@@ -20,6 +20,10 @@ def load(name: str) -> list[Stream]:
         from experiments.datasets import load_beam
 
         return load_beam(("1M",))
+    if name == "repomem-new":
+        from experiments.repomem import load_repomem
+
+        return load_repomem(split="new")
     if name == "repomem-fresh":
         from experiments.repomem import load_repomem
 

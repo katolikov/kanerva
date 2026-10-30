@@ -45,10 +45,20 @@ REPOS = {
     "pypa/packaging": ("src/packaging", "fresh"),
     "Delgan/loguru": ("loguru", "fresh"),
     "tqdm/tqdm": ("tqdm", "fresh"),
+    # A second held-out test, for changes made after the first one.
+    "encode/uvicorn": ("uvicorn", "new"),
+    "agronholm/anyio": ("src/anyio", "new"),
+    "python-trio/trio": ("src/trio", "new"),
+    "tox-dev/tox": ("src/tox", "new"),
+    "Pylons/waitress": ("src/waitress", "new"),
+    "benoitc/gunicorn": ("gunicorn", "new"),
+    "sqlalchemy/alembic": ("alembic", "new"),
+    "python-jsonschema/jsonschema": ("jsonschema", "new"),
 }
 LEGACY_ROOTS = {"src/click": "click", "src/attr": "src/attr", "src/flask": "flask", "src/requests": "requests",
                 "src/werkzeug": "werkzeug", "src/jinja2": "jinja2", "src/black": "black",
-                "src/marshmallow": "marshmallow", "src/pluggy": "pluggy", "src/packaging": "packaging"}
+                "src/marshmallow": "marshmallow", "src/pluggy": "pluggy", "src/packaging": "packaging",
+                "src/anyio": "anyio", "src/trio": "trio", "src/tox": "tox", "src/waitress": "waitress"}
 
 SNAPSHOTS = 14
 YEARS = 6
