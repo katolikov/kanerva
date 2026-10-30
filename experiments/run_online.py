@@ -1,4 +1,4 @@
-"""E3: prequential online learning on real streams, with feedback simulated from evidence labels.
+"""Prequential online learning on real streams, with feedback simulated from evidence labels.
 
 Each seed shuffles the order of streams and of queries inside a stream and shares one policy across the
 whole run. After each retrieval at budget B, every injected item gets reward 1 if it is gold and 0 otherwise,
@@ -38,7 +38,7 @@ def replay(args: tuple) -> dict:
     dataset, keyed, setting, seed, ridge = args
     spec = SETTINGS[setting]
     rng = random.Random(seed)
-    streams = [s for s in load(dataset) if s.split == "test"]  # round-1 test splits, development data in round 2
+    streams = [s for s in load(dataset) if s.split == "test"]
     if dataset == "repomem":
         streams = [s for s in streams if s.name.endswith(f"-{seed % 3}")]
     rng.shuffle(streams)
@@ -89,7 +89,7 @@ def main() -> None:
     with ProcessPoolExecutor(8) as pool:
         results = list(pool.map(replay, jobs))
     (RESULTS / "raw").mkdir(parents=True, exist_ok=True)
-    (RESULTS / "raw" / "online_r2.json").write_text(json.dumps(results))
+    (RESULTS / "raw" / "online.json").write_text(json.dumps(results))
     summary: dict = {}
     for r in results:
         n = len(r["recall"])
@@ -99,7 +99,7 @@ def main() -> None:
         entry["second_half"].append(float(np.mean(tail)))
     out = {"meta": {"experiment": "online", "budget": BUDGET, "seeds": SEEDS, "commit": git_commit(),
                     "wall_seconds": round(time.time() - start, 1)}, "summary": summary}
-    (RESULTS / "online_r2.json").write_text(json.dumps(out, indent=1))
+    (RESULTS / "online.json").write_text(json.dumps(out, indent=1))
     for d, settings in summary.items():
         for s, e in settings.items():
             print(d, s, f"all={np.mean(e['all']):.4f}", f"second_half={np.mean(e['second_half']):.4f}")

@@ -29,6 +29,14 @@ def git_commit() -> str:
         return "uncommitted"
 
 
+def answer_stems(answer: str, question: str) -> list[str]:
+    """Stems of the reference answer that the question does not already contain."""
+    from kanerva.text import content_terms, light_stem
+
+    asked = {light_stem(t) for t in content_terms(question)}
+    return [s for s in dict.fromkeys(light_stem(t) for t in content_terms(answer)) if s not in asked][:62]
+
+
 def answer_recall(texts: list[str], wanted: list[str]) -> float:
     """Share of the reference answer's stems (those not already in the question) present in the injected text."""
     if not wanted:
@@ -81,7 +89,7 @@ def run_stream(args: tuple) -> list[dict]:
     cache = TextCache(cache_name)
     reranker = None
     if selected and {"kanerva-ce", "rerank"} & set(selected):
-        from experiments.run_rerank import CachedScores
+        from experiments.cross_encoder import CachedScores
 
         reranker = CachedScores(os.environ.get("KANERVA_CE_CACHE", cache_name))
     mem = new_memory(cache, base, reranker)
@@ -113,8 +121,6 @@ def evaluate_query(mem, cache, query: Query, id_of, methods, budgets, stream_nam
     if not gold:
         return []
     ctx = Context(mem, query.question, query.now, cache.vector(query.question))
-    from experiments.r2_dump import answer_stems
-
     wanted = answer_stems(query.answer, query.question) if query.answer else []
     rows = []
     for name, method in methods.items():

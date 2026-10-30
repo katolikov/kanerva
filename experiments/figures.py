@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "results"
 BUDGETS = (128, 256, 512, 1024, 2048, 4096)
-PANELS = {"fresh_beam": "Conversations (BEAM, 984 questions)", "fresh_repomem-fresh-plain": "Code history (RepoMem, 1,248 questions)"}
+PANELS = {"fresh_beam": "Long conversations (BEAM, 984 questions)", "fresh_repomem-fresh-plain": "Code history (RepoMem, 1,248 questions)"}
 SERIES = (
     ("kanerva-ce", "Kanerva + reranker", 0),
     ("kanerva", "Kanerva", 1),
@@ -40,7 +40,7 @@ def draw(path: Path, theme: dict, width: float = 9.6, height: float = 4.1) -> No
             if f"{method}@128" not in summary:
                 continue
             values = [summary[f"{method}@{b}"]["recall"] for b in BUDGETS]
-            line, = ax.plot(BUDGETS, values, color=theme["series"][slot], linewidth=2.2, marker="o", markersize=6,
+            line, = ax.plot(BUDGETS, values, color=theme["series"][slot], linewidth=2, marker="o", markersize=7.5,
                             markeredgecolor=theme["surface"], markeredgewidth=1.5, label=label, zorder=3 + (5 - slot))
             if label not in [h.get_label() for h in handles]:
                 handles.append(line)

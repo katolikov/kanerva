@@ -1,4 +1,4 @@
-"""E5-E8: consolidation, forgetting and store growth, multi-resolution retrieval, and scale."""
+"""Consolidation, forgetting and store growth, and retrieval latency at scale."""
 
 from __future__ import annotations
 
@@ -136,41 +136,6 @@ def forgetting() -> None:
     dump("forgetting", {"results": out, "meta": {"budget": BUDGET, "streams": len(streams), "session_days": float(np.mean(days))}})
 
 
-def _snippet_job(args: tuple) -> dict:
-    stream, threshold = args
-    cache = TextCache("lme")
-    cfg = RetrievalConfig(snippet_threshold=threshold)
-    mem = new_memory(cache, cfg)
-    id_of: dict[str, int] = {}
-    for turn in stream.writes:
-        apply_write(mem, cache, turn, id_of, False)
-    out = {}
-    for query in stream.queries:
-        gold = {id_of[t] for t in query.gold if t in id_of}
-        if not gold:
-            continue
-        for budget in (256, 512, 1024, 2048):
-            result = mem.retrieve(query.question, budget, now=query.now, query_vector=cache.vector(query.question), record=False)
-            chosen = {i.id for i in result.items}
-            out[budget] = {"recall": len(chosen & gold) / len(gold), "tokens": result.tokens,
-                           "items": len(result.items), "cut": sum(i.truncated for i in result.items)}
-    mem.close()
-    return out
-
-
-def multires() -> None:
-    streams = [s for s in load("lme") if s.split == "test"]
-    out: dict = {}
-    for threshold in (0, 48, 96):
-        with ProcessPoolExecutor(8) as pool:
-            rows = list(pool.map(_snippet_job, [(s, threshold) for s in streams]))
-        for budget in (256, 512, 1024, 2048):
-            subset = [r[budget] for r in rows if budget in r]
-            out[f"{threshold}@{budget}"] = {k: float(np.mean([r[k] for r in subset])) for k in ("recall", "tokens", "items", "cut")}
-            print(threshold, budget, {k: round(v, 3) for k, v in out[f"{threshold}@{budget}"].items()}, flush=True)
-    dump("multires", {"results": out})
-
-
 def scale() -> None:
     cache = TextCache("lme")
     streams = [s for s in load("lme")]
@@ -205,6 +170,6 @@ def scale() -> None:
 
 
 if __name__ == "__main__":
-    jobs = {"consolidation": consolidation, "forgetting": forgetting, "multires": multires, "scale": scale}
+    jobs = {"consolidation": consolidation, "forgetting": forgetting, "scale": scale}
     for name in sys.argv[1:] or jobs:
         jobs[name]()

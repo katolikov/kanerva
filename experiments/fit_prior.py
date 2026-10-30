@@ -1,4 +1,4 @@
-"""Fit the policy prior theta0 by weighted ridge regression on the dev splits only."""
+"""Fit the linear prior of the first version of the method, by weighted ridge regression on the dev splits."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ def collect(dataset: str, cfg: RetrievalConfig, keyed: bool) -> tuple[np.ndarray
     cache = TextCache(dataset)
     reranker = None
     if cfg.use_reranker:
-        from experiments.run_rerank import CachedScores
+        from experiments.cross_encoder import CachedScores
 
         reranker = CachedScores(dataset)
     xs, ys, ws = [], [], []
@@ -56,9 +56,10 @@ def fit(cfg: RetrievalConfig, ridge: float = 1e-3) -> np.ndarray:
 
 
 if __name__ == "__main__":
-    theta = fit(RetrievalConfig(use_validity=False, use_bandit=False))
-    lexical = fit(RetrievalConfig(use_validity=False, use_bandit=False, use_dense=False, gamma=0.0))
-    rerank = fit(RetrievalConfig(use_validity=False, use_bandit=False, use_reranker=True))
+    base = RetrievalConfig(use_validity=False, use_bandit=False, relevance="linear", candidates=100, neighbour_top=0, gamma=0.05)
+    theta = fit(base)
+    lexical = fit(base.with_(use_dense=False, gamma=0.0))
+    rerank = fit(base.with_(use_reranker=True))
     print("DEFAULT_THETA =", tuple(np.round(theta, 4).tolist()))
     print("RERANK_THETA =", tuple(np.round(rerank, 4).tolist()))
     print("LEXICAL_THETA =", tuple(np.round(lexical, 4).tolist()))

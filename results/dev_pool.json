@@ -1,0 +1,132 @@
+{
+ "meta": {
+  "experiment": "candidate pool recall",
+  "commit": "8e0339e8b1e4"
+ },
+ "results": {
+  "beam-dev": {
+   "pool50": 0.584,
+   "size50": 85.464,
+   "pool100": 0.665,
+   "size100": 167.237,
+   "pool200": 0.744,
+   "size200": 326.258,
+   "pool400": 0.828,
+   "size400": 626.245,
+   "nb20x1": 0.702,
+   "nb20x1_size": 188.552,
+   "nb50x1": 0.731,
+   "nb50x1_size": 225.373,
+   "nb20x2": 0.713,
+   "nb20x2_size": 211.526,
+   "prf": 0.677,
+   "prf_size": 182.067,
+   "by_category": {
+    "contradiction_resolution": {
+     "pool100": 0.79,
+     "pool400": 0.895,
+     "nb20x1": 0.818,
+     "prf": 0.804
+    },
+    "event_ordering": {
+     "pool100": 0.219,
+     "pool400": 0.462,
+     "nb20x1": 0.251,
+     "prf": 0.248
+    },
+    "information_extraction": {
+     "pool100": 0.789,
+     "pool400": 0.911,
+     "nb20x1": 0.804,
+     "prf": 0.796
+    },
+    "instruction_following": {
+     "pool100": 0.686,
+     "pool400": 0.905,
+     "nb20x1": 0.786,
+     "prf": 0.7
+    },
+    "knowledge_update": {
+     "pool100": 0.896,
+     "pool400": 0.932,
+     "nb20x1": 0.93,
+     "prf": 0.896
+    },
+    "multi_session_reasoning": {
+     "pool100": 0.691,
+     "pool400": 0.87,
+     "nb20x1": 0.726,
+     "prf": 0.702
+    },
+    "preference_following": {
+     "pool100": 0.646,
+     "pool400": 0.825,
+     "nb20x1": 0.716,
+     "prf": 0.664
+    },
+    "summarization": {
+     "pool100": 0.372,
+     "pool400": 0.683,
+     "nb20x1": 0.386,
+     "prf": 0.383
+    },
+    "temporal_reasoning": {
+     "pool100": 0.875,
+     "pool400": 0.961,
+     "nb20x1": 0.887,
+     "prf": 0.881
+    }
+   }
+  },
+  "locomo": {
+   "pool50": 0.868,
+   "size50": 84.672,
+   "pool100": 0.912,
+   "size100": 158.255,
+   "pool200": 0.956,
+   "size200": 278.652,
+   "pool400": 0.995,
+   "size400": 460.264,
+   "nb20x1": 0.939,
+   "nb20x1_size": 178.705,
+   "nb50x1": 0.949,
+   "nb50x1_size": 211.845,
+   "nb20x2": 0.952,
+   "nb20x2_size": 193.361,
+   "prf": 0.916,
+   "prf_size": 170.315,
+   "by_category": {
+    "1": {
+     "pool100": 0.802,
+     "pool400": 0.987,
+     "nb20x1": 0.827,
+     "prf": 0.809
+    },
+    "2": {
+     "pool100": 0.915,
+     "pool400": 1.0,
+     "nb20x1": 0.932,
+     "prf": 0.919
+    },
+    "3": {
+     "pool100": 0.691,
+     "pool400": 0.97,
+     "nb20x1": 0.722,
+     "prf": 0.691
+    },
+    "4": {
+     "pool100": 0.957,
+     "pool400": 0.998,
+     "nb20x1": 0.974,
+     "prf": 0.961
+    },
+    "5": {
+     "pool100": 0.938,
+     "pool400": 0.994,
+     "nb20x1": 0.991,
+     "prf": 0.943
+    }
+   }
+  }
+ }
+}

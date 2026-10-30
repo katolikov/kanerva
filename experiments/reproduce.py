@@ -1,4 +1,4 @@
-"""Run every experiment with a wall-clock cap per step. ``--fast`` uses the dev split as a smoke test."""
+"""Run every experiment in order, with a wall-clock cap per step."""
 
 from __future__ import annotations
 
@@ -11,22 +11,22 @@ ROOT = Path(__file__).resolve().parent.parent
 
 SYSTEMS_PYTHON = ROOT / ".venv-systems" / "bin" / "python"
 STEPS = [
-    ("synthetic", sys.executable, ["experiments.run_synthetic"], 1800),
+    ("features", sys.executable, ["experiments.dump_features"], 7200),
+    ("models", sys.executable, ["experiments.compare_models"], 7200),
+    ("ablation", sys.executable, ["experiments.feature_ablation"], 7200),
+    ("fit", sys.executable, ["experiments.fit_relevance"], 3600),
+    ("fresh-test", sys.executable, ["experiments.final_test"], 7200),
     ("store", sys.executable, ["experiments.run_store"], 3600),
-    ("rerank", sys.executable, ["experiments.run_rerank"], 3600),
-    ("retrieval", sys.executable, ["experiments.run_retrieval"], 3600),
     ("online", sys.executable, ["experiments.run_online"], 3600),
+    ("synthetic", sys.executable, ["experiments.run_synthetic"], 1800),
+    ("regret-scale", sys.executable, ["experiments.regret_scale"], 300),
     ("baseline-systems", str(SYSTEMS_PYTHON), ["experiments.run_systems"], 1800),
-    ("analysis", sys.executable, ["experiments.analysis"], 600),
+    ("figures", sys.executable, ["experiments.figures"], 300),
 ]
 
 
 def main() -> None:
-    fast = "--fast" in sys.argv
-    if fast:
-        code = subprocess.run([sys.executable, "-m", "experiments.run_dev", "lme"], timeout=600).returncode
-        sys.exit(code)
-    only = {a for a in sys.argv[1:] if not a.startswith("-")}
+    only = set(sys.argv[1:])
     for name, python, module, cap in STEPS:
         if only and name not in only:
             continue

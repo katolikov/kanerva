@@ -1,4 +1,4 @@
-"""E9: Mem0's open-source library as a real-system baseline, in its no-LLM mode (infer=False).
+"""Mem0's open-source library as a real-system baseline, in its no-LLM mode (infer=False).
 
 Runs in its own environment: .venv-systems/bin/python -m experiments.run_systems. Mem0 stores turns verbatim,
 retrieves with its own scoring over local Qdrant, and its ranking is then filled to the budget with the same

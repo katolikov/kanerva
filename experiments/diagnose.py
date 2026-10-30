@@ -12,11 +12,11 @@ from collections import defaultdict
 
 import numpy as np
 
+from experiments.cross_encoder import CachedScores
 from experiments.embed_cache import TextCache
 from experiments.harness import RESULTS, apply_write, new_memory
 from experiments.methods import Context, fill
 from experiments.registry import load
-from experiments.run_rerank import CachedScores
 from kanerva import RetrievalConfig
 
 BUDGETS = (128, 256, 512, 1024, 4096)

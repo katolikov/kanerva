@@ -8,14 +8,11 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
-import sys
 
 import numpy as np
 
 from experiments.embed_cache import CACHE
-from experiments.harness import BUDGETS, RESULTS
-from kanerva.policy import DEFAULT_THETA
+from experiments.harness import BUDGETS, RESULTS, git_commit
 from kanerva.relevance import FEATURES, RERANK_FEATURES
 
 FOLDS = 5
@@ -23,7 +20,7 @@ FOLDS = 5
 
 class Data:
     def __init__(self, name: str):
-        d = np.load(CACHE / f"r2_{name}{os.environ.get('R2_SUFFIX', '')}.npz")
+        d = np.load(CACHE / f"features_{name}.npz")
         self.name = name
         self.offsets = d["offsets"]
         for key in ("x1", "x2", "gold", "stale", "cost", "answer", "nans", "ngold", "old", "qid", "category", "stream", "split"):
@@ -53,17 +50,13 @@ def fit_logistic(x: np.ndarray, y: np.ndarray, w: np.ndarray, c: float = 1.0):
     return lambda z: model.predict_proba((z - mean) / scale)[:, 1], (model, mean, scale)
 
 
-MONOTONE = {"lex_rank", "dense_rank", "lex_score", "dense_score", "term_cover", "rank_agreement", "lex_top", "dense_top",
-            "rerank_score", "rerank_rank", "rerank_top", "entity_overlap", "number_overlap"}
 DENSE = {"dense_rank", "dense_score", "rank_agreement", "dense_top", "neighbour_dense", "neighbour2_dense", "session_dense", "dense_gap"}
 
 
-def fit_gbdt(x: np.ndarray, y: np.ndarray, w: np.ndarray, use: tuple[str, ...] = (), monotone: bool = False):
+def fit_gbdt(x: np.ndarray, y: np.ndarray, w: np.ndarray):
     from sklearn.ensemble import HistGradientBoostingClassifier
 
-    cst = [1 if f in MONOTONE else 0 for f in use] if monotone else None
-    model = HistGradientBoostingClassifier(max_iter=300, learning_rate=0.05, max_leaf_nodes=31, l2_regularization=1.0,
-                                           random_state=0, monotonic_cst=cst)
+    model = HistGradientBoostingClassifier(max_iter=300, learning_rate=0.05, max_leaf_nodes=31, l2_regularization=1.0, random_state=0)
     model.fit(x, y, sample_weight=w * len(w) / w.sum())
     return lambda z: model.predict_proba(z)[:, 1], model
 
@@ -101,45 +94,11 @@ def cross_fit(data: list[Data], use: tuple[str, ...], kind: str = "logistic", c:
         if kind == "logistic":
             model = fit_logistic(x, y, w, c)[0]
         else:
-            model = fit_gbdt(x, y, w, use, monotone=kind == "gbdt-mono")[0]
+            model = fit_gbdt(x, y, w)[0]
         for d, p in zip(data, preds):
             test = (d.fold == fold)[d.row_query] & in_pool(d, pool)
             if test.any():
                 p[test] = model(d.x2[test][:, cols])
-    return preds
-
-
-def stage_rank(d: Data, p: np.ndarray) -> np.ndarray:
-    """Rank of each row by score within its query (0 is best)."""
-    out = np.zeros(len(p), dtype=int)
-    for q in range(d.n):
-        rows = d.rows(q)
-        out[rows] = np.argsort(np.argsort(-p[rows], kind="stable"), kind="stable")
-    return out
-
-
-def cross_fit_cascade(data: list[Data], use: tuple[str, ...], top: int = 30) -> list[np.ndarray]:
-    """Stage 2 re-scores the top rows of stage 1, trained only on such rows, with the stage-1 score as a feature.
-
-    Rows below ``top`` keep their stage-1 score, scaled so that they never outrank stage-2 rows.
-    """
-    first = cross_fit(data, use, "gbdt")
-    ranks = [stage_rank(d, p) for d, p in zip(data, first)]
-    cols = columns(use)
-    preds = [p.copy() for p in first]
-    for fold in range(FOLDS):
-        weights = training_weights(data, [d.fold != fold for d in data])
-        keep = [(w > 0) & (r < top) for w, r in zip(weights, ranks)]
-        x = np.vstack([np.column_stack([d.x2[k][:, cols], p1[k], r[k]]) for d, k, p1, r in zip(data, keep, first, ranks)])
-        y = np.concatenate([d.gold[k] for d, k in zip(data, keep)])
-        w = np.concatenate([wt[k] for wt, k in zip(weights, keep)])
-        model = fit_gbdt(x, y, w)[0]
-        for d, p, p1, r in zip(data, preds, first, ranks):
-            test = (d.fold == fold)[d.row_query] & (r < top)
-            if test.any():
-                p[test] = model(np.column_stack([d.x2[test][:, cols], p1[test], r[test]]))
-    for d, p, r in zip(data, preds, ranks):
-        p[r >= top] *= 1e-3
     return preds
 
 
@@ -263,49 +222,37 @@ def summary(result: dict) -> tuple[list[float], float]:
 
 
 BASE = tuple(f for f in FEATURES if f not in RERANK_FEATURES)
-ROUND1 = ("bias", "lex_rank", "dense_rank", "lex_score", "dense_score", "term_cover", "rank_agreement", "lex_top", "dense_top", "activation")
+LEXICAL = tuple(f for f in BASE if f not in DENSE)
+MODELS = {
+    "kanerva": ("gbdt", BASE, "all"),
+    "kanerva-ce": ("gbdt", BASE + RERANK_FEATURES, "all"),
+    "kanerva-lex": ("gbdt", LEXICAL, "lexical"),
+    "logistic": ("logistic", BASE, "all"),
+}
 
 
-def main(names: list[str]) -> None:
+def main(names: list[str], tag: str, models: tuple[str, ...], rules: tuple[str, ...]) -> None:
     data = [Data(n) for n in names]
-    lexical = tuple(f for f in BASE if f not in DENSE)
-    candidates = {
-        "r2-logit": ("logistic", BASE, "all"),
-        "r2-gbdt": ("gbdt", BASE, "all"),
-        "r2-gbdt-mono": ("gbdt-mono", BASE, "all"),
-        "r2-gbdt-ce": ("gbdt", BASE + RERANK_FEATURES, "all"),
-        "r2-gbdt-mono-ce": ("gbdt-mono", BASE + RERANK_FEATURES, "all"),
-        "lex-gbdt-mono": ("gbdt-mono", lexical, "lexical"),
-    }
-    wanted = os.environ.get("R2_MODELS")
-    if wanted:
-        candidates = {k: v for k, v in candidates.items() if k in wanted.split(",")}
-    rules = tuple(os.environ.get("R2_RULES", "rank,density").split(","))
     report: dict = {}
-    scores = {name: cross_fit(data, use, kind, pool=pool) for name, (kind, use, pool) in candidates.items()}
-    if os.environ.get("R2_CASCADE"):
-        scores["cascade"] = cross_fit_cascade(data, BASE)
-        scores["cascade-ce"] = cross_fit_cascade(data, BASE + RERANK_FEATURES)
-        candidates = dict(candidates) | {"cascade": None, "cascade-ce": None}
-    for d_idx, d in enumerate(data):
+    scores = {name: cross_fit(data, MODELS[name][1], MODELS[name][0], pool=MODELS[name][2]) for name in models}
+    for index, d in enumerate(data):
         rows = {}
         old = d.old[eval_queries(d)]
-        rows["round1 (stored)"] = (old.mean(0).tolist(), float(old.mean()))
-        rows["hybrid"] = summary(evaluate(d, None, "", "hybrid"))
-        rows["rerank"] = summary(evaluate(d, None, "", "rerank"))
-        rows["bm25"] = summary(evaluate(d, None, "", "bm25"))
-        prior = np.clip(d.x1 @ np.asarray(DEFAULT_THETA), 0.0, 1.0)
-        rows["r1-prior/density"] = summary(evaluate(d, prior + 1e-6, "density"))
-        for name in candidates:
+        rows["first-version"] = (old.mean(0).tolist(), float(old.mean()))
+        for baseline in ("hybrid", "rerank", "bm25"):
+            rows[baseline] = summary(evaluate(d, None, "", baseline))
+        for name in models:
             for rule in rules:
-                rows[f"{name}/{rule}"] = summary(evaluate(d, scores[name][d_idx], rule))
+                rows[f"{name}/{rule}"] = summary(evaluate(d, scores[name][index], rule))
         report[d.name] = rows
         print(f"== {d.name} ({d.n} queries)")
         print("method".ljust(26) + "".join(f"{b:>7}" for b in BUDGETS) + "   mean")
         for name, (per, mean) in rows.items():
             print(name.ljust(26) + "".join(f"{v:7.3f}" for v in per) + f"  {mean:.3f}")
-    (RESULTS / "r2_offline.json").write_text(json.dumps(report, indent=1))
+    meta = {"experiment": "cross-fitted model comparison", "folds": FOLDS, "commit": git_commit()}
+    (RESULTS / f"dev_models{tag}.json").write_text(json.dumps({"meta": meta, "results": report}, indent=1))
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:] or ["lme", "locomo", "repomem", "beam-dev"])
+    main(["lme", "locomo", "repomem", "beam-dev"], "", ("kanerva", "kanerva-ce", "kanerva-lex"), ("density",))
+    main(["lme-m2v", "locomo-m2v", "repomem-m2v", "beam-dev-m2v"], "_static", ("kanerva",), ("density",))

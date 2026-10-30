@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 import json
-import os
 import sys
 
 import numpy as np
 
-from experiments.harness import RESULTS
-from experiments.r2_offline import BASE, Data, cross_fit, evaluate, summary
+from experiments.compare_models import BASE, Data, cross_fit, evaluate, summary
+from experiments.harness import RESULTS, git_commit
 
 GROUPS = {
     "item": ("log_tokens", "short", "content_density", "is_question", "has_number"),
@@ -30,9 +29,8 @@ def main(names: list[str]) -> None:
         print(label.ljust(16) + "  ".join(f"{d.name} {out[label][d.name][1]:.3f}" for d in data), flush=True)
     base = {d.name: out["all"][d.name][1] for d in data}
     print("mean drop:", {k: round(float(np.mean([base[n] - v[n][1] for n in base])), 4) for k, v in out.items()})
-    (RESULTS / "r2_ablation.json").write_text(json.dumps(out, indent=1))
+    (RESULTS / "dev_ablation.json").write_text(json.dumps({"meta": {"commit": git_commit()}, "results": out}, indent=1))
 
 
 if __name__ == "__main__":
-    os.environ.setdefault("R2_SUFFIX", "-wide")
     main(sys.argv[1:] or ["lme", "locomo", "repomem", "beam-dev"])

@@ -64,7 +64,7 @@ class RetrievalConfig:
     soft_supersede_keyed: bool = False  # keyed items have exact version chains, so similarity is not evidence
     stale_factor: float = 0.05
 
-    # "trees": the calibrated relevance model of kanerva.relevance; "linear": the round-1 linear prior over FEATURES.
+    # "trees": the calibrated relevance model of kanerva.relevance; "linear": a linear prior over FEATURES.
     relevance: str = "trees"
     model: str = ""  # relevance model name; empty picks rerank, dense, static or lexical from the setup
 

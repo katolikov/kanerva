@@ -7,18 +7,16 @@ Three models: ``dense`` (hybrid candidates), ``lexical`` (FTS5 candidates only, 
 from __future__ import annotations
 
 import json
-import os
 import sys
 
 import numpy as np
 
-from experiments.r2_offline import BASE, DENSE, Data, columns, fit_gbdt, in_pool, training_weights
+from experiments.compare_models import BASE, LEXICAL, Data, columns, fit_gbdt, in_pool, training_weights
 from experiments.tree_export import export
 from kanerva.relevance import MODEL_PATH, RERANK_FEATURES
 
 DEV = ("lme", "locomo", "repomem", "beam-dev")
 STATIC = tuple(f"{name}-m2v" for name in DEV)  # dumps with the static model2vec embedder
-LEXICAL = tuple(f for f in BASE if f not in DENSE)
 SPECS = {"dense": (BASE, "all"), "lexical": (LEXICAL, "lexical"), "rerank": (BASE + RERANK_FEATURES, "all")}
 
 
@@ -29,7 +27,7 @@ def fit(data: list[Data], use: tuple[str, ...], pool: str):
     x = np.vstack([d.x2[k][:, cols] for d, k in zip(data, keep)])
     y = np.concatenate([d.gold[k] for d, k in zip(data, keep)])
     w = np.concatenate([wt[k] for wt, k in zip(weights, keep)])
-    return fit_gbdt(x, y, w, use)[1]
+    return fit_gbdt(x, y, w)[1]
 
 
 def main(names: tuple[str, ...]) -> None:
@@ -41,8 +39,7 @@ def main(names: tuple[str, ...]) -> None:
         tree = export(model, use)
         check = data[0].x2[:2000]
         assert np.allclose(tree.predict(check), model.predict_proba(check[:, columns(use)])[:, 1], atol=1e-9)
-        out[name] = tree.to_json() | {"trained_on": [d.name for d in data], "suffix": os.environ.get("R2_SUFFIX", ""),
-                                      "trees": int(tree.feature.shape[0])}
+        out[name] = tree.to_json() | {"trained_on": [d.name for d in data], "trees": int(tree.feature.shape[0])}
         print(name, "trees", tree.feature.shape[0], "depth", tree.depth, flush=True)
     MODEL_PATH.write_text(json.dumps(out, separators=(",", ":")))
     print("wrote", MODEL_PATH, f"{MODEL_PATH.stat().st_size / 1e6:.1f} MB")

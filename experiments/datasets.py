@@ -184,7 +184,7 @@ def _beam_time(anchor: str) -> float | None:
 def load_beam(splits: tuple[str, ...] = ("1M", "100K", "500K")) -> list[Stream]:
     """BEAM, one store per conversation. Abstention questions have no evidence and are dropped.
 
-    BEAM-1M is development data; BEAM-100K and BEAM-500K are the fresh test (see docs/research-2/protocol.md).
+    BEAM-1M is development data; BEAM-100K and BEAM-500K are the held-out test.
     """
     import ast
 

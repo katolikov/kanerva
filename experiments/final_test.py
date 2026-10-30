@@ -1,7 +1,6 @@
-"""The round-2 fresh test: one command, run once, after the method is frozen (see docs/research-2/protocol.md).
+"""The held-out test: BEAM-100K and BEAM-500K, and five RepoMem repositories that fitting never saw.
 
-Steps: score cross-encoder pairs in one process, run every method on BEAM-100K and BEAM-500K and on the five fresh
-RepoMem repositories, then write hypothesis tests to results/r2_tests.json.
+Steps: score cross-encoder pairs in one process, run every method, then write paired tests to results/fresh_tests.json.
 """
 
 from __future__ import annotations
@@ -13,12 +12,12 @@ import time
 
 import numpy as np
 
-from experiments.analysis import holm, paired
+from experiments.cross_encoder import LiveCrossEncoder
 from experiments.embed_cache import TextCache
 from experiments.harness import BUDGETS, RESULTS, apply_write, git_commit, new_memory, run_dataset, save, table
 from experiments.methods import Context
-from experiments.r2_dump import LiveCrossEncoder
 from experiments.registry import load
+from experiments.stats import holm, paired
 from kanerva import RetrievalConfig
 
 BASELINES = {"recency", "bm25", "dense", "hybrid", "hybrid-live", "hybrid-newest", "hybrid-dedup", "mmr", "gen-agents", "facility", "rerank"}
@@ -68,9 +67,9 @@ def run(name: str, spec: dict, selected: set[str], base: RetrievalConfig) -> lis
     start = time.time()
     streams = streams_for(spec)
     records = run_dataset(streams, spec["cache"], base, keyed=spec["keyed"], selected=selected)
-    meta = {"experiment": "round-2 fresh test", "dataset": name, "split": spec["split"], "streams": len(streams),
+    meta = {"experiment": "fresh test", "dataset": name, "split": spec["split"], "streams": len(streams),
             "queries": len({r["qid"] for r in records}), "budgets": BUDGETS, "wall_seconds": round(time.time() - start, 1)}
-    save(f"r2_final_{name}", records, meta)
+    save(f"fresh_{name}", records, meta)
     print(f"== {name} ({meta['queries']} queries, {meta['wall_seconds']}s)\n{table(records)}\n{table(records, 'answer')}", flush=True)
     return records
 
@@ -86,7 +85,7 @@ def per_query(records: list[dict], method: str, metric: str, budgets) -> dict:
 
 def compare(records: list[dict], name: str, a: str, b: str, rng, metric: str = "recall") -> dict:
     """Per-budget tests with Holm correction within this comparison, plus the mean over all budgets."""
-    unit = "repomem" if name.startswith("repomem") else "locomo"  # a conversation or a repository is the unit
+    unit = "repomem" if name.startswith("repomem") else "beam"  # a conversation or a repository is the unit
     rows = {}
     for budget in BUDGETS:
         rows[str(budget)] = paired(per_query(records, a, metric, (budget,)), per_query(records, b, metric, (budget,)), rng, unit)
@@ -114,7 +113,7 @@ def tests(all_records: dict[str, list[dict]]) -> None:
                 "recall": float(np.mean([r["recall"] for r in changed if r["method"] == m]))}
             for m in sorted({r["method"] for r in changed})
         }
-    (RESULTS / "r2_tests.json").write_text(json.dumps(report, indent=1))
+    (RESULTS / "fresh_tests.json").write_text(json.dumps(report, indent=1))
 
 
 def main() -> None:

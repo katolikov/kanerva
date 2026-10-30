@@ -14,6 +14,9 @@ from kanerva import Memory, RetrievalConfig
 from kanerva.policy import LEXICAL_THETA, RERANK_THETA
 from kanerva.select import SelectionProblem, budgeted_select
 
+# The first version of the method: a linear prior, no neighbours, a smaller pool. Kept as a baseline.
+FIRST_VERSION = {"relevance": "linear", "candidates": 100, "neighbour_top": 0, "gamma": 0.05, "newest_first": False}
+
 
 @dataclass
 class Context:
@@ -234,16 +237,11 @@ def variants(base: RetrievalConfig) -> dict[str, RetrievalConfig]:
     return {
         "kanerva": base,
         "-density": base.with_(cost_exponents=(0.0,)),
-        "-coverage": base.with_(query_facet=1.0),
-        "-redundancy": base.with_(gamma=0.0),
         "-validity": base.with_(use_validity=False),
         "-supersession": base.with_(use_supersession=False),
-        "-activation": base.with_(theta0=tuple(0.0 if i == 6 else t for i, t in enumerate(base.theta0))),
-        "kanerva-first": base.with_(soft_supersede_keyed=True),
         "kanerva-ce": base.with_(use_reranker=True, theta0=RERANK_THETA),
         "kanerva-lex": base.with_(use_dense=False, gamma=0.0, neighbour_top=0, theta0=LEXICAL_THETA),
-        "kanerva-g0": base.with_(gamma=0.0),
-        "kanerva-r1": base.with_(relevance="linear", candidates=100, neighbour_top=0, gamma=0.05, newest_first=False),
+        "kanerva-r1": base.with_(**FIRST_VERSION),
         "-neighbours": base.with_(candidates=100, neighbour_top=0),
         "kanerva-x128": base.with_(excerpt_threshold=160, excerpt_tokens=128),
     }

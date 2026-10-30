@@ -34,12 +34,12 @@ REPOS = {
     "Textualize/rich": ("rich", "test"),
     "pallets/werkzeug": ("src/werkzeug", "test"),
     "pallets/jinja": ("src/jinja2", "test"),
-    # Added after the first test run, for checking one post-hoc change on untouched repositories.
+    # Extra repositories that no parameter was fitted on.
     "encode/starlette": ("starlette", "holdout"),
     "fastapi/typer": ("typer", "holdout"),
     "psf/black": ("src/black", "holdout"),
     "aio-libs/aiohttp": ("aiohttp", "holdout"),
-    # Round-2 fresh test, named in docs/research-2/protocol.md before the histories were fetched.
+    # The held-out test.
     "marshmallow-code/marshmallow": ("src/marshmallow", "fresh"),
     "pytest-dev/pluggy": ("src/pluggy", "fresh"),
     "pypa/packaging": ("src/packaging", "fresh"),
@@ -318,7 +318,7 @@ def stream_for(data: dict, seed: int) -> Stream:
 
 
 def load_repomem(holdout: bool = False, split: str | None = None) -> list[Stream]:
-    """Round-1 dev and test repositories by default; ``holdout=True`` or ``split`` picks another group."""
+    """The dev and test repositories by default; ``holdout=True`` or ``split`` picks another group."""
     wanted = split or ("holdout" if holdout else None)
     streams = []
     for repo, (_, repo_split) in REPOS.items():

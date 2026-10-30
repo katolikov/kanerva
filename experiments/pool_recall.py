@@ -9,9 +9,9 @@ from concurrent.futures import ProcessPoolExecutor
 
 import numpy as np
 
+from experiments.dump_features import DATASETS
 from experiments.embed_cache import TextCache
-from experiments.harness import RESULTS, apply_write, new_memory
-from experiments.r2_dump import DATASETS
+from experiments.harness import RESULTS, apply_write, git_commit, new_memory
 from experiments.registry import load
 from kanerva import RetrievalConfig
 
@@ -96,7 +96,7 @@ def main(names: list[str]) -> None:
             for c in cats
         }
         print(name, json.dumps({k: v for k, v in report[name].items() if k != "by_category"}), flush=True)
-    (RESULTS / "r2_pool.json").write_text(json.dumps(report, indent=1))
+    (RESULTS / "dev_pool.json").write_text(json.dumps({"meta": {"commit": git_commit()}, "results": report}, indent=1))
 
 
 if __name__ == "__main__":
