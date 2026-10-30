@@ -194,6 +194,9 @@ def kanerva_variant(cfg: RetrievalConfig):
         if key not in ctx.cache:
             ctx.cache[key] = ctx.mem.prepare(ctx.question, ctx.now, None, cfg, ctx.qvec)
         result = ctx.mem.select(ctx.cache[key], budget, record=False)
+        if any(item.truncated for item in result.items):
+            ctx.cache["texts"] = [item.text for item in result.items]
+            ctx.cache["text_costs"] = [ctx.mem.count_tokens(item.text) + ctx.overhead for item in result.items]
         return [item.id for item in result.items]
 
     return run
@@ -226,4 +229,8 @@ def variants(base: RetrievalConfig) -> dict[str, RetrievalConfig]:
         "kanerva-first": base.with_(soft_supersede_keyed=True),
         "kanerva-ce": base.with_(use_reranker=True, theta0=RERANK_THETA),
         "kanerva-lex": base.with_(use_dense=False, gamma=0.0, theta0=LEXICAL_THETA),
+        "kanerva-r1": base.with_(relevance="linear"),
+        "kanerva-x64": base.with_(excerpt_threshold=160, excerpt_tokens=64),
+        "kanerva-x128": base.with_(excerpt_threshold=160, excerpt_tokens=128),
+        "kanerva-x256": base.with_(excerpt_threshold=320, excerpt_tokens=256),
     }

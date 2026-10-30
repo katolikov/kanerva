@@ -20,6 +20,7 @@ class Turn:
     at: float  # unix seconds
     key: str | None = None
     kind: str = "episodic"
+    session: str | None = None
 
 
 @dataclass
@@ -32,6 +33,7 @@ class Query:
     gold: set[str] = field(default_factory=set)  # item texts that answer the query
     stale: set[str] = field(default_factory=set)  # item texts with an outdated answer
     historical: bool = False
+    answer: str = ""  # reference answer, for answer-term recall; empty when there is none
 
 
 @dataclass
@@ -91,11 +93,11 @@ def load_longmemeval(dev_fraction: float = 0.2) -> list[Stream]:
     for q in raw:
         turns: list[Turn] = []
         gold: set[str] = set()
-        for date, session in zip(q["haystack_dates"], q["haystack_sessions"]):
+        for index, (date, session) in enumerate(zip(q["haystack_dates"], q["haystack_sessions"])):
             at = _lme_time(date)
             for offset, turn in enumerate(session):
                 text = f"{turn['role']}: {turn['content']}"
-                turns.append(Turn(text, at + offset))
+                turns.append(Turn(text, at + offset, session=str(index)))
                 if turn.get("has_answer"):
                     gold.add(text)
         if not gold:
@@ -107,6 +109,7 @@ def load_longmemeval(dev_fraction: float = 0.2) -> list[Stream]:
             now=_lme_time(q["question_date"]),
             category=q["question_type"],
             gold=gold,
+            answer=str(q["answer"]),
         )
         streams.append(Stream(q["question_id"], _split_for(q["question_id"], dev_fraction, "lme"), turns, [query]))
     return streams
@@ -142,15 +145,77 @@ def load_locomo() -> list[Stream]:
                 if turn.get("blip_caption"):
                     text += f" [shared image: {turn['blip_caption']}]"
                 by_id[turn["dia_id"]] = text
-                turns.append(Turn(text, at + offset))
+                turns.append(Turn(text, at + offset, session=name))
         queries = []
         for q_index, qa in enumerate(sample["qa"]):
             gold = {by_id[e.strip()] for e in qa.get("evidence", []) if e.strip() in by_id}
             if gold:
                 queries.append(
-                    Query(len(turns), f"{sample['sample_id']}-{q_index}", qa["question"], last + 86400, str(qa["category"]), gold)
+                    Query(len(turns), f"{sample['sample_id']}-{q_index}", qa["question"], last + 86400, str(qa["category"]), gold,
+                          answer=str(qa.get("answer", "")))
                 )
         streams.append(Stream(str(sample["sample_id"]), "dev" if index < 3 else "test", turns, queries))
+    return streams
+
+
+BEAM_SPLITS = {"1M": "dev", "100K": "test", "500K": "test"}
+BEAM_ANSWER_FIELDS = ("answer", "ideal_answer", "ideal_summary")
+
+
+def _beam_ids(value) -> list[int]:
+    """Flatten ``source_chat_ids``, which is a list or a dict of lists, written as a Python literal."""
+    import ast
+
+    parsed = ast.literal_eval(value) if isinstance(value, str) else value
+    if isinstance(parsed, dict):
+        return [i for ids in parsed.values() for i in _beam_ids(ids)]
+    if isinstance(parsed, (list, tuple)):
+        return [i for ids in parsed for i in _beam_ids(ids)]
+    return [int(parsed)]
+
+
+def _beam_time(anchor: str) -> float | None:
+    try:
+        return datetime.strptime(anchor.strip(), "%B-%d-%Y").replace(tzinfo=timezone.utc).timestamp()
+    except (ValueError, AttributeError):
+        return None
+
+
+def load_beam(splits: tuple[str, ...] = ("1M", "100K", "500K")) -> list[Stream]:
+    """BEAM, one store per conversation. Abstention questions have no evidence and are dropped.
+
+    BEAM-1M is development data; BEAM-100K and BEAM-500K are the fresh test (see docs/research-2/protocol.md).
+    """
+    import ast
+
+    import pyarrow.parquet as pq
+
+    streams = []
+    for split in splits:
+        for row in pq.read_table(DATA / "beam" / f"{split}.parquet").to_pylist():
+            turns: list[Turn] = []
+            by_id: dict[int, str] = {}
+            at = _beam_time("January-01-2024") or 0.0
+            for s_index, session in enumerate(row["chat"]):
+                for message in session:
+                    stamp = _beam_time(message.get("time_anchor") or "")
+                    at = max(at + 60.0, stamp or 0.0)
+                    text = f"{message['role']}: {message['content']}"
+                    turns.append(Turn(text, at, session=str(s_index)))
+                    by_id[int(message["id"])] = text
+            queries = []
+            probing = ast.literal_eval(row["probing_questions"])
+            for qtype, items in probing.items():
+                for index, q in enumerate(items):
+                    if "source_chat_ids" not in q:
+                        continue
+                    gold = {by_id[i] for i in _beam_ids(q["source_chat_ids"]) if i in by_id}
+                    if not gold:
+                        continue
+                    answer = next((str(q[f]) for f in BEAM_ANSWER_FIELDS if q.get(f)), "")
+                    queries.append(Query(len(turns), f"beam{split}-{row['conversation_id']}-{qtype}-{index}", q["question"],
+                                         at + 86400, qtype, gold, answer=answer))
+            streams.append(Stream(f"beam{split}-{row['conversation_id']}", BEAM_SPLITS[split], turns, queries))
     return streams
 
 

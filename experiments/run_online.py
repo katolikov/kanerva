@@ -21,7 +21,7 @@ from experiments.harness import RESULTS, apply_write, git_commit, new_memory
 from experiments.registry import load
 from kanerva import RetrievalConfig
 from kanerva.bandit import LinearBandit
-from kanerva.policy import DEFAULT_THETA
+from kanerva.policy import BANDIT_THETA
 
 SEEDS = (0, 1, 2, 3, 4)
 BUDGET = 512
@@ -31,23 +31,19 @@ SETTINGS = {
     "online-ucb": {"learn": True, "beta": 0.05, "noise": 0.0},
     "online-noisy": {"learn": True, "beta": 0.0, "noise": 0.2},
     "online-debiased": {"learn": True, "beta": 0.0, "noise": 0.2, "debias": True},
-    "cold-static": {"learn": False, "beta": 0.0, "noise": 0.0, "cold": True},
-    "cold-online": {"learn": True, "beta": 0.0, "noise": 0.0, "cold": True},
 }
-COLD_THETA = tuple(0.1 for _ in DEFAULT_THETA)
 
 
 def replay(args: tuple) -> dict:
     dataset, keyed, setting, seed, ridge = args
     spec = SETTINGS[setting]
     rng = random.Random(seed)
-    streams = [s for s in load(dataset) if s.split == "test"]
+    streams = [s for s in load(dataset) if s.split == "test"]  # round-1 test splits, development data in round 2
     if dataset == "repomem":
         streams = [s for s in streams if s.name.endswith(f"-{seed % 3}")]
     rng.shuffle(streams)
-    theta0 = COLD_THETA if spec.get("cold") else DEFAULT_THETA
-    cfg = RetrievalConfig(theta0=theta0, bandit_ridge=ridge)
-    bandit = LinearBandit(np.asarray(theta0, dtype=float), ridge, spec["beta"])
+    cfg = RetrievalConfig(bandit_ridge=ridge)
+    bandit = LinearBandit(np.asarray(BANDIT_THETA, dtype=float), ridge, spec["beta"])
     cache = TextCache(dataset)
     hits: list[float] = []
     tokens: list[float] = []
@@ -93,7 +89,7 @@ def main() -> None:
     with ProcessPoolExecutor(8) as pool:
         results = list(pool.map(replay, jobs))
     (RESULTS / "raw").mkdir(parents=True, exist_ok=True)
-    (RESULTS / "raw" / "online.json").write_text(json.dumps(results))
+    (RESULTS / "raw" / "online_r2.json").write_text(json.dumps(results))
     summary: dict = {}
     for r in results:
         n = len(r["recall"])
@@ -103,7 +99,7 @@ def main() -> None:
         entry["second_half"].append(float(np.mean(tail)))
     out = {"meta": {"experiment": "online", "budget": BUDGET, "seeds": SEEDS, "commit": git_commit(),
                     "wall_seconds": round(time.time() - start, 1)}, "summary": summary}
-    (RESULTS / "online.json").write_text(json.dumps(out, indent=1))
+    (RESULTS / "online_r2.json").write_text(json.dumps(out, indent=1))
     for d, settings in summary.items():
         for s, e in settings.items():
             print(d, s, f"all={np.mean(e['all']):.4f}", f"second_half={np.mean(e['second_half']):.4f}")

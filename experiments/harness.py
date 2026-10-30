@@ -19,7 +19,7 @@ from kanerva import Memory, RetrievalConfig
 
 RESULTS = ROOT / "results"
 BUDGETS = (128, 256, 512, 1024, 2048, 4096)
-METRICS = ("recall", "all", "any", "tokens", "precision", "stale_any", "stale_error", "latency_ms")
+METRICS = ("recall", "all", "any", "tokens", "precision", "stale_any", "stale_error", "latency_ms", "answer")
 
 
 def git_commit() -> str:
@@ -27,6 +27,18 @@ def git_commit() -> str:
         return subprocess.run(["git", "-C", str(ROOT), "describe", "--always", "--dirty", "--abbrev=12"], capture_output=True, text=True, check=True).stdout.strip()
     except subprocess.CalledProcessError:
         return "uncommitted"
+
+
+def answer_recall(texts: list[str], wanted: list[str]) -> float:
+    """Share of the reference answer's stems (those not already in the question) present in the injected text."""
+    if not wanted:
+        return float("nan")
+    from kanerva.relevance import stems
+
+    have: set[str] = set()
+    for text in texts:
+        have |= stems(text)
+    return sum(1 for s in wanted if s in have) / len(wanted)
 
 
 def score(ids: list[int], gold: set[int], stale: set[int], costs: dict[int, int], ms: float) -> dict:
@@ -56,7 +68,8 @@ def new_memory(cache: TextCache, cfg: RetrievalConfig, reranker=None) -> Memory:
 
 def apply_write(mem: Memory, cache: TextCache, turn, id_of: dict[str, int], keyed: bool) -> None:
     item = mem.write(
-        turn.text, at=turn.at, kind=turn.kind, key=turn.key if keyed else None, embedding=cache.vector(turn.text)
+        turn.text, at=turn.at, kind=turn.kind, key=turn.key if keyed else None, embedding=cache.vector(turn.text),
+        session=turn.session,
     )
     if item is not None:
         id_of[turn.text] = item
@@ -99,15 +112,26 @@ def evaluate_query(mem, cache, query: Query, id_of, methods, budgets, stream_nam
     if not gold:
         return []
     ctx = Context(mem, query.question, query.now, cache.vector(query.question))
+    from experiments.r2_dump import answer_stems
+
+    wanted = answer_stems(query.answer, query.question) if query.answer else []
     rows = []
     for name, method in methods.items():
         for budget in budgets:
+            ctx.cache.pop("texts", None)
             start = time.perf_counter()
             ids = method(ctx, budget)
             ms = (time.perf_counter() - start) * 1000
             costs = ctx.cost(ids) if ids else {}
             row = {"method": name, "budget": budget, "qid": query.qid, "category": query.category, "stream": stream_name}
             row.update(score(ids, gold, stale, costs, ms))
+            texts = ctx.cache.get("texts")
+            if texts is None:
+                fetched = mem._fetch(ids)
+                texts = [fetched[i]["text"] for i in ids]
+            else:
+                row["tokens"] = sum(ctx.cache["text_costs"])  # excerpts cost less than whole items
+            row["answer"] = answer_recall(texts, wanted)
             rows.append(row)
     for name, k in dict(fixed).items():
         ids = ctx.hybrid()[:k]
@@ -133,7 +157,8 @@ def aggregate(records: list[dict]) -> dict:
     for r in records:
         table.setdefault((r["method"], r["budget"]), []).append(r)
     return {
-        f"{m}@{b}": {k: float(np.mean([r[k] for r in rows])) for k in METRICS} | {"n": len(rows)}
+        f"{m}@{b}": {k: float(np.nanmean([r.get(k, np.nan) for r in rows])) if any(np.isfinite(r.get(k, np.nan)) for r in rows)
+                     else float("nan") for k in METRICS} | {"n": len(rows)}
         for (m, b), rows in sorted(table.items(), key=lambda kv: (kv[0][0], kv[0][1]))
     }
 

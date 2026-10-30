@@ -16,10 +16,30 @@ import numpy as np
 
 from .bandit import LinearBandit
 from .embed import Embedder, HashingEmbedder
-from .policy import LEXICAL_THETA, RERANK_THETA, Candidates, RetrievalConfig, feature_matrix, subset
+from .policy import (
+    BANDIT_THETA,
+    LEXICAL_THETA,
+    RERANK_THETA,
+    Candidates,
+    RetrievalConfig,
+    bandit_features,
+    feature_matrix,
+    subset,
+)
+from .relevance import ItemView, load_model
+from .relevance import feature_matrix as relevance_features
 from .secrets_filter import redact
 from .select import SelectionProblem, budgeted_select, optimality_certificate, value
-from .text import approx_tokens, content_terms, fts_query, light_stem, query_snippet, search_text, tokenize
+from .text import (
+    approx_tokens,
+    content_terms,
+    fts_query,
+    light_stem,
+    query_snippet,
+    query_window,
+    search_text,
+    tokenize,
+)
 from .validity import HazardPosterior, activation_score
 
 DAY = 86400.0
@@ -43,7 +63,8 @@ CREATE TABLE IF NOT EXISTS items (
     unused REAL NOT NULL DEFAULT 1,
     parents TEXT NOT NULL DEFAULT '[]',
     source TEXT NOT NULL DEFAULT '{}',
-    embedding BLOB
+    embedding BLOB,
+    session TEXT
 );
 CREATE INDEX IF NOT EXISTS items_scope ON items(scope, tier);
 CREATE INDEX IF NOT EXISTS items_key ON items(scope, key);
@@ -143,10 +164,14 @@ class Memory:
             self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute("PRAGMA synchronous=NORMAL")
         self.db.executescript(_SCHEMA)
+        columns = {r["name"] for r in self.db.execute("PRAGMA table_info(items)")}
+        if "session" not in columns:
+            self.db.execute("ALTER TABLE items ADD COLUMN session TEXT")
         self.hazard_prior = hazard_prior
         self.hazards: dict[str, HazardPosterior] = {}
         self.bandit = self._load_bandit()
         self._matrix_cache: dict[tuple, tuple[np.ndarray, np.ndarray]] = {}
+        self._session_codes: dict[tuple, np.ndarray] = {}
         self._writes_since_refresh = 0
 
     def close(self) -> None:
@@ -167,6 +192,7 @@ class Memory:
         parents: Sequence[int] = (),
         embedding: np.ndarray | None = None,
         pinned: bool = False,
+        session: str | None = None,
     ) -> int | None:
         """Store an item and return its id, or the id of the identical item it reconfirms.
 
@@ -190,13 +216,15 @@ class Memory:
             embedding = self.embedder.encode([text])[0]
         blob = None if embedding is None else np.asarray(embedding, dtype=np.float32).tobytes()
         src = dict(source or {})
+        if session is None and src.get("session") is not None:
+            session = str(src["session"])
         if secret_kinds:
             src["redacted"] = secret_kinds
         cursor = self.db.execute(
             "INSERT INTO items (scope, kind, text, key, digest, tokens, created_at, confirmed_at,"
-            " parents, source, embedding, pinned) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+            " parents, source, embedding, pinned, session) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (scope, kind, text, key, digest, self.count_tokens(text), now, now,
-             json.dumps(list(parents)), json.dumps(src), blob, int(pinned)),
+             json.dumps(list(parents)), json.dumps(src), blob, int(pinned), session),
         )
         item_id = int(cursor.lastrowid)
         self.db.execute("INSERT INTO items_fts (rowid, body) VALUES (?, ?)", (item_id, search_text(text)))
@@ -256,12 +284,17 @@ class Memory:
         cached = self._matrix_cache.get((scope,))
         if cached is not None:
             return cached
-        sql = "SELECT id, embedding FROM items WHERE tier='active' AND embedding IS NOT NULL"
+        sql = "SELECT id, embedding, session FROM items WHERE tier='active' AND embedding IS NOT NULL"
         args: list = []
         if scope is not None:
             sql += " AND scope IN (?, 'global')"
             args.append(scope)
-        rows = self.db.execute(sql, args).fetchall()
+        rows = self.db.execute(sql + " ORDER BY id", args).fetchall()
+        codes: dict[str | None, int] = {}
+        self._session_codes[(scope,)] = np.fromiter(
+            (codes.setdefault(r["session"], len(codes)) if r["session"] is not None else -1 for r in rows),
+            dtype=np.int64, count=len(rows),
+        )
         if not rows:
             result = (np.zeros(0, dtype=np.int64), np.zeros((0, 1), dtype=np.float32))
         else:
@@ -286,6 +319,44 @@ class Memory:
         top = np.argpartition(-scores, k - 1)[:k]
         top = top[np.argsort(-scores[top])]
         return [(int(ids[i]), float(scores[i])) for i in top]
+
+    def context_signals(
+        self, ids: Sequence[int], query_vector: np.ndarray | None, scope: str | None
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Dense similarity of each item's neighbours (one and two turns away, same session) and its session's best.
+
+        Items are neighbours when they are adjacent in write order and share a session. Without embeddings or a
+        session, the signals are zero.
+        """
+        n = len(ids)
+        zeros = (np.zeros(n), np.zeros(n), np.zeros(n))
+        if query_vector is None or n == 0:
+            return zeros
+        all_ids, matrix = self._matrix(scope)
+        if all_ids.size == 0:
+            return zeros
+        codes = self._session_codes[(scope,)]
+        scores = np.asarray(matrix @ query_vector, dtype=float)
+        best = np.full(int(codes.max()) + 2, -1.0)
+        has = codes >= 0
+        np.maximum.at(best, codes[has], scores[has])
+        pos = np.searchsorted(all_ids, np.asarray(ids, dtype=np.int64))
+        pos = np.clip(pos, 0, all_ids.size - 1)
+        found = all_ids[pos] == np.asarray(ids, dtype=np.int64)
+        own = np.where(found, codes[pos], -1)
+
+        def neighbour(offset: int) -> np.ndarray:
+            out = np.zeros(n)
+            for sign in (-1, 1):
+                other = np.clip(pos + sign * offset, 0, all_ids.size - 1)
+                same = found & (own >= 0) & (codes[other] == own) & (other != pos)
+                out = np.maximum(out, np.where(same, scores[other], 0.0))
+            return out
+
+        near = neighbour(1)
+        near2 = np.maximum(near, neighbour(2))
+        session = np.where(found & (own >= 0), best[np.maximum(own, 0)], 0.0)
+        return near, near2, session
 
     def _fetch(self, ids: Sequence[int]) -> dict[int, sqlite3.Row]:
         rows: dict[int, sqlite3.Row] = {}
@@ -334,6 +405,10 @@ class Memory:
         ids = list(dict.fromkeys([i for i, _ in lexical] + [i for i, _ in dense]))
         rows = self._fetch(ids)
         ids = [i for i in ids if i in rows]
+        if cfg.neighbour_top > 0 and ids:
+            extra = self._neighbours(ids, lex, den, rows, cfg, scope)
+            rows.update(extra)
+            ids.extend(extra)
         historical = bool(_HISTORICAL.search(query))
         if cfg.use_validity and cfg.drop_superseded and not historical:
             ids = [i for i in ids if rows[i]["valid_to"] is None]
@@ -371,6 +446,14 @@ class Memory:
         )
         if cfg.use_reranker and self.reranker is not None and n:
             self._rerank(query, cand, rows, cfg)
+        if cfg.relevance == "trees" and n:
+            near, near2, session = self.context_signals(ids, query_vector if cfg.use_dense else None, scope)
+            views = [ItemView(rows[i]["text"], int(rows[i]["tokens"]), float(rows[i]["created_at"]), rows[i]["session"])
+                     for i in ids]
+            cand.relevance = relevance_features(
+                query, views, cand.lex_rank, cand.dense_rank, cand.lex_score, cand.dense_score, cand.term_cover,
+                cand.activation, near, near2, session, cand.rerank_rank, cand.rerank_score, cfg.rank_kappa,
+            )
         embedded = [rows[i]["embedding"] for i in ids]
         vectors = None
         if n and all(e is not None for e in embedded):
@@ -382,6 +465,26 @@ class Memory:
                 cand = subset(cand, keep)
                 vectors = None if vectors is None else vectors[keep]
         return cand, rows, vectors, terms, term_weights, stems
+
+    def _neighbours(
+        self, ids: list[int], lex: dict, den: dict, rows: dict, cfg: RetrievalConfig, scope: str | None
+    ) -> dict[int, sqlite3.Row]:
+        """Rows written next to the best fused candidates in the same session, which are not candidates yet."""
+        def fused(i: int) -> float:
+            return sum(1.0 / (61.0 + ranks[i][0]) for ranks in (lex, den) if i in ranks)
+
+        top = sorted(ids, key=fused, reverse=True)[: cfg.neighbour_top]
+        wanted = {i + step * sign for i in top for step in range(1, cfg.neighbour_reach + 1) for sign in (-1, 1)}
+        wanted -= set(ids)
+        found = self._fetch(sorted(wanted))
+        origin = {i: rows[i]["session"] for i in top}
+        keep: dict[int, sqlite3.Row] = {}
+        for i, row in found.items():
+            near = [j for j in top if abs(j - i) <= cfg.neighbour_reach]
+            in_scope = scope is None or row["scope"] in (scope, "global")
+            if in_scope and row["tier"] == "active" and row["session"] is not None and any(origin[j] == row["session"] for j in near):
+                keep[i] = row
+        return keep
 
     def _rerank(self, query: str, cand: Candidates, rows, cfg: RetrievalConfig) -> None:
         """Cross-encoder signals for the top of the fused ranking; other candidates stay unscored."""
@@ -424,13 +527,22 @@ class Memory:
         cfg: RetrievalConfig,
         bandit: LinearBandit | None,
     ) -> tuple[SelectionProblem, np.ndarray, dict[int, str]]:
-        """Effective weights w = rho * mu and the structures F needs. Returns problem, x and snippets."""
-        x = feature_matrix(cand, cfg)
-        prior = np.clip(x @ np.asarray(cfg.theta0), 0.0, 1.0)
+        """Effective weights w = rho * mu and the structures F needs. Returns problem, x and snippets.
+
+        With the relevance model, mu is its calibrated probability (adjusted online by the bandit) and F is the
+        expected number of needed items selected, plus the optional facility-location term.
+        """
+        trees = cfg.relevance == "trees" and cand.relevance is not None
+        if trees:
+            prior = self._relevance_model(cfg).predict(cand.relevance)
+            x = bandit_features(prior, cand)
+        else:
+            x = feature_matrix(cand, cfg)
+            prior = np.clip(x @ np.asarray(cfg.theta0), 0.0, 1.0)
         mu = bandit.score(x) if bandit is not None else prior
         if cfg.min_weight > 0:
             mu = np.where(mu >= cfg.min_weight, mu, 0.0)
-        if cfg.floor > 0:
+        if cfg.floor > 0 and not trees:
             rank_signal = 0.5 * (x[:, 1] + x[:, 2])
             mu = np.maximum(mu, cfg.floor * rank_signal)
             prior = np.maximum(prior, cfg.floor * rank_signal)
@@ -453,6 +565,10 @@ class Memory:
                 if term in stems[i]:
                     affinity[idx, t_idx + 1] = 1.0
         facet_weights = np.concatenate([[cfg.query_facet if f else 1.0], (1.0 - cfg.query_facet) * term_weights])
+        modular = cfg.modular
+        if trees:
+            facet_weights = np.zeros_like(facet_weights)
+            modular = 1.0
         similarity = None
         if vectors is not None and cfg.gamma > 0 and cfg.use_dense:
             similarity = np.clip(vectors @ vectors.T, 0.0, 1.0)
@@ -464,8 +580,50 @@ class Memory:
             similarity=similarity,
             prior_weights=prior if similarity is not None else None,
             gamma=cfg.gamma if similarity is not None else 0.0,
-            modular=cfg.modular,
+            modular=modular,
         )
+        if cfg.excerpt_threshold and trees:
+            problem, x, snippets = self._add_excerpts(problem, x, snippets, cand, rows, terms, term_weights, cfg)
+        return problem, x, snippets
+
+    def _add_excerpts(self, problem, x, snippets, cand, rows, terms, term_weights, cfg: RetrievalConfig):
+        """Offer each long item a second version: its best query window, worth p times the query weight it keeps.
+
+        Versions of one item form a group, and selection takes at most one of them. Extra versions are appended
+        after the n original candidates, and ``snippets`` maps their index to the excerpt text.
+        """
+        n = len(cand.ids)
+        extra: list[tuple[int, str, float, int]] = []
+        for idx, i in enumerate(cand.ids):
+            if rows[i]["tokens"] <= cfg.excerpt_threshold or problem.weights[idx] <= 0:
+                continue
+            text, kept, total = query_window(rows[i]["text"], terms, list(term_weights), cfg.excerpt_tokens, self.count_tokens)
+            tokens = self.count_tokens(text)
+            share = kept / total if total > 0 else 0.0
+            retain = max(share, tokens / rows[i]["tokens"])
+            extra.append((idx, text, retain, tokens))
+        if not extra:
+            return problem, x, snippets
+        src = np.array([e[0] for e in extra])
+        retain = np.array([e[2] for e in extra])
+
+        def grow(values: np.ndarray | None, add: np.ndarray | None = None) -> np.ndarray | None:
+            if values is None:
+                return None
+            return np.concatenate([values, values[src] if add is None else add])
+
+        problem.weights = grow(problem.weights, problem.weights[src] * retain)
+        problem.costs = grow(problem.costs, np.array([e[3] + cfg.item_overhead for e in extra], dtype=float))
+        problem.affinity = np.vstack([problem.affinity, problem.affinity[src]])
+        problem.prior_weights = grow(problem.prior_weights, None if problem.prior_weights is None else problem.prior_weights[src] * retain)
+        if problem.similarity is not None:
+            index = np.concatenate([np.arange(n), src])
+            problem.similarity = problem.similarity[np.ix_(index, index)]
+        problem.groups = np.concatenate([np.arange(n), src])
+        x = np.vstack([x, x[src]])
+        snippets = dict(snippets)
+        for k, (_, text, _, _) in enumerate(extra):
+            snippets[n + k] = text
         return problem, x, snippets
 
     def retrieve(
@@ -515,7 +673,8 @@ class Memory:
         chosen = budgeted_select(problem, budget, prepared.config.cost_exponents)
         chosen = [i for i in chosen if problem.weights[i] >= min_weight]
         chosen.sort(key=lambda i: -problem.weights[i])
-        items = [self._item(rows[cand.ids[i]], float(problem.weights[i]), prepared.snippets.get(i)) for i in chosen]
+        origin = (lambda i: int(problem.groups[i])) if problem.groups is not None else (lambda i: i)
+        items = [self._item(rows[cand.ids[origin(i)]], float(problem.weights[i]), prepared.snippets.get(i)) for i in chosen]
         result = RetrievalResult(
             items=items,
             tokens=int(sum(problem.costs[i] for i in chosen)),
@@ -525,7 +684,7 @@ class Memory:
         if certificate:
             result.upper_bound = optimality_certificate(problem, chosen, budget)
         if record and chosen:
-            ids = [cand.ids[i] for i in chosen]
+            ids = [cand.ids[origin(i)] for i in chosen]
             result.retrieval_id = self._record(prepared.query, prepared.now, ids, prepared.features[chosen])
         return result
 
@@ -584,11 +743,21 @@ class Memory:
         row = self.db.execute("SELECT valid_to FROM items WHERE id=?", (item_id,)).fetchone()
         return row is not None and row["valid_to"] is None
 
+    def _relevance_model(self, cfg: RetrievalConfig):
+        name = "rerank" if cfg.use_reranker and self.reranker is not None else ("dense" if cfg.use_dense else "lexical")
+        model = load_model(name)
+        if model is None:
+            raise RuntimeError(f"relevance model {name!r} is missing from kanerva/relevance_model.json")
+        return model
+
     def _load_bandit(self) -> LinearBandit:
+        theta0 = BANDIT_THETA if self.config.relevance == "trees" else self.config.theta0
         row = self.db.execute("SELECT value FROM meta WHERE key='bandit'").fetchone()
         if row is not None:
-            return LinearBandit.from_state(json.loads(row["value"]))
-        return LinearBandit(np.asarray(self.config.theta0, dtype=float), self.config.bandit_ridge, self.config.bandit_beta)
+            bandit = LinearBandit.from_state(json.loads(row["value"]))
+            if bandit.theta0.shape[0] == len(theta0):
+                return bandit
+        return LinearBandit(np.asarray(theta0, dtype=float), self.config.bandit_ridge, self.config.bandit_beta)
 
     def _save_state(self) -> None:
         self.db.execute("INSERT OR REPLACE INTO meta VALUES ('bandit', ?)", (json.dumps(self.bandit.state()),))

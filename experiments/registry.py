@@ -12,6 +12,18 @@ def load(name: str) -> list[Stream]:
         return load_lme_updates()
     if name == "locomo":
         return load_locomo()
+    if name == "beam":
+        from experiments.datasets import load_beam
+
+        return load_beam()
+    if name == "beam-dev":
+        from experiments.datasets import load_beam
+
+        return load_beam(("1M",))
+    if name == "repomem-fresh":
+        from experiments.repomem import load_repomem
+
+        return load_repomem(split="fresh")
     if name == "repomem":
         from experiments.repomem import load_repomem
 

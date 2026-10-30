@@ -32,6 +32,8 @@ RERANK_THETA = (0.0013, -0.0339, 0.0062, 0.0303, -0.0071, -0.0156, 0.0027, 0.0, 
 @dataclass(frozen=True)
 class RetrievalConfig:
     candidates: int = 100
+    neighbour_top: int = 0  # the items next to this many best fused candidates join the pool
+    neighbour_reach: int = 1
     rank_kappa: float = 10.0
     item_overhead: int = 14  # the rendered prefix '[#id date] ' costs 11 to 15 tokens
 
@@ -48,6 +50,8 @@ class RetrievalConfig:
 
     snippet_threshold: int = 0  # items above this many tokens are injected as query-biased snippets
     snippet_tokens: int = 40
+    excerpt_threshold: int = 0  # items above this many tokens may also be chosen as an excerpt of excerpt_tokens
+    excerpt_tokens: int = 96
 
     use_validity: bool = True
     drop_superseded: bool = True  # exact version chains: old versions leave unless the query asks for history
@@ -57,6 +61,9 @@ class RetrievalConfig:
     supersession_drop: float = 0.97  # an unkeyed item with a newer twin this similar is removed outright
     soft_supersede_keyed: bool = False  # keyed items have exact version chains, so similarity is not evidence
     stale_factor: float = 0.05
+
+    # "trees": the calibrated relevance model of kanerva.relevance; "linear": the round-1 linear prior over FEATURES.
+    relevance: str = "trees"
 
     use_bandit: bool = True
     learn: bool = True
@@ -83,6 +90,7 @@ class Candidates:
     validity: np.ndarray | None = None
     rerank_rank: np.ndarray | None = None
     rerank_score: np.ndarray | None = None
+    relevance: np.ndarray | None = None  # rows of kanerva.relevance.FEATURES
 
 
 def subset(c: Candidates, keep: np.ndarray) -> Candidates:
@@ -102,7 +110,17 @@ def subset(c: Candidates, keep: np.ndarray) -> Candidates:
         validity=pick(c.validity),
         rerank_rank=pick(c.rerank_rank),
         rerank_score=pick(c.rerank_score),
+        relevance=pick(c.relevance),
     )
+
+
+BANDIT_FEATURES = ("prior", "usefulness")
+BANDIT_THETA = (1.0, 0.0)
+
+
+def bandit_features(prior: np.ndarray, c: Candidates) -> np.ndarray:
+    """What the online learner sees when the relevance model supplies the prior: its probability and past use."""
+    return np.column_stack([prior, c.usefulness - 0.5])
 
 
 def feature_matrix(c: Candidates, cfg: RetrievalConfig) -> np.ndarray:

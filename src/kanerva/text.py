@@ -120,3 +120,39 @@ def query_snippet(text: str, stems: list[str], limit: int, count: Callable[[str]
         words = text.split()
         return " ".join(words[: max(limit // 2, 1)]) + " ..."
     return " ... ".join(sentences[i] for i in sorted(chosen))
+
+
+def query_window(
+    text: str, terms: list[str], weights: list[float], limit: int, count: Callable[[str], int]
+) -> tuple[str, float, float]:
+    """The run of consecutive sentences within ``limit`` tokens that covers the most query weight.
+
+    Returns the excerpt, the weight it covers and the weight the whole text covers. ``terms`` are stems.
+    """
+    sentences = split_sentences(text)
+    weight = dict(zip(terms, weights))
+    have = [{light_stem(t) for t in tokenize(s)} & weight.keys() for s in sentences]
+    total = sum(weight[t] for t in set().union(*have)) if have else 0.0
+    costs = [count(s) for s in sentences]
+    best, best_span = -1.0, (0, 0)
+    for start in range(len(sentences)):
+        covered: set[str] = set()
+        used = 0
+        for end in range(start, len(sentences)):
+            if used + costs[end] > limit:
+                break
+            used += costs[end]
+            covered |= have[end]
+            value = sum(weight[t] for t in covered)
+            if value > best:
+                best, best_span = value, (start, end + 1)
+    if best < 0:
+        words = text.split()
+        return " ".join(words[: max(limit // 2, 1)]) + " ...", 0.0, total
+    start, end = best_span
+    excerpt = " ".join(sentences[start:end])
+    if start > 0:
+        excerpt = "... " + excerpt
+    if end < len(sentences):
+        excerpt += " ..."
+    return excerpt, best, total

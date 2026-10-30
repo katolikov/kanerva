@@ -39,9 +39,16 @@ REPOS = {
     "fastapi/typer": ("typer", "holdout"),
     "psf/black": ("src/black", "holdout"),
     "aio-libs/aiohttp": ("aiohttp", "holdout"),
+    # Round-2 fresh test, named in docs/research-2/protocol.md before the histories were fetched.
+    "marshmallow-code/marshmallow": ("src/marshmallow", "fresh"),
+    "pytest-dev/pluggy": ("src/pluggy", "fresh"),
+    "pypa/packaging": ("src/packaging", "fresh"),
+    "Delgan/loguru": ("loguru", "fresh"),
+    "tqdm/tqdm": ("tqdm", "fresh"),
 }
 LEGACY_ROOTS = {"src/click": "click", "src/attr": "src/attr", "src/flask": "flask", "src/requests": "requests",
-                "src/werkzeug": "werkzeug", "src/jinja2": "jinja2", "src/black": "black"}
+                "src/werkzeug": "werkzeug", "src/jinja2": "jinja2", "src/black": "black",
+                "src/marshmallow": "marshmallow", "src/pluggy": "pluggy", "src/packaging": "packaging"}
 
 SNAPSHOTS = 14
 YEARS = 6
@@ -141,7 +148,8 @@ QUERY_TEMPLATES = {
     "dependency": ["Which version of {name} does the project require?", "What is the {name} version constraint?"],
 }
 
-_DEP = re.compile(r"""["']\s*([A-Za-z0-9_.\-]+)\s*((?:[<>=!~]=?[^"';,]*,?\s*)+)["']""")
+# Operator characters are excluded inside a clause, so the repetition cannot backtrack exponentially.
+_DEP = re.compile(r"""["']\s*([A-Za-z0-9_.\-]+)\s*((?:[<>=!~]=?[^"';,<>=!~]*,?\s*)+)["']""")
 
 
 def dependency_facts(source: str) -> dict[str, tuple[str, str, str]]:
@@ -229,16 +237,17 @@ def stream_for(data: dict, seed: int) -> Stream:
     snaps = data["snapshots"]
     past_commits: list[dict] = []
     repo_name = data["repo"].split("/")[1]
+    current = ["0"]
 
     def observe(key: str, fact: list, at: float) -> None:
         kind, name, value, path = fact
         text = render_fact(kind, name, value, path)
         chain = versions.setdefault(key, [])
         if chain and chain[-1][0] == text:
-            writes.append(Turn(text, at, key=key, kind="semantic"))  # reconfirmation
+            writes.append(Turn(text, at, key=key, kind="semantic", session=current[0]))  # reconfirmation
             return
         chain.append((text, kind, name, value, path))
-        writes.append(Turn(text, at, key=key, kind="semantic"))
+        writes.append(Turn(text, at, key=key, kind="semantic", session=current[0]))
 
     first = snaps[0]
     initial = sorted(first["facts"])
@@ -247,12 +256,13 @@ def stream_for(data: dict, seed: int) -> Stream:
         observe(key, first["facts"][key], first["at"])
 
     for session, window in enumerate(data["windows"]):
+        current[0] = str(session + 1)
         before, after = snaps[session], snaps[session + 1]
         span_days = max((after["at"] - before["at"]) / 86400, 1.0)
         commits = window if len(window) <= MAX_COMMITS_PER_SESSION else rng.sample(window, MAX_COMMITS_PER_SESSION)
         commits = sorted(commits, key=lambda c: c["at"])
         for commit in commits:
-            writes.append(Turn(_commit_note(commit), commit["at"]))
+            writes.append(Turn(_commit_note(commit), commit["at"], session=current[0]))
         changed = [k for k, f in after["facts"].items() if k in before["facts"] and before["facts"][k][2:] != f[2:]]
         changed_paths = {after["facts"][k][3] for k in changed}
         touched = {f for c in window for f in c["files"]} | changed_paths
@@ -283,7 +293,7 @@ def stream_for(data: dict, seed: int) -> Stream:
             category = f"fact-{kind}-{'changed' if len(chain) > 1 else 'stable'}"
             queries.append(
                 Query(len(writes), f"{repo_name}-s{session}-f{index}", question, now, category,
-                      gold={text}, stale={c[0] for c in chain[:-1] if c[0] != text})
+                      gold={text}, stale={c[0] for c in chain[:-1] if c[0] != text}, answer=value)
             )
         tasks = [c for c in commits if 1 <= len(c["files"]) <= 6 and len(c["subject"]) > 15]
         rng.shuffle(tasks)
@@ -307,10 +317,12 @@ def stream_for(data: dict, seed: int) -> Stream:
     return Stream(f"{repo_name}-{seed}", data["split"], ordered, sorted(queries, key=lambda q: q.pos))
 
 
-def load_repomem(holdout: bool = False) -> list[Stream]:
+def load_repomem(holdout: bool = False, split: str | None = None) -> list[Stream]:
+    """Round-1 dev and test repositories by default; ``holdout=True`` or ``split`` picks another group."""
+    wanted = split or ("holdout" if holdout else None)
     streams = []
-    for repo, (_, split) in REPOS.items():
-        if (split == "holdout") != holdout:
+    for repo, (_, repo_split) in REPOS.items():
+        if wanted is None and repo_split not in ("dev", "test") or wanted is not None and repo_split != wanted:
             continue
         data = json.loads((BUILD / (repo.replace("/", "__") + ".json")).read_text())
         for seed in SEEDS:
