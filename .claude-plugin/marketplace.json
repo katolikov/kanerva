@@ -1,0 +1,18 @@
+{
+  "name": "kanerva",
+  "owner": {
+    "name": "Artem Katolikov"
+  },
+  "metadata": {
+    "description": "Long-term memory for coding agents"
+  },
+  "plugins": [
+    {
+      "name": "kanerva",
+      "source": "./plugins/claude-code",
+      "description": "Long-term memory for Claude Code: local, no LLM calls, hard token budget.",
+      "category": "productivity",
+      "keywords": ["memory", "context", "agent-memory", "local-first", "mcp"]
+    }
+  ]
+}
