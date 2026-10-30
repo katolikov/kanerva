@@ -97,7 +97,7 @@ def compare(records: list[dict], name: str, a: str, b: str, rng, metric: str = "
 
 def tests(all_records: dict[str, list[dict]]) -> None:
     rng = np.random.default_rng(0)
-    report: dict = {"commit": git_commit()}
+    report: dict = {"meta": {"experiment": "paired tests on the held-out data", "commit": git_commit()}}
     for name, records in all_records.items():
         have = {r["method"] for r in records}
         pairs = [("kanerva", b) for b in ("hybrid", "rerank", "kanerva-r1", "bm25", "hybrid-live") if b in have]

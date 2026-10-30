@@ -1,5 +1,8 @@
 {
- "commit": "ff2b75e3e875-dirty",
+ "meta": {
+  "experiment": "paired tests on the held-out data",
+  "commit": "ff2b75e3e875-dirty"
+ },
  "beam": {
   "kanerva vs hybrid": {
    "128": {

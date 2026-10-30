@@ -134,7 +134,7 @@ def ablation_table(data: dict) -> str:
     return "\n".join(rows)
 
 
-def update_readme(data: dict, tests: dict, static: dict) -> None:
+def update_readme(data: dict, tests: dict, static: dict, latency: dict) -> None:
     rows = ["| Dataset | Budget | Kanerva | Kanerva + reranker | Hybrid + reranker | Hybrid | BM25 |", "|---|---:|---:|---:|---:|---:|---:|"]
     titles = {"beam": "Long conversations", "repomem-fresh": "Code history, with keys", "repomem-fresh-plain": "Code history, no keys"}
     for name, title in titles.items():
@@ -145,7 +145,7 @@ def update_readme(data: dict, tests: dict, static: dict) -> None:
             cells = [f"**{fmt(v)}**" if abs(v - best) < 5e-4 else fmt(v) for v in values.values()]
             rows.append(f"| {title} | {b} | " + " | ".join(cells) + " |")
     beam, plain = data["beam"]["summary"], data["repomem-fresh-plain"]["summary"]
-    keyed = tests["repomem-fresh"]["stale_on_changed_facts"]
+    tests["repomem-fresh"]["stale_on_changed_facts"]
     unkeyed = tests["repomem-fresh-plain"]["stale_on_changed_facts"]
     lift = tests["beam"]["kanerva vs rerank"]["mean"]
     text = f"""<picture>
@@ -158,10 +158,10 @@ Share of the needed evidence that made it into the context. The test data was he
 {chr(10).join(rows)}
 
 - **Long conversations are where it shines.** Across budgets, Kanerva recovers {100 * lift['diff']:.0f} points more evidence than hybrid search with a cross-encoder reranker, and it needs no reranker to do it. At 1024 tokens it finds {fmt(beam['kanerva@1024']['recall'])} of the evidence against {fmt(beam['rerank@1024']['recall'])}.
-- **Stale facts mostly stop.** On facts that changed, plain hybrid search injects an outdated version {100 * unkeyed['hybrid']['stale_any']:.0f}% of the time. Kanerva does so {100 * unkeyed['kanerva']['stale_any']:.0f}% of the time from text alone, and never when notes carry keys.
+- **Stale facts mostly stop.** On facts that changed, plain hybrid search injects an outdated version {100 * unkeyed['hybrid']['stale_any']:.1f}% of the time. Kanerva does so {100 * unkeyed['kanerva']['stale_any']:.1f}% of the time from text alone, and never when notes carry keys.
 - **Where it loses.** On code history at large budgets, the same rule that removes stale notes also drops some useful look-alikes. At 4096 tokens without keys, Kanerva has {fmt(plain['kanerva@4096']['recall'])} against {fmt(plain['hybrid@4096']['recall'])} for hybrid. With five repositories the intervals are wide, so treat code-history differences of a few points as ties.
 
-The numbers above use a small sentence-embedding model. The plugins run without one by default: lexical search alone reaches {fmt(beam['kanerva-lex@1024']['recall'])} on long conversations at 1024 tokens, and `KANERVA_EMBEDDER=static` reaches {fmt(static['beam-static']['summary']['kanerva@1024']['recall'])}."""
+The numbers above use a small sentence-embedding model. The plugins run without one by default: lexical search alone reaches {fmt(beam['kanerva-lex@1024']['recall'])} on long conversations at 1024 tokens, and `KANERVA_EMBEDDER=static` reaches {fmt(static['beam-static']['summary']['kanerva@1024']['recall'])}. A query over 10,000 notes takes about {latency['lexical@10000']['p50_ms']:.0f} ms on an M1 Pro without embeddings and {latency['hybrid@10000']['p50_ms']:.0f} ms with them."""
     path = ROOT / "README.md"
     readme = path.read_text()
     start, end = "<!-- results:start -->", "<!-- results:end -->"
@@ -186,7 +186,7 @@ def main() -> None:
             if row.get("answer") == row.get("answer"):
                 define(lines, f"v-ans-{name}-{m}-{b}", fmt(row["answer"]))
             define(lines, f"v-lat-{name}-{m}-{b}", f"{row['latency_ms']:.0f}")
-        for m in {k.split("@")[0] for k in entry["summary"]}:
+        for m in sorted({k.split("@")[0] for k in entry["summary"]}):
             if all(f"{m}@{b}" in entry["summary"] for b in BUDGETS):
                 define(lines, f"r-{name}-{m}-mean", fmt(mean_over_budgets(entry["summary"], m)))
 
@@ -316,7 +316,7 @@ def main() -> None:
     define(lines, "v-encode", f"{latency['query_encode_ms']:.0f}")
 
     (OUT / "macros.tex").write_text("\n".join(lines) + "\n")
-    update_readme(data, tests, {n: data[n] for n in STATIC})
+    update_readme(data, tests, {n: data[n] for n in STATIC}, latency["results"])
 
 
 if __name__ == "__main__":

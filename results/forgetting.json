@@ -1,7 +1,7 @@
 {
  "results": {
   "keep-all": {
-   "recall": 0.8970938981327011,
+   "recall": 0.9230083025423939,
    "final_active": 965.0555555555555,
    "final_tokens": 21491.833333333332,
    "max_tokens": 21491.833333333332,
@@ -104,10 +104,10 @@
    ]
   },
   "idle-730d": {
-   "recall": 0.8647744603077901,
-   "final_active": 535.7222222222222,
-   "final_tokens": 11790.333333333334,
-   "max_tokens": 16437.88888888889,
+   "recall": 0.8572966541948145,
+   "final_active": 474.3888888888889,
+   "final_tokens": 11661.388888888889,
+   "max_tokens": 15887.166666666666,
    "trace": [
     {
      "writes": 434,
@@ -136,81 +136,81 @@
     },
     {
      "writes": 649,
-     "active": 392,
-     "tokens": 7655
+     "active": 344,
+     "tokens": 7010
     },
     {
      "writes": 693,
-     "active": 412,
-     "tokens": 7955
+     "active": 366,
+     "tokens": 7347
     },
     {
      "writes": 694,
-     "active": 413,
-     "tokens": 7986
+     "active": 367,
+     "tokens": 7378
     },
     {
      "writes": 694,
-     "active": 406,
-     "tokens": 7841
+     "active": 358,
+     "tokens": 7217
     },
     {
      "writes": 725,
-     "active": 408,
-     "tokens": 7947
+     "active": 349,
+     "tokens": 7150
     },
     {
      "writes": 726,
-     "active": 409,
-     "tokens": 7979
+     "active": 350,
+     "tokens": 7182
     },
     {
      "writes": 726,
-     "active": 409,
-     "tokens": 7979
+     "active": 350,
+     "tokens": 7182
     },
     {
      "writes": 802,
-     "active": 459,
-     "tokens": 9223
+     "active": 395,
+     "tokens": 8364
     },
     {
      "writes": 803,
-     "active": 460,
-     "tokens": 9252
+     "active": 396,
+     "tokens": 8393
     },
     {
      "writes": 803,
-     "active": 460,
-     "tokens": 9252
+     "active": 396,
+     "tokens": 8393
     },
     {
      "writes": 855,
-     "active": 471,
-     "tokens": 9518
+     "active": 394,
+     "tokens": 8484
     },
     {
      "writes": 967,
-     "active": 410,
-     "tokens": 8080
+     "active": 355,
+     "tokens": 7487
     },
     {
      "writes": 968,
-     "active": 411,
-     "tokens": 8101
+     "active": 356,
+     "tokens": 7508
     },
     {
      "writes": 969,
-     "active": 412,
-     "tokens": 8136
+     "active": 357,
+     "tokens": 7543
     }
    ]
   },
   "idle-365d": {
-   "recall": 0.7275886513096871,
-   "final_active": 263.0,
-   "final_tokens": 5909.333333333333,
-   "max_tokens": 12913.666666666666,
+   "recall": 0.7125502452103573,
+   "final_active": 242.66666666666666,
+   "final_tokens": 6176.5,
+   "max_tokens": 12755.388888888889,
    "trace": [
     {
      "writes": 434,
@@ -219,78 +219,78 @@
     },
     {
      "writes": 485,
-     "active": 250,
-     "tokens": 4767
+     "active": 201,
+     "tokens": 4112
     },
     {
      "writes": 515,
-     "active": 258,
-     "tokens": 4913
+     "active": 205,
+     "tokens": 4204
     },
     {
      "writes": 545,
-     "active": 251,
-     "tokens": 4836
+     "active": 203,
+     "tokens": 4245
     },
     {
      "writes": 607,
-     "active": 275,
-     "tokens": 5367
+     "active": 216,
+     "tokens": 4593
     },
     {
      "writes": 649,
-     "active": 294,
-     "tokens": 5813
+     "active": 242,
+     "tokens": 5193
     },
     {
      "writes": 693,
-     "active": 319,
-     "tokens": 6187
+     "active": 271,
+     "tokens": 5646
     },
     {
      "writes": 694,
-     "active": 320,
-     "tokens": 6218
+     "active": 272,
+     "tokens": 5677
     },
     {
      "writes": 694,
-     "active": 320,
-     "tokens": 6218
+     "active": 272,
+     "tokens": 5677
     },
     {
      "writes": 725,
-     "active": 315,
-     "tokens": 6131
+     "active": 253,
+     "tokens": 5380
     },
     {
      "writes": 726,
-     "active": 316,
-     "tokens": 6163
+     "active": 254,
+     "tokens": 5412
     },
     {
      "writes": 726,
-     "active": 316,
-     "tokens": 6163
+     "active": 254,
+     "tokens": 5412
     },
     {
      "writes": 802,
-     "active": 348,
-     "tokens": 7078
+     "active": 287,
+     "tokens": 6385
     },
     {
      "writes": 803,
-     "active": 349,
-     "tokens": 7107
+     "active": 288,
+     "tokens": 6414
     },
     {
      "writes": 803,
-     "active": 343,
-     "tokens": 6872
+     "active": 288,
+     "tokens": 6414
     },
     {
      "writes": 855,
-     "active": 295,
-     "tokens": 5974
+     "active": 244,
+     "tokens": 5632
     },
     {
      "writes": 967,
@@ -310,10 +310,10 @@
    ]
   },
   "idle-180d": {
-   "recall": 0.5611284349530545,
-   "final_active": 131.11111111111111,
-   "final_tokens": 2937.5,
-   "max_tokens": 9457.0,
+   "recall": 0.5506337973132313,
+   "final_active": 130.33333333333334,
+   "final_tokens": 3226.722222222222,
+   "max_tokens": 9489.722222222223,
    "trace": [
     {
      "writes": 434,
@@ -322,58 +322,58 @@
     },
     {
      "writes": 485,
-     "active": 123,
-     "tokens": 2368
+     "active": 105,
+     "tokens": 2131
     },
     {
      "writes": 515,
-     "active": 126,
-     "tokens": 2418
+     "active": 98,
+     "tokens": 2042
     },
     {
      "writes": 545,
-     "active": 140,
-     "tokens": 2682
+     "active": 107,
+     "tokens": 2239
     },
     {
      "writes": 607,
-     "active": 180,
-     "tokens": 3553
+     "active": 157,
+     "tokens": 3261
     },
     {
      "writes": 649,
-     "active": 182,
-     "tokens": 3543
+     "active": 146,
+     "tokens": 3210
     },
     {
      "writes": 693,
-     "active": 216,
-     "tokens": 4104
+     "active": 184,
+     "tokens": 3839
     },
     {
      "writes": 694,
-     "active": 217,
-     "tokens": 4135
+     "active": 185,
+     "tokens": 3870
     },
     {
      "writes": 694,
-     "active": 214,
-     "tokens": 4068
+     "active": 183,
+     "tokens": 3840
     },
     {
      "writes": 725,
-     "active": 220,
-     "tokens": 4252
+     "active": 174,
+     "tokens": 3746
     },
     {
      "writes": 726,
-     "active": 221,
-     "tokens": 4284
+     "active": 175,
+     "tokens": 3778
     },
     {
      "writes": 726,
-     "active": 221,
-     "tokens": 4284
+     "active": 175,
+     "tokens": 3778
     },
     {
      "writes": 802,
@@ -392,8 +392,8 @@
     },
     {
      "writes": 855,
-     "active": 112,
-     "tokens": 2348
+     "active": 111,
+     "tokens": 2398
     },
     {
      "writes": 967,
@@ -413,10 +413,10 @@
    ]
   },
   "cap-8k": {
-   "recall": 0.7649169873268538,
-   "final_active": 466.22222222222223,
-   "final_tokens": 7986.555555555556,
-   "max_tokens": 7998.388888888889,
+   "recall": 0.7498129425139639,
+   "final_active": 426.3888888888889,
+   "final_tokens": 7985.611111111111,
+   "max_tokens": 7998.333333333333,
    "trace": [
     {
      "writes": 434,
@@ -446,80 +446,80 @@
     {
      "writes": 649,
      "active": 413,
-     "tokens": 7986
+     "tokens": 7973
     },
     {
      "writes": 693,
-     "active": 418,
-     "tokens": 7989
+     "active": 417,
+     "tokens": 7990
     },
     {
      "writes": 694,
-     "active": 418,
-     "tokens": 7996
+     "active": 417,
+     "tokens": 7998
     },
     {
      "writes": 694,
-     "active": 418,
-     "tokens": 7996
+     "active": 417,
+     "tokens": 7998
     },
     {
      "writes": 725,
-     "active": 416,
+     "active": 413,
+     "tokens": 8000
+    },
+    {
+     "writes": 726,
+     "active": 412,
      "tokens": 7990
     },
     {
      "writes": 726,
-     "active": 416,
-     "tokens": 7980
-    },
-    {
-     "writes": 726,
-     "active": 416,
-     "tokens": 7980
+     "active": 412,
+     "tokens": 7990
     },
     {
      "writes": 802,
-     "active": 411,
-     "tokens": 7983
+     "active": 401,
+     "tokens": 7981
     },
     {
      "writes": 803,
-     "active": 411,
-     "tokens": 7985
+     "active": 401,
+     "tokens": 7991
     },
     {
      "writes": 803,
-     "active": 411,
-     "tokens": 7985
+     "active": 401,
+     "tokens": 7991
     },
     {
      "writes": 855,
-     "active": 418,
+     "active": 397,
      "tokens": 7996
     },
     {
      "writes": 967,
-     "active": 431,
-     "tokens": 7993
+     "active": 409,
+     "tokens": 7999
     },
     {
      "writes": 968,
-     "active": 431,
-     "tokens": 7976
+     "active": 409,
+     "tokens": 7961
     },
     {
      "writes": 969,
-     "active": 431,
-     "tokens": 7988
+     "active": 410,
+     "tokens": 7996
     }
    ]
   },
   "cap-4k": {
-   "recall": 0.5528176456501729,
-   "final_active": 278.8888888888889,
-   "final_tokens": 3989.3888888888887,
-   "max_tokens": 3998.8888888888887,
+   "recall": 0.5399581308844478,
+   "final_active": 239.16666666666666,
+   "final_tokens": 3988.777777777778,
+   "max_tokens": 3999.3333333333335,
    "trace": [
     {
      "writes": 434,
@@ -528,93 +528,93 @@
     },
     {
      "writes": 485,
-     "active": 241,
-     "tokens": 3999
+     "active": 240,
+     "tokens": 3989
     },
     {
      "writes": 515,
-     "active": 240,
-     "tokens": 3994
+     "active": 239,
+     "tokens": 3998
     },
     {
      "writes": 545,
-     "active": 236,
-     "tokens": 3988
+     "active": 232,
+     "tokens": 3994
     },
     {
      "writes": 607,
-     "active": 241,
-     "tokens": 3978
+     "active": 223,
+     "tokens": 3975
     },
     {
      "writes": 649,
-     "active": 245,
-     "tokens": 3984
+     "active": 224,
+     "tokens": 3993
     },
     {
      "writes": 693,
-     "active": 251,
-     "tokens": 3980
+     "active": 231,
+     "tokens": 3998
     },
     {
      "writes": 694,
-     "active": 251,
-     "tokens": 3980
+     "active": 229,
+     "tokens": 3967
     },
     {
      "writes": 694,
-     "active": 251,
-     "tokens": 3980
+     "active": 229,
+     "tokens": 3967
     },
     {
      "writes": 725,
-     "active": 251,
-     "tokens": 3981
+     "active": 230,
+     "tokens": 3988
     },
     {
      "writes": 726,
-     "active": 251,
-     "tokens": 3979
+     "active": 229,
+     "tokens": 3967
     },
     {
      "writes": 726,
-     "active": 251,
-     "tokens": 3979
+     "active": 229,
+     "tokens": 3967
     },
     {
      "writes": 802,
-     "active": 243,
-     "tokens": 3991
+     "active": 216,
+     "tokens": 3993
     },
     {
      "writes": 803,
-     "active": 243,
-     "tokens": 3987
+     "active": 216,
+     "tokens": 3984
     },
     {
      "writes": 803,
-     "active": 243,
-     "tokens": 3987
+     "active": 216,
+     "tokens": 3984
     },
     {
      "writes": 855,
-     "active": 247,
-     "tokens": 3999
+     "active": 219,
+     "tokens": 3989
     },
     {
      "writes": 967,
-     "active": 256,
-     "tokens": 3992
+     "active": 232,
+     "tokens": 3985
     },
     {
      "writes": 968,
-     "active": 256,
-     "tokens": 3977
+     "active": 232,
+     "tokens": 3964
     },
     {
      "writes": 969,
-     "active": 256,
-     "tokens": 3978
+     "active": 233,
+     "tokens": 3999
     }
    ]
   }
@@ -624,6 +624,6 @@
   "streams": 18,
   "session_days": 168.36610532407406,
   "experiment": "forgetting",
-  "commit": "4fe63379cfe3-dirty"
+  "commit": "2a073495be3a-dirty"
  }
 }

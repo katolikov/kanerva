@@ -86,7 +86,7 @@ There is no notes file to maintain, and everything stays readable and editable w
 
 Search engines find text that looks like your query. Kanerva also asks what is worth paying for. A small gradient-boosted model reads 30 signals for each candidate, such as how it ranked, how long it is, who said it, what sits next to it in the session and whether it mentions the entities in your question. The result is a calibrated probability that the note is needed. Selection then packs the most expected value into your token budget.
 
-The model ships as a small JSON file and runs on NumPy in a few milliseconds, so there is no training step on your side and nothing heavy to install. Each project gets its own memory, and a `global` scope is shared across projects.
+The model ships as a small JSON file and runs on NumPy, so there is no training step on your side and nothing heavy to install. Each project gets its own memory, and a `global` scope is shared across projects.
 
 The name comes from Pentti Kanerva, whose sparse distributed memory showed how a few active bits out of many can recall what you need. It is also the idea behind the logo.
 
@@ -113,10 +113,10 @@ Share of the needed evidence that made it into the context. The test data was he
 | Code history, no keys | 4096 | 0.917 | 0.916 | **0.951** | **0.951** | 0.939 |
 
 - **Long conversations are where it shines.** Across budgets, Kanerva recovers 9 points more evidence than hybrid search with a cross-encoder reranker, and it needs no reranker to do it. At 1024 tokens it finds 0.635 of the evidence against 0.488.
-- **Stale facts mostly stop.** On facts that changed, plain hybrid search injects an outdated version 100% of the time. Kanerva does so 19% of the time from text alone, and never when notes carry keys.
+- **Stale facts mostly stop.** On facts that changed, plain hybrid search injects an outdated version 99.7% of the time. Kanerva does so 19.4% of the time from text alone, and never when notes carry keys.
 - **Where it loses.** On code history at large budgets, the same rule that removes stale notes also drops some useful look-alikes. At 4096 tokens without keys, Kanerva has 0.917 against 0.951 for hybrid. With five repositories the intervals are wide, so treat code-history differences of a few points as ties.
 
-The numbers above use a small sentence-embedding model. The plugins run without one by default: lexical search alone reaches 0.546 on long conversations at 1024 tokens, and `KANERVA_EMBEDDER=static` reaches 0.592.
+The numbers above use a small sentence-embedding model. The plugins run without one by default: lexical search alone reaches 0.546 on long conversations at 1024 tokens, and `KANERVA_EMBEDDER=static` reaches 0.592. A query over 10,000 notes takes about 150 ms on an M1 Pro without embeddings and 287 ms with them.
 <!-- results:end -->
 
 The full method, proofs and all results are in the [paper](paper/paper.pdf).

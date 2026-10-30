@@ -1,4 +1,4 @@
-"""E4: checks of Theorems 1 and 2 and of Propositions 3 and 8 on synthetic instances with known truth."""
+"""Checks of Theorems 1 and 2 and of Propositions 3 and 8 on synthetic instances with known truth."""
 
 from __future__ import annotations
 

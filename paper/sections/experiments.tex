@@ -18,7 +18,7 @@ The candidate pool matters most on BEAM, where a question has many evidence turn
 
 Table~\ref{tab:devablation} removes one feature group at a time and refits. Item features and neighbourhood features carry most of the gain, and query--item overlap adds little on top of them.
 
-With calibrated weights, the selection rule hardly matters: over the four datasets, mean recall is \V{rule-lme-density} for density greedy against \V{rule-lme-dp} for an exact knapsack on LongMemEval-S, and \V{rule-beam-dev-density} against \V{rule-beam-dev-dp} on BEAM-1M. We keep density greedy because Theorem~\ref{thm:selection} covers it.
+With calibrated weights, the choice of knapsack solver hardly matters: over the four datasets, mean recall is \V{rule-lme-density} for density greedy against \V{rule-lme-dp} for an exact knapsack on LongMemEval-S, and \V{rule-beam-dev-density} against \V{rule-beam-dev-dp} on BEAM-1M. Cost still matters where item lengths vary: ranking by probability alone falls to \V{rule-beam-dev-rank} on BEAM-1M. We keep density greedy because Theorem~\ref{thm:selection} covers it.
 
 \begin{table}[!htb]\centering\scriptsize
 \caption{Cross-fitted evidence recall on development data. Mean is over the six budgets.}\label{tab:dev}
@@ -42,7 +42,7 @@ Figure~\ref{fig:recall} and Table~\ref{tab:fresh} give the results, and Table~\r
 \paragraph{Mem0.} On a random \V{mem0n}-question development sample of LongMemEval-S, Mem0's verbatim mode reached \V{mem0-mem0-1024} at 1024 tokens against \V{mem0-first_version-1024} for the first version of the method and \V{mem0-hybrid-1024} for hybrid on the same questions, with \V{mem0add} ms per write. Mem0's LLM extraction, its main feature, was not exercised.
 
 \begin{figure*}[t]\centering
-\includegraphics[width=0.86\textwidth]{figs/recall.pdf}
+\includegraphics[width=\textwidth]{figs/recall.pdf}
 \caption{Evidence recall at each token budget on held-out data. RepoMem is shown without keys.}\label{fig:recall}
 \end{figure*}
 

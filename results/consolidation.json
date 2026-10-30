@@ -6,7 +6,7 @@
    "tokens_before": 150326,
    "tokens_after": 150326,
    "saving": 0.0,
-   "recall": 0.712861848896506,
+   "recall": 0.8235102537198635,
    "n": 1483,
    "clusters": 0,
    "sources": 0
@@ -17,7 +17,7 @@
    "tokens_before": 150326,
    "tokens_after": 115721,
    "saving": 0.23019969932014417,
-   "recall": 0.6721880480562988,
+   "recall": 0.6685413057894055,
    "n": 1483,
    "clusters": 577,
    "sources": 1972
@@ -28,7 +28,7 @@
    "tokens_before": 150326,
    "tokens_after": 141927,
    "saving": 0.055871905059670324,
-   "recall": 0.7111353299591412,
+   "recall": 0.7908662025639475,
    "n": 1483,
    "clusters": 195,
    "sources": 535
@@ -39,7 +39,7 @@
    "tokens_before": 150326,
    "tokens_after": 149633,
    "saving": 0.004609980974681682,
-   "recall": 0.7155253687886164,
+   "recall": 0.8230431169887945,
    "n": 1483,
    "clusters": 29,
    "sources": 71
@@ -50,7 +50,7 @@
    "tokens_before": 6265039,
    "tokens_after": 6265039,
    "saving": 0.0,
-   "recall": 0.8736111111111111,
+   "recall": 0.9694444444444444,
    "n": 60,
    "clusters": 0,
    "sources": 0
@@ -61,7 +61,7 @@
    "tokens_before": 6265039,
    "tokens_after": 3795022,
    "saving": 0.3942540501344046,
-   "recall": 0.7277777777777777,
+   "recall": 0.6888888888888888,
    "n": 60,
    "clusters": 7985,
    "sources": 20806
@@ -72,7 +72,7 @@
    "tokens_before": 6265039,
    "tokens_after": 5018798,
    "saving": 0.19891991095346728,
-   "recall": 0.826388888888889,
+   "recall": 0.788888888888889,
    "n": 60,
    "clusters": 4625,
    "sources": 10327
@@ -83,7 +83,7 @@
    "tokens_before": 6265039,
    "tokens_after": 6130709,
    "saving": 0.021441207309323973,
-   "recall": 0.8736111111111111,
+   "recall": 0.9694444444444444,
    "n": 60,
    "clusters": 458,
    "sources": 1015
@@ -93,6 +93,6 @@
   "budget": 1024,
   "lme_streams": 60,
   "experiment": "consolidation",
-  "commit": "4fe63379cfe3-dirty"
+  "commit": "2a073495be3a-dirty"
  }
 }
