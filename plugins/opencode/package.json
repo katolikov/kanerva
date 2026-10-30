@@ -1,12 +1,52 @@
 {
   "name": "opencode-kanerva",
-  "version": "0.1.0",
-  "description": "Local token-budgeted memory for OpenCode",
-  "type": "module",
+  "version": "0.2.0",
+  "description": "Persistent local memory for OpenCode. Injects only what the current step needs, under a hard token budget.",
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "memory",
+    "agent-memory",
+    "long-term-memory",
+    "context-engineering",
+    "mcp",
+    "local-first",
+    "sqlite",
+    "ai-agents"
+  ],
+  "homepage": "https://github.com/katolikov/kanerva#readme",
+  "bugs": "https://github.com/katolikov/kanerva/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/katolikov/kanerva.git",
+    "directory": "plugins/opencode"
+  },
   "license": "Apache-2.0",
-  "exports": { ".": "./src/index.ts" },
-  "files": ["src"],
-  "scripts": { "test": "node --experimental-strip-types --test src/*.test.ts" },
-  "peerDependencies": { "@opencode/plugin": ">=2.2.0" },
-  "peerDependenciesMeta": { "@opencode/plugin": { "optional": true } }
+  "author": "Artem Katolikov",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src",
+    "!src/*.test.ts",
+    "lib",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --experimental-strip-types --no-warnings --test src/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@opencode/plugin": ">=2.2.0"
+  },
+  "peerDependenciesMeta": {
+    "@opencode/plugin": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
 }

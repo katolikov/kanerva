@@ -1,10 +1,15 @@
 // OpenCode entry point. One default export serves both plugin generations: V2 reads `id` and `setup`,
-// and V1 (1.18.29 or newer) reads `server`. Memory tools come from the MCP server; see the README.
-import { Bridge, type Runner, promptText, pythonRunner } from "./core.ts"
+// and V1 (1.18.29 or newer) reads `server`.
+import { Bridge, type Launch, type Runner, cliRunner, promptText, resolveLaunch, summaryText } from "./core.ts"
 
-/** Event and hook field names follow the types of @opencode/plugin 2.2.3. */
-export async function setupV2(ctx: any, run: Runner) {
+const SERVER = "kanerva"
+
+export async function setupV2(ctx: any, run: Runner, launch: Launch) {
   const bridge = new Bridge(run, ctx.location.directory)
+  await ctx.mcp.transform((editor: any) => {
+    // codemode off: the model calls memory_search directly instead of scripting it inside `execute`.
+    editor.set(SERVER, { type: "local", command: [...launch.command, "mcp"], environment: launch.environment, codemode: false })
+  })
   await ctx.session.hook("prompt", async (event: any) => {
     await bridge.prompt(event.sessionID, event.prompt?.text ?? "")
   })
@@ -12,38 +17,51 @@ export async function setupV2(ctx: any, run: Runner) {
     const text = bridge.system(event.sessionID)
     if (text) event.system.push({ type: "text", text })
   })
-  await ctx.session.hook("compaction", async (event: any) => {
-    await bridge.compacting(event.sessionID)
+  await ctx.session.hook("compaction", (event: any) => {
+    bridge.compacting(event.sessionID)
   })
-  await ctx.tool.hook("execute.after", async (event: any) => {
-    if (event.status === "completed") await bridge.toolAfter(event.sessionID, event.tool, event.input, event.result)
+  await ctx.tool.hook("execute.after", (event: any) => {
+    if (event.status === "completed") bridge.toolAfter(event.sessionID, event.tool, event.input, event.result)
   })
   const controller = new AbortController()
   void (async () => {
-    for await (const event of ctx.event.subscribe({
-      types: ["session.created", "session.idle"],
+    const events = ctx.event.subscribe({
+      types: ["session.created", "session.idle", "session.deleted", "session.compaction.ended"],
       signal: controller.signal,
-    })) {
+    })
+    for await (const event of events) {
       const sessionID = event.data?.sessionID
+      if (!sessionID) continue
       if (event.type === "session.created") await bridge.sessionStart(sessionID)
-      if (event.type === "session.idle") await bridge.idle(sessionID)
+      if (event.type === "session.idle") bridge.idle(sessionID)
+      if (event.type === "session.deleted") bridge.close(sessionID)
+      if (event.type === "session.compaction.ended") bridge.compacted(sessionID, event.data.summary ?? event.data.text ?? "")
     }
-  })()
-  return () => controller.abort()
+  })().catch(() => {})
+  return async () => {
+    controller.abort()
+    await bridge.flush()
+  }
 }
 
-const v2 = {
-  id: "kanerva",
-  setup: (ctx: any) => setupV2(ctx, pythonRunner()),
-}
-
-const server = async ({ directory }: { directory: string }) => {
-  const bridge = new Bridge(pythonRunner(), directory)
+export async function serverV1({ client, directory }: any, run: Runner, launch: Launch) {
+  const bridge = new Bridge(run, directory)
   return {
+    config: async (config: any) => {
+      config.mcp ??= {}
+      config.mcp[SERVER] ??= { type: "local", command: [...launch.command, "mcp"], environment: launch.environment, enabled: true }
+    },
     event: async ({ event }: any) => {
-      const sessionID = event.properties?.sessionID ?? event.properties?.info?.id
+      const properties = event.properties ?? {}
+      const sessionID = properties.sessionID ?? properties.info?.id
+      if (!sessionID) return
       if (event.type === "session.created") await bridge.sessionStart(sessionID)
-      if (event.type === "session.idle") await bridge.idle(sessionID)
+      if (event.type === "session.idle") bridge.idle(sessionID)
+      if (event.type === "session.deleted") bridge.close(sessionID)
+      if (event.type === "session.compacted") {
+        const messages = await client?.session?.messages?.({ path: { id: sessionID } }).catch(() => undefined)
+        bridge.compacted(sessionID, summaryText(messages?.data))
+      }
     },
     "chat.message": async (input: any, output: any) => {
       await bridge.prompt(input.sessionID, promptText(output.parts))
@@ -53,12 +71,21 @@ const server = async ({ directory }: { directory: string }) => {
       if (text) output.system.push(text)
     },
     "tool.execute.after": async (input: any, output: any) => {
-      await bridge.toolAfter(input.sessionID, input.tool, input.args, { stdout: output.output })
+      bridge.toolAfter(input.sessionID, input.tool, input.args, { stdout: output.output })
     },
     "experimental.session.compacting": async (input: any) => {
-      await bridge.compacting(input.sessionID)
+      bridge.compacting(input.sessionID)
+    },
+    dispose: async () => {
+      await bridge.flush()
     },
   }
 }
 
-export default { ...v2, server }
+const launch = resolveLaunch()
+
+export default {
+  id: "kanerva",
+  setup: (ctx: any) => setupV2(ctx, cliRunner(launch), launch),
+  server: (input: any) => serverV1(input, cliRunner(launch), launch),
+}
