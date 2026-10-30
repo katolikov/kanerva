@@ -1,0 +1,32 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kanerva"
+version = "0.1.0"
+description = "Local, persistent, self-improving memory for coding agents under a hard token budget"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = ["numpy>=1.26"]
+
+[project.optional-dependencies]
+embeddings = ["model2vec>=0.6"]
+transformers = ["sentence-transformers>=3"]
+mcp = ["mcp>=1.2"]
+dev = ["pytest>=8", "ruff>=0.6"]
+experiments = ["scipy", "matplotlib", "tiktoken", "sentence-transformers>=3", "huggingface_hub"]
+
+[project.scripts]
+kanerva = "kanerva.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kanerva"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+
+[tool.ruff]
+line-length = 120
