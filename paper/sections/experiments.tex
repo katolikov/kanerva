@@ -1,0 +1,87 @@
+\section{Experiments}\label{sec:experiments}
+
+\subsection{Setup}
+\paragraph{Mode.} No LLM was available, so all metrics are retrieval-level. Hypotheses about end-to-end effects are out of scope.
+
+\paragraph{Benchmarks.} \emph{LongMemEval-S} \cite{wu2025longmemeval}: 500 questions, each with its own store of about 490 turns; \V{n-lme} test questions remain after dropping those without flagged evidence and the dev split. \emph{LoCoMo} \cite{maharana2024locomo}: 10 long conversations; conversations 0--2 are dev, leaving \V{n-locomo} test questions. \emph{RepoMem} (new): eight Python repositories at 14 snapshots over six years. Each interval is a session in which the simulated agent records commit notes and facts observed in changed files. Facts (constants, signatures, symbol locations, dependency constraints) come from \texttt{ast}, so a fact is stale exactly when the same key held another value at an earlier snapshot. Fact queries ask for the current value; task queries use a real later commit subject, with earlier commits on the same files as gold. Two repositories are dev, six test (\V{n-repomem-keyed} queries over three seeded streams each). We run RepoMem with slot keys, as a host agent would supply, and without. Four more repositories are a holdout (Section~\ref{sec:posthoc}).
+
+\paragraph{Baselines.} No memory (recall $0$), full history (recall $1$ at the cost of the whole store, about 115k tokens per question on LongMemEval-S), recency, BM25 (FTS5), dense (all-MiniLM-L6-v2 \cite{hf_minilm}), hybrid RRF \cite{cormack2009rrf}, hybrid followed by a cross-encoder reranker, MMR \cite{carbonell1998mmr}, Generative Agents scoring \cite{park2023generative} with constant importance, facility location under a knapsack as in PACMS \cite{pacms2026}, hybrid top-$k$ for $k\in\{3,5,10,20\}$, and hybrid with superseded versions removed (temporal invalidation alone, in the spirit of \cite{rasmussen2025zep}). All methods share candidate generators, token counts (\texttt{cl100k\_base}) and an 8-token per-item overhead, and every ranking is filled greedily to the budget, which already makes the baselines budget-aware. Mem0 2.2.1 with \texttt{infer=False} and local Qdrant ran on a random \V{mem0n}-question sample. Systems that need an LLM on write were not run.
+
+\paragraph{Protocol.} The prior $\theta_0$ and hyperparameters were set on dev splits only. Metrics: evidence recall, tokens injected, staleness error (an outdated version is injected and either the current one is absent or ranks lower), latency and store size. Retrieval is deterministic; seeds govern RepoMem streams and online runs (five seeds). CIs are paired bootstrap over questions; for clustered data we also give a cluster bootstrap over streams, which is the more honest interval. $p$-values are Wilcoxon signed-rank with Holm correction per dataset.
+
+\subsection{Recall against tokens}
+Figure~\ref{fig:pareto} shows the fronts and Table~\ref{tab:recall} the values. On LongMemEval-S, where turn lengths vary widely, \kanerva dominates every baseline at every budget from 256 up: at 1024 tokens recall is \R{lme}{kanerva}{1024} against \R{lme}{bm25}{1024} for BM25, \R{lme}{hybrid}{1024} for hybrid and \R{lme}{rerank}{1024} for the reranker. The ablation shows where this comes from: without cost density it falls to \R{lme}{-density}{1024}. On LoCoMo, where turns are short and similar in length, \kanerva leads up to 1024 tokens (\R{locomo}{kanerva}{1024} against \R{locomo}{hybrid}{1024}) and then loses to hybrid: \R{locomo}{kanerva}{4096} against \R{locomo}{hybrid}{4096} at 4096. On RepoMem without keys it trails hybrid in recall by up to about two points (\R{repomem-plain}{kanerva}{1024} against \R{repomem-plain}{hybrid}{1024}). Dense retrieval is better than \kanerva at the smallest budget there. Lexical-only \kanerva, the zero-dependency default of the plugin, stays close on LongMemEval-S (\R{lme}{kanerva-lex}{1024}) and below full \kanerva elsewhere.
+
+On the Mem0 sample (\V{mem0n} questions, mixed categories), Mem0's verbatim mode reached \V{mem0-1024} at 1024 tokens against \V{mem0ours-1024} for \kanerva and \V{mem0hyb-1024} for hybrid on the same questions. Its write took \V{mem0add} ms per turn.
+
+\begin{figure*}[t]\centering
+\includegraphics[width=\textwidth]{figs/pareto.pdf}
+\caption{Evidence recall against mean tokens injected. Each curve visits budgets 128 to 4096; open circles are fixed top-$k$. Up and to the left is better.}\label{fig:pareto}
+\end{figure*}
+
+\begin{table*}[t]\centering\small
+\caption{Evidence recall at each token budget on test splits. Bold marks the best method per column within a dataset.}\label{tab:recall}
+\input{generated/table_recall.tex}
+\end{table*}
+
+\begin{table}[t]\centering\scriptsize
+\caption{\kanerva minus the best rival at each budget, in recall. Positive favors \kanerva. Cluster CI resamples streams.}\label{tab:diff}
+\resizebox{\columnwidth}{!}{\input{generated/table_diff.tex}}
+\end{table}
+
+Table~\ref{tab:diff} gives the paired differences against the strongest rival at three budgets. The cluster intervals on LoCoMo and RepoMem are wide because they rest on few conversations or repositories, so differences of a point or two there should be read as ties.
+
+\subsection{Staleness}
+Table~\ref{tab:stale} is the main result on RepoMem. Over all queries, stale error is about a third for similarity-based methods at any budget, and restricted to facts that changed it is \V{stalechanged-hybrid} for hybrid at 1024 tokens: more often than not the agent would read an outdated value ahead of the current one, or instead of it. A larger budget does not help. With keys, \kanerva reaches \St{repomem-keyed}{kanerva}{1024}. Without keys, where it has only similarity and timestamps, it reaches \St{repomem-plain}{kanerva}{1024} overall, or \V{stalechanged-kanerva} on changed facts. Hybrid with invalidation also reaches zero with keys, and that method has no answer without them, since its filter needs them. Removing validity from \kanerva brings the error back in full, so the component is responsible. The price is the recall gap described above, because older versions are pushed out even for task queries that would have benefited from them.
+
+\begin{table}[t]\centering\scriptsize
+\caption{Staleness error on RepoMem (all queries).}\label{tab:stale}
+\resizebox{\columnwidth}{!}{\input{generated/table_stale.tex}}
+\end{table}
+
+\subsection{Ablations}
+Table~\ref{tab:ablation} removes one component at a time. Cost density is decisive on LongMemEval-S and slightly harmful on LoCoMo at small budgets, where \emph{removing} it adds up to \V{dens-locomo} recall, because uniform turn lengths give density nothing to exploit and short turns get an edge. Validity costs a little recall on chat benchmarks and pays for itself on RepoMem through staleness, which recall does not show. Facets help at small budgets. The facility-location term and activation have effects indistinguishable from zero on recall; we keep them because they are cheap, and because activation becomes informative only with real access histories, which these benchmarks lack. An honest reading is that this benchmark set does not establish their value.
+
+\begin{table}[t]\centering\scriptsize
+\caption{Ablations: recall of \kanerva minus the variant with a component removed, at $B=256$ and $1024$. A positive value means the component helps. $^{*}$: $p_{\text{Holm}}<0.05$.}\label{tab:ablation}
+\resizebox{\columnwidth}{!}{\input{generated/table_ablation.tex}}
+\end{table}
+
+\subsection{A disclosed post-hoc change}\label{sec:posthoc}
+The first test run showed \kanerva below hybrid on keyed RepoMem, and the ablation pointed at soft supersession: signatures of different functions are near-duplicates, so they discounted each other. Since keyed items have exact version chains, we restricted soft supersession to items without a key. This fix was found on test data, so numbers on those six repositories are no longer clean. Table~\ref{tab:recall} reports both the first-run rule and the fix. To check it fairly we added four repositories after that run (starlette, typer, black, aiohttp), never used for tuning. There, at 1024 tokens, the fixed method has recall \R{repomem-holdout}{kanerva}{1024} against \R{repomem-holdout}{kanerva-first}{1024} for the first-run rule, \R{repomem-holdout}{hybrid}{1024} for hybrid and \R{repomem-holdout}{dense}{1024} for dense, with stale error \St{repomem-holdout}{kanerva}{1024} against \St{repomem-holdout}{hybrid}{1024} for hybrid. LongMemEval and LoCoMo have no keys, so the change does not touch them.
+
+\subsection{Online learning}
+Feedback here is simulated from evidence labels, as described in Section~\ref{sec:limitations}. Each seed shuffles the order of work and shares a single policy; Table~\ref{tab:online} reports recall at $B=512$ over the second half of each run, and Figure~\ref{fig:online} the learning curves. \onlinesummary
+
+\begin{table*}[t]\centering\small
+\caption{Prequential recall at $B=512$ over the second half of each run, mean $\pm$ s.d.\ over five seeds. ``Noisy'' flips 20\% of rewards. ``Flat'' starts from a uniform prior.}\label{tab:online}
+\input{generated/table_online.tex}
+\end{table*}
+
+\begin{figure*}[t]\centering
+\includegraphics[width=\textwidth]{figs/online.pdf}
+\caption{Online learning curves: moving-mean recall at $B=512$. Bands span the seeds.}\label{fig:online}
+\end{figure*}
+
+\subsection{Checks of the theory on synthetic instances}
+With known ground truth (eight seeds, horizon 4000, 40 items per round, classes with different hazards), cumulative regret against the per-round greedy optimum is \V{regret-known} for a learner that knows validity, \V{regret-estimated} when it estimates hazards and \V{regret-blind} when it is blind. The log--log slopes of regret in $T$ are \V{slope-known}, \V{slope-estimated} and \V{slope-blind}. Theorem~\ref{thm:regret} predicts a slope near $\frac12$ for the first two up to log factors, and Proposition~\ref{prop:blind} predicts a slope of $1$ in the adversarial case. Over \V{certn} random selection problems, the mean of $F(S)$ over the certificate upper bound was \V{certmean}, and the minimum \V{certmin}, far above the worst-case constant of $0.316$.
+
+\subsection{Consolidation, forgetting and multi-resolution}
+\paragraph{Consolidation.} Table~\ref{tab:consolidation} applies consolidation at several thresholds. A gold item counts as found if its summary is selected, which measures discoverability, since the sources stay expandable. \consolidationsummary{} The rate--distortion bound of Theorem~\ref{thm:rd} held in all \V{rdtotal} cases with $Z^\star=X$ (\V{rdviol} violations). Mean distortion falls from \V{rd-0.1} at rate $0.1$ to \V{rd-0.5} at $0.5$.
+
+\begin{table}[t]\centering\scriptsize
+\caption{Reversible consolidation on test splits (LongMemEval-S: 60 questions). $\tau$ is the similarity threshold, $R$ the extractive rate.}\label{tab:consolidation}
+\resizebox{\columnwidth}{!}{\input{generated/table_consolidation.tex}}
+\end{table}
+
+\paragraph{Forgetting.} On RepoMem streams, Table~\ref{tab:forgetting} compares keeping everything with idle-time rules and token capacities. \forgettingsummary
+
+\begin{table}[t]\centering\scriptsize
+\caption{Forgetting on RepoMem test streams: final active store and recall.}\label{tab:forgetting}
+\resizebox{\columnwidth}{!}{\input{generated/table_forgetting.tex}}
+\end{table}
+
+\paragraph{Multi-resolution.} Injecting query-biased excerpts of long items, with a pointer to the full text, raises the number of items that fit. On LongMemEval-S at 512 tokens, turn reachability moves from \V{mr-0@512} with full items to \V{mr-48@512} with excerpts above 48 tokens, and at 1024 tokens from \V{mr-0@1024} to \V{mr-48@1024}. This counts an excerpt as reaching the turn. Whether the excerpt contains the answer, or the agent would expand it, was not measured without an LLM.
+
+\subsection{Latency and scale}
+On an M1 Pro, at $10^4$ items, hybrid retrieval takes \V{p50-hybrid@10000} ms at the median and \V{p95-hybrid@10000} ms at the 95th percentile, and lexical retrieval \V{p50-lexical@10000} ms and \V{p95-lexical@10000} ms. At $10^5$ items these are \V{p50-hybrid@100000} and \V{p50-lexical@100000} ms. A write costs \V{wr-hybrid@10000} ms, excluding the embedding. The memory layer spends no LLM tokens, so its token cost is the injected context alone.

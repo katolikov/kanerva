@@ -377,6 +377,9 @@ class Memory:
         created = np.array([rows[i]["created_at"] for i in cand.ids])
         tau = cfg.supersession_threshold
         gate = np.clip((sim - tau) / (1.0 - tau), 0.0, 1.0) * (created[None, :] > created[:, None])
+        if not cfg.soft_supersede_keyed:
+            unkeyed = np.array([rows[i]["key"] is None for i in cand.ids], dtype=float)
+            gate = gate * unkeyed[:, None]
         cand.validity = cand.validity * np.prod(1.0 - cfg.supersession_strength * gate, axis=1)
 
     def build_problem(

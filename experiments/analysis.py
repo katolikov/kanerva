@@ -17,9 +17,10 @@ from experiments.datasets import ROOT
 RESULTS = ROOT / "results"
 FIGS = ROOT / "paper" / "figs"
 BUDGETS = (128, 256, 512, 1024, 2048, 4096)
-DATASETS = {"lme": "LongMemEval-S", "locomo": "LoCoMo", "repomem-keyed": "RepoMem (keys)", "repomem-plain": "RepoMem (no keys)"}
+DATASETS = {"lme": "LongMemEval-S", "locomo": "LoCoMo", "repomem-keyed": "RepoMem (keys)", "repomem-plain": "RepoMem (no keys)",
+            "repomem-holdout": "RepoMem holdout (keys)"}
 BASELINES = ("hybrid", "bm25", "dense", "mmr", "facility", "gen-agents", "recency", "rerank", "hybrid-live")
-ABLATIONS = ("-density", "-coverage", "-redundancy", "-validity", "-supersession", "-activation")
+ABLATIONS = ("-density", "-coverage", "-redundancy", "-validity", "-supersession", "-activation", "kanerva-first")
 BOOT = 2000
 
 INK = "#0b0b0b"

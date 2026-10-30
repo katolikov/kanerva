@@ -18,7 +18,8 @@ export const pythonRunner =
 
 /** Per-session state: the context retrieved for the latest prompt is re-sent on each model call of that prompt. */
 export class Bridge {
-  private context = new Map<string, string>()
+  private startContext = new Map<string, string>()
+  private promptContext = new Map<string, string>()
   private run: Runner
   private cwd: string
 
@@ -32,16 +33,17 @@ export class Bridge {
   }
 
   async sessionStart(sessionID: string) {
-    this.context.set(sessionID, await this.run("session_start", this.payload(sessionID, { source: "startup" })))
+    this.startContext.set(sessionID, await this.run("session_start", this.payload(sessionID, { source: "startup" })))
   }
 
   async prompt(sessionID: string, prompt: string) {
-    this.context.set(sessionID, await this.run("prompt", this.payload(sessionID, { prompt })))
+    this.promptContext.set(sessionID, await this.run("prompt", this.payload(sessionID, { prompt })))
   }
 
   /** Text to append to the system prompt of an outgoing model request. */
   system(sessionID: string): string {
-    return this.context.get(sessionID) ?? ""
+    const parts = [this.startContext.get(sessionID), this.promptContext.get(sessionID)]
+    return parts.filter(Boolean).join("\n")
   }
 
   async toolAfter(sessionID: string, tool: string, input: unknown, output: unknown) {

@@ -1,0 +1,7 @@
+\section{Conclusion}
+
+Treating agent memory as budgeted selection over items with explicit validity gives a read path that needs no LLM, states its own optimality gap per query, and carries a regret guarantee that survives expiring items. \conclusionsummary
+
+The next step is an end-to-end study: whether higher recall per token, and fewer stale injections, change what a coding agent does. The retrieval results here are necessary for that outcome and do not establish it.
+
+\paragraph{Reproducibility.} \texttt{make data \&\& make reproduce} rebuilds every result in \texttt{results/*.json} with commit hashes and seeds, and \texttt{make check} verifies each number in this paper against those files. The RepoMem manifest pins every repository snapshot.

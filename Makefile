@@ -20,6 +20,10 @@ data:
 	$(PY) -m experiments.embed_cache lme
 	$(PY) -m experiments.embed_cache locomo
 	$(PY) -m experiments.embed_cache repomem
+	$(PY) -m experiments.embed_cache repomem-holdout
+	$(PY) -m experiments.embed_cache lme minishlab/potion-base-8M
+	$(PY) -m experiments.embed_cache locomo minishlab/potion-base-8M
+	$(PY) -m experiments.embed_cache repomem minishlab/potion-base-8M
 
 reproduce:
 	$(PY) -m experiments.reproduce

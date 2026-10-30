@@ -40,7 +40,7 @@ class TextCache:
 
 
 def build(name: str, texts: list[str], model: str) -> None:
-    from kanerva.embed import SentenceTransformerEmbedder
+    from kanerva.embed import Model2VecEmbedder, SentenceTransformerEmbedder
     from kanerva.text import tiktoken_counter
 
     CACHE.mkdir(parents=True, exist_ok=True)
@@ -48,7 +48,7 @@ def build(name: str, texts: list[str], model: str) -> None:
     count = tiktoken_counter()
     tokens = {digest(t): count(t) for t in texts}
     print(f"{name}: {len(texts)} texts, tokens counted in {time.time() - start:.0f}s", flush=True)
-    embedder = SentenceTransformerEmbedder(model)
+    embedder = Model2VecEmbedder(model) if model.startswith("minishlab/") else SentenceTransformerEmbedder(model)
     order = sorted(range(len(texts)), key=lambda i: len(texts[i]))
     out = np.zeros((len(texts), embedder.dim), dtype=np.float32)
     for start_i in range(0, len(order), 4096):
@@ -67,4 +67,5 @@ if __name__ == "__main__":
 
     which = sys.argv[1]
     model = sys.argv[2] if len(sys.argv) > 2 else "sentence-transformers/all-MiniLM-L6-v2"
-    build(which, all_texts(load(which)), model)
+    suffix = "-m2v" if model.startswith("minishlab/") else ""
+    build(which + suffix, all_texts(load(which)), model)

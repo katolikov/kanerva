@@ -14,4 +14,8 @@ def load(name: str) -> list[Stream]:
         from experiments.repomem import load_repomem
 
         return load_repomem()
+    if name == "repomem-holdout":
+        from experiments.repomem import load_repomem
+
+        return load_repomem(holdout=True)
     raise ValueError(name)

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict"
 import { test } from "node:test"
 import { Bridge, promptText } from "./core.ts"
-import plugin from "./index.ts"
+import plugin, { setupV2 } from "./index.ts"
 
 function fake() {
   const calls: Array<[string, Record<string, unknown>]> = []
@@ -56,4 +56,37 @@ test("the V2 setup registers every hook it needs", async () => {
   assert.deepEqual(session, ["prompt", "context", "compaction"])
   assert.deepEqual(tools, ["execute.after"])
   stop()
+})
+
+test("a simulated V2 session flows through prompt, context, tool and idle", async () => {
+  const hooks: Record<string, (event: any) => any> = {}
+  const calls: Array<[string, Record<string, unknown>]> = []
+  const run = async (event: string, payload: Record<string, unknown>) => {
+    calls.push([event, payload])
+    return event === "prompt" ? "note" : ""
+  }
+  const ctx = {
+    location: { directory: "/repo" },
+    session: { hook: async (name: string, fn: any) => void (hooks[name] = fn) },
+    tool: { hook: async (name: string, fn: any) => void (hooks[`tool.${name}`] = fn) },
+    event: {
+      subscribe: async function* () {
+        yield { type: "session.created", data: { sessionID: "s1" } }
+        yield { type: "session.idle", data: { sessionID: "s1" } }
+      },
+    },
+  }
+  const stop = await setupV2(ctx, run)
+  await hooks.prompt({ sessionID: "s1", prompt: { text: "how do I deploy?" } })
+  const request = { sessionID: "s1", system: [] as unknown[] }
+  hooks.context(request)
+  assert.deepEqual(request.system, [{ type: "text", text: "note" }])
+  await hooks["tool.execute.after"]({ sessionID: "s1", tool: "bash", input: { command: "ls" }, status: "completed", result: {} })
+  await hooks["tool.execute.after"]({ sessionID: "s1", tool: "bash", input: {}, status: "error", error: {} })
+  await new Promise((resolve) => setImmediate(resolve))
+  stop()
+  const names = calls.map((c) => c[0])
+  assert.ok(names.includes("session_start") && names.includes("stop"))
+  assert.equal(names.filter((n) => n === "tool").length, 1)
+  assert.equal(calls.find((c) => c[0] === "prompt")?.[1].prompt, "how do I deploy?")
 })

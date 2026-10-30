@@ -1,0 +1,41 @@
+\documentclass[10pt,twocolumn]{article}
+\usepackage[letterpaper,margin=0.8in,columnsep=0.28in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs,graphicx,xspace,microtype,balance}
+\usepackage{algorithm,algpseudocode}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newcommand{\kanerva}{\textsc{Kanerva}\xspace}
+\input{generated/macros.tex}
+
+\title{\kanerva: Token-Budgeted, Validity-Aware Memory\\for Coding Agents, Without an LLM in the Loop}
+\author{Artem Katolikov\thanks{Drafted with Claude Code. Code, data pointers and every reported number are at the project repository; see the Reproducibility section.}}
+\date{October 2026}
+
+\begin{document}
+\maketitle
+\input{sections/abstract.tex}
+\input{sections/intro.tex}
+\input{sections/related.tex}
+\input{sections/framework.tex}
+\input{sections/method.tex}
+\input{sections/theory.tex}
+\input{sections/experiments.tex}
+\input{sections/limitations.tex}
+\input{sections/conclusion.tex}
+
+\balance
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\onecolumn
+\input{sections/proofs.tex}
+\end{document}

@@ -1,37 +1,40 @@
 // OpenCode entry point. One default export serves both plugin generations: V2 reads `id` and `setup`,
 // and V1 (1.18.29 or newer) reads `server`. Memory tools come from the MCP server; see the README.
-import { Bridge, promptText, pythonRunner } from "./core.ts"
+import { Bridge, type Runner, promptText, pythonRunner } from "./core.ts"
+
+/** Event and hook field names follow the types of @opencode/plugin 2.2.3. */
+export async function setupV2(ctx: any, run: Runner) {
+  const bridge = new Bridge(run, ctx.location.directory)
+  await ctx.session.hook("prompt", async (event: any) => {
+    await bridge.prompt(event.sessionID, event.prompt?.text ?? "")
+  })
+  await ctx.session.hook("context", (event: any) => {
+    const text = bridge.system(event.sessionID)
+    if (text) event.system.push({ type: "text", text })
+  })
+  await ctx.session.hook("compaction", async (event: any) => {
+    await bridge.compacting(event.sessionID)
+  })
+  await ctx.tool.hook("execute.after", async (event: any) => {
+    if (event.status === "completed") await bridge.toolAfter(event.sessionID, event.tool, event.input, event.result)
+  })
+  const controller = new AbortController()
+  void (async () => {
+    for await (const event of ctx.event.subscribe({
+      types: ["session.created", "session.idle"],
+      signal: controller.signal,
+    })) {
+      const sessionID = event.data?.sessionID
+      if (event.type === "session.created") await bridge.sessionStart(sessionID)
+      if (event.type === "session.idle") await bridge.idle(sessionID)
+    }
+  })()
+  return () => controller.abort()
+}
 
 const v2 = {
   id: "kanerva",
-  async setup(ctx: any) {
-    const bridge = new Bridge(pythonRunner(), ctx.location.directory)
-    await ctx.session.hook("prompt", async (event: any) => {
-      await bridge.prompt(event.sessionID, promptText(event.parts ?? event.prompt?.parts ?? []))
-    })
-    await ctx.session.hook("context", (event: any) => {
-      const text = bridge.system(event.sessionID)
-      if (text) event.system.push({ type: "text", text })
-    })
-    await ctx.session.hook("compaction", async (event: any) => {
-      await bridge.compacting(event.sessionID)
-    })
-    await ctx.tool.hook("execute.after", async (event: any) => {
-      if (event.status === "completed") await bridge.toolAfter(event.sessionID, event.tool, event.input, event.result)
-    })
-    const controller = new AbortController()
-    void (async () => {
-      for await (const event of ctx.event.subscribe({
-        types: ["session.created", "session.idle"],
-        signal: controller.signal,
-      })) {
-        const sessionID = event.properties?.sessionID ?? event.sessionID
-        if (event.type === "session.created") await bridge.sessionStart(sessionID)
-        if (event.type === "session.idle") await bridge.idle(sessionID)
-      }
-    })()
-    return () => controller.abort()
-  },
+  setup: (ctx: any) => setupV2(ctx, pythonRunner()),
 }
 
 const server = async ({ directory }: { directory: string }) => {

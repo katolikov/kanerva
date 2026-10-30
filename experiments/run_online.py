@@ -2,7 +2,8 @@
 
 Each seed shuffles the order of streams and of queries inside a stream and shares one policy across the
 whole run. After each retrieval at budget B, every injected item gets reward 1 if it is gold and 0 otherwise,
-flipped with probability ``noise``. Superseded items are skipped, as in the model of Theorem 2.
+flipped with probability ``noise``. Superseded items are skipped, as in the model of Theorem 2. The debiased
+setting applies the unbiased correction for a known flip rate, (y - p) / (1 - 2p).
 """
 
 from __future__ import annotations
@@ -29,6 +30,7 @@ SETTINGS = {
     "online": {"learn": True, "beta": 0.0, "noise": 0.0},
     "online-ucb": {"learn": True, "beta": 0.05, "noise": 0.0},
     "online-noisy": {"learn": True, "beta": 0.0, "noise": 0.2},
+    "online-debiased": {"learn": True, "beta": 0.0, "noise": 0.2, "debias": True},
     "cold-static": {"learn": False, "beta": 0.0, "noise": 0.0, "cold": True},
     "cold-online": {"learn": True, "beta": 0.0, "noise": 0.0, "cold": True},
 }
@@ -74,7 +76,10 @@ def replay(args: tuple) -> dict:
                     good = item in gold
                     if rng.random() < spec["noise"]:
                         good = not good
-                    rewards[item] = 1.0 if good else 0.0
+                    reward = 1.0 if good else 0.0
+                    if spec.get("debias"):
+                        reward = (reward - spec["noise"]) / (1.0 - 2.0 * spec["noise"])
+                    rewards[item] = reward
                 mem.feedback(result.retrieval_id, rewards)
         mem.close()
     return {"dataset": dataset, "setting": setting, "seed": seed, "recall": hits, "tokens": tokens, "theta": bandit.theta.tolist()}

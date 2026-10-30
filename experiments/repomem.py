@@ -34,9 +34,14 @@ REPOS = {
     "Textualize/rich": ("rich", "test"),
     "pallets/werkzeug": ("src/werkzeug", "test"),
     "pallets/jinja": ("src/jinja2", "test"),
+    # Added after the first test run, for checking one post-hoc change on untouched repositories.
+    "encode/starlette": ("starlette", "holdout"),
+    "fastapi/typer": ("typer", "holdout"),
+    "psf/black": ("src/black", "holdout"),
+    "aio-libs/aiohttp": ("aiohttp", "holdout"),
 }
 LEGACY_ROOTS = {"src/click": "click", "src/attr": "src/attr", "src/flask": "flask", "src/requests": "requests",
-                "src/werkzeug": "werkzeug", "src/jinja2": "jinja2"}
+                "src/werkzeug": "werkzeug", "src/jinja2": "jinja2", "src/black": "black"}
 
 SNAPSHOTS = 14
 YEARS = 6
@@ -302,9 +307,11 @@ def stream_for(data: dict, seed: int) -> Stream:
     return Stream(f"{repo_name}-{seed}", data["split"], ordered, sorted(queries, key=lambda q: q.pos))
 
 
-def load_repomem() -> list[Stream]:
+def load_repomem(holdout: bool = False) -> list[Stream]:
     streams = []
-    for repo in REPOS:
+    for repo, (_, split) in REPOS.items():
+        if (split == "holdout") != holdout:
+            continue
         data = json.loads((BUILD / (repo.replace("/", "__") + ".json")).read_text())
         for seed in SEEDS:
             streams.append(stream_for(data, seed))
@@ -314,9 +321,13 @@ def load_repomem() -> list[Stream]:
 def main() -> None:
     manifest = {}
     for repo in REPOS:
-        data = build_repo(repo)
-        BUILD.mkdir(parents=True, exist_ok=True)
-        (BUILD / (repo.replace("/", "__") + ".json")).write_text(json.dumps(data))
+        path = BUILD / (repo.replace("/", "__") + ".json")
+        if path.exists():
+            data = json.loads(path.read_text())
+        else:
+            data = build_repo(repo)
+            BUILD.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(data))
         manifest[repo] = {
             "head": data["head"],
             "snapshots": [s["sha"] for s in data["snapshots"]],

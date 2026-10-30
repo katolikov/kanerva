@@ -20,3 +20,4 @@ paper/*.log
 paper/*.out
 paper/*.bbl
 paper/*.blg
+.venv-*/

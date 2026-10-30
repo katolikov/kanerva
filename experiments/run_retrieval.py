@@ -14,11 +14,21 @@ RUNS = {
     "locomo": {"keyed": False},
     "repomem-keyed": {"dataset": "repomem", "keyed": True},
     "repomem-plain": {"dataset": "repomem", "keyed": False},
+    "repomem-holdout": {"dataset": "repomem-holdout", "keyed": True, "split": "holdout"},
 }
 
 
-def run(name: str, split: str = "test") -> None:
+def run_small_embedder() -> None:
+    """The method and its rivals with the static model2vec embedder that the plugin can use."""
+    for name, dataset, keyed in (("lme", "lme", False), ("locomo", "locomo", False), ("repomem-plain", "repomem", False)):
+        streams = [s for s in load(dataset) if s.split == "test"]
+        records = run_dataset(streams, f"{dataset}-m2v", RetrievalConfig(), keyed=keyed, selected={"kanerva", "hybrid", "dense"})
+        save(f"m2v_{name}", records, {"experiment": "small-embedder", "dataset": name, "model": "minishlab/potion-base-8M"})
+
+
+def run(name: str) -> None:
     spec = RUNS[name]
+    split = spec.get("split", "test")
     dataset = spec.get("dataset", name)
     streams = [s for s in load(dataset) if s.split == split]
     start = time.time()
@@ -31,5 +41,5 @@ def run(name: str, split: str = "test") -> None:
 
 
 if __name__ == "__main__":
-    for name in sys.argv[1:] or RUNS:
-        run(name)
+    for name in sys.argv[1:] or [*RUNS, "m2v"]:
+        run_small_embedder() if name == "m2v" else run(name)

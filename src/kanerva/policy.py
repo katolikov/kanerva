@@ -47,6 +47,7 @@ class RetrievalConfig:
     use_supersession: bool = True
     supersession_threshold: float = 0.8
     supersession_strength: float = 0.8
+    soft_supersede_keyed: bool = False  # keyed items have exact version chains, so similarity is not evidence
     stale_factor: float = 0.05
 
     use_bandit: bool = True
