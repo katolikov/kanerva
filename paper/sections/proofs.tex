@@ -88,3 +88,11 @@ Condition on $r$ and let $T$ be the time until the first gap of length $\tau$ in
 
 The pairs (arrival time, lifetime) form a marked Poisson process with i.i.d.\ marks. By the marking theorem, the number of items alive at $t$ is Poisson with mean $a\int_0^t\Pr[L>u]\,du$, which converges to $a\,\mathbb{E}L$ under the finiteness assumption.
 \end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:calibration}]
+For any set $S$, $|\sum_{m\in S}p_m-\sum_{m\in S}\hat p_m|\le e(S)$. Hence
+$\sum_{\hat S}p\ge\sum_{\hat S}\hat p-e(\hat S)\ge\alpha\sum_{S^\star}\hat p-e(\hat S)\ge\alpha\sum_{S^\star}p-\alpha e(S^\star)-e(\hat S)$,
+where the middle step uses that $S^\star$ is feasible. For $\alpha=1$, the items in $S^\star\cap\hat S$ cancel: apply the same chain to $S^\star\setminus\hat S$ and $\hat S\setminus S^\star$, using $\sum_{\hat S\setminus S^\star}\hat p\ge\sum_{S^\star\setminus\hat S}\hat p$, which holds because $\hat S$ is optimal for $\hat p$.
+
+For $\alpha=\frac12$ with an additive objective: let density greedy stop at the first item $g$ that does not fit, with accepted set $G$, ignoring later items, which only add value. The items are in density order, so the value of $G\cup\{g\}$ is at least the optimum of the fractional relaxation, and so at least the integer optimum. Thus $\hat p(G)+\hat p(g)\ge\mathrm{OPT}$, and the better of $G$ and the best singleton has value at least $\frac12\mathrm{OPT}$.
+\end{proof}

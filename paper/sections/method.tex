@@ -9,17 +9,20 @@ item with its FTS5 entry and embedding. A write with a key closes the version in
 $\tau^{\mathrm{end}}$ and a pointer to its successor. Nothing is rewritten, so history stays queryable.
 
 \subsection{Read path}
-Algorithm~\ref{alg:retrieve} shows retrieval. Candidates are the union of the top-100 lexical and dense hits. Features combine rank and score signals,
-query-term coverage, ACT-R base-level activation \cite{anderson2004integrated}, and an item's feedback posterior, in twelve features, plus three optional signals from a local reranker. Facets are the query's content terms with
-\emph{idf} weights plus one facet for the query as a whole.
+Algorithm~\ref{alg:retrieve} shows retrieval. Candidates are the union of the top-200 lexical and dense hits, plus the items written next to the 50 best fused hits in the same session. Neighbours matter because a conversation often splits one fact across adjacent turns, and on our development data they added about three times more evidence per candidate than a larger pool.
+
+\paragraph{Relevance.} Each candidate gets a calibrated probability of being needed, from gradient-boosted trees over 30 features in five groups: retrieval signals (ranks, scores, query-term coverage), the item itself (length, content-word density, question form, numbers), role and speaker (whether a first-person query meets a user turn, whether a named speaker appears in the query), query--item overlap (entities, numbers, and a question type such as ``when'' or ``how many'' against dates and numbers in the item), and context (similarity of neighbouring turns and of the session, recency, ACT-R base-level activation \cite{anderson2004integrated}). Three more features come from an optional local reranker. The trees are fitted on development data with equal weight per dataset and per query, exported to a compact array form and evaluated with NumPy in about 3\,ms for 150 candidates, so the package has no learning library at run time. Separate models cover the lexical, static-embedding, dense and reranker configurations.
+
+\paragraph{Objective.} With calibrated weights, $F(S)=\sum_{m\in S}w_m$ is the expected number of needed items in $S$. This is the modular case of the objective of Section~\ref{sec:framework}, so Theorem~\ref{thm:selection} still applies, and Proposition~\ref{prop:calibration} says how probability error reaches the selection. In round-1 experiments the coverage facets and the facility-location term were needed to offset an uncalibrated score; with the model they had no measurable effect on development data, and they are off by default. Length enters twice, as a feature and as the cost, which is intended: the model can learn that short turns are rarely needed, so density no longer favours short junk once the strong candidates run out. That was the main cause of the large-budget loss in the first version of the method.
 
 \begin{algorithm}[t]
 \caption{\textsc{Retrieve}$(q,B,t)$}\label{alg:retrieve}
 \begin{algorithmic}[1]
-\State $C\gets$ top-$N$ of FTS5 $\cup$ top-$N$ of dense search
+\State $C\gets$ top-$N$ of FTS5 $\cup$ top-$N$ of dense search $\cup$ same-session neighbours of the best fused hits
 \State Remove superseded items, and items with a newer near-twin, unless $q$ asks for history
 \For{$m\in C$}
-  \State $x_m\gets$ features of $(m,q)$;\quad $\mu_m\gets\mathrm{clip}_{[0,1]}\big(x_m^\top\hat\theta+\beta\|x_m\|_{V^{-1}}\big)$
+  \State $p_m\gets$ relevance model on features of $(m,q)$;\quad $x_m\gets(p_m,u_m)$ \Comment{$u_m$: past use}
+  \State $\mu_m\gets\mathrm{clip}_{[0,1]}\big(x_m^\top\hat\theta+\beta\|x_m\|_{V^{-1}}\big)$
   \State $\rho_m\gets$ Lomax survival \eqref{eq:lomax} at $t-\tau^{\mathrm{v}}(m)$
   \State $\rho_m\gets\rho_m\prod_{m'\text{ newer}}\big(1-\pi\,g(s(m,m'))\big)$ \Comment{no key}
   \State $w_m\gets\rho_m\mu_m$
@@ -56,8 +59,8 @@ The class hazards are estimated from the store's own version history, so stable 
 Keyed facts have exact version chains: a superseded item is dropped from the candidates, and a query with historical intent (``previously'', ``used to'') brings old versions back with $\rho=1$. Text without keys has no such chain. For it we use a heuristic: a newer item with similarity above $0.8$ discounts an older one (the product in Algorithm~\ref{alg:retrieve}), and a newer near-twin above $0.97$ removes it. Without embeddings, the similarity comes from feature hashing. This rule fires only on near-identical text, so it suits structured notes and rarely fires on natural-language updates; Section~\ref{sec:experiments} measures both cases.
 
 \subsection{Learning}
-The policy keeps a ridge estimate with prior mean $\theta_0$ fitted on development data:
-$\hat\theta_t=\theta_0+V_t^{-1}\sum_{(x,y)}(y-x^\top\theta_0)x$ with $V_t=\lambda I+\sum xx^\top$. Feedback $y\in[0,1]$ says whether an injected item was used, and a used item counts as reconfirmed. Items known to be invalid at feedback time are skipped, since they say nothing about $\mu$. The update is $O(d^2)$ by Sherman--Morrison per item and works offline. In the plugin, an injected item counts as used when its identifiers or paths appear in later tool calls or edits, and a failed test halves the reward, following the evidence that self-reports inflate reward \cite{asadolahi2026rewardinflation}. Item-level counters always update, but policy learning is opt-in, because Section~\ref{sec:experiments} finds it fragile under noise.
+The online layer sits on top of the frozen relevance model. It keeps a ridge estimate over three features, a bias, the model's probability and the item's past use, starting from $\theta_0=(0,1,0)$, so that with no feedback it returns the model's probability:
+$\hat\theta_t=\theta_0+V_t^{-1}\sum_{(x,y)}(y-x^\top\theta_0)x$ with $V_t=\lambda I+\sum xx^\top$. The bias is used in fitting and zeroed when scoring. It absorbs the base rate of the reward, including false positives from a noisy signal; a constant added to every item would otherwise push the density rule toward short items. Feedback $y\in[0,1]$ says whether an injected item was used, and a used item counts as reconfirmed. Items known to be invalid at feedback time are skipped, since they say nothing about $\mu$. The update is $O(d^2)$ by Sherman--Morrison per item and works offline. In the plugin, an injected item counts as used when its identifiers or paths appear in later tool calls or edits, and a failed test halves the reward, following the evidence that self-reports inflate reward \cite{asadolahi2026rewardinflation}. Item-level counters always update, but policy learning is opt-in, because Section~\ref{sec:experiments} finds it fragile under noise.
 
 \subsection{Consolidation and forgetting}
 Consolidation is reversible. Star clusters around a leader, with every member above a similarity threshold of $0.9$ by default, are summarized extractively: density greedy on a sentence-level facility location with rate $R$, which yields the rate--distortion
@@ -67,9 +70,9 @@ Forgetting moves items to the archive when they have been idle for $\tau$ days o
 $\rho\cdot\mathrm{activation}\cdot\mathrm{usefulness}/c$ first. Both rules are opt-in, because Section~\ref{sec:experiments} finds that they cost recall. Deletion happens only on an explicit user command.
 
 \subsection{Multi-resolution}
-An item above a token threshold can be injected as a query-biased excerpt: the sentences that cover the most query terms, up to 40 tokens, marked with the item's id. Its cost in the knapsack is the excerpt's cost, so more items fit, and the agent pulls the full text with \textsc{Expand} only when it needs it. This mode is off by default.
+An item above 160 tokens can also enter selection as an excerpt: the run of consecutive sentences within 128 tokens that covers the most \emph{idf}-weighted query terms, marked with the item's id. The excerpt's weight is the item's probability times the share of query weight it keeps, or its share of the tokens if that is larger, and its cost is its own. The two versions of an item are mutually exclusive. That adds a partition constraint to the knapsack, which Theorem~\ref{thm:selection} does not cover, so excerpts are a heuristic. The agent pulls the full text with \textsc{Expand} when it needs it. This mode is off by default.
 
 \subsection{Complexity}
-With $N$ active items, $n\le2N_c$ candidates, $f$ facets, embedding dimension $D$, and $|S|=k$ selected: a write costs $O(\log N)$ plus one embedding; candidate generation costs $O(ND)$ by brute force
-(or sub-linear with an ANN index) plus the FTS5 query; greedy costs $O((k+r)\,n\,(f+n))$ per run with $r$ rejected items, and lazy evaluation \cite{minoux1978accelerated,leskovec2007cost} could reduce this further; building the similarity matrix costs $O(n^2D)$.
+With $N$ active items, $n$ candidates, embedding dimension $D$, $\mathcal{T}$ trees of depth at most $h$, and $|S|=k$ selected: a write costs $O(\log N)$ plus one embedding; candidate generation costs $O(ND)$ by brute force
+(or sub-linear with an ANN index) plus the FTS5 query; scoring costs $O(n\mathcal{T}h)$; on the modular objective, greedy reduces to a sort and costs $O(n\log n)$ per run.
 A bandit update costs $O(kd^2)$. Space is $O(N(D+\bar c))$. The memory layer itself uses no LLM tokens; the only token cost is the injected $c(S)\le B$.

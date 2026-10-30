@@ -16,6 +16,16 @@ For any feasible $S$, with $\Delta(m\mid S)=F(S\cup\{m\})-F(S)$,
 and the right-hand side is computed by sorting on $\Delta/c$ in $O(n\log n)$.
 \end{proposition}
 
+\subsection{Selection with estimated probabilities}
+With the relevance model of Section~\ref{sec:method}, the objective is modular: $F(S)=\sum_{m\in S}w_m$, the expected number of needed items in $S$ when $w_m$ is the probability that $m$ is needed. The model only estimates these probabilities, so the question is how estimation error reaches the selection.
+
+\begin{proposition}[From probability error to selection loss]\label{prop:calibration}
+Let $p_m$ be the probability that candidate $m$ is needed and $\hat p_m\ge0$ an estimate, and write $e(S)=\sum_{m\in S}|p_m-\hat p_m|$. Let $S^\star$ maximise $\sum_{m\in S}p_m$ under the budget. If $\hat S$ is feasible and $\sum_{m\in\hat S}\hat p_m\ge\alpha\max_{c(S)\le B}\sum_{m\in S}\hat p_m$, then
+\[\sum_{m\in\hat S}p_m\ \ge\ \alpha\sum_{m\in S^\star}p_m-\alpha\,e(S^\star)-e(\hat S).\]
+Density greedy with the best singleton has $\alpha=\frac12$ on modular objectives, and an exact knapsack has $\alpha=1$, in which case the loss is at most $e(S^\star\triangle\hat S)$.
+\end{proposition}
+So only the error on selected and optimal items matters, not the error on the whole pool. The worst case separates the two algorithms by a factor of two, while on our dev data they differ by about a point, which is why the simpler one is kept.
+
 \subsection{Learning with expiring items}
 The closest results \cite{yue2011linear,yu2016linear,takemori2020submodular} assume that an item's expected value is a stationary linear function of its features. Memory violates this: a fact's value collapses when the fact stops holding, while its text, and so its features, stay the same. We therefore model the two factors separately.
 
@@ -33,7 +43,7 @@ Let $\lambda\ge K$ and $\beta_t=\beta_T:=R\sqrt{d\log\big(4(1+KT/\lambda)/\delta
 \end{theorem}
 The comparator is the per-round optimum under the time-varying $w^\star_t$, so the bound is dynamic, and the $\rho_{t,m}$ need no variation budget: the burden moves into estimating them, through the last term. The first term is the usual linear bandit price, the second comes from the randomness of validity, and warm starting helps through $\Sigma$. With $\alpha=\frac12(1-\frac1e)$ from Theorem~\ref{thm:selection} and $L=(1-\gamma)(1+\eta)$, the theorem covers Algorithm~\ref{alg:retrieve} run with $\beta_T$ and the margin $\varepsilon$.
 
-\paragraph{What this does and does not say.} The theorem describes how regret scales, and it is not a practical guarantee. Since $F\le1$, regret is trivially at most $T$, and with realistic constants ($K=40$, $d=12$) the bound falls below $T$ only around $T\approx10^7$ rounds. The shipped defaults use $\beta=0$ and no margin, and they use a heuristic rule on top of \eqref{eq:lomax}, so the code is not the analyzed algorithm. The recall tables in Section~\ref{sec:experiments} use the static prior and do not rest on learning at all.
+\paragraph{What this does and does not say.} The theorem describes how regret scales, and it is not a practical guarantee. Since $F\le1$ in the original objective, regret is trivially at most $T$, and with $K=40$, $R=\frac12$, $\Sigma=1$, $\delta=0.05$ and $L=1$, the bound falls below $T$ near \V{horizon-12} rounds at $d=12$. Letting the online layer see only three features, with the frozen model's probability as one of them, moves that point to \V{horizon-3} rounds, which is better and still far from a session count. The shipped defaults use $\beta=0$ and no margin, and they use a heuristic rule on top of \eqref{eq:lomax}, so the code is not the analyzed algorithm. The recall tables in Section~\ref{sec:experiments} use the static model and do not rest on online learning at all.
 
 \begin{proposition}[Validity error of the hazard estimate]\label{prop:hazard}
 Let items of class $k$ have lifetimes that are $\mathrm{Exp}(\lambda_k)$, with right-censoring that depends only on the past. Let $N$ be the number of observed changes, $E$ the total exposure up to a stopping time, and $\hat\lambda_k=N/E$. If $E\ge E_0$ almost surely and $\eta:=2\sqrt{\log(2/\delta)/(\lambda_kE_0)}\le\frac12$, then with probability at least $1-\delta$, for all ages $a\ge0$ simultaneously,
