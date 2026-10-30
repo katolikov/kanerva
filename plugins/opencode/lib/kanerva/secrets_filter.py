@@ -18,10 +18,11 @@ PATTERNS: dict[str, re.Pattern[str]] = {
     "npm-token": re.compile(r"\bnpm_[A-Za-z0-9]{36}\b"),
     "jwt": re.compile(r"\beyJ[A-Za-z0-9_\-]{8,}\.eyJ[A-Za-z0-9_\-]{8,}\.[A-Za-z0-9_\-]{8,}"),
     "url-credentials": re.compile(r"\b[a-z][a-z0-9+.\-]*://[^\s:/@]+:[^\s:/@]+@[^\s]+"),
+    "auth-header": re.compile(r"(?i)\b(?:authorization\s*[:=]\s*[\"']?(?:bearer|basic|token)\s+|bearer\s+)[A-Za-z0-9._~+/\-]{16,}=*"),
 }
 
 _ASSIGNMENT = re.compile(
-    r"(?i)\b(pass(?:word|wd)?|secret|token|api[_-]?key|auth[_-]?key|private[_-]?key|credential)s?\b"
+    r"(?i)\b[\w\-]*(?:pass(?:word|wd)?|secret|token|api[_-]?key|auth[_-]?key|access[_-]?key|private[_-]?key|credential)s?[\w\-]*"
     r"[\"']?\s*[:=]\s*[\"']?([^\s\"',;]{8,})"
 )
 
@@ -37,9 +38,10 @@ def find_secrets(text: str) -> list[tuple[str, int, int]]:
     for kind, pattern in PATTERNS.items():
         spans.extend((kind, m.start(), m.end()) for m in pattern.finditer(text))
     for m in _ASSIGNMENT.finditer(text):
-        value = m.group(2)
-        if shannon_entropy(value) >= 3.0 and not value.startswith(("$", "{", "<", "process.env", "os.environ")):
-            spans.append(("assigned-secret", m.start(2), m.end(2)))
+        value = m.group(1)
+        placeholder = value.startswith(("$", "{", "<", "process.env", "os.environ")) or value.isdigit()
+        if shannon_entropy(value) >= 2.5 and not placeholder:
+            spans.append(("assigned-secret", m.start(1), m.end(1)))
     return spans
 
 

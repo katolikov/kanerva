@@ -1,7 +1,7 @@
-"""Calibrated relevance: P(item is needed | query) from retrieval, item, neighbourhood and query-item signals.
+"""Relevance: P(item is needed | query) from retrieval, item, neighbourhood and query-item signals.
 
-The model is a logistic regression on standardised features, so scoring needs only NumPy. Weights are fitted
-on development data by ``experiments/fit_relevance.py`` and shipped in ``relevance_model.json``.
+The shipped models are gradient-boosted trees, stored as plain arrays so that scoring needs only NumPy. They are
+fitted on development data by ``experiments/fit_relevance.py`` and shipped in ``relevance_model.json``.
 """
 
 from __future__ import annotations

@@ -1,9 +1,9 @@
 import assert from "node:assert/strict"
 import { chmodSync, mkdtempSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
-import { join } from "node:path"
+import { dirname, join } from "node:path"
 import { test } from "node:test"
-import { Bridge, cliRunner, promptText, resolveLaunch, summaryText } from "./core.ts"
+import { Bridge, cliRunner, forProject, promptText, resolveLaunch, summaryText } from "./core.ts"
 import plugin, { serverV1, setupV2 } from "./index.ts"
 
 const launch = { command: ["kanerva"], environment: {} }
@@ -117,7 +117,23 @@ test("launch prefers the override, then the CLI, then uv, then python3", () => {
   assert.deepEqual(resolveLaunch({ PATH: none, PYTHONPATH: "/x" }, lib), {
     command: ["python3", "-m", "kanerva"],
     environment: { PYTHONPATH: `${lib}:/x` },
+    cwd: dirname(lib),
   })
+})
+
+test("a launch keeps its project in the environment", () => {
+  const launch = forProject({ command: ["kanerva"], environment: { A: "1" } }, "/repo")
+  assert.deepEqual(launch.environment, { A: "1", KANERVA_PROJECT_DIR: "/repo" })
+})
+
+test("the runner does not wait for a child that holds stdout open", async () => {
+  const dir = binDir()
+  const script = join(dir, "orphan.sh")
+  writeFileSync(script, "#!/bin/sh\nsleep 30 &\nwait\n")
+  chmodSync(script, 0o755)
+  const start = Date.now()
+  assert.equal(await cliRunner({ command: [script], environment: {} }, 50)("prompt", {}), "")
+  assert.ok(Date.now() - start < 2000)
 })
 
 test("the runner passes the payload to the CLI and returns its output", async () => {
@@ -152,6 +168,14 @@ test("the default export serves both plugin generations", async () => {
   }
 })
 
+test("the MCP server starts from the launch folder", async () => {
+  const hooks = await serverV1({ directory: "/repo" }, fake().run, { command: ["python3", "-m", "kanerva"], environment: {}, cwd: "/plugin" })
+  const config: any = {}
+  await hooks.config(config)
+  assert.deepEqual(config.mcp.kanerva.command.slice(0, 2), ["sh", "-c"])
+  assert.deepEqual(config.mcp.kanerva.command.slice(3), ["sh", "/plugin", "python3", "-m", "kanerva", "mcp"])
+})
+
 test("V1 adds the MCP server and keeps a user's own entry", async () => {
   const { run } = fake()
   const hooks = await serverV1({ directory: "/repo" }, run, launch)
@@ -175,7 +199,7 @@ test("a V1 session flows through prompt, context, tools, compaction and deletion
   const output = { system: [] as string[] }
   await hooks["experimental.chat.system.transform"]({ sessionID: "s1" }, output)
   assert.deepEqual(output.system, ["note about tests"])
-  await hooks["tool.execute.after"]({ sessionID: "s1", tool: "bash", args: { command: "tox" } }, { output: "ok" })
+  await hooks["tool.execute.after"]({ sessionID: "s1", tool: "bash", args: { command: "tox" } }, { output: "ok", metadata: { exit: 1 } })
   await hooks["experimental.session.compacting"]({ sessionID: "s1" })
   await hooks.event({ event: { type: "session.compacted", properties: { sessionID: "s1" } } })
   await hooks.event({ event: { type: "session.idle", properties: { sessionID: "s1" } } })
@@ -183,6 +207,7 @@ test("a V1 session flows through prompt, context, tools, compaction and deletion
   await hooks.dispose()
   assert.deepEqual(calls.map((c) => c[0]).sort(), ["compact", "compact_summary", "prompt", "session_start", "stop", "tool"])
   assert.equal(calls.find((c) => c[0] === "compact_summary")?.[1].compact_summary, "we use tox")
+  assert.deepEqual(calls.find((c) => c[0] === "tool")?.[1].tool_response, { stdout: "ok", exit_code: 1 })
   const after = { system: [] as string[] }
   await hooks["experimental.chat.system.transform"]({ sessionID: "s1" }, after)
   assert.deepEqual(after.system, [])

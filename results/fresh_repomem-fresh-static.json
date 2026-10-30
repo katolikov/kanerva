@@ -1,6 +1,6 @@
 {
  "meta": {
-  "experiment": "round-2 fresh test",
+  "experiment": "fresh test",
   "dataset": "repomem-fresh-static",
   "split": "fresh",
   "streams": 15,

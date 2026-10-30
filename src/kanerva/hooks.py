@@ -16,11 +16,12 @@ import time
 from .consolidate import consolidate
 from .memory import Memory, open_store
 from .paths import project_scope
+from .secrets_filter import redact
 from .text import content_terms
 
 SESSION_BUDGET = int(os.environ.get("KANERVA_SESSION_BUDGET", "400"))
 PROMPT_BUDGET = int(os.environ.get("KANERVA_PROMPT_BUDGET", "600"))
-MIN_WEIGHT = float(os.environ.get("KANERVA_MIN_WEIGHT", "0.04"))
+MIN_WEIGHT = float(os.environ.get("KANERVA_MIN_WEIGHT", "0.02"))
 LEARN = os.environ.get("KANERVA_LEARN") == "1"  # policy learning is opt-in: noisy rewards hurt in the experiments
 CONSOLIDATE_ON_COMPACT = os.environ.get("KANERVA_CONSOLIDATE") == "1"
 MAX_CONTEXT_CHARS = 9500  # Claude Code truncates injected strings at 10,000 characters
@@ -59,7 +60,7 @@ def _inject(mem: Memory, session: str, query: str, scope: str, budget: int, head
 
 
 def _note(mem: Memory, session: str, kind: str, text: str) -> None:
-    mem.db.execute("INSERT INTO session_events VALUES (?, ?, ?, ?)", (session, time.time(), kind, text[:4000]))
+    mem.db.execute("INSERT INTO session_events VALUES (?, ?, ?, ?)", (session, time.time(), kind, redact(text)[0][:4000]))
 
 
 def distinctive_tokens(text: str) -> set[str]:

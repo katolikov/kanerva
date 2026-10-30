@@ -17,7 +17,10 @@ STOPWORDS = frozenset(
     while who whom why will with won would wouldn you your yours yourself yourselves""".split()
 )
 
-_WORD = re.compile(r"[A-Za-z0-9_]+")
+_WORD = re.compile(r"\w+")
+_CJK = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af]{2,}")
+_WIDE = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uac00-\ud7af]")
+_NON_ASCII = re.compile(r"[^\x00-\x7f]")
 _CAMEL = re.compile(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
 _SENTENCE = re.compile(r"(?<=[.!?])\s+|\n+")
 
@@ -40,6 +43,8 @@ def tokenize(text: str) -> list[str]:
         parts = split_identifier(word)
         if len(parts) > 1:
             out.extend(parts)
+        for run in _CJK.findall(word):  # no spaces between words in these scripts, so index character pairs
+            out.extend(run[i:i + 2] for i in range(len(run) - 1))
     return out
 
 
@@ -57,12 +62,17 @@ def split_sentences(text: str) -> list[str]:
 
 
 def approx_tokens(text: str) -> int:
-    """Dependency-free token estimate; calibrated on cl100k_base over English and code."""
+    """Dependency-free token estimate, calibrated on cl100k_base over English, code, Russian, Chinese and hashes."""
     if not text:
         return 0
-    words = len(_WORD.findall(text))
+    words = _WORD.findall(text)
     punctuation = sum(1 for ch in text if not ch.isalnum() and not ch.isspace())
-    return max(1, math.ceil(0.75 * len(text) / 4 + 0.25 * (1.3 * words + punctuation)))
+    wide = len(_WIDE.findall(text))
+    other = len(_NON_ASCII.findall(text)) - wide
+    ascii_chars = len(text) - wide - other
+    hard = sum(len(w) for w in words if len(w) >= 12 and sum(c.isdigit() for c in w) >= 3)
+    estimate = 0.75 * ascii_chars / 4 + 0.25 * (1.3 * len(words) + punctuation) + other / 2.2 + wide * 1.1 + hard * 0.37
+    return max(1, math.ceil(estimate))
 
 
 def tiktoken_counter(encoding: str = "cl100k_base") -> Callable[[str], int]:

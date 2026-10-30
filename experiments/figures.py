@@ -15,8 +15,8 @@ RESULTS = ROOT / "results"
 BUDGETS = (128, 256, 512, 1024, 2048, 4096)
 PANELS = {"fresh_beam": "Long conversations (BEAM, 984 questions)", "fresh_repomem-fresh-plain": "Code history (RepoMem, 1,248 questions)"}
 SERIES = (
-    ("kanerva-ce", "Kanerva + reranker", 0),
-    ("kanerva", "Kanerva", 1),
+    ("kanerva", "Kanerva, full", 0),
+    ("kanerva-lex", "Kanerva, plugin default", 1),
     ("rerank", "Hybrid + reranker", 2),
     ("hybrid", "Hybrid", 3),
     ("bm25", "BM25", 4),

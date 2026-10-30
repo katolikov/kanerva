@@ -15,9 +15,9 @@ Coding agents start every session from zero. You explain the test command again,
 
 **Kanerva gives your agent long-term memory that runs on your machine, makes no LLM calls, and injects only what the current step needs, under a hard token budget.**
 
-- **Small context.** You set the budget in tokens. Kanerva picks the set of notes worth the most per token, and never goes over.
-- **Facts stay current.** When a value changes, the new note supersedes the old one, so your agent stops following instructions that stopped being true.
-- **Private by default.** One SQLite file in your home folder. No account, no cloud, no API key. Keys and tokens are redacted before anything is stored.
+- **Small context.** You set the budget in tokens, and Kanerva picks the set of notes worth the most per token. Plugins estimate tokens instead of counting them exactly, so treat the limit as close, not exact.
+- **Facts stay current.** Give a fact a key, or write a near-identical note, and the new version replaces the old one. Old versions stay in history, and every note shows its date, newest first.
+- **Private by default.** One SQLite file in your home folder. No account, no cloud, no API key. Known key and token formats are redacted before anything is stored.
 - **No extra model calls.** No LLM on write or read, so memory costs you only the tokens it injects.
 - **Fits your tools.** Plugins for Claude Code and OpenCode, plus an MCP server for everything else.
 
@@ -48,7 +48,7 @@ Restart Claude Code. Memory now loads on session start and on each prompt, edits
 curl -fsSL https://raw.githubusercontent.com/katolikov/kanerva/main/install.sh | sh -s -- opencode
 ```
 
-This works on OpenCode 1.18.29 and newer, including V2. Restart OpenCode and the eight `memory_*` tools are there, with no MCP setup. On V2 you can also install it as a package:
+Tested on OpenCode 1.19 and 2.2. Restart OpenCode and the eight `memory_*` tools are there, with no MCP setup. On V2 you can also install it as a package:
 
 ```bash
 opencode plugin add "github:katolikov/kanerva::path:plugins/opencode"
@@ -84,7 +84,7 @@ There is no notes file to maintain, and everything stays readable and editable w
   <img src="docs/assets/how-it-works.png" alt="How Kanerva captures notes and selects context" width="100%">
 </p>
 
-Search engines find text that looks like your query. Kanerva also asks what is worth paying for. A small gradient-boosted model reads 30 signals for each candidate, such as how it ranked, how long it is, who said it, what sits next to it in the session and whether it mentions the entities in your question. The result is a calibrated probability that the note is needed. Selection then packs the most expected value into your token budget.
+Search engines find text that looks like your query. Kanerva also asks what is worth paying for. A small gradient-boosted model reads up to 29 signals for each candidate, such as how it ranked, how long it is, who said it, what sits next to it in the session and whether it mentions the entities in your question. The result is a probability that the note is needed. Selection then packs the most expected value into your token budget.
 
 The model ships as a small JSON file and runs on NumPy, so there is no training step on your side and nothing heavy to install. Each project gets its own memory, and a `global` scope is shared across projects.
 
@@ -98,25 +98,22 @@ The name comes from Pentti Kanerva, whose sparse distributed memory showed how a
   <img src="docs/assets/recall-light.png" alt="Evidence recovered at each token budget on held-out data" width="100%">
 </picture>
 
-Share of the needed evidence that made it into the context. The test data was held out: BEAM conversations and five repositories that no part of the method was fitted on, 984 and 1,248 questions. These are retrieval metrics, measured with no LLM in the loop.
+Share of the needed evidence that made it into the context, on held-out data: 984 questions over 55 BEAM conversations and 1,248 queries over five Python repositories, none of which were used for fitting. These are retrieval metrics, with no LLM in the loop, and code history is shown without keys. "Kanerva, full" uses the MiniLM sentence-embedding model through the library. The plugins run the two lighter setups.
 
-| Dataset | Budget | Kanerva | Kanerva + reranker | Hybrid + reranker | Hybrid | BM25 |
-|---|---:|---:|---:|---:|---:|---:|
-| Long conversations | 256 | 0.449 | **0.480** | 0.439 | 0.428 | 0.371 |
-| Long conversations | 1024 | 0.635 | **0.644** | 0.488 | 0.430 | 0.368 |
-| Long conversations | 4096 | **0.754** | 0.753 | 0.576 | 0.529 | 0.431 |
-| Code history, with keys | 256 | 0.805 | **0.809** | 0.796 | 0.799 | 0.763 |
-| Code history, with keys | 1024 | 0.869 | 0.866 | **0.871** | 0.869 | 0.850 |
-| Code history, with keys | 4096 | 0.926 | 0.926 | **0.951** | **0.951** | 0.939 |
-| Code history, no keys | 256 | 0.786 | 0.786 | 0.796 | **0.799** | 0.763 |
-| Code history, no keys | 1024 | 0.855 | 0.852 | **0.871** | 0.869 | 0.850 |
-| Code history, no keys | 4096 | 0.917 | 0.916 | **0.951** | **0.951** | 0.939 |
+| Dataset | Budget | Kanerva, full | Plugin default | Plugin, static embedder | Hybrid + reranker | Hybrid | BM25 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Long conversations | 256 | **0.449** | 0.388 | 0.438 | 0.439 | 0.428 | 0.371 |
+| Long conversations | 1024 | **0.635** | 0.546 | 0.592 | 0.488 | 0.430 | 0.368 |
+| Long conversations | 4096 | **0.754** | 0.641 | 0.705 | 0.576 | 0.529 | 0.431 |
+| Code history | 256 | 0.786 | 0.758 | 0.715 | 0.796 | **0.799** | 0.763 |
+| Code history | 1024 | 0.855 | 0.833 | 0.804 | **0.871** | 0.869 | 0.850 |
+| Code history | 4096 | 0.917 | 0.895 | 0.890 | **0.951** | **0.951** | 0.939 |
 
-- **Long conversations are where it shines.** Across budgets, Kanerva recovers 9 points more evidence than hybrid search with a cross-encoder reranker, and it needs no reranker to do it. At 1024 tokens it finds 0.635 of the evidence against 0.488.
-- **Stale facts mostly stop.** On facts that changed, plain hybrid search injects an outdated version 99.7% of the time. Kanerva does so 19.4% of the time from text alone, and never when notes carry keys.
-- **Where it loses.** On code history at large budgets, the same rule that removes stale notes also drops some useful look-alikes. At 4096 tokens without keys, Kanerva has 0.917 against 0.951 for hybrid. With five repositories the intervals are wide, so treat code-history differences of a few points as ties.
+- **Long conversations are where it shines.** From 1024 tokens up, Kanerva pulls well ahead of everything else, with 0.635 against 0.488 for hybrid search with a cross-encoder reranker at 1024 tokens. Below that it is level with the reranker, without needing one. Over all budgets it recovers 9 points more.
+- **Stale facts mostly stop, when they can be detected.** At 1024 tokens on facts that changed, hybrid search injects an outdated version 99.7% of the time. Kanerva does so 19.4% of the time without keys, and on none of the test queries with keys. A one-line keep-the-newest rule gets 22.7%, so most of this comes from a simple idea. Free-text updates are not detected: both versions get injected, newest first.
+- **Where it loses.** On code history, the rule that removes near-identical notes also drops useful look-alike commits, so large budgets favour plain search: 0.917 against 0.951 at 4096 tokens. The plugin default is about level with BM25 there, and behind it at large budgets (0.895 against 0.939). The static embedder helps on conversations but hurts on code (0.804 against 0.833 at 1024 tokens) and lets through more stale facts (37.1%). With five repositories the intervals are wide, so read differences of a few points on code as ties.
 
-The numbers above use a small sentence-embedding model. The plugins run without one by default: lexical search alone reaches 0.546 on long conversations at 1024 tokens, and `KANERVA_EMBEDDER=static` reaches 0.592. A query over 10,000 notes takes about 150 ms on an M1 Pro without embeddings and 287 ms with them.
+A query over 10,000 notes takes about 150 ms on an M1 Pro, or 287 ms with embeddings. A hook call adds Python start-up on top, for 0.2 to 0.4 s in total.
 <!-- results:end -->
 
 The full method, proofs and all results are in the [paper](paper/paper.pdf).
@@ -127,10 +124,10 @@ Everything is optional.
 
 | Variable | Default | What it does |
 |---|---|---|
-| `KANERVA_EMBEDDER` | off | Set to `static` to add vector search with [model2vec](https://github.com/MinishLab/model2vec). Recommended: it raises recall and needs no GPU. Downloads a small model on first use. |
+| `KANERVA_EMBEDDER` | off | Set to `static` to add vector search with [model2vec](https://github.com/MinishLab/model2vec). Good for long conversational notes, worse for exact code facts (see [Benchmarks](#benchmarks)). Downloads a small model on first use. |
 | `KANERVA_PROMPT_BUDGET` | `600` | Tokens injected per prompt. |
 | `KANERVA_SESSION_BUDGET` | `400` | Tokens injected at session start. |
-| `KANERVA_MIN_WEIGHT` | `0.04` | Skip notes below this probability of being needed. |
+| `KANERVA_MIN_WEIGHT` | `0.02` | Skip notes below this estimated probability of being needed. |
 | `KANERVA_HOME` | `~/.kanerva` | Where the database lives. |
 | `KANERVA_CONSOLIDATE` | off | Set to `1` to merge near-duplicate notes on compaction. Merges can be undone. |
 | `KANERVA_LEARN` | off | Set to `1` to learn from which notes were used. |

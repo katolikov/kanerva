@@ -2,7 +2,7 @@
 
 Long-term memory for OpenCode. Notes from earlier sessions come back when they matter, under a hard token budget, with no LLM calls and no data leaving your machine.
 
-Works on OpenCode 1.18.29 and newer, including V2. Needs [uv](https://docs.astral.sh/uv/) or `python3` with NumPy.
+Tested on OpenCode 1.19 and 2.2. Needs [uv](https://docs.astral.sh/uv/) or `python3` with NumPy.
 
 ## Install
 

@@ -17,7 +17,7 @@ def db_path() -> Path:
 
 
 def project_root(cwd: str | None = None) -> str:
-    base = cwd or os.getcwd()
+    base = cwd or os.environ.get("KANERVA_PROJECT_DIR") or os.getcwd()
     try:
         out = subprocess.run(
             ["git", "-C", base, "rev-parse", "--show-toplevel"], capture_output=True, text=True, timeout=2

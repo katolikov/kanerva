@@ -44,8 +44,19 @@ case "$TARGET" in
   opencode) install_opencode ;;
   claude) install_claude ;;
   all)
-    command -v opencode >/dev/null 2>&1 && install_opencode
-    command -v claude >/dev/null 2>&1 && install_claude
+    found=""
+    if command -v opencode >/dev/null 2>&1; then
+      install_opencode
+      found=1
+    fi
+    if command -v claude >/dev/null 2>&1; then
+      install_claude
+      found=1
+    fi
+    if [ -z "$found" ]; then
+      echo "kanerva: neither claude nor opencode was found" >&2
+      exit 1
+    fi
     ;;
   *)
     echo "usage: install.sh [claude|opencode|all]" >&2

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -92,7 +93,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "export":
             text = export_markdown(mem, scope)
             if args.path:
-                Path(args.path).write_text(text)
+                (Path(os.environ.get("KANERVA_PROJECT_DIR", ".")) / args.path).write_text(text)
             else:
                 sys.stdout.write(text)
         mem.commit()

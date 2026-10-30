@@ -135,7 +135,14 @@ def tracks() -> None:
     (RESULTS / "fresh_tracks.json").write_text(json.dumps(report, indent=1))
 
 
+def retest() -> None:
+    """Recompute the paired tests from the stored per-query rows."""
+    tests({name: json.load(gzip.open(RESULTS / "raw" / f"fresh_{name}.json.gz", "rt")) for name in {**RUNS, **STATIC_RUNS}})
+
+
 def main() -> None:
+    if sys.argv[1:] == ["retest"]:
+        return retest()
     os.environ.setdefault("HF_HUB_OFFLINE", "1")
     for name in ("beam", "repomem-fresh"):
         score_pairs(name, RUNS[name])

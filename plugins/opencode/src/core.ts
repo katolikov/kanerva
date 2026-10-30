@@ -9,6 +9,7 @@ export type Runner = (event: string, payload: Record<string, unknown>) => Promis
 export interface Launch {
   command: string[]
   environment: Record<string, string>
+  cwd?: string
 }
 
 const PACKAGE_ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
@@ -26,7 +27,10 @@ function onPath(name: string, env: NodeJS.ProcessEnv): boolean {
   })
 }
 
-/** How to start Kanerva: `KANERVA_COMMAND`, an installed CLI, or the bundled copy through uv or python3. */
+/**
+ * How to start Kanerva: `KANERVA_COMMAND`, an installed CLI, or the bundled copy through uv or python3.
+ * The bundled copy runs from the plugin folder, so that a project's own modules and .python-version stay out of the way.
+ */
 export function resolveLaunch(env: NodeJS.ProcessEnv = process.env, bundled: string = BUNDLED): Launch {
   if (env.KANERVA_COMMAND) return { command: env.KANERVA_COMMAND.split(" "), environment: {} }
   if (onPath("kanerva", env)) return { command: ["kanerva"], environment: {} }
@@ -35,9 +39,14 @@ export function resolveLaunch(env: NodeJS.ProcessEnv = process.env, bundled: str
   if (onPath("uv", env)) {
     const packages = ["--with", "numpy>=1.26"]
     if (env.KANERVA_EMBEDDER === "static") packages.push("--with", "model2vec>=0.6")
-    return { command: ["uv", "run", "--quiet", "--no-project", ...packages, "python", "-m", "kanerva"], environment }
+    return { command: ["uv", "run", "--quiet", "--no-project", ...packages, "python", "-m", "kanerva"], environment, cwd: dirname(bundled) }
   }
-  return { command: ["python3", "-m", "kanerva"], environment }
+  return { command: ["python3", "-m", "kanerva"], environment, cwd: dirname(bundled) }
+}
+
+/** The same launch, tied to a project. */
+export function forProject(launch: Launch, directory: string): Launch {
+  return { ...launch, environment: { ...launch.environment, KANERVA_PROJECT_DIR: directory } }
 }
 
 /** Runs one hook event in a child process. Memory must never block the agent, so failures and timeouts return "". */
@@ -46,21 +55,26 @@ export const cliRunner =
   (event, payload) =>
     new Promise((resolve) => {
       const [program, ...args] = launch.command
+      let settled = false
+      const finish = (text: string) => {
+        if (settled) return
+        settled = true
+        clearTimeout(timer)
+        resolve(text)
+      }
       const child = spawn(program, [...args, "hook-raw", event], {
         stdio: ["pipe", "pipe", "ignore"],
         env: { ...process.env, ...launch.environment },
+        cwd: launch.cwd,
       })
-      const timer = setTimeout(() => child.kill(), timeoutMs)
+      const timer = setTimeout(() => {
+        child.kill()
+        finish("")
+      }, timeoutMs)
       let out = ""
       child.stdout.on("data", (chunk) => (out += chunk))
-      child.on("error", () => {
-        clearTimeout(timer)
-        resolve("")
-      })
-      child.on("close", (code) => {
-        clearTimeout(timer)
-        resolve(code === 0 ? out : "")
-      })
+      child.on("error", () => finish(""))
+      child.on("close", (code) => finish(code === 0 ? out : ""))
       child.stdin.on("error", () => {})
       child.stdin.end(JSON.stringify(payload))
     })

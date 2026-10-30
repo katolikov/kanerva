@@ -1,4 +1,5 @@
 PY := .venv/bin/python
+TECTONIC_TARGET := $(if $(filter Darwin,$(shell uname -s)),aarch64-apple-darwin,x86_64-unknown-linux-gnu)
 export PYTHONPATH := src:.
 
 .PHONY: install test data reproduce figures paper check plugin fit
@@ -40,4 +41,4 @@ fit:
 
 tools:
 	mkdir -p .tools
-	curl -sL "https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.17.0/tectonic-0.17.0-aarch64-apple-darwin.tar.gz" | tar -xz -C .tools
+	curl -sL "https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.17.0/tectonic-0.17.0-$(TECTONIC_TARGET).tar.gz" | tar -xz -C .tools

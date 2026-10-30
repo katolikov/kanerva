@@ -5,7 +5,7 @@ Kanerva stores what your agent sees in a local SQLite file, so a leak there matt
 ## What Kanerva does
 
 - Runs locally. The memory layer makes no network calls, except for the optional model download when you turn on `KANERVA_EMBEDDER=static`.
-- Redacts API keys, tokens, private keys, JWTs and credentials in URLs before anything is written to disk. See `src/kanerva/secrets_filter.py`.
+- Redacts API keys, tokens, private keys, JWTs, `Authorization` headers, credentials in URLs and values assigned to names such as `DB_PASSWORD` before anything is written to disk, including prompts and commands kept for the session. See `src/kanerva/secrets_filter.py`.
 - Keeps everything in `~/.kanerva/memory.sqlite`, which you can inspect, export or delete at any time.
 
 Redaction is pattern-based and cannot catch everything, so avoid pasting secrets into prompts in the first place.

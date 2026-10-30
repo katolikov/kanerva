@@ -23,9 +23,9 @@ def sign_flip_p(d: np.ndarray, rng: np.random.Generator) -> float:
         return 1.0
     if n <= 16:
         signs = ((np.arange(2**n)[:, None] >> np.arange(n)) & 1) * 2 - 1
-    else:
-        signs = rng.choice((-1.0, 1.0), size=(PERMUTATIONS, n))
-    return float((np.abs((signs * d).mean(axis=1)) >= observed - 1e-12).mean())
+        return float((np.abs((signs * d).mean(axis=1)) >= observed - 1e-12).mean())
+    signs = rng.choice((-1.0, 1.0), size=(PERMUTATIONS, n))
+    return float(((np.abs((signs * d).mean(axis=1)) >= observed - 1e-12).sum() + 1) / (PERMUTATIONS + 1))
 
 
 def paired(a: dict, b: dict, rng: np.random.Generator, name: str) -> dict:

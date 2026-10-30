@@ -1,14 +1,20 @@
 // OpenCode entry point. One default export serves both plugin generations: V2 reads `id` and `setup`,
 // and V1 (1.18.29 or newer) reads `server`.
-import { Bridge, type Launch, type Runner, cliRunner, promptText, resolveLaunch, summaryText } from "./core.ts"
+import { Bridge, type Launch, type Runner, cliRunner, forProject, promptText, resolveLaunch, summaryText } from "./core.ts"
 
 const SERVER = "kanerva"
+
+/** V1 has no `cwd` for MCP servers, so a shell changes directory first. */
+function server(launch: Launch) {
+  const start = launch.cwd ? ["sh", "-c", 'cd "$1" && shift && exec "$@"', "sh", launch.cwd] : []
+  return { type: "local", command: [...start, ...launch.command, "mcp"], environment: launch.environment }
+}
 
 export async function setupV2(ctx: any, run: Runner, launch: Launch) {
   const bridge = new Bridge(run, ctx.location.directory)
   await ctx.mcp.transform((editor: any) => {
     // codemode off: the model calls memory_search directly instead of scripting it inside `execute`.
-    editor.set(SERVER, { type: "local", command: [...launch.command, "mcp"], environment: launch.environment, codemode: false })
+    editor.set(SERVER, { ...server(launch), codemode: false })
   })
   await ctx.session.hook("prompt", async (event: any) => {
     await bridge.prompt(event.sessionID, event.prompt?.text ?? "")
@@ -21,7 +27,9 @@ export async function setupV2(ctx: any, run: Runner, launch: Launch) {
     bridge.compacting(event.sessionID)
   })
   await ctx.tool.hook("execute.after", (event: any) => {
-    if (event.status === "completed") bridge.toolAfter(event.sessionID, event.tool, event.input, event.result)
+    if (event.status === "completed") {
+      bridge.toolAfter(event.sessionID, event.tool, event.input, { ...event.result, exit_code: event.result?.metadata?.exit })
+    }
   })
   const controller = new AbortController()
   void (async () => {
@@ -49,7 +57,7 @@ export async function serverV1({ client, directory }: any, run: Runner, launch: 
   return {
     config: async (config: any) => {
       config.mcp ??= {}
-      config.mcp[SERVER] ??= { type: "local", command: [...launch.command, "mcp"], environment: launch.environment, enabled: true }
+      config.mcp[SERVER] ??= { ...server(launch), enabled: true }
     },
     event: async ({ event }: any) => {
       const properties = event.properties ?? {}
@@ -71,7 +79,7 @@ export async function serverV1({ client, directory }: any, run: Runner, launch: 
       if (text) output.system.push(text)
     },
     "tool.execute.after": async (input: any, output: any) => {
-      bridge.toolAfter(input.sessionID, input.tool, input.args, { stdout: output.output })
+      bridge.toolAfter(input.sessionID, input.tool, input.args, { stdout: output.output, exit_code: output.metadata?.exit })
     },
     "experimental.session.compacting": async (input: any) => {
       bridge.compacting(input.sessionID)
@@ -86,6 +94,12 @@ const launch = resolveLaunch()
 
 export default {
   id: "kanerva",
-  setup: (ctx: any) => setupV2(ctx, cliRunner(launch), launch),
-  server: (input: any) => serverV1(input, cliRunner(launch), launch),
+  setup: (ctx: any) => {
+    const project = forProject(launch, ctx.location.directory)
+    return setupV2(ctx, cliRunner(project), project)
+  },
+  server: (input: any) => {
+    const project = forProject(launch, input.directory)
+    return serverV1(input, cliRunner(project), project)
+  },
 }

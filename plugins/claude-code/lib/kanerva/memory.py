@@ -164,6 +164,7 @@ class Memory:
         if path != ":memory:":
             self.db.execute("PRAGMA journal_mode=WAL")
         self.db.execute("PRAGMA synchronous=NORMAL")
+        self.db.execute("PRAGMA secure_delete=ON")
         self.db.executescript(_SCHEMA)
         columns = {r["name"] for r in self.db.execute("PRAGMA table_info(items)")}
         if "session" not in columns:
@@ -716,7 +717,7 @@ class Memory:
     def _record(self, query: str, now: float, ids: list[int], x: np.ndarray) -> int:
         cursor = self.db.execute(
             "INSERT INTO retrievals (at, query, item_ids, features) VALUES (?,?,?,?)",
-            (now, query, json.dumps(ids), x.astype(np.float64).tobytes()),
+            (now, redact(query)[0], json.dumps(ids), x.astype(np.float64).tobytes()),
         )
         self.db.executemany("INSERT INTO accesses VALUES (?, ?)", [(i, now) for i in ids])
         return int(cursor.lastrowid)

@@ -88,6 +88,13 @@ class Server:
         self.scope = scope or project_scope(os.environ.get("KANERVA_PROJECT_DIR"))
 
     def call(self, name: str, args: dict) -> Any:
+        """Run one tool and commit, since a long-lived open transaction would lock out the hooks."""
+        try:
+            return self._call(name, args)
+        finally:
+            self.mem.commit()
+
+    def _call(self, name: str, args: dict) -> Any:
         if name == "memory_search":
             result = self.mem.retrieve(args["query"], int(args.get("budget", 800)), scope=self.scope)
             return {
@@ -100,7 +107,6 @@ class Server:
             item = self.mem.write(
                 args["text"], scope=scope, kind="semantic", key=args.get("key"), pinned=bool(args.get("pinned"))
             )
-            self.mem.commit()
             return {"id": item}
         if name == "memory_expand":
             return expand(self.mem, int(args["id"]))

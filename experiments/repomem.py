@@ -208,7 +208,8 @@ def build_repo(repo: str) -> dict:
     """Extract and cache snapshots, commit windows and facts for one repository."""
     root, split = REPOS[repo]
     repo_dir = ensure_clone(repo)
-    head = git(repo_dir, "rev-parse", "HEAD").strip()
+    pinned = json.loads(MANIFEST.read_text()).get(repo, {}) if MANIFEST.exists() else {}
+    head = pinned.get("head") or git(repo_dir, "rev-parse", "HEAD").strip()
     lines = git(repo_dir, "log", "--first-parent", "--format=%H %ct", head).splitlines()
     history = [(ln.split()[0], float(ln.split()[1])) for ln in lines][::-1]
     latest = history[-1][1]

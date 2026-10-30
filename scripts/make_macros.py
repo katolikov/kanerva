@@ -134,40 +134,45 @@ def ablation_table(data: dict) -> str:
     return "\n".join(rows)
 
 
-def update_readme(data: dict, tests: dict, static: dict, latency: dict) -> None:
-    rows = ["| Dataset | Budget | Kanerva | Kanerva + reranker | Hybrid + reranker | Hybrid | BM25 |", "|---|---:|---:|---:|---:|---:|---:|"]
-    titles = {"beam": "Long conversations", "repomem-fresh": "Code history, with keys", "repomem-fresh-plain": "Code history, no keys"}
-    for name, title in titles.items():
-        summary = data[name]["summary"]
+def update_readme(data: dict, tests: dict, latency: dict) -> None:
+    columns = (("beam", "repomem-fresh-plain"), ("kanerva", "kanerva-lex", "static", "rerank", "hybrid", "bm25"))
+    head = "| Dataset | Budget | Kanerva, full | Plugin default | Plugin, static embedder | Hybrid + reranker | Hybrid | BM25 |"
+    rows = [head, "|---|---:|---:|---:|---:|---:|---:|---:|"]
+    titles = {"beam": "Long conversations", "repomem-fresh-plain": "Code history"}
+    statics = {"beam": "beam-static", "repomem-fresh-plain": "repomem-fresh-static"}
+    for name in columns[0]:
+        summary, static = data[name]["summary"], data[statics[name]]["summary"]
         for b in (256, 1024, 4096):
-            values = {m: summary[f"{m}@{b}"]["recall"] for m in ("kanerva", "kanerva-ce", "rerank", "hybrid", "bm25")}
-            best = max(values.values())
-            cells = [f"**{fmt(v)}**" if abs(v - best) < 5e-4 else fmt(v) for v in values.values()]
-            rows.append(f"| {title} | {b} | " + " | ".join(cells) + " |")
+            values = [static[f"kanerva@{b}"]["recall"] if m == "static" else summary[f"{m}@{b}"]["recall"] for m in columns[1]]
+            best = max(values)
+            cells = [f"**{fmt(v)}**" if abs(v - best) < 5e-4 else fmt(v) for v in values]
+            rows.append(f"| {titles[name]} | {b} | " + " | ".join(cells) + " |")
     beam, plain = data["beam"]["summary"], data["repomem-fresh-plain"]["summary"]
-    tests["repomem-fresh"]["stale_on_changed_facts"]
+    static_code = data["repomem-fresh-static"]["summary"]
     unkeyed = tests["repomem-fresh-plain"]["stale_on_changed_facts"]
+    keyed = tests["repomem-fresh"]["stale_on_changed_facts"]
+    static_stale = tests["repomem-fresh-static"]["stale_on_changed_facts"]["kanerva"]["stale_any"]
     lift = tests["beam"]["kanerva vs rerank"]["mean"]
     text = f"""<picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/recall-dark.png">
   <img src="docs/assets/recall-light.png" alt="Evidence recovered at each token budget on held-out data" width="100%">
 </picture>
 
-Share of the needed evidence that made it into the context. The test data was held out: BEAM conversations and five repositories that no part of the method was fitted on, {data['beam']['meta']['queries']:,} and {data['repomem-fresh']['meta']['queries']:,} questions. These are retrieval metrics, measured with no LLM in the loop.
+Share of the needed evidence that made it into the context, on held-out data: {data['beam']['meta']['queries']:,} questions over 55 BEAM conversations and {data['repomem-fresh']['meta']['queries']:,} queries over five Python repositories, none of which were used for fitting. These are retrieval metrics, with no LLM in the loop, and code history is shown without keys. "Kanerva, full" uses the MiniLM sentence-embedding model through the library. The plugins run the two lighter setups.
 
 {chr(10).join(rows)}
 
-- **Long conversations are where it shines.** Across budgets, Kanerva recovers {100 * lift['diff']:.0f} points more evidence than hybrid search with a cross-encoder reranker, and it needs no reranker to do it. At 1024 tokens it finds {fmt(beam['kanerva@1024']['recall'])} of the evidence against {fmt(beam['rerank@1024']['recall'])}.
-- **Stale facts mostly stop.** On facts that changed, plain hybrid search injects an outdated version {100 * unkeyed['hybrid']['stale_any']:.1f}% of the time. Kanerva does so {100 * unkeyed['kanerva']['stale_any']:.1f}% of the time from text alone, and never when notes carry keys.
-- **Where it loses.** On code history at large budgets, the same rule that removes stale notes also drops some useful look-alikes. At 4096 tokens without keys, Kanerva has {fmt(plain['kanerva@4096']['recall'])} against {fmt(plain['hybrid@4096']['recall'])} for hybrid. With five repositories the intervals are wide, so treat code-history differences of a few points as ties.
+- **Long conversations are where it shines.** From 1024 tokens up, Kanerva pulls well ahead of everything else, with {fmt(beam['kanerva@1024']['recall'])} against {fmt(beam['rerank@1024']['recall'])} for hybrid search with a cross-encoder reranker at 1024 tokens. Below that it is level with the reranker, without needing one. Over all budgets it recovers {100 * lift['diff']:.0f} points more.
+- **Stale facts mostly stop, when they can be detected.** At 1024 tokens on facts that changed, hybrid search injects an outdated version {100 * unkeyed['hybrid']['stale_any']:.1f}% of the time. Kanerva does so {100 * unkeyed['kanerva']['stale_any']:.1f}% of the time without keys, and on none of the test queries with keys. A one-line keep-the-newest rule gets {100 * unkeyed['hybrid-dedup']['stale_any']:.1f}%, so most of this comes from a simple idea. Free-text updates are not detected: both versions get injected, newest first.
+- **Where it loses.** On code history, the rule that removes near-identical notes also drops useful look-alike commits, so large budgets favour plain search: {fmt(plain['kanerva@4096']['recall'])} against {fmt(plain['hybrid@4096']['recall'])} at 4096 tokens. The plugin default is about level with BM25 there, and behind it at large budgets ({fmt(plain['kanerva-lex@4096']['recall'])} against {fmt(plain['bm25@4096']['recall'])}). The static embedder helps on conversations but hurts on code ({fmt(static_code['kanerva@1024']['recall'])} against {fmt(plain['kanerva-lex@1024']['recall'])} at 1024 tokens) and lets through more stale facts ({100 * static_stale:.1f}%). With five repositories the intervals are wide, so read differences of a few points on code as ties.
 
-The numbers above use a small sentence-embedding model. The plugins run without one by default: lexical search alone reaches {fmt(beam['kanerva-lex@1024']['recall'])} on long conversations at 1024 tokens, and `KANERVA_EMBEDDER=static` reaches {fmt(static['beam-static']['summary']['kanerva@1024']['recall'])}. A query over 10,000 notes takes about {latency['lexical@10000']['p50_ms']:.0f} ms on an M1 Pro without embeddings and {latency['hybrid@10000']['p50_ms']:.0f} ms with them."""
+A query over 10,000 notes takes about {latency['lexical@10000']['p50_ms']:.0f} ms on an M1 Pro, or {latency['hybrid@10000']['p50_ms']:.0f} ms with embeddings. A hook call adds Python start-up on top, for 0.2 to 0.4 s in total."""
     path = ROOT / "README.md"
     readme = path.read_text()
     start, end = "<!-- results:start -->", "<!-- results:end -->"
-    head, rest = readme.split(start)
+    head_text, rest = readme.split(start)
     _, tail = rest.split(end)
-    path.write_text(f"{head}{start}\n{text}\n{end}{tail}")
+    path.write_text(f"{head_text}{start}\n{text}\n{end}{tail}")
 
 
 def main() -> None:
@@ -191,7 +196,7 @@ def main() -> None:
                 define(lines, f"r-{name}-{m}-mean", fmt(mean_over_budgets(entry["summary"], m)))
 
     tests = load("fresh_tests")
-    for name in FRESH:
+    for name in (*FRESH, *STATIC):
         for pair, entry in tests[name].items():
             if pair == "stale_on_changed_facts":
                 for m, row in entry.items():
@@ -232,6 +237,11 @@ def main() -> None:
             for key, (per, mean) in rows.items():
                 if key.startswith("kanerva/"):
                     define(lines, f"v-rule-{name}-{key.split('/')[1]}", fmt(mean))
+    calibration = load("dev_calibration")
+    for name, row in calibration["results"].items():
+        define(lines, f"v-ece-{name}", fmt(row["ece"], 4))
+        define(lines, f"v-top-{name}-predicted", fmt(row["top_percent"]["predicted"]))
+        define(lines, f"v-top-{name}-observed", fmt(row["top_percent"]["observed"]))
     ablation = load("dev_ablation")
     (OUT / "table_dev_ablation.tex").write_text(ablation_table(ablation["results"]))
     pool = load("dev_pool")["results"]
@@ -316,7 +326,7 @@ def main() -> None:
     define(lines, "v-encode", f"{latency['query_encode_ms']:.0f}")
 
     (OUT / "macros.tex").write_text("\n".join(lines) + "\n")
-    update_readme(data, tests, {n: data[n] for n in STATIC}, latency["results"])
+    update_readme(data, tests, latency["results"])
 
 
 if __name__ == "__main__":

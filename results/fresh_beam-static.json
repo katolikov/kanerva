@@ -1,6 +1,6 @@
 {
  "meta": {
-  "experiment": "round-2 fresh test",
+  "experiment": "fresh test",
   "dataset": "beam-static",
   "split": "test",
   "streams": 55,
