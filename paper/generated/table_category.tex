@@ -1,19 +1,19 @@
-\begin{tabular}{@{}lrrrrr@{}}\toprule
-Category & $n$ & \kanerva & Hybrid & Rerank & BM25 \\\midrule
-knowledge update & 48 & 0.969 & 0.896 & 1.000 & 0.917 \\
-multi session & 101 & 0.763 & 0.651 & 0.828 & 0.645 \\
-single session assistant & 45 & 0.911 & 0.911 & 0.889 & 0.889 \\
-single session preference & 20 & 0.750 & 0.608 & 0.750 & 0.483 \\
-single session user & 52 & 0.981 & 0.904 & 0.981 & 0.942 \\
-temporal reasoning & 104 & 0.842 & 0.700 & 0.809 & 0.738 \\
+\begin{tabular}{@{}lrrrrrr@{}}\toprule
+Category & $n$ & \kanerva & + reranker & Hybrid & Rerank & BM25 \\\midrule
+knowledge update & 48 & 0.969 & 1.000 & 0.896 & 1.000 & 0.917 \\
+multi session & 101 & 0.763 & 0.835 & 0.651 & 0.828 & 0.645 \\
+single session assistant & 45 & 0.911 & 0.911 & 0.911 & 0.889 & 0.889 \\
+single session preference & 20 & 0.750 & 0.792 & 0.608 & 0.750 & 0.483 \\
+single session user & 52 & 0.981 & 0.962 & 0.904 & 0.981 & 0.942 \\
+temporal reasoning & 104 & 0.842 & 0.846 & 0.700 & 0.809 & 0.738 \\
 \addlinespace
-fact constant changed & 3 & 1.000 & 1.000 & 1.000 & 1.000 \\
-fact constant stable & 16 & 1.000 & 1.000 & 1.000 & 1.000 \\
-fact dependency changed & 112 & 1.000 & 1.000 & 1.000 & 1.000 \\
-fact dependency stable & 24 & 1.000 & 1.000 & 1.000 & 1.000 \\
-fact location changed & 823 & 0.999 & 0.999 & 0.999 & 0.995 \\
-fact location stable & 314 & 1.000 & 1.000 & 1.000 & 0.997 \\
-fact signature changed & 1340 & 0.991 & 0.987 & 0.995 & 0.960 \\
-fact signature stable & 932 & 0.992 & 0.997 & 0.997 & 0.989 \\
-task & 758 & 0.464 & 0.506 & 0.514 & 0.441 \\
+fact constant changed & 3 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 \\
+fact constant stable & 16 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 \\
+fact dependency changed & 112 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 \\
+fact dependency stable & 24 & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 \\
+fact location changed & 823 & 0.999 & 0.999 & 0.999 & 0.999 & 0.995 \\
+fact location stable & 314 & 1.000 & 1.000 & 1.000 & 1.000 & 0.997 \\
+fact signature changed & 1340 & 0.991 & 0.994 & 0.987 & 0.995 & 0.960 \\
+fact signature stable & 932 & 0.992 & 0.998 & 0.997 & 0.997 & 0.989 \\
+task & 758 & 0.464 & 0.476 & 0.506 & 0.514 & 0.441 \\
 \bottomrule\end{tabular}

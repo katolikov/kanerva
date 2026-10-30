@@ -28,6 +28,6 @@
  "meta": {
   "embedder": "hashing",
   "experiment": "rate_distortion",
-  "commit": "0efc38887f8b3c521a851be8f55e66693b08a85d"
+  "commit": "2861bd9e3f897e21b50f8d1f62f9d7fe41c17c28"
  }
 }

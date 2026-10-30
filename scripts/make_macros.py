@@ -53,7 +53,7 @@ def recall_table(comparison: dict) -> str:
         rows.append(f"\\multicolumn{{{len(BUDGETS) + 1}}}{{@{{}}l}}{{\\emph{{{title}}}}} \\\\")
         best = {b: max(means[f"{m}@{b}"] for m in METHODS if f"{m}@{b}" in means) for b in BUDGETS}
         for method, label in METHODS.items():
-            if f"{method}@128" not in means or (method == "hybrid-live" and not name.startswith("repomem")):
+            if f"{method}@128" not in means or (method in ("hybrid-live", "kanerva-first") and not name.startswith("repomem")):
                 continue
             cells = []
             for b in BUDGETS:
@@ -66,12 +66,14 @@ def recall_table(comparison: dict) -> str:
     return "\n".join(rows)
 
 
-def diff_table(comparison: dict) -> str:
+def diff_table(comparison: dict, key: str = "comparisons") -> str:
     rows = ["\\begin{tabular}{@{}lllrrrr@{}}\\toprule", "Dataset & Rival & $B$ & $\\Delta$ recall & 95\\% CI & Cluster CI & $p_{\\text{Holm}}$ \\\\\\midrule"]
     for name, title in DATASETS.items():
         if name not in comparison:
             continue
-        tests = comparison[name]["comparisons"]
+        tests = comparison[name].get(key, [])
+        if not tests:
+            continue
         rivals = {}
         for b in (256, 1024, 4096):
             candidates = [t for t in tests if t["budget"] == b]
@@ -136,13 +138,13 @@ def category_table(comparison: dict) -> str:
 
 
 def update_readme(comparison: dict) -> None:
-    rows = ["| Dataset | Budget | Kanerva | Hybrid RRF | Hybrid + reranker | BM25 |", "|---|---:|---:|---:|---:|---:|"]
+    rows = ["| Dataset | Budget | Kanerva | Kanerva + reranker | Hybrid RRF | Hybrid + reranker | BM25 |", "|---|---:|---:|---:|---:|---:|---:|"]
     for name in ("lme", "locomo", "repomem-plain", "repomem-holdout"):
         if name not in comparison:
             continue
         means = comparison[name]["means"]
         for b in (256, 1024, 4096):
-            cells = [fmt(means[f"{m}@{b}"]) if f"{m}@{b}" in means else "n/a" for m in ("kanerva", "hybrid", "rerank", "bm25")]
+            cells = [fmt(means[f"{m}@{b}"]) if f"{m}@{b}" in means else "n/a" for m in ("kanerva", "kanerva-ce", "hybrid", "rerank", "bm25")]
             rows.append(f"| {DATASETS[name]} | {b} | " + " | ".join(cells) + " |")
     table = "\n".join(rows)
     stale = []
@@ -153,8 +155,10 @@ def update_readme(comparison: dict) -> None:
     text = (
         "Evidence recall on test splits, with no LLM in the evaluation. Larger is better.\n\n" + table
         + "\n\nStaleness error at 1024 tokens over all RepoMem queries. " + " ".join(stale)
-        + "\n\nKanerva loses to hybrid retrieval at large budgets on LoCoMo and on recall on RepoMem without keys. "
-        "It trades that for far fewer stale injections. The paper reports every such case, with confidence intervals."
+        + "\n\nA cross-encoder reranker beats plain Kanerva at small budgets, and the reranker variant was designed after seeing "
+        "those test results, so it needs confirming on fresh data. Hybrid retrieval beats Kanerva at large budgets on LoCoMo, and on "
+        "recall on RepoMem without keys, where Kanerva trades a little recall for far fewer stale injections. "
+        "The paper reports every such case, with confidence intervals."
     )
     path = ROOT / "README.md"
     readme = path.read_text()
@@ -191,6 +195,11 @@ def main() -> None:
             define(lines, f"ci-{name}-{t['other']}-{t['budget']}", f"[{signed(t['ci'][0])}, {signed(t['ci'][1])}]")
         define(lines, f"v-n-{name}", entry["comparisons"][0]["n"])
         define(lines, f"v-latp50-{name}", f"{entry['latency_ms']['p50']:.1f}")
+        for other, p in entry.get("pareto_ce", {}).items():
+            define(lines, f"v-cewin-{name}-{other}", p["wins"])
+            define(lines, f"v-celoss-{name}-{other}", p["losses"])
+        if "latency_rerank_ms" in entry:
+            define(lines, f"v-latce-{name}", f"{entry['latency_rerank_ms']:.0f}")
         for other, p in entry["pareto"].items():
             define(lines, f"v-pwin-{name}-{other}", p["wins"])
             define(lines, f"v-ploss-{name}-{other}", p["losses"])
@@ -223,6 +232,12 @@ def main() -> None:
         define(lines, "v-mem0n", systems["meta"]["questions"])
         define(lines, "v-mem0add", f"{systems['meta']['add_ms_per_turn']:.0f}")
         define(lines, "v-mem0search", f"{systems['meta']['search_ms']:.0f}")
+
+    for name in ("lme", "locomo", "repomem-plain"):
+        small = load(f"m2v_{name}")
+        if small:
+            for method in ("kanerva", "hybrid", "dense"):
+                define(lines, f"v-m2v-{name}-{method}", fmt(small["summary"][f"{method}@1024"]["recall"]))
 
     full = load("full_history")
     if full:
@@ -307,6 +322,7 @@ def main() -> None:
     if comparison:
         (OUT / "table_recall.tex").write_text(recall_table(comparison))
         (OUT / "table_diff.tex").write_text(diff_table(comparison))
+        (OUT / "table_diff_ce.tex").write_text(diff_table(comparison, "comparisons_ce"))
         (OUT / "table_ablation.tex").write_text(ablation_table(comparison))
         (OUT / "table_stale.tex").write_text(staleness_table(comparison))
         (OUT / "table_category.tex").write_text(category_table(comparison))

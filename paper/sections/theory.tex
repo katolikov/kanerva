@@ -25,12 +25,13 @@ The closest results \cite{yue2011linear,yu2016linear,takemori2020submodular} ass
 
 \begin{theorem}[Validity-aware regret]\label{thm:regret}
 Let $\lambda\ge K$ and $\beta_t=\beta_T:=R\sqrt{d\log\big(4(1+KT/\lambda)/\delta\big)}+\sqrt{\lambda}\,\Sigma$. With probability at least $1-\delta$,
-\[
-\sum_{t=1}^{T}\Big[\alpha\max_{c(S)\le B}F_t(S;w_t^\star)-F_t(S_t;w_t^\star)\Big]
-\le L\bigg[2\beta_T\sqrt{2dKT\log\Big(1+\frac{KT}{d\lambda}\Big)}+\sqrt{2KT\log\frac4\delta}+2\sum_{t=1}^{T}\sum_{m\in S_t}\varepsilon_{t,m}\bigg].
-\]
+\begin{align*}
+&\sum_{t=1}^{T}\Big[\alpha\max_{c(S)\le B}F_t(S;w_t^\star)-F_t(S_t;w_t^\star)\Big]\\
+&\quad\le L\bigg[2\beta_T\sqrt{2dKT\log\Big(1+\frac{KT}{d\lambda}\Big)}+\sqrt{2KT\log\frac4\delta}\\
+&\qquad\quad+2\sum_{t=1}^{T}\sum_{m\in S_t}\varepsilon_{t,m}\bigg].
+\end{align*}
 \end{theorem}
-The comparator is the per-round optimum under the time-varying $w^\star_t$, so the bound is dynamic; the $\rho_{t,m}$ can change arbitrarily without any variation budget, as long as they are estimated. The cost of non-stationarity is exactly the accumulated validity error. Warm starting helps through $\Sigma$. With $\alpha=\frac12(1-\frac1e)$ from Theorem~\ref{thm:selection} and $L=(1-\gamma)(1+\eta)$, the theorem applies to Algorithm~\ref{alg:retrieve}.
+The comparator is the per-round optimum under the time-varying $w^\star_t$, so the bound is dynamic; the $\rho_{t,m}$ can change arbitrarily without any variation budget, as long as they are estimated. The cost of non-stationarity is exactly the accumulated validity error. Warm starting helps through $\Sigma$. With $\alpha=\frac12(1-\frac1e)$ from Theorem~\ref{thm:selection} and $L=(1-\gamma)(1+\eta)$, the theorem applies to Algorithm~\ref{alg:retrieve} run with $\beta>0$ and the margin $\varepsilon$.
 
 \begin{proposition}[Validity error of the hazard estimate]\label{prop:hazard}
 Suppose lifetimes of class $k$ are i.i.d.\ $\mathrm{Exp}(\lambda_k)$ and let $\hat\lambda_k=n/\sum_{i\le n}L_i$ be the rate estimate from $n$ completed lifetimes. If $n\ge 24\log(2/\delta)$ then with probability at least $1-\delta$, for all ages $a\ge0$ simultaneously,

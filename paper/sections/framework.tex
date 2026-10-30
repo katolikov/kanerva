@@ -16,8 +16,10 @@ query. Section~\ref{sec:theory} shows that a learner which conflates them has li
 \end{equation}
 We study the family
 \begin{equation}\label{eq:objective}
-  F(S)=(1-\gamma)\Big[\sum_{f\in\mathcal{F}_q}\omega_f\Big(1-\prod_{m\in S}\big(1-w(m)\,a_{mf}\big)\Big)+\eta\sum_{m\in S}w(m)\Big]
-  +\gamma\sum_{c\in C}\frac{p_c}{\sum_{c'}p_{c'}}\max_{m\in S}s(c,m).
+\begin{split}
+  F(S)={}&(1-\gamma)\Big[\sum_{f\in\mathcal{F}_q}\omega_f\Big(1-\prod_{m\in S}\big(1-w(m)\,a_{mf}\big)\Big)\\
+  &+\eta\sum_{m\in S}w(m)\Big]+\gamma\sum_{c\in C}\frac{p_c}{\sum_{c'}p_{c'}}\max_{m\in S}s(c,m).
+\end{split}
 \end{equation}
 Here $\mathcal{F}_q$ is a set of facets of the query with weights $\omega_f\ge0$, $\sum_f\omega_f=1$, and $a_{mf}\in[0,1]$ is the
 chance that item $m$ answers facet $f$ given that it is valid and useful. The first term is the expected fraction of the need that gets
@@ -32,9 +34,12 @@ $w$ and $|F(S;w)-F(S;w')|\le L\sum_{m\in S}|w(m)-w'(m)|$ with $L=(1-\gamma)(1+\e
 \paragraph{The online problem.} A memory policy $\Pi=(\mathsf{W},\mathsf{R},\mathsf{C},\mathsf{F})$ decides what to write, what to read,
 what to consolidate and what to forget. For a sequence of steps it earns
 \begin{equation}\label{eq:online}
-  J(\Pi)=\mathbb{E}\sum_{t=1}^{T}\Big[U(S_t\mid q_t)-\kappa_{\mathrm{r}}\,c(S_t)\Big]-\kappa_{\mathrm{w}}\,\mathrm{WriteCost}(\Pi)-\kappa_{\mathrm{s}}\sum_t c(M_t),
-  \quad c(S_t)\le B\ \ \forall t.
+\begin{split}
+  J(\Pi)={}&\mathbb{E}\sum_{t=1}^{T}\Big[U(S_t\mid q_t)-\kappa_{\mathrm{r}}\,c(S_t)\Big]\\
+  &-\kappa_{\mathrm{w}}\,\mathrm{WriteCost}(\Pi)-\kappa_{\mathrm{s}}\sum_t c(M_t),
+\end{split}
 \end{equation}
+subject to $c(S_t)\le B$ for all $t$.
 Reading costs tokens on every step, writing costs LLM calls or latency, and the store costs retrieval time and noise. Learning, in this
 paper, is updating $\Pi$ and $M_t$; model weights never change.
 
@@ -45,7 +50,7 @@ mostly in what they store, which is the $\mathsf{W}$ component.
 
 \begin{table*}[t]\centering\small
 \caption{Surveyed methods as instances of the framework. ``Score'' is the $w$ used by the read policy; $k$ denotes a cardinality limit.}\label{tab:special}
-\begin{tabular}{@{}llllll@{}}\toprule
+\resizebox{\textwidth}{!}{\begin{tabular}{@{}llllll@{}}\toprule
 Method & Write $\mathsf{W}$ & Score $w$ & Constraint & Validity $\rho$ & Learns \\\midrule
 Top-$k$ RAG, hybrid, rerank \cite{robertson1994okapi,cormack2009rrf} & chunks & BM25/cosine/RRF/CE & $k$ & none & no \\
 MMR \cite{carbonell1998mmr} & chunks & greedy rule, $\lambda$ trade-off & $k$ & none & no \\
@@ -61,7 +66,7 @@ ACE, ReasoningBank \cite{zhang2025ace,ouyang2025reasoningbank} & LLM-curated les
 Claude Code files \cite{claudecode_memory} & model-decided notes & constant (query-independent) & 200 lines/25\,KB & none & no \\
 Full history & everything & constant & window size & none & no \\
 LLMLingua family \cite{jiang2023llmlingua,pan2024llmlingua2} & --- & --- & compresses $c(m)$ & none & no \\
-\bottomrule\end{tabular}
+\bottomrule\end{tabular}}
 \end{table*}
 
 Parametric methods (test-time training \cite{sun2020ttt,sun2024ttt}, memory layers \cite{berges2024memorylayers}, Titans \cite{behrouz2024titans},

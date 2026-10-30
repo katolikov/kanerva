@@ -95,19 +95,20 @@ def compare() -> dict:
         recall = pivot(records, "recall")
         tokens = pivot(records, "tokens")
         stale = pivot(records, "stale_error")
-        entry: dict = {"means": {}, "comparisons": {}, "ablations": {}, "tokens": {}, "stale_error": {}, "pareto": {}}
+        entry: dict = {"means": {}, "comparisons": {}, "ablations": {}, "tokens": {}, "stale_error": {}, "pareto": {}, "pareto_ce": {}}
         methods = sorted({m for m, _ in recall})
         for m in methods:
             for b in sorted({b for mm, b in recall if mm == m}):
                 entry["means"][f"{m}@{b}"] = float(np.mean(list(recall[(m, b)].values())))
                 entry["tokens"][f"{m}@{b}"] = float(np.mean(list(tokens[(m, b)].values())))
                 entry["stale_error"][f"{m}@{b}"] = float(np.mean(list(stale[(m, b)].values())))
-        for group, members, key in ((BASELINES, "comparisons", "comparisons"), (ABLATIONS, "ablations", "ablations")):
+        groups = (("kanerva", BASELINES, "comparisons"), ("kanerva", ABLATIONS, "ablations"), ("kanerva-ce", BASELINES, "comparisons_ce"))
+        for reference, group, key in groups:
             tests = []
             for other in group:
                 for b in BUDGETS:
-                    if (other, b) in recall and ("kanerva", b) in recall:
-                        result = paired(recall[("kanerva", b)], recall[(other, b)], rng)
+                    if (other, b) in recall and (reference, b) in recall:
+                        result = paired(recall[(reference, b)], recall[(other, b)], rng)
                         result["other"] = other
                         result["budget"] = b
                         tests.append(result)
@@ -118,6 +119,10 @@ def compare() -> dict:
             wins = sum(t["diff"] > 0 and t["p_holm"] < 0.05 for t in tests)
             losses = sum(t["diff"] < 0 and t["p_holm"] < 0.05 for t in tests)
             entry["pareto"][other] = {"wins": wins, "losses": losses, "ties": len(tests) - wins - losses}
+            tests = [t for t in entry["comparisons_ce"] if t["other"] == other]
+            wins = sum(t["diff"] > 0 and t["p_holm"] < 0.05 for t in tests)
+            losses = sum(t["diff"] < 0 and t["p_holm"] < 0.05 for t in tests)
+            entry["pareto_ce"][other] = {"wins": wins, "losses": losses, "ties": len(tests) - wins - losses}
         categories = sorted({r["category"] for r in records})
         by_category: dict = {}
         for c in categories:
@@ -129,6 +134,9 @@ def compare() -> dict:
         entry["by_category_1024"] = by_category
         latency = [r["latency_ms"] for r in records if r["method"] == "kanerva"]
         entry["latency_ms"] = {"p50": float(np.percentile(latency, 50)), "p95": float(np.percentile(latency, 95))}
+        rerank_latency = [r["latency_ms"] for r in records if r["method"] == "rerank"]
+        if rerank_latency:
+            entry["latency_rerank_ms"] = float(np.percentile(rerank_latency, 50))
         out[name] = entry
     (RESULTS / "comparison.json").write_text(json.dumps(out, indent=1))
     return out

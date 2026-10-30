@@ -44,7 +44,6 @@ def run(seed: int, policy: str) -> list[float]:
     alpha = 1.0
     hazards = np.array([0.002, 0.02, 0.1])
     observed = np.zeros((3, 2))
-    observed[:, 1] = 1.0
     bandit = LinearBandit(np.zeros(D + 1), ridge=20.0, beta=0.5 if policy != "greedy" else 0.0)
     regret = []
     total = 0.0
@@ -53,7 +52,8 @@ def run(seed: int, policy: str) -> list[float]:
         classes = rng.integers(0, 3, size=ITEMS)
         ages = rng.exponential(30.0, size=ITEMS)
         rho = np.exp(-hazards[classes] * ages)
-        valid = rng.random(ITEMS) < rho
+        lifetimes = rng.exponential(1.0 / hazards[classes])
+        valid = lifetimes > ages
         costs = rng.integers(2, 10, size=ITEMS).astype(float)
         affinity = (rng.random((ITEMS, 5)) < 0.3).astype(float)
         affinity[:, 0] = 1.0
@@ -79,9 +79,9 @@ def run(seed: int, policy: str) -> list[float]:
             if policy == "blind":
                 reward = reward * valid[keep]
             bandit.update(x[keep], reward)
-            for i in idx:
+            for i in idx:  # right-censored exponential data, as in the store's version history
                 observed[classes[i], 0] += 0 if valid[i] else 1
-                observed[classes[i], 1] += ages[i]
+                observed[classes[i], 1] += min(ages[i], lifetimes[i])
     return [regret[c - 1] for c in CHECKPOINTS]
 
 

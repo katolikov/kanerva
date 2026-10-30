@@ -87,6 +87,12 @@
 \expandafter\def\csname r-lme-kanerva-1024\endcsname{0.860}
 \expandafter\def\csname r-lme-kanerva-2048\endcsname{0.901}
 \expandafter\def\csname r-lme-kanerva-4096\endcsname{0.934}
+\expandafter\def\csname r-lme-kanerva-ce-128\endcsname{0.459}
+\expandafter\def\csname r-lme-kanerva-ce-256\endcsname{0.713}
+\expandafter\def\csname r-lme-kanerva-ce-512\endcsname{0.827}
+\expandafter\def\csname r-lme-kanerva-ce-1024\endcsname{0.884}
+\expandafter\def\csname r-lme-kanerva-ce-2048\endcsname{0.923}
+\expandafter\def\csname r-lme-kanerva-ce-4096\endcsname{0.954}
 \expandafter\def\csname r-lme-kanerva-first-128\endcsname{0.426}
 \expandafter\def\csname r-lme-kanerva-first-256\endcsname{0.655}
 \expandafter\def\csname r-lme-kanerva-first-512\endcsname{0.771}
@@ -199,6 +205,12 @@
 \expandafter\def\csname t-lme-kanerva-1024\endcsname{1016}
 \expandafter\def\csname t-lme-kanerva-2048\endcsname{2039}
 \expandafter\def\csname t-lme-kanerva-4096\endcsname{4084}
+\expandafter\def\csname t-lme-kanerva-ce-128\endcsname{122}
+\expandafter\def\csname t-lme-kanerva-ce-256\endcsname{249}
+\expandafter\def\csname t-lme-kanerva-ce-512\endcsname{505}
+\expandafter\def\csname t-lme-kanerva-ce-1024\endcsname{1017}
+\expandafter\def\csname t-lme-kanerva-ce-2048\endcsname{2039}
+\expandafter\def\csname t-lme-kanerva-ce-4096\endcsname{4085}
 \expandafter\def\csname t-lme-kanerva-first-128\endcsname{122}
 \expandafter\def\csname t-lme-kanerva-first-256\endcsname{250}
 \expandafter\def\csname t-lme-kanerva-first-512\endcsname{505}
@@ -311,6 +323,12 @@
 \expandafter\def\csname s-lme-kanerva-1024\endcsname{0.000}
 \expandafter\def\csname s-lme-kanerva-2048\endcsname{0.000}
 \expandafter\def\csname s-lme-kanerva-4096\endcsname{0.000}
+\expandafter\def\csname s-lme-kanerva-ce-128\endcsname{0.000}
+\expandafter\def\csname s-lme-kanerva-ce-256\endcsname{0.000}
+\expandafter\def\csname s-lme-kanerva-ce-512\endcsname{0.000}
+\expandafter\def\csname s-lme-kanerva-ce-1024\endcsname{0.000}
+\expandafter\def\csname s-lme-kanerva-ce-2048\endcsname{0.000}
+\expandafter\def\csname s-lme-kanerva-ce-4096\endcsname{0.000}
 \expandafter\def\csname s-lme-kanerva-first-128\endcsname{0.000}
 \expandafter\def\csname s-lme-kanerva-first-256\endcsname{0.000}
 \expandafter\def\csname s-lme-kanerva-first-512\endcsname{0.000}
@@ -533,8 +551,39 @@
 \expandafter\def\csname ci-lme-kanerva-first-2048\endcsname{[+0.000, +0.000]}
 \expandafter\def\csname d-lme-kanerva-first-4096\endcsname{+0.000}
 \expandafter\def\csname ci-lme-kanerva-first-4096\endcsname{[+0.000, +0.000]}
+\expandafter\def\csname d-lme-kanerva-ce-128\endcsname{-0.032}
+\expandafter\def\csname ci-lme-kanerva-ce-128\endcsname{[-0.057, -0.007]}
+\expandafter\def\csname d-lme-kanerva-ce-256\endcsname{-0.058}
+\expandafter\def\csname ci-lme-kanerva-ce-256\endcsname{[-0.086, -0.031]}
+\expandafter\def\csname d-lme-kanerva-ce-512\endcsname{-0.056}
+\expandafter\def\csname ci-lme-kanerva-ce-512\endcsname{[-0.079, -0.034]}
+\expandafter\def\csname d-lme-kanerva-ce-1024\endcsname{-0.024}
+\expandafter\def\csname ci-lme-kanerva-ce-1024\endcsname{[-0.045, -0.004]}
+\expandafter\def\csname d-lme-kanerva-ce-2048\endcsname{-0.022}
+\expandafter\def\csname ci-lme-kanerva-ce-2048\endcsname{[-0.038, -0.006]}
+\expandafter\def\csname d-lme-kanerva-ce-4096\endcsname{-0.020}
+\expandafter\def\csname ci-lme-kanerva-ce-4096\endcsname{[-0.034, -0.007]}
 \expandafter\def\csname v-n-lme\endcsname{370}
 \expandafter\def\csname v-latp50-lme\endcsname{14.6}
+\expandafter\def\csname v-cewin-lme-hybrid\endcsname{5}
+\expandafter\def\csname v-celoss-lme-hybrid\endcsname{0}
+\expandafter\def\csname v-cewin-lme-bm25\endcsname{5}
+\expandafter\def\csname v-celoss-lme-bm25\endcsname{0}
+\expandafter\def\csname v-cewin-lme-dense\endcsname{6}
+\expandafter\def\csname v-celoss-lme-dense\endcsname{0}
+\expandafter\def\csname v-cewin-lme-mmr\endcsname{6}
+\expandafter\def\csname v-celoss-lme-mmr\endcsname{0}
+\expandafter\def\csname v-cewin-lme-facility\endcsname{5}
+\expandafter\def\csname v-celoss-lme-facility\endcsname{0}
+\expandafter\def\csname v-cewin-lme-gen-agents\endcsname{6}
+\expandafter\def\csname v-celoss-lme-gen-agents\endcsname{0}
+\expandafter\def\csname v-cewin-lme-recency\endcsname{6}
+\expandafter\def\csname v-celoss-lme-recency\endcsname{0}
+\expandafter\def\csname v-cewin-lme-rerank\endcsname{0}
+\expandafter\def\csname v-celoss-lme-rerank\endcsname{0}
+\expandafter\def\csname v-cewin-lme-hybrid-live\endcsname{5}
+\expandafter\def\csname v-celoss-lme-hybrid-live\endcsname{0}
+\expandafter\def\csname v-latce-lme\endcsname{246}
 \expandafter\def\csname v-pwin-lme-hybrid\endcsname{3}
 \expandafter\def\csname v-ploss-lme-hybrid\endcsname{0}
 \expandafter\def\csname v-pwin-lme-bm25\endcsname{4}
@@ -635,6 +684,12 @@
 \expandafter\def\csname r-locomo-kanerva-1024\endcsname{0.722}
 \expandafter\def\csname r-locomo-kanerva-2048\endcsname{0.777}
 \expandafter\def\csname r-locomo-kanerva-4096\endcsname{0.842}
+\expandafter\def\csname r-locomo-kanerva-ce-128\endcsname{0.528}
+\expandafter\def\csname r-locomo-kanerva-ce-256\endcsname{0.634}
+\expandafter\def\csname r-locomo-kanerva-ce-512\endcsname{0.712}
+\expandafter\def\csname r-locomo-kanerva-ce-1024\endcsname{0.757}
+\expandafter\def\csname r-locomo-kanerva-ce-2048\endcsname{0.795}
+\expandafter\def\csname r-locomo-kanerva-ce-4096\endcsname{0.854}
 \expandafter\def\csname r-locomo-kanerva-first-128\endcsname{0.422}
 \expandafter\def\csname r-locomo-kanerva-first-256\endcsname{0.566}
 \expandafter\def\csname r-locomo-kanerva-first-512\endcsname{0.662}
@@ -747,6 +802,12 @@
 \expandafter\def\csname t-locomo-kanerva-1024\endcsname{1019}
 \expandafter\def\csname t-locomo-kanerva-2048\endcsname{2043}
 \expandafter\def\csname t-locomo-kanerva-4096\endcsname{4079}
+\expandafter\def\csname t-locomo-kanerva-ce-128\endcsname{123}
+\expandafter\def\csname t-locomo-kanerva-ce-256\endcsname{251}
+\expandafter\def\csname t-locomo-kanerva-ce-512\endcsname{507}
+\expandafter\def\csname t-locomo-kanerva-ce-1024\endcsname{1019}
+\expandafter\def\csname t-locomo-kanerva-ce-2048\endcsname{2043}
+\expandafter\def\csname t-locomo-kanerva-ce-4096\endcsname{4079}
 \expandafter\def\csname t-locomo-kanerva-first-128\endcsname{123}
 \expandafter\def\csname t-locomo-kanerva-first-256\endcsname{251}
 \expandafter\def\csname t-locomo-kanerva-first-512\endcsname{507}
@@ -859,6 +920,12 @@
 \expandafter\def\csname s-locomo-kanerva-1024\endcsname{0.000}
 \expandafter\def\csname s-locomo-kanerva-2048\endcsname{0.000}
 \expandafter\def\csname s-locomo-kanerva-4096\endcsname{0.000}
+\expandafter\def\csname s-locomo-kanerva-ce-128\endcsname{0.000}
+\expandafter\def\csname s-locomo-kanerva-ce-256\endcsname{0.000}
+\expandafter\def\csname s-locomo-kanerva-ce-512\endcsname{0.000}
+\expandafter\def\csname s-locomo-kanerva-ce-1024\endcsname{0.000}
+\expandafter\def\csname s-locomo-kanerva-ce-2048\endcsname{0.000}
+\expandafter\def\csname s-locomo-kanerva-ce-4096\endcsname{0.000}
 \expandafter\def\csname s-locomo-kanerva-first-128\endcsname{0.000}
 \expandafter\def\csname s-locomo-kanerva-first-256\endcsname{0.000}
 \expandafter\def\csname s-locomo-kanerva-first-512\endcsname{0.000}
@@ -890,133 +957,133 @@
 \expandafter\def\csname s-locomo-rerank-2048\endcsname{0.000}
 \expandafter\def\csname s-locomo-rerank-4096\endcsname{0.000}
 \expandafter\def\csname d-locomo-hybrid-128\endcsname{+0.087}
-\expandafter\def\csname ci-locomo-hybrid-128\endcsname{[+0.068, +0.107]}
+\expandafter\def\csname ci-locomo-hybrid-128\endcsname{[+0.068, +0.108]}
 \expandafter\def\csname d-locomo-hybrid-256\endcsname{+0.091}
 \expandafter\def\csname ci-locomo-hybrid-256\endcsname{[+0.071, +0.110]}
 \expandafter\def\csname d-locomo-hybrid-512\endcsname{+0.095}
-\expandafter\def\csname ci-locomo-hybrid-512\endcsname{[+0.077, +0.113]}
+\expandafter\def\csname ci-locomo-hybrid-512\endcsname{[+0.077, +0.114]}
 \expandafter\def\csname d-locomo-hybrid-1024\endcsname{+0.040}
-\expandafter\def\csname ci-locomo-hybrid-1024\endcsname{[+0.025, +0.053]}
+\expandafter\def\csname ci-locomo-hybrid-1024\endcsname{[+0.025, +0.055]}
 \expandafter\def\csname d-locomo-hybrid-2048\endcsname{-0.025}
 \expandafter\def\csname ci-locomo-hybrid-2048\endcsname{[-0.037, -0.013]}
 \expandafter\def\csname d-locomo-hybrid-4096\endcsname{-0.031}
-\expandafter\def\csname ci-locomo-hybrid-4096\endcsname{[-0.043, -0.021]}
+\expandafter\def\csname ci-locomo-hybrid-4096\endcsname{[-0.044, -0.020]}
 \expandafter\def\csname d-locomo-bm25-128\endcsname{-0.010}
-\expandafter\def\csname ci-locomo-bm25-128\endcsname{[-0.025, +0.005]}
+\expandafter\def\csname ci-locomo-bm25-128\endcsname{[-0.025, +0.004]}
 \expandafter\def\csname d-locomo-bm25-256\endcsname{+0.007}
-\expandafter\def\csname ci-locomo-bm25-256\endcsname{[-0.007, +0.020]}
+\expandafter\def\csname ci-locomo-bm25-256\endcsname{[-0.008, +0.021]}
 \expandafter\def\csname d-locomo-bm25-512\endcsname{+0.024}
-\expandafter\def\csname ci-locomo-bm25-512\endcsname{[+0.011, +0.037]}
+\expandafter\def\csname ci-locomo-bm25-512\endcsname{[+0.011, +0.036]}
 \expandafter\def\csname d-locomo-bm25-1024\endcsname{+0.020}
 \expandafter\def\csname ci-locomo-bm25-1024\endcsname{[+0.007, +0.034]}
 \expandafter\def\csname d-locomo-bm25-2048\endcsname{+0.017}
-\expandafter\def\csname ci-locomo-bm25-2048\endcsname{[+0.004, +0.030]}
+\expandafter\def\csname ci-locomo-bm25-2048\endcsname{[+0.004, +0.029]}
 \expandafter\def\csname d-locomo-bm25-4096\endcsname{+0.043}
-\expandafter\def\csname ci-locomo-bm25-4096\endcsname{[+0.032, +0.056]}
+\expandafter\def\csname ci-locomo-bm25-4096\endcsname{[+0.032, +0.055]}
 \expandafter\def\csname d-locomo-dense-128\endcsname{+0.197}
-\expandafter\def\csname ci-locomo-dense-128\endcsname{[+0.174, +0.219]}
+\expandafter\def\csname ci-locomo-dense-128\endcsname{[+0.174, +0.220]}
 \expandafter\def\csname d-locomo-dense-256\endcsname{+0.222}
-\expandafter\def\csname ci-locomo-dense-256\endcsname{[+0.199, +0.245]}
+\expandafter\def\csname ci-locomo-dense-256\endcsname{[+0.196, +0.248]}
 \expandafter\def\csname d-locomo-dense-512\endcsname{+0.222}
 \expandafter\def\csname ci-locomo-dense-512\endcsname{[+0.199, +0.246]}
 \expandafter\def\csname d-locomo-dense-1024\endcsname{+0.183}
-\expandafter\def\csname ci-locomo-dense-1024\endcsname{[+0.159, +0.207]}
+\expandafter\def\csname ci-locomo-dense-1024\endcsname{[+0.159, +0.206]}
 \expandafter\def\csname d-locomo-dense-2048\endcsname{+0.127}
 \expandafter\def\csname ci-locomo-dense-2048\endcsname{[+0.104, +0.151]}
 \expandafter\def\csname d-locomo-dense-4096\endcsname{+0.105}
 \expandafter\def\csname ci-locomo-dense-4096\endcsname{[+0.084, +0.127]}
 \expandafter\def\csname d-locomo-mmr-128\endcsname{+0.180}
-\expandafter\def\csname ci-locomo-mmr-128\endcsname{[+0.156, +0.205]}
+\expandafter\def\csname ci-locomo-mmr-128\endcsname{[+0.157, +0.204]}
 \expandafter\def\csname d-locomo-mmr-256\endcsname{+0.213}
 \expandafter\def\csname ci-locomo-mmr-256\endcsname{[+0.189, +0.236]}
 \expandafter\def\csname d-locomo-mmr-512\endcsname{+0.213}
-\expandafter\def\csname ci-locomo-mmr-512\endcsname{[+0.190, +0.238]}
+\expandafter\def\csname ci-locomo-mmr-512\endcsname{[+0.190, +0.239]}
 \expandafter\def\csname d-locomo-mmr-1024\endcsname{+0.147}
-\expandafter\def\csname ci-locomo-mmr-1024\endcsname{[+0.125, +0.170]}
+\expandafter\def\csname ci-locomo-mmr-1024\endcsname{[+0.124, +0.170]}
 \expandafter\def\csname d-locomo-mmr-2048\endcsname{+0.092}
 \expandafter\def\csname ci-locomo-mmr-2048\endcsname{[+0.070, +0.114]}
 \expandafter\def\csname d-locomo-mmr-4096\endcsname{+0.004}
-\expandafter\def\csname ci-locomo-mmr-4096\endcsname{[-0.014, +0.020]}
+\expandafter\def\csname ci-locomo-mmr-4096\endcsname{[-0.013, +0.021]}
 \expandafter\def\csname d-locomo-facility-128\endcsname{+0.407}
-\expandafter\def\csname ci-locomo-facility-128\endcsname{[+0.382, +0.433]}
+\expandafter\def\csname ci-locomo-facility-128\endcsname{[+0.383, +0.433]}
 \expandafter\def\csname d-locomo-facility-256\endcsname{+0.525}
-\expandafter\def\csname ci-locomo-facility-256\endcsname{[+0.500, +0.549]}
+\expandafter\def\csname ci-locomo-facility-256\endcsname{[+0.500, +0.550]}
 \expandafter\def\csname d-locomo-facility-512\endcsname{+0.560}
-\expandafter\def\csname ci-locomo-facility-512\endcsname{[+0.534, +0.585]}
+\expandafter\def\csname ci-locomo-facility-512\endcsname{[+0.535, +0.583]}
 \expandafter\def\csname d-locomo-facility-1024\endcsname{+0.523}
-\expandafter\def\csname ci-locomo-facility-1024\endcsname{[+0.497, +0.550]}
+\expandafter\def\csname ci-locomo-facility-1024\endcsname{[+0.497, +0.549]}
 \expandafter\def\csname d-locomo-facility-2048\endcsname{+0.400}
-\expandafter\def\csname ci-locomo-facility-2048\endcsname{[+0.372, +0.427]}
+\expandafter\def\csname ci-locomo-facility-2048\endcsname{[+0.374, +0.427]}
 \expandafter\def\csname d-locomo-facility-4096\endcsname{+0.130}
-\expandafter\def\csname ci-locomo-facility-4096\endcsname{[+0.109, +0.152]}
+\expandafter\def\csname ci-locomo-facility-4096\endcsname{[+0.111, +0.150]}
 \expandafter\def\csname d-locomo-gen-agents-128\endcsname{+0.398}
-\expandafter\def\csname ci-locomo-gen-agents-128\endcsname{[+0.373, +0.422]}
+\expandafter\def\csname ci-locomo-gen-agents-128\endcsname{[+0.373, +0.423]}
 \expandafter\def\csname d-locomo-gen-agents-256\endcsname{+0.522}
 \expandafter\def\csname ci-locomo-gen-agents-256\endcsname{[+0.497, +0.548]}
 \expandafter\def\csname d-locomo-gen-agents-512\endcsname{+0.600}
-\expandafter\def\csname ci-locomo-gen-agents-512\endcsname{[+0.577, +0.625]}
+\expandafter\def\csname ci-locomo-gen-agents-512\endcsname{[+0.575, +0.625]}
 \expandafter\def\csname d-locomo-gen-agents-1024\endcsname{+0.591}
-\expandafter\def\csname ci-locomo-gen-agents-1024\endcsname{[+0.565, +0.617]}
+\expandafter\def\csname ci-locomo-gen-agents-1024\endcsname{[+0.565, +0.615]}
 \expandafter\def\csname d-locomo-gen-agents-2048\endcsname{+0.475}
-\expandafter\def\csname ci-locomo-gen-agents-2048\endcsname{[+0.448, +0.501]}
+\expandafter\def\csname ci-locomo-gen-agents-2048\endcsname{[+0.449, +0.500]}
 \expandafter\def\csname d-locomo-gen-agents-4096\endcsname{+0.241}
-\expandafter\def\csname ci-locomo-gen-agents-4096\endcsname{[+0.215, +0.266]}
+\expandafter\def\csname ci-locomo-gen-agents-4096\endcsname{[+0.217, +0.265]}
 \expandafter\def\csname d-locomo-recency-128\endcsname{+0.420}
-\expandafter\def\csname ci-locomo-recency-128\endcsname{[+0.398, +0.445]}
+\expandafter\def\csname ci-locomo-recency-128\endcsname{[+0.395, +0.445]}
 \expandafter\def\csname d-locomo-recency-256\endcsname{+0.563}
-\expandafter\def\csname ci-locomo-recency-256\endcsname{[+0.538, +0.586]}
+\expandafter\def\csname ci-locomo-recency-256\endcsname{[+0.538, +0.587]}
 \expandafter\def\csname d-locomo-recency-512\endcsname{+0.647}
-\expandafter\def\csname ci-locomo-recency-512\endcsname{[+0.622, +0.671]}
+\expandafter\def\csname ci-locomo-recency-512\endcsname{[+0.622, +0.670]}
 \expandafter\def\csname d-locomo-recency-1024\endcsname{+0.686}
-\expandafter\def\csname ci-locomo-recency-1024\endcsname{[+0.664, +0.710]}
+\expandafter\def\csname ci-locomo-recency-1024\endcsname{[+0.664, +0.711]}
 \expandafter\def\csname d-locomo-recency-2048\endcsname{+0.694}
-\expandafter\def\csname ci-locomo-recency-2048\endcsname{[+0.670, +0.718]}
+\expandafter\def\csname ci-locomo-recency-2048\endcsname{[+0.672, +0.716]}
 \expandafter\def\csname d-locomo-recency-4096\endcsname{+0.693}
 \expandafter\def\csname ci-locomo-recency-4096\endcsname{[+0.668, +0.716]}
 \expandafter\def\csname d-locomo-rerank-128\endcsname{-0.105}
 \expandafter\def\csname ci-locomo-rerank-128\endcsname{[-0.126, -0.084]}
 \expandafter\def\csname d-locomo-rerank-256\endcsname{-0.066}
-\expandafter\def\csname ci-locomo-rerank-256\endcsname{[-0.085, -0.048]}
+\expandafter\def\csname ci-locomo-rerank-256\endcsname{[-0.084, -0.047]}
 \expandafter\def\csname d-locomo-rerank-512\endcsname{-0.028}
-\expandafter\def\csname ci-locomo-rerank-512\endcsname{[-0.044, -0.011]}
+\expandafter\def\csname ci-locomo-rerank-512\endcsname{[-0.044, -0.012]}
 \expandafter\def\csname d-locomo-rerank-1024\endcsname{-0.009}
 \expandafter\def\csname ci-locomo-rerank-1024\endcsname{[-0.022, +0.004]}
 \expandafter\def\csname d-locomo-rerank-2048\endcsname{+0.005}
-\expandafter\def\csname ci-locomo-rerank-2048\endcsname{[-0.007, +0.018]}
+\expandafter\def\csname ci-locomo-rerank-2048\endcsname{[-0.006, +0.018]}
 \expandafter\def\csname d-locomo-rerank-4096\endcsname{+0.068}
 \expandafter\def\csname ci-locomo-rerank-4096\endcsname{[+0.055, +0.083]}
 \expandafter\def\csname d-locomo-hybrid-live-128\endcsname{+0.087}
-\expandafter\def\csname ci-locomo-hybrid-live-128\endcsname{[+0.069, +0.106]}
+\expandafter\def\csname ci-locomo-hybrid-live-128\endcsname{[+0.069, +0.108]}
 \expandafter\def\csname d-locomo-hybrid-live-256\endcsname{+0.091}
-\expandafter\def\csname ci-locomo-hybrid-live-256\endcsname{[+0.071, +0.112]}
+\expandafter\def\csname ci-locomo-hybrid-live-256\endcsname{[+0.071, +0.111]}
 \expandafter\def\csname d-locomo-hybrid-live-512\endcsname{+0.095}
 \expandafter\def\csname ci-locomo-hybrid-live-512\endcsname{[+0.077, +0.113]}
 \expandafter\def\csname d-locomo-hybrid-live-1024\endcsname{+0.040}
-\expandafter\def\csname ci-locomo-hybrid-live-1024\endcsname{[+0.026, +0.053]}
+\expandafter\def\csname ci-locomo-hybrid-live-1024\endcsname{[+0.026, +0.054]}
 \expandafter\def\csname d-locomo-hybrid-live-2048\endcsname{-0.025}
-\expandafter\def\csname ci-locomo-hybrid-live-2048\endcsname{[-0.037, -0.013]}
+\expandafter\def\csname ci-locomo-hybrid-live-2048\endcsname{[-0.037, -0.014]}
 \expandafter\def\csname d-locomo-hybrid-live-4096\endcsname{-0.031}
-\expandafter\def\csname ci-locomo-hybrid-live-4096\endcsname{[-0.043, -0.020]}
+\expandafter\def\csname ci-locomo-hybrid-live-4096\endcsname{[-0.044, -0.020]}
 \expandafter\def\csname d-locomo--density-128\endcsname{-0.023}
-\expandafter\def\csname ci-locomo--density-128\endcsname{[-0.033, -0.013]}
+\expandafter\def\csname ci-locomo--density-128\endcsname{[-0.034, -0.014]}
 \expandafter\def\csname d-locomo--density-256\endcsname{-0.018}
 \expandafter\def\csname ci-locomo--density-256\endcsname{[-0.026, -0.010]}
 \expandafter\def\csname d-locomo--density-512\endcsname{-0.008}
 \expandafter\def\csname ci-locomo--density-512\endcsname{[-0.015, -0.002]}
 \expandafter\def\csname d-locomo--density-1024\endcsname{-0.013}
-\expandafter\def\csname ci-locomo--density-1024\endcsname{[-0.019, -0.006]}
+\expandafter\def\csname ci-locomo--density-1024\endcsname{[-0.020, -0.006]}
 \expandafter\def\csname d-locomo--density-2048\endcsname{-0.005}
 \expandafter\def\csname ci-locomo--density-2048\endcsname{[-0.010, +0.001]}
 \expandafter\def\csname d-locomo--density-4096\endcsname{-0.006}
-\expandafter\def\csname ci-locomo--density-4096\endcsname{[-0.012, -0.001]}
+\expandafter\def\csname ci-locomo--density-4096\endcsname{[-0.012, -0.000]}
 \expandafter\def\csname d-locomo--coverage-128\endcsname{+0.015}
 \expandafter\def\csname ci-locomo--coverage-128\endcsname{[+0.008, +0.022]}
 \expandafter\def\csname d-locomo--coverage-256\endcsname{+0.006}
-\expandafter\def\csname ci-locomo--coverage-256\endcsname{[-0.001, +0.013]}
+\expandafter\def\csname ci-locomo--coverage-256\endcsname{[-0.000, +0.013]}
 \expandafter\def\csname d-locomo--coverage-512\endcsname{+0.000}
 \expandafter\def\csname ci-locomo--coverage-512\endcsname{[-0.004, +0.005]}
 \expandafter\def\csname d-locomo--coverage-1024\endcsname{+0.001}
-\expandafter\def\csname ci-locomo--coverage-1024\endcsname{[-0.002, +0.005]}
+\expandafter\def\csname ci-locomo--coverage-1024\endcsname{[-0.003, +0.006]}
 \expandafter\def\csname d-locomo--coverage-2048\endcsname{+0.003}
 \expandafter\def\csname ci-locomo--coverage-2048\endcsname{[-0.002, +0.007]}
 \expandafter\def\csname d-locomo--coverage-4096\endcsname{+0.002}
@@ -1028,9 +1095,9 @@
 \expandafter\def\csname d-locomo--redundancy-512\endcsname{+0.001}
 \expandafter\def\csname ci-locomo--redundancy-512\endcsname{[-0.001, +0.003]}
 \expandafter\def\csname d-locomo--redundancy-1024\endcsname{+0.000}
-\expandafter\def\csname ci-locomo--redundancy-1024\endcsname{[-0.002, +0.002]}
+\expandafter\def\csname ci-locomo--redundancy-1024\endcsname{[-0.002, +0.003]}
 \expandafter\def\csname d-locomo--redundancy-2048\endcsname{+0.000}
-\expandafter\def\csname ci-locomo--redundancy-2048\endcsname{[-0.001, +0.002]}
+\expandafter\def\csname ci-locomo--redundancy-2048\endcsname{[-0.000, +0.002]}
 \expandafter\def\csname d-locomo--redundancy-4096\endcsname{-0.002}
 \expandafter\def\csname ci-locomo--redundancy-4096\endcsname{[-0.004, -0.000]}
 \expandafter\def\csname d-locomo--validity-128\endcsname{-0.002}
@@ -1038,7 +1105,7 @@
 \expandafter\def\csname d-locomo--validity-256\endcsname{+0.002}
 \expandafter\def\csname ci-locomo--validity-256\endcsname{[-0.002, +0.005]}
 \expandafter\def\csname d-locomo--validity-512\endcsname{-0.001}
-\expandafter\def\csname ci-locomo--validity-512\endcsname{[-0.004, +0.002]}
+\expandafter\def\csname ci-locomo--validity-512\endcsname{[-0.003, +0.001]}
 \expandafter\def\csname d-locomo--validity-1024\endcsname{+0.001}
 \expandafter\def\csname ci-locomo--validity-1024\endcsname{[-0.001, +0.003]}
 \expandafter\def\csname d-locomo--validity-2048\endcsname{+0.001}
@@ -1081,8 +1148,39 @@
 \expandafter\def\csname ci-locomo-kanerva-first-2048\endcsname{[+0.000, +0.000]}
 \expandafter\def\csname d-locomo-kanerva-first-4096\endcsname{+0.000}
 \expandafter\def\csname ci-locomo-kanerva-first-4096\endcsname{[+0.000, +0.000]}
+\expandafter\def\csname d-locomo-kanerva-ce-128\endcsname{-0.106}
+\expandafter\def\csname ci-locomo-kanerva-ce-128\endcsname{[-0.125, -0.087]}
+\expandafter\def\csname d-locomo-kanerva-ce-256\endcsname{-0.068}
+\expandafter\def\csname ci-locomo-kanerva-ce-256\endcsname{[-0.084, -0.052]}
+\expandafter\def\csname d-locomo-kanerva-ce-512\endcsname{-0.050}
+\expandafter\def\csname ci-locomo-kanerva-ce-512\endcsname{[-0.063, -0.037]}
+\expandafter\def\csname d-locomo-kanerva-ce-1024\endcsname{-0.036}
+\expandafter\def\csname ci-locomo-kanerva-ce-1024\endcsname{[-0.046, -0.025]}
+\expandafter\def\csname d-locomo-kanerva-ce-2048\endcsname{-0.019}
+\expandafter\def\csname ci-locomo-kanerva-ce-2048\endcsname{[-0.029, -0.008]}
+\expandafter\def\csname d-locomo-kanerva-ce-4096\endcsname{-0.013}
+\expandafter\def\csname ci-locomo-kanerva-ce-4096\endcsname{[-0.023, -0.003]}
 \expandafter\def\csname v-n-locomo\endcsname{1483}
 \expandafter\def\csname v-latp50-locomo\endcsname{16.3}
+\expandafter\def\csname v-cewin-locomo-hybrid\endcsname{4}
+\expandafter\def\csname v-celoss-locomo-hybrid\endcsname{0}
+\expandafter\def\csname v-cewin-locomo-bm25\endcsname{6}
+\expandafter\def\csname v-celoss-locomo-bm25\endcsname{0}
+\expandafter\def\csname v-cewin-locomo-dense\endcsname{6}
+\expandafter\def\csname v-celoss-locomo-dense\endcsname{0}
+\expandafter\def\csname v-cewin-locomo-mmr\endcsname{5}
+\expandafter\def\csname v-celoss-locomo-mmr\endcsname{0}
+\expandafter\def\csname v-cewin-locomo-facility\endcsname{6}
+\expandafter\def\csname v-celoss-locomo-facility\endcsname{0}
+\expandafter\def\csname v-cewin-locomo-gen-agents\endcsname{6}
+\expandafter\def\csname v-celoss-locomo-gen-agents\endcsname{0}
+\expandafter\def\csname v-cewin-locomo-recency\endcsname{6}
+\expandafter\def\csname v-celoss-locomo-recency\endcsname{0}
+\expandafter\def\csname v-cewin-locomo-rerank\endcsname{1}
+\expandafter\def\csname v-celoss-locomo-rerank\endcsname{0}
+\expandafter\def\csname v-cewin-locomo-hybrid-live\endcsname{4}
+\expandafter\def\csname v-celoss-locomo-hybrid-live\endcsname{0}
+\expandafter\def\csname v-latce-locomo\endcsname{52}
 \expandafter\def\csname v-pwin-locomo-hybrid\endcsname{4}
 \expandafter\def\csname v-ploss-locomo-hybrid\endcsname{2}
 \expandafter\def\csname v-pwin-locomo-bm25\endcsname{1}
@@ -1183,6 +1281,12 @@
 \expandafter\def\csname r-repomem-keyed-kanerva-1024\endcsname{0.901}
 \expandafter\def\csname r-repomem-keyed-kanerva-2048\endcsname{0.922}
 \expandafter\def\csname r-repomem-keyed-kanerva-4096\endcsname{0.950}
+\expandafter\def\csname r-repomem-keyed-kanerva-ce-128\endcsname{0.804}
+\expandafter\def\csname r-repomem-keyed-kanerva-ce-256\endcsname{0.860}
+\expandafter\def\csname r-repomem-keyed-kanerva-ce-512\endcsname{0.888}
+\expandafter\def\csname r-repomem-keyed-kanerva-ce-1024\endcsname{0.906}
+\expandafter\def\csname r-repomem-keyed-kanerva-ce-2048\endcsname{0.923}
+\expandafter\def\csname r-repomem-keyed-kanerva-ce-4096\endcsname{0.950}
 \expandafter\def\csname r-repomem-keyed-kanerva-first-128\endcsname{0.757}
 \expandafter\def\csname r-repomem-keyed-kanerva-first-256\endcsname{0.816}
 \expandafter\def\csname r-repomem-keyed-kanerva-first-512\endcsname{0.852}
@@ -1295,6 +1399,12 @@
 \expandafter\def\csname t-repomem-keyed-kanerva-1024\endcsname{1019}
 \expandafter\def\csname t-repomem-keyed-kanerva-2048\endcsname{2042}
 \expandafter\def\csname t-repomem-keyed-kanerva-4096\endcsname{3740}
+\expandafter\def\csname t-repomem-keyed-kanerva-ce-128\endcsname{122}
+\expandafter\def\csname t-repomem-keyed-kanerva-ce-256\endcsname{250}
+\expandafter\def\csname t-repomem-keyed-kanerva-ce-512\endcsname{507}
+\expandafter\def\csname t-repomem-keyed-kanerva-ce-1024\endcsname{1019}
+\expandafter\def\csname t-repomem-keyed-kanerva-ce-2048\endcsname{2042}
+\expandafter\def\csname t-repomem-keyed-kanerva-ce-4096\endcsname{3740}
 \expandafter\def\csname t-repomem-keyed-kanerva-first-128\endcsname{122}
 \expandafter\def\csname t-repomem-keyed-kanerva-first-256\endcsname{251}
 \expandafter\def\csname t-repomem-keyed-kanerva-first-512\endcsname{507}
@@ -1407,6 +1517,12 @@
 \expandafter\def\csname s-repomem-keyed-kanerva-1024\endcsname{0.003}
 \expandafter\def\csname s-repomem-keyed-kanerva-2048\endcsname{0.003}
 \expandafter\def\csname s-repomem-keyed-kanerva-4096\endcsname{0.004}
+\expandafter\def\csname s-repomem-keyed-kanerva-ce-128\endcsname{0.002}
+\expandafter\def\csname s-repomem-keyed-kanerva-ce-256\endcsname{0.002}
+\expandafter\def\csname s-repomem-keyed-kanerva-ce-512\endcsname{0.003}
+\expandafter\def\csname s-repomem-keyed-kanerva-ce-1024\endcsname{0.002}
+\expandafter\def\csname s-repomem-keyed-kanerva-ce-2048\endcsname{0.002}
+\expandafter\def\csname s-repomem-keyed-kanerva-ce-4096\endcsname{0.003}
 \expandafter\def\csname s-repomem-keyed-kanerva-first-128\endcsname{0.000}
 \expandafter\def\csname s-repomem-keyed-kanerva-first-256\endcsname{0.000}
 \expandafter\def\csname s-repomem-keyed-kanerva-first-512\endcsname{0.000}
@@ -1438,13 +1554,13 @@
 \expandafter\def\csname s-repomem-keyed-rerank-2048\endcsname{0.252}
 \expandafter\def\csname s-repomem-keyed-rerank-4096\endcsname{0.252}
 \expandafter\def\csname d-repomem-keyed-hybrid-128\endcsname{+0.013}
-\expandafter\def\csname ci-repomem-keyed-hybrid-128\endcsname{[+0.005, +0.022]}
+\expandafter\def\csname ci-repomem-keyed-hybrid-128\endcsname{[+0.005, +0.023]}
 \expandafter\def\csname d-repomem-keyed-hybrid-256\endcsname{+0.011}
 \expandafter\def\csname ci-repomem-keyed-hybrid-256\endcsname{[+0.005, +0.017]}
 \expandafter\def\csname d-repomem-keyed-hybrid-512\endcsname{-0.004}
 \expandafter\def\csname ci-repomem-keyed-hybrid-512\endcsname{[-0.008, -0.001]}
 \expandafter\def\csname d-repomem-keyed-hybrid-1024\endcsname{-0.007}
-\expandafter\def\csname ci-repomem-keyed-hybrid-1024\endcsname{[-0.011, -0.004]}
+\expandafter\def\csname ci-repomem-keyed-hybrid-1024\endcsname{[-0.011, -0.003]}
 \expandafter\def\csname d-repomem-keyed-hybrid-2048\endcsname{-0.009}
 \expandafter\def\csname ci-repomem-keyed-hybrid-2048\endcsname{[-0.013, -0.005]}
 \expandafter\def\csname d-repomem-keyed-hybrid-4096\endcsname{+0.001}
@@ -1458,11 +1574,11 @@
 \expandafter\def\csname d-repomem-keyed-bm25-1024\endcsname{+0.015}
 \expandafter\def\csname ci-repomem-keyed-bm25-1024\endcsname{[+0.011, +0.020]}
 \expandafter\def\csname d-repomem-keyed-bm25-2048\endcsname{+0.016}
-\expandafter\def\csname ci-repomem-keyed-bm25-2048\endcsname{[+0.012, +0.021]}
+\expandafter\def\csname ci-repomem-keyed-bm25-2048\endcsname{[+0.012, +0.020]}
 \expandafter\def\csname d-repomem-keyed-bm25-4096\endcsname{+0.035}
 \expandafter\def\csname ci-repomem-keyed-bm25-4096\endcsname{[+0.030, +0.040]}
 \expandafter\def\csname d-repomem-keyed-dense-128\endcsname{-0.013}
-\expandafter\def\csname ci-repomem-keyed-dense-128\endcsname{[-0.022, -0.005]}
+\expandafter\def\csname ci-repomem-keyed-dense-128\endcsname{[-0.022, -0.004]}
 \expandafter\def\csname d-repomem-keyed-dense-256\endcsname{+0.000}
 \expandafter\def\csname ci-repomem-keyed-dense-256\endcsname{[-0.006, +0.006]}
 \expandafter\def\csname d-repomem-keyed-dense-512\endcsname{+0.001}
@@ -1470,7 +1586,7 @@
 \expandafter\def\csname d-repomem-keyed-dense-1024\endcsname{-0.003}
 \expandafter\def\csname ci-repomem-keyed-dense-1024\endcsname{[-0.007, +0.001]}
 \expandafter\def\csname d-repomem-keyed-dense-2048\endcsname{-0.004}
-\expandafter\def\csname ci-repomem-keyed-dense-2048\endcsname{[-0.008, +0.000]}
+\expandafter\def\csname ci-repomem-keyed-dense-2048\endcsname{[-0.008, +0.001]}
 \expandafter\def\csname d-repomem-keyed-dense-4096\endcsname{+0.010}
 \expandafter\def\csname ci-repomem-keyed-dense-4096\endcsname{[+0.007, +0.012]}
 \expandafter\def\csname d-repomem-keyed-mmr-128\endcsname{+0.046}
@@ -1478,7 +1594,7 @@
 \expandafter\def\csname d-repomem-keyed-mmr-256\endcsname{+0.033}
 \expandafter\def\csname ci-repomem-keyed-mmr-256\endcsname{[+0.026, +0.040]}
 \expandafter\def\csname d-repomem-keyed-mmr-512\endcsname{+0.014}
-\expandafter\def\csname ci-repomem-keyed-mmr-512\endcsname{[+0.009, +0.020]}
+\expandafter\def\csname ci-repomem-keyed-mmr-512\endcsname{[+0.009, +0.019]}
 \expandafter\def\csname d-repomem-keyed-mmr-1024\endcsname{+0.002}
 \expandafter\def\csname ci-repomem-keyed-mmr-1024\endcsname{[-0.002, +0.007]}
 \expandafter\def\csname d-repomem-keyed-mmr-2048\endcsname{-0.010}
@@ -1486,15 +1602,15 @@
 \expandafter\def\csname d-repomem-keyed-mmr-4096\endcsname{-0.000}
 \expandafter\def\csname ci-repomem-keyed-mmr-4096\endcsname{[-0.001, +0.001]}
 \expandafter\def\csname d-repomem-keyed-facility-128\endcsname{+0.680}
-\expandafter\def\csname ci-repomem-keyed-facility-128\endcsname{[+0.666, +0.694]}
+\expandafter\def\csname ci-repomem-keyed-facility-128\endcsname{[+0.665, +0.694]}
 \expandafter\def\csname d-repomem-keyed-facility-256\endcsname{+0.701}
-\expandafter\def\csname ci-repomem-keyed-facility-256\endcsname{[+0.687, +0.715]}
+\expandafter\def\csname ci-repomem-keyed-facility-256\endcsname{[+0.688, +0.714]}
 \expandafter\def\csname d-repomem-keyed-facility-512\endcsname{+0.648}
-\expandafter\def\csname ci-repomem-keyed-facility-512\endcsname{[+0.634, +0.662]}
+\expandafter\def\csname ci-repomem-keyed-facility-512\endcsname{[+0.634, +0.663]}
 \expandafter\def\csname d-repomem-keyed-facility-1024\endcsname{+0.542}
-\expandafter\def\csname ci-repomem-keyed-facility-1024\endcsname{[+0.526, +0.557]}
+\expandafter\def\csname ci-repomem-keyed-facility-1024\endcsname{[+0.527, +0.557]}
 \expandafter\def\csname d-repomem-keyed-facility-2048\endcsname{+0.393}
-\expandafter\def\csname ci-repomem-keyed-facility-2048\endcsname{[+0.377, +0.408]}
+\expandafter\def\csname ci-repomem-keyed-facility-2048\endcsname{[+0.378, +0.406]}
 \expandafter\def\csname d-repomem-keyed-facility-4096\endcsname{+0.086}
 \expandafter\def\csname ci-repomem-keyed-facility-4096\endcsname{[+0.078, +0.095]}
 \expandafter\def\csname d-repomem-keyed-gen-agents-128\endcsname{+0.588}
@@ -1502,33 +1618,33 @@
 \expandafter\def\csname d-repomem-keyed-gen-agents-256\endcsname{+0.563}
 \expandafter\def\csname ci-repomem-keyed-gen-agents-256\endcsname{[+0.548, +0.579]}
 \expandafter\def\csname d-repomem-keyed-gen-agents-512\endcsname{+0.387}
-\expandafter\def\csname ci-repomem-keyed-gen-agents-512\endcsname{[+0.372, +0.400]}
+\expandafter\def\csname ci-repomem-keyed-gen-agents-512\endcsname{[+0.372, +0.401]}
 \expandafter\def\csname d-repomem-keyed-gen-agents-1024\endcsname{+0.235}
 \expandafter\def\csname ci-repomem-keyed-gen-agents-1024\endcsname{[+0.222, +0.248]}
 \expandafter\def\csname d-repomem-keyed-gen-agents-2048\endcsname{+0.054}
-\expandafter\def\csname ci-repomem-keyed-gen-agents-2048\endcsname{[+0.046, +0.062]}
+\expandafter\def\csname ci-repomem-keyed-gen-agents-2048\endcsname{[+0.046, +0.061]}
 \expandafter\def\csname d-repomem-keyed-gen-agents-4096\endcsname{+0.020}
 \expandafter\def\csname ci-repomem-keyed-gen-agents-4096\endcsname{[+0.016, +0.025]}
 \expandafter\def\csname d-repomem-keyed-recency-128\endcsname{+0.773}
-\expandafter\def\csname ci-repomem-keyed-recency-128\endcsname{[+0.761, +0.786]}
+\expandafter\def\csname ci-repomem-keyed-recency-128\endcsname{[+0.761, +0.785]}
 \expandafter\def\csname d-repomem-keyed-recency-256\endcsname{+0.835}
 \expandafter\def\csname ci-repomem-keyed-recency-256\endcsname{[+0.825, +0.846]}
 \expandafter\def\csname d-repomem-keyed-recency-512\endcsname{+0.844}
 \expandafter\def\csname ci-repomem-keyed-recency-512\endcsname{[+0.834, +0.854]}
 \expandafter\def\csname d-repomem-keyed-recency-1024\endcsname{+0.813}
-\expandafter\def\csname ci-repomem-keyed-recency-1024\endcsname{[+0.802, +0.824]}
+\expandafter\def\csname ci-repomem-keyed-recency-1024\endcsname{[+0.802, +0.825]}
 \expandafter\def\csname d-repomem-keyed-recency-2048\endcsname{+0.734}
-\expandafter\def\csname ci-repomem-keyed-recency-2048\endcsname{[+0.720, +0.747]}
+\expandafter\def\csname ci-repomem-keyed-recency-2048\endcsname{[+0.721, +0.747]}
 \expandafter\def\csname d-repomem-keyed-recency-4096\endcsname{+0.626}
-\expandafter\def\csname ci-repomem-keyed-recency-4096\endcsname{[+0.611, +0.640]}
+\expandafter\def\csname ci-repomem-keyed-recency-4096\endcsname{[+0.611, +0.641]}
 \expandafter\def\csname d-repomem-keyed-rerank-128\endcsname{-0.009}
-\expandafter\def\csname ci-repomem-keyed-rerank-128\endcsname{[-0.018, +0.000]}
+\expandafter\def\csname ci-repomem-keyed-rerank-128\endcsname{[-0.018, -0.000]}
 \expandafter\def\csname d-repomem-keyed-rerank-256\endcsname{+0.004}
 \expandafter\def\csname ci-repomem-keyed-rerank-256\endcsname{[-0.003, +0.010]}
 \expandafter\def\csname d-repomem-keyed-rerank-512\endcsname{-0.003}
-\expandafter\def\csname ci-repomem-keyed-rerank-512\endcsname{[-0.007, +0.001]}
+\expandafter\def\csname ci-repomem-keyed-rerank-512\endcsname{[-0.008, +0.001]}
 \expandafter\def\csname d-repomem-keyed-rerank-1024\endcsname{-0.011}
-\expandafter\def\csname ci-repomem-keyed-rerank-1024\endcsname{[-0.014, -0.007]}
+\expandafter\def\csname ci-repomem-keyed-rerank-1024\endcsname{[-0.015, -0.007]}
 \expandafter\def\csname d-repomem-keyed-rerank-2048\endcsname{-0.003}
 \expandafter\def\csname ci-repomem-keyed-rerank-2048\endcsname{[-0.007, +0.000]}
 \expandafter\def\csname d-repomem-keyed-rerank-4096\endcsname{+0.025}
@@ -1538,7 +1654,7 @@
 \expandafter\def\csname d-repomem-keyed-hybrid-live-256\endcsname{+0.030}
 \expandafter\def\csname ci-repomem-keyed-hybrid-live-256\endcsname{[+0.024, +0.037]}
 \expandafter\def\csname d-repomem-keyed-hybrid-live-512\endcsname{+0.036}
-\expandafter\def\csname ci-repomem-keyed-hybrid-live-512\endcsname{[+0.029, +0.042]}
+\expandafter\def\csname ci-repomem-keyed-hybrid-live-512\endcsname{[+0.030, +0.042]}
 \expandafter\def\csname d-repomem-keyed-hybrid-live-1024\endcsname{+0.033}
 \expandafter\def\csname ci-repomem-keyed-hybrid-live-1024\endcsname{[+0.026, +0.040]}
 \expandafter\def\csname d-repomem-keyed-hybrid-live-2048\endcsname{+0.030}
@@ -1582,7 +1698,7 @@
 \expandafter\def\csname d-repomem-keyed--redundancy-4096\endcsname{+0.000}
 \expandafter\def\csname ci-repomem-keyed--redundancy-4096\endcsname{[-0.000, +0.000]}
 \expandafter\def\csname d-repomem-keyed--validity-128\endcsname{+0.009}
-\expandafter\def\csname ci-repomem-keyed--validity-128\endcsname{[+0.001, +0.018]}
+\expandafter\def\csname ci-repomem-keyed--validity-128\endcsname{[+0.001, +0.017]}
 \expandafter\def\csname d-repomem-keyed--validity-256\endcsname{+0.009}
 \expandafter\def\csname ci-repomem-keyed--validity-256\endcsname{[+0.004, +0.015]}
 \expandafter\def\csname d-repomem-keyed--validity-512\endcsname{+0.000}
@@ -1602,15 +1718,15 @@
 \expandafter\def\csname d-repomem-keyed--supersession-1024\endcsname{-0.004}
 \expandafter\def\csname ci-repomem-keyed--supersession-1024\endcsname{[-0.005, -0.002]}
 \expandafter\def\csname d-repomem-keyed--supersession-2048\endcsname{-0.005}
-\expandafter\def\csname ci-repomem-keyed--supersession-2048\endcsname{[-0.007, -0.003]}
+\expandafter\def\csname ci-repomem-keyed--supersession-2048\endcsname{[-0.006, -0.003]}
 \expandafter\def\csname d-repomem-keyed--supersession-4096\endcsname{-0.001}
 \expandafter\def\csname ci-repomem-keyed--supersession-4096\endcsname{[-0.002, -0.000]}
 \expandafter\def\csname d-repomem-keyed--activation-128\endcsname{-0.001}
-\expandafter\def\csname ci-repomem-keyed--activation-128\endcsname{[-0.003, +0.000]}
+\expandafter\def\csname ci-repomem-keyed--activation-128\endcsname{[-0.002, +0.000]}
 \expandafter\def\csname d-repomem-keyed--activation-256\endcsname{-0.000}
 \expandafter\def\csname ci-repomem-keyed--activation-256\endcsname{[-0.001, -0.000]}
 \expandafter\def\csname d-repomem-keyed--activation-512\endcsname{-0.001}
-\expandafter\def\csname ci-repomem-keyed--activation-512\endcsname{[-0.002, -0.001]}
+\expandafter\def\csname ci-repomem-keyed--activation-512\endcsname{[-0.002, -0.000]}
 \expandafter\def\csname d-repomem-keyed--activation-1024\endcsname{-0.001}
 \expandafter\def\csname ci-repomem-keyed--activation-1024\endcsname{[-0.002, -0.001]}
 \expandafter\def\csname d-repomem-keyed--activation-2048\endcsname{-0.001}
@@ -1620,7 +1736,7 @@
 \expandafter\def\csname d-repomem-keyed-kanerva-first-128\endcsname{+0.025}
 \expandafter\def\csname ci-repomem-keyed-kanerva-first-128\endcsname{[+0.019, +0.031]}
 \expandafter\def\csname d-repomem-keyed-kanerva-first-256\endcsname{+0.037}
-\expandafter\def\csname ci-repomem-keyed-kanerva-first-256\endcsname{[+0.031, +0.044]}
+\expandafter\def\csname ci-repomem-keyed-kanerva-first-256\endcsname{[+0.031, +0.043]}
 \expandafter\def\csname d-repomem-keyed-kanerva-first-512\endcsname{+0.030}
 \expandafter\def\csname ci-repomem-keyed-kanerva-first-512\endcsname{[+0.025, +0.036]}
 \expandafter\def\csname d-repomem-keyed-kanerva-first-1024\endcsname{+0.022}
@@ -1629,8 +1745,39 @@
 \expandafter\def\csname ci-repomem-keyed-kanerva-first-2048\endcsname{[+0.006, +0.012]}
 \expandafter\def\csname d-repomem-keyed-kanerva-first-4096\endcsname{-0.000}
 \expandafter\def\csname ci-repomem-keyed-kanerva-first-4096\endcsname{[-0.000, -0.000]}
+\expandafter\def\csname d-repomem-keyed-kanerva-ce-128\endcsname{-0.022}
+\expandafter\def\csname ci-repomem-keyed-kanerva-ce-128\endcsname{[-0.029, -0.016]}
+\expandafter\def\csname d-repomem-keyed-kanerva-ce-256\endcsname{-0.006}
+\expandafter\def\csname ci-repomem-keyed-kanerva-ce-256\endcsname{[-0.011, -0.002]}
+\expandafter\def\csname d-repomem-keyed-kanerva-ce-512\endcsname{-0.006}
+\expandafter\def\csname ci-repomem-keyed-kanerva-ce-512\endcsname{[-0.009, -0.003]}
+\expandafter\def\csname d-repomem-keyed-kanerva-ce-1024\endcsname{-0.004}
+\expandafter\def\csname ci-repomem-keyed-kanerva-ce-1024\endcsname{[-0.007, -0.002]}
+\expandafter\def\csname d-repomem-keyed-kanerva-ce-2048\endcsname{-0.001}
+\expandafter\def\csname ci-repomem-keyed-kanerva-ce-2048\endcsname{[-0.003, +0.002]}
+\expandafter\def\csname d-repomem-keyed-kanerva-ce-4096\endcsname{+0.000}
+\expandafter\def\csname ci-repomem-keyed-kanerva-ce-4096\endcsname{[-0.001, +0.001]}
 \expandafter\def\csname v-n-repomem-keyed\endcsname{4322}
 \expandafter\def\csname v-latp50-repomem-keyed\endcsname{11.7}
+\expandafter\def\csname v-cewin-repomem-keyed-hybrid\endcsname{1}
+\expandafter\def\csname v-celoss-repomem-keyed-hybrid\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-keyed-bm25\endcsname{6}
+\expandafter\def\csname v-celoss-repomem-keyed-bm25\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-keyed-dense\endcsname{0}
+\expandafter\def\csname v-celoss-repomem-keyed-dense\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-keyed-mmr\endcsname{3}
+\expandafter\def\csname v-celoss-repomem-keyed-mmr\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-keyed-facility\endcsname{6}
+\expandafter\def\csname v-celoss-repomem-keyed-facility\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-keyed-gen-agents\endcsname{6}
+\expandafter\def\csname v-celoss-repomem-keyed-gen-agents\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-keyed-recency\endcsname{6}
+\expandafter\def\csname v-celoss-repomem-keyed-recency\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-keyed-rerank\endcsname{1}
+\expandafter\def\csname v-celoss-repomem-keyed-rerank\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-keyed-hybrid-live\endcsname{3}
+\expandafter\def\csname v-celoss-repomem-keyed-hybrid-live\endcsname{0}
+\expandafter\def\csname v-latce-repomem-keyed\endcsname{50}
 \expandafter\def\csname v-pwin-repomem-keyed-hybrid\endcsname{0}
 \expandafter\def\csname v-ploss-repomem-keyed-hybrid\endcsname{1}
 \expandafter\def\csname v-pwin-repomem-keyed-bm25\endcsname{5}
@@ -1968,7 +2115,7 @@
 \expandafter\def\csname s-repomem-plain-recency-2048\endcsname{0.001}
 \expandafter\def\csname s-repomem-plain-recency-4096\endcsname{0.004}
 \expandafter\def\csname d-repomem-plain-hybrid-128\endcsname{+0.003}
-\expandafter\def\csname ci-repomem-plain-hybrid-128\endcsname{[-0.007, +0.012]}
+\expandafter\def\csname ci-repomem-plain-hybrid-128\endcsname{[-0.007, +0.011]}
 \expandafter\def\csname d-repomem-plain-hybrid-256\endcsname{-0.008}
 \expandafter\def\csname ci-repomem-plain-hybrid-256\endcsname{[-0.015, -0.000]}
 \expandafter\def\csname d-repomem-plain-hybrid-512\endcsname{-0.020}
@@ -1980,81 +2127,81 @@
 \expandafter\def\csname d-repomem-plain-hybrid-4096\endcsname{+0.001}
 \expandafter\def\csname ci-repomem-plain-hybrid-4096\endcsname{[-0.001, +0.002]}
 \expandafter\def\csname d-repomem-plain-bm25-128\endcsname{+0.052}
-\expandafter\def\csname ci-repomem-plain-bm25-128\endcsname{[+0.041, +0.062]}
+\expandafter\def\csname ci-repomem-plain-bm25-128\endcsname{[+0.041, +0.063]}
 \expandafter\def\csname d-repomem-plain-bm25-256\endcsname{+0.039}
 \expandafter\def\csname ci-repomem-plain-bm25-256\endcsname{[+0.030, +0.048]}
 \expandafter\def\csname d-repomem-plain-bm25-512\endcsname{+0.021}
-\expandafter\def\csname ci-repomem-plain-bm25-512\endcsname{[+0.014, +0.028]}
+\expandafter\def\csname ci-repomem-plain-bm25-512\endcsname{[+0.014, +0.029]}
 \expandafter\def\csname d-repomem-plain-bm25-1024\endcsname{+0.004}
-\expandafter\def\csname ci-repomem-plain-bm25-1024\endcsname{[-0.001, +0.009]}
+\expandafter\def\csname ci-repomem-plain-bm25-1024\endcsname{[-0.002, +0.009]}
 \expandafter\def\csname d-repomem-plain-bm25-2048\endcsname{+0.008}
 \expandafter\def\csname ci-repomem-plain-bm25-2048\endcsname{[+0.003, +0.013]}
 \expandafter\def\csname d-repomem-plain-bm25-4096\endcsname{+0.035}
 \expandafter\def\csname ci-repomem-plain-bm25-4096\endcsname{[+0.030, +0.040]}
 \expandafter\def\csname d-repomem-plain-dense-128\endcsname{-0.024}
-\expandafter\def\csname ci-repomem-plain-dense-128\endcsname{[-0.033, -0.015]}
+\expandafter\def\csname ci-repomem-plain-dense-128\endcsname{[-0.033, -0.014]}
 \expandafter\def\csname d-repomem-plain-dense-256\endcsname{-0.018}
-\expandafter\def\csname ci-repomem-plain-dense-256\endcsname{[-0.025, -0.011]}
+\expandafter\def\csname ci-repomem-plain-dense-256\endcsname{[-0.025, -0.012]}
 \expandafter\def\csname d-repomem-plain-dense-512\endcsname{-0.015}
-\expandafter\def\csname ci-repomem-plain-dense-512\endcsname{[-0.021, -0.009]}
+\expandafter\def\csname ci-repomem-plain-dense-512\endcsname{[-0.020, -0.009]}
 \expandafter\def\csname d-repomem-plain-dense-1024\endcsname{-0.015}
-\expandafter\def\csname ci-repomem-plain-dense-1024\endcsname{[-0.019, -0.010]}
+\expandafter\def\csname ci-repomem-plain-dense-1024\endcsname{[-0.020, -0.010]}
 \expandafter\def\csname d-repomem-plain-dense-2048\endcsname{-0.012}
 \expandafter\def\csname ci-repomem-plain-dense-2048\endcsname{[-0.017, -0.008]}
 \expandafter\def\csname d-repomem-plain-dense-4096\endcsname{+0.009}
 \expandafter\def\csname ci-repomem-plain-dense-4096\endcsname{[+0.007, +0.012]}
 \expandafter\def\csname d-repomem-plain-mmr-128\endcsname{+0.034}
-\expandafter\def\csname ci-repomem-plain-mmr-128\endcsname{[+0.023, +0.044]}
+\expandafter\def\csname ci-repomem-plain-mmr-128\endcsname{[+0.023, +0.043]}
 \expandafter\def\csname d-repomem-plain-mmr-256\endcsname{+0.014}
 \expandafter\def\csname ci-repomem-plain-mmr-256\endcsname{[+0.006, +0.023]}
 \expandafter\def\csname d-repomem-plain-mmr-512\endcsname{-0.002}
-\expandafter\def\csname ci-repomem-plain-mmr-512\endcsname{[-0.008, +0.004]}
+\expandafter\def\csname ci-repomem-plain-mmr-512\endcsname{[-0.008, +0.005]}
 \expandafter\def\csname d-repomem-plain-mmr-1024\endcsname{-0.009}
 \expandafter\def\csname ci-repomem-plain-mmr-1024\endcsname{[-0.015, -0.004]}
 \expandafter\def\csname d-repomem-plain-mmr-2048\endcsname{-0.018}
-\expandafter\def\csname ci-repomem-plain-mmr-2048\endcsname{[-0.022, -0.014]}
+\expandafter\def\csname ci-repomem-plain-mmr-2048\endcsname{[-0.023, -0.014]}
 \expandafter\def\csname d-repomem-plain-mmr-4096\endcsname{-0.000}
-\expandafter\def\csname ci-repomem-plain-mmr-4096\endcsname{[-0.002, +0.001]}
+\expandafter\def\csname ci-repomem-plain-mmr-4096\endcsname{[-0.001, +0.001]}
 \expandafter\def\csname d-repomem-plain-facility-128\endcsname{+0.668}
-\expandafter\def\csname ci-repomem-plain-facility-128\endcsname{[+0.653, +0.682]}
+\expandafter\def\csname ci-repomem-plain-facility-128\endcsname{[+0.654, +0.682]}
 \expandafter\def\csname d-repomem-plain-facility-256\endcsname{+0.679}
-\expandafter\def\csname ci-repomem-plain-facility-256\endcsname{[+0.665, +0.693]}
+\expandafter\def\csname ci-repomem-plain-facility-256\endcsname{[+0.664, +0.692]}
 \expandafter\def\csname d-repomem-plain-facility-512\endcsname{+0.627}
-\expandafter\def\csname ci-repomem-plain-facility-512\endcsname{[+0.613, +0.642]}
+\expandafter\def\csname ci-repomem-plain-facility-512\endcsname{[+0.613, +0.643]}
 \expandafter\def\csname d-repomem-plain-facility-1024\endcsname{+0.522}
-\expandafter\def\csname ci-repomem-plain-facility-1024\endcsname{[+0.507, +0.537]}
+\expandafter\def\csname ci-repomem-plain-facility-1024\endcsname{[+0.508, +0.536]}
 \expandafter\def\csname d-repomem-plain-facility-2048\endcsname{+0.374}
-\expandafter\def\csname ci-repomem-plain-facility-2048\endcsname{[+0.358, +0.389]}
+\expandafter\def\csname ci-repomem-plain-facility-2048\endcsname{[+0.359, +0.388]}
 \expandafter\def\csname d-repomem-plain-facility-4096\endcsname{+0.077}
-\expandafter\def\csname ci-repomem-plain-facility-4096\endcsname{[+0.070, +0.085]}
+\expandafter\def\csname ci-repomem-plain-facility-4096\endcsname{[+0.069, +0.085]}
 \expandafter\def\csname d-repomem-plain-gen-agents-128\endcsname{+0.579}
-\expandafter\def\csname ci-repomem-plain-gen-agents-128\endcsname{[+0.564, +0.594]}
+\expandafter\def\csname ci-repomem-plain-gen-agents-128\endcsname{[+0.563, +0.594]}
 \expandafter\def\csname d-repomem-plain-gen-agents-256\endcsname{+0.546}
-\expandafter\def\csname ci-repomem-plain-gen-agents-256\endcsname{[+0.530, +0.561]}
+\expandafter\def\csname ci-repomem-plain-gen-agents-256\endcsname{[+0.531, +0.560]}
 \expandafter\def\csname d-repomem-plain-gen-agents-512\endcsname{+0.370}
-\expandafter\def\csname ci-repomem-plain-gen-agents-512\endcsname{[+0.355, +0.384]}
+\expandafter\def\csname ci-repomem-plain-gen-agents-512\endcsname{[+0.355, +0.386]}
 \expandafter\def\csname d-repomem-plain-gen-agents-1024\endcsname{+0.225}
-\expandafter\def\csname ci-repomem-plain-gen-agents-1024\endcsname{[+0.212, +0.238]}
+\expandafter\def\csname ci-repomem-plain-gen-agents-1024\endcsname{[+0.211, +0.238]}
 \expandafter\def\csname d-repomem-plain-gen-agents-2048\endcsname{+0.046}
 \expandafter\def\csname ci-repomem-plain-gen-agents-2048\endcsname{[+0.038, +0.054]}
 \expandafter\def\csname d-repomem-plain-gen-agents-4096\endcsname{+0.020}
 \expandafter\def\csname ci-repomem-plain-gen-agents-4096\endcsname{[+0.015, +0.024]}
 \expandafter\def\csname d-repomem-plain-recency-128\endcsname{+0.763}
-\expandafter\def\csname ci-repomem-plain-recency-128\endcsname{[+0.752, +0.776]}
+\expandafter\def\csname ci-repomem-plain-recency-128\endcsname{[+0.751, +0.775]}
 \expandafter\def\csname d-repomem-plain-recency-256\endcsname{+0.817}
-\expandafter\def\csname ci-repomem-plain-recency-256\endcsname{[+0.806, +0.828]}
+\expandafter\def\csname ci-repomem-plain-recency-256\endcsname{[+0.806, +0.829]}
 \expandafter\def\csname d-repomem-plain-recency-512\endcsname{+0.829}
-\expandafter\def\csname ci-repomem-plain-recency-512\endcsname{[+0.819, +0.839]}
+\expandafter\def\csname ci-repomem-plain-recency-512\endcsname{[+0.817, +0.839]}
 \expandafter\def\csname d-repomem-plain-recency-1024\endcsname{+0.803}
 \expandafter\def\csname ci-repomem-plain-recency-1024\endcsname{[+0.792, +0.815]}
 \expandafter\def\csname d-repomem-plain-recency-2048\endcsname{+0.727}
-\expandafter\def\csname ci-repomem-plain-recency-2048\endcsname{[+0.714, +0.741]}
+\expandafter\def\csname ci-repomem-plain-recency-2048\endcsname{[+0.713, +0.740]}
 \expandafter\def\csname d-repomem-plain-recency-4096\endcsname{+0.629}
-\expandafter\def\csname ci-repomem-plain-recency-4096\endcsname{[+0.615, +0.644]}
+\expandafter\def\csname ci-repomem-plain-recency-4096\endcsname{[+0.613, +0.644]}
 \expandafter\def\csname d-repomem-plain-hybrid-live-128\endcsname{+0.003}
 \expandafter\def\csname ci-repomem-plain-hybrid-live-128\endcsname{[-0.007, +0.011]}
 \expandafter\def\csname d-repomem-plain-hybrid-live-256\endcsname{-0.008}
-\expandafter\def\csname ci-repomem-plain-hybrid-live-256\endcsname{[-0.014, -0.000]}
+\expandafter\def\csname ci-repomem-plain-hybrid-live-256\endcsname{[-0.015, -0.000]}
 \expandafter\def\csname d-repomem-plain-hybrid-live-512\endcsname{-0.020}
 \expandafter\def\csname ci-repomem-plain-hybrid-live-512\endcsname{[-0.025, -0.015]}
 \expandafter\def\csname d-repomem-plain-hybrid-live-1024\endcsname{-0.018}
@@ -2082,7 +2229,7 @@
 \expandafter\def\csname d-repomem-plain--coverage-512\endcsname{+0.004}
 \expandafter\def\csname ci-repomem-plain--coverage-512\endcsname{[+0.002, +0.006]}
 \expandafter\def\csname d-repomem-plain--coverage-1024\endcsname{+0.004}
-\expandafter\def\csname ci-repomem-plain--coverage-1024\endcsname{[+0.002, +0.007]}
+\expandafter\def\csname ci-repomem-plain--coverage-1024\endcsname{[+0.003, +0.007]}
 \expandafter\def\csname d-repomem-plain--coverage-2048\endcsname{+0.001}
 \expandafter\def\csname ci-repomem-plain--coverage-2048\endcsname{[+0.000, +0.003]}
 \expandafter\def\csname d-repomem-plain--coverage-4096\endcsname{+0.000}
@@ -2102,23 +2249,23 @@
 \expandafter\def\csname d-repomem-plain--validity-128\endcsname{-0.001}
 \expandafter\def\csname ci-repomem-plain--validity-128\endcsname{[-0.010, +0.007]}
 \expandafter\def\csname d-repomem-plain--validity-256\endcsname{-0.009}
-\expandafter\def\csname ci-repomem-plain--validity-256\endcsname{[-0.016, -0.003]}
+\expandafter\def\csname ci-repomem-plain--validity-256\endcsname{[-0.015, -0.002]}
 \expandafter\def\csname d-repomem-plain--validity-512\endcsname{-0.016}
-\expandafter\def\csname ci-repomem-plain--validity-512\endcsname{[-0.021, -0.011]}
+\expandafter\def\csname ci-repomem-plain--validity-512\endcsname{[-0.020, -0.011]}
 \expandafter\def\csname d-repomem-plain--validity-1024\endcsname{-0.011}
-\expandafter\def\csname ci-repomem-plain--validity-1024\endcsname{[-0.015, -0.007]}
+\expandafter\def\csname ci-repomem-plain--validity-1024\endcsname{[-0.014, -0.007]}
 \expandafter\def\csname d-repomem-plain--validity-2048\endcsname{-0.009}
 \expandafter\def\csname ci-repomem-plain--validity-2048\endcsname{[-0.012, -0.005]}
 \expandafter\def\csname d-repomem-plain--validity-4096\endcsname{+0.000}
 \expandafter\def\csname ci-repomem-plain--validity-4096\endcsname{[-0.001, +0.002]}
 \expandafter\def\csname d-repomem-plain--supersession-128\endcsname{-0.001}
-\expandafter\def\csname ci-repomem-plain--supersession-128\endcsname{[-0.010, +0.008]}
+\expandafter\def\csname ci-repomem-plain--supersession-128\endcsname{[-0.010, +0.007]}
 \expandafter\def\csname d-repomem-plain--supersession-256\endcsname{-0.009}
 \expandafter\def\csname ci-repomem-plain--supersession-256\endcsname{[-0.016, -0.003]}
 \expandafter\def\csname d-repomem-plain--supersession-512\endcsname{-0.015}
-\expandafter\def\csname ci-repomem-plain--supersession-512\endcsname{[-0.021, -0.011]}
+\expandafter\def\csname ci-repomem-plain--supersession-512\endcsname{[-0.020, -0.011]}
 \expandafter\def\csname d-repomem-plain--supersession-1024\endcsname{-0.011}
-\expandafter\def\csname ci-repomem-plain--supersession-1024\endcsname{[-0.014, -0.007]}
+\expandafter\def\csname ci-repomem-plain--supersession-1024\endcsname{[-0.015, -0.007]}
 \expandafter\def\csname d-repomem-plain--supersession-2048\endcsname{-0.008}
 \expandafter\def\csname ci-repomem-plain--supersession-2048\endcsname{[-0.011, -0.005]}
 \expandafter\def\csname d-repomem-plain--supersession-4096\endcsname{+0.000}
@@ -2149,6 +2296,24 @@
 \expandafter\def\csname ci-repomem-plain-kanerva-first-4096\endcsname{[+0.000, +0.000]}
 \expandafter\def\csname v-n-repomem-plain\endcsname{4322}
 \expandafter\def\csname v-latp50-repomem-plain\endcsname{11.7}
+\expandafter\def\csname v-cewin-repomem-plain-hybrid\endcsname{0}
+\expandafter\def\csname v-celoss-repomem-plain-hybrid\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-plain-bm25\endcsname{0}
+\expandafter\def\csname v-celoss-repomem-plain-bm25\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-plain-dense\endcsname{0}
+\expandafter\def\csname v-celoss-repomem-plain-dense\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-plain-mmr\endcsname{0}
+\expandafter\def\csname v-celoss-repomem-plain-mmr\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-plain-facility\endcsname{0}
+\expandafter\def\csname v-celoss-repomem-plain-facility\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-plain-gen-agents\endcsname{0}
+\expandafter\def\csname v-celoss-repomem-plain-gen-agents\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-plain-recency\endcsname{0}
+\expandafter\def\csname v-celoss-repomem-plain-recency\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-plain-rerank\endcsname{0}
+\expandafter\def\csname v-celoss-repomem-plain-rerank\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-plain-hybrid-live\endcsname{0}
+\expandafter\def\csname v-celoss-repomem-plain-hybrid-live\endcsname{0}
 \expandafter\def\csname v-pwin-repomem-plain-hybrid\endcsname{0}
 \expandafter\def\csname v-ploss-repomem-plain-hybrid\endcsname{3}
 \expandafter\def\csname v-pwin-repomem-plain-bm25\endcsname{3}
@@ -2249,6 +2414,12 @@
 \expandafter\def\csname r-repomem-holdout-kanerva-1024\endcsname{0.834}
 \expandafter\def\csname r-repomem-holdout-kanerva-2048\endcsname{0.863}
 \expandafter\def\csname r-repomem-holdout-kanerva-4096\endcsname{0.905}
+\expandafter\def\csname r-repomem-holdout-kanerva-ce-128\endcsname{0.677}
+\expandafter\def\csname r-repomem-holdout-kanerva-ce-256\endcsname{0.752}
+\expandafter\def\csname r-repomem-holdout-kanerva-ce-512\endcsname{0.805}
+\expandafter\def\csname r-repomem-holdout-kanerva-ce-1024\endcsname{0.835}
+\expandafter\def\csname r-repomem-holdout-kanerva-ce-2048\endcsname{0.863}
+\expandafter\def\csname r-repomem-holdout-kanerva-ce-4096\endcsname{0.903}
 \expandafter\def\csname r-repomem-holdout-kanerva-first-128\endcsname{0.638}
 \expandafter\def\csname r-repomem-holdout-kanerva-first-256\endcsname{0.712}
 \expandafter\def\csname r-repomem-holdout-kanerva-first-512\endcsname{0.777}
@@ -2273,6 +2444,12 @@
 \expandafter\def\csname r-repomem-holdout-recency-1024\endcsname{0.060}
 \expandafter\def\csname r-repomem-holdout-recency-2048\endcsname{0.096}
 \expandafter\def\csname r-repomem-holdout-recency-4096\endcsname{0.206}
+\expandafter\def\csname r-repomem-holdout-rerank-128\endcsname{0.661}
+\expandafter\def\csname r-repomem-holdout-rerank-256\endcsname{0.731}
+\expandafter\def\csname r-repomem-holdout-rerank-512\endcsname{0.789}
+\expandafter\def\csname r-repomem-holdout-rerank-1024\endcsname{0.833}
+\expandafter\def\csname r-repomem-holdout-rerank-2048\endcsname{0.869}
+\expandafter\def\csname r-repomem-holdout-rerank-4096\endcsname{0.873}
 \expandafter\def\csname t-repomem-holdout--activation-128\endcsname{122}
 \expandafter\def\csname t-repomem-holdout--activation-256\endcsname{250}
 \expandafter\def\csname t-repomem-holdout--activation-512\endcsname{506}
@@ -2355,6 +2532,12 @@
 \expandafter\def\csname t-repomem-holdout-kanerva-1024\endcsname{1018}
 \expandafter\def\csname t-repomem-holdout-kanerva-2048\endcsname{2041}
 \expandafter\def\csname t-repomem-holdout-kanerva-4096\endcsname{3957}
+\expandafter\def\csname t-repomem-holdout-kanerva-ce-128\endcsname{122}
+\expandafter\def\csname t-repomem-holdout-kanerva-ce-256\endcsname{250}
+\expandafter\def\csname t-repomem-holdout-kanerva-ce-512\endcsname{506}
+\expandafter\def\csname t-repomem-holdout-kanerva-ce-1024\endcsname{1018}
+\expandafter\def\csname t-repomem-holdout-kanerva-ce-2048\endcsname{2041}
+\expandafter\def\csname t-repomem-holdout-kanerva-ce-4096\endcsname{3955}
 \expandafter\def\csname t-repomem-holdout-kanerva-first-128\endcsname{122}
 \expandafter\def\csname t-repomem-holdout-kanerva-first-256\endcsname{250}
 \expandafter\def\csname t-repomem-holdout-kanerva-first-512\endcsname{506}
@@ -2379,6 +2562,12 @@
 \expandafter\def\csname t-repomem-holdout-recency-1024\endcsname{1020}
 \expandafter\def\csname t-repomem-holdout-recency-2048\endcsname{2044}
 \expandafter\def\csname t-repomem-holdout-recency-4096\endcsname{4092}
+\expandafter\def\csname t-repomem-holdout-rerank-128\endcsname{121}
+\expandafter\def\csname t-repomem-holdout-rerank-256\endcsname{249}
+\expandafter\def\csname t-repomem-holdout-rerank-512\endcsname{505}
+\expandafter\def\csname t-repomem-holdout-rerank-1024\endcsname{1016}
+\expandafter\def\csname t-repomem-holdout-rerank-2048\endcsname{1708}
+\expandafter\def\csname t-repomem-holdout-rerank-4096\endcsname{1905}
 \expandafter\def\csname s-repomem-holdout--activation-128\endcsname{0.001}
 \expandafter\def\csname s-repomem-holdout--activation-256\endcsname{0.001}
 \expandafter\def\csname s-repomem-holdout--activation-512\endcsname{0.001}
@@ -2461,6 +2650,12 @@
 \expandafter\def\csname s-repomem-holdout-kanerva-1024\endcsname{0.001}
 \expandafter\def\csname s-repomem-holdout-kanerva-2048\endcsname{0.001}
 \expandafter\def\csname s-repomem-holdout-kanerva-4096\endcsname{0.001}
+\expandafter\def\csname s-repomem-holdout-kanerva-ce-128\endcsname{0.000}
+\expandafter\def\csname s-repomem-holdout-kanerva-ce-256\endcsname{0.001}
+\expandafter\def\csname s-repomem-holdout-kanerva-ce-512\endcsname{0.000}
+\expandafter\def\csname s-repomem-holdout-kanerva-ce-1024\endcsname{0.000}
+\expandafter\def\csname s-repomem-holdout-kanerva-ce-2048\endcsname{0.000}
+\expandafter\def\csname s-repomem-holdout-kanerva-ce-4096\endcsname{0.001}
 \expandafter\def\csname s-repomem-holdout-kanerva-first-128\endcsname{0.000}
 \expandafter\def\csname s-repomem-holdout-kanerva-first-256\endcsname{0.000}
 \expandafter\def\csname s-repomem-holdout-kanerva-first-512\endcsname{0.000}
@@ -2485,8 +2680,14 @@
 \expandafter\def\csname s-repomem-holdout-recency-1024\endcsname{0.000}
 \expandafter\def\csname s-repomem-holdout-recency-2048\endcsname{0.000}
 \expandafter\def\csname s-repomem-holdout-recency-4096\endcsname{0.000}
+\expandafter\def\csname s-repomem-holdout-rerank-128\endcsname{0.216}
+\expandafter\def\csname s-repomem-holdout-rerank-256\endcsname{0.240}
+\expandafter\def\csname s-repomem-holdout-rerank-512\endcsname{0.245}
+\expandafter\def\csname s-repomem-holdout-rerank-1024\endcsname{0.252}
+\expandafter\def\csname s-repomem-holdout-rerank-2048\endcsname{0.252}
+\expandafter\def\csname s-repomem-holdout-rerank-4096\endcsname{0.253}
 \expandafter\def\csname d-repomem-holdout-hybrid-128\endcsname{+0.008}
-\expandafter\def\csname ci-repomem-holdout-hybrid-128\endcsname{[-0.002, +0.017]}
+\expandafter\def\csname ci-repomem-holdout-hybrid-128\endcsname{[-0.001, +0.016]}
 \expandafter\def\csname d-repomem-holdout-hybrid-256\endcsname{+0.010}
 \expandafter\def\csname ci-repomem-holdout-hybrid-256\endcsname{[+0.004, +0.017]}
 \expandafter\def\csname d-repomem-holdout-hybrid-512\endcsname{+0.012}
@@ -2494,11 +2695,11 @@
 \expandafter\def\csname d-repomem-holdout-hybrid-1024\endcsname{+0.005}
 \expandafter\def\csname ci-repomem-holdout-hybrid-1024\endcsname{[+0.000, +0.011]}
 \expandafter\def\csname d-repomem-holdout-hybrid-2048\endcsname{-0.005}
-\expandafter\def\csname ci-repomem-holdout-hybrid-2048\endcsname{[-0.012, +0.001]}
+\expandafter\def\csname ci-repomem-holdout-hybrid-2048\endcsname{[-0.011, +0.001]}
 \expandafter\def\csname d-repomem-holdout-hybrid-4096\endcsname{-0.003}
 \expandafter\def\csname ci-repomem-holdout-hybrid-4096\endcsname{[-0.006, +0.001]}
 \expandafter\def\csname d-repomem-holdout-bm25-128\endcsname{+0.058}
-\expandafter\def\csname ci-repomem-holdout-bm25-128\endcsname{[+0.047, +0.070]}
+\expandafter\def\csname ci-repomem-holdout-bm25-128\endcsname{[+0.047, +0.069]}
 \expandafter\def\csname d-repomem-holdout-bm25-256\endcsname{+0.055}
 \expandafter\def\csname ci-repomem-holdout-bm25-256\endcsname{[+0.047, +0.064]}
 \expandafter\def\csname d-repomem-holdout-bm25-512\endcsname{+0.055}
@@ -2508,13 +2709,13 @@
 \expandafter\def\csname d-repomem-holdout-bm25-2048\endcsname{+0.024}
 \expandafter\def\csname ci-repomem-holdout-bm25-2048\endcsname{[+0.017, +0.030]}
 \expandafter\def\csname d-repomem-holdout-bm25-4096\endcsname{+0.021}
-\expandafter\def\csname ci-repomem-holdout-bm25-4096\endcsname{[+0.016, +0.026]}
+\expandafter\def\csname ci-repomem-holdout-bm25-4096\endcsname{[+0.016, +0.027]}
 \expandafter\def\csname d-repomem-holdout-dense-128\endcsname{+0.011}
-\expandafter\def\csname ci-repomem-holdout-dense-128\endcsname{[+0.001, +0.020]}
+\expandafter\def\csname ci-repomem-holdout-dense-128\endcsname{[+0.001, +0.021]}
 \expandafter\def\csname d-repomem-holdout-dense-256\endcsname{+0.004}
 \expandafter\def\csname ci-repomem-holdout-dense-256\endcsname{[-0.004, +0.012]}
 \expandafter\def\csname d-repomem-holdout-dense-512\endcsname{+0.017}
-\expandafter\def\csname ci-repomem-holdout-dense-512\endcsname{[+0.010, +0.024]}
+\expandafter\def\csname ci-repomem-holdout-dense-512\endcsname{[+0.010, +0.025]}
 \expandafter\def\csname d-repomem-holdout-dense-1024\endcsname{+0.012}
 \expandafter\def\csname ci-repomem-holdout-dense-1024\endcsname{[+0.006, +0.019]}
 \expandafter\def\csname d-repomem-holdout-dense-2048\endcsname{-0.002}
@@ -2522,7 +2723,7 @@
 \expandafter\def\csname d-repomem-holdout-dense-4096\endcsname{+0.002}
 \expandafter\def\csname ci-repomem-holdout-dense-4096\endcsname{[-0.002, +0.006]}
 \expandafter\def\csname d-repomem-holdout-mmr-128\endcsname{+0.047}
-\expandafter\def\csname ci-repomem-holdout-mmr-128\endcsname{[+0.036, +0.058]}
+\expandafter\def\csname ci-repomem-holdout-mmr-128\endcsname{[+0.036, +0.059]}
 \expandafter\def\csname d-repomem-holdout-mmr-256\endcsname{+0.038}
 \expandafter\def\csname ci-repomem-holdout-mmr-256\endcsname{[+0.029, +0.047]}
 \expandafter\def\csname d-repomem-holdout-mmr-512\endcsname{+0.048}
@@ -2532,43 +2733,55 @@
 \expandafter\def\csname d-repomem-holdout-mmr-2048\endcsname{+0.012}
 \expandafter\def\csname ci-repomem-holdout-mmr-2048\endcsname{[+0.006, +0.019]}
 \expandafter\def\csname d-repomem-holdout-mmr-4096\endcsname{+0.001}
-\expandafter\def\csname ci-repomem-holdout-mmr-4096\endcsname{[-0.003, +0.004]}
+\expandafter\def\csname ci-repomem-holdout-mmr-4096\endcsname{[-0.003, +0.005]}
 \expandafter\def\csname d-repomem-holdout-facility-128\endcsname{+0.541}
-\expandafter\def\csname ci-repomem-holdout-facility-128\endcsname{[+0.522, +0.558]}
+\expandafter\def\csname ci-repomem-holdout-facility-128\endcsname{[+0.524, +0.558]}
 \expandafter\def\csname d-repomem-holdout-facility-256\endcsname{+0.576}
-\expandafter\def\csname ci-repomem-holdout-facility-256\endcsname{[+0.559, +0.593]}
+\expandafter\def\csname ci-repomem-holdout-facility-256\endcsname{[+0.558, +0.592]}
 \expandafter\def\csname d-repomem-holdout-facility-512\endcsname{+0.551}
 \expandafter\def\csname ci-repomem-holdout-facility-512\endcsname{[+0.534, +0.568]}
 \expandafter\def\csname d-repomem-holdout-facility-1024\endcsname{+0.469}
-\expandafter\def\csname ci-repomem-holdout-facility-1024\endcsname{[+0.453, +0.486]}
+\expandafter\def\csname ci-repomem-holdout-facility-1024\endcsname{[+0.452, +0.486]}
 \expandafter\def\csname d-repomem-holdout-facility-2048\endcsname{+0.365}
-\expandafter\def\csname ci-repomem-holdout-facility-2048\endcsname{[+0.348, +0.381]}
+\expandafter\def\csname ci-repomem-holdout-facility-2048\endcsname{[+0.347, +0.381]}
 \expandafter\def\csname d-repomem-holdout-facility-4096\endcsname{+0.160}
-\expandafter\def\csname ci-repomem-holdout-facility-4096\endcsname{[+0.147, +0.174]}
+\expandafter\def\csname ci-repomem-holdout-facility-4096\endcsname{[+0.147, +0.173]}
 \expandafter\def\csname d-repomem-holdout-gen-agents-128\endcsname{+0.565}
-\expandafter\def\csname ci-repomem-holdout-gen-agents-128\endcsname{[+0.546, +0.581]}
+\expandafter\def\csname ci-repomem-holdout-gen-agents-128\endcsname{[+0.547, +0.583]}
 \expandafter\def\csname d-repomem-holdout-gen-agents-256\endcsname{+0.611}
-\expandafter\def\csname ci-repomem-holdout-gen-agents-256\endcsname{[+0.593, +0.628]}
+\expandafter\def\csname ci-repomem-holdout-gen-agents-256\endcsname{[+0.594, +0.627]}
 \expandafter\def\csname d-repomem-holdout-gen-agents-512\endcsname{+0.547}
-\expandafter\def\csname ci-repomem-holdout-gen-agents-512\endcsname{[+0.529, +0.565]}
+\expandafter\def\csname ci-repomem-holdout-gen-agents-512\endcsname{[+0.530, +0.564]}
 \expandafter\def\csname d-repomem-holdout-gen-agents-1024\endcsname{+0.263}
-\expandafter\def\csname ci-repomem-holdout-gen-agents-1024\endcsname{[+0.247, +0.278]}
+\expandafter\def\csname ci-repomem-holdout-gen-agents-1024\endcsname{[+0.248, +0.279]}
 \expandafter\def\csname d-repomem-holdout-gen-agents-2048\endcsname{+0.066}
-\expandafter\def\csname ci-repomem-holdout-gen-agents-2048\endcsname{[+0.056, +0.077]}
+\expandafter\def\csname ci-repomem-holdout-gen-agents-2048\endcsname{[+0.057, +0.076]}
 \expandafter\def\csname d-repomem-holdout-gen-agents-4096\endcsname{-0.001}
 \expandafter\def\csname ci-repomem-holdout-gen-agents-4096\endcsname{[-0.005, +0.004]}
 \expandafter\def\csname d-repomem-holdout-recency-128\endcsname{+0.659}
 \expandafter\def\csname ci-repomem-holdout-recency-128\endcsname{[+0.642, +0.675]}
 \expandafter\def\csname d-repomem-holdout-recency-256\endcsname{+0.732}
-\expandafter\def\csname ci-repomem-holdout-recency-256\endcsname{[+0.717, +0.747]}
+\expandafter\def\csname ci-repomem-holdout-recency-256\endcsname{[+0.718, +0.747]}
 \expandafter\def\csname d-repomem-holdout-recency-512\endcsname{+0.769}
-\expandafter\def\csname ci-repomem-holdout-recency-512\endcsname{[+0.756, +0.783]}
+\expandafter\def\csname ci-repomem-holdout-recency-512\endcsname{[+0.755, +0.783]}
 \expandafter\def\csname d-repomem-holdout-recency-1024\endcsname{+0.774}
-\expandafter\def\csname ci-repomem-holdout-recency-1024\endcsname{[+0.759, +0.787]}
+\expandafter\def\csname ci-repomem-holdout-recency-1024\endcsname{[+0.761, +0.787]}
 \expandafter\def\csname d-repomem-holdout-recency-2048\endcsname{+0.768}
 \expandafter\def\csname ci-repomem-holdout-recency-2048\endcsname{[+0.754, +0.782]}
 \expandafter\def\csname d-repomem-holdout-recency-4096\endcsname{+0.699}
 \expandafter\def\csname ci-repomem-holdout-recency-4096\endcsname{[+0.684, +0.715]}
+\expandafter\def\csname d-repomem-holdout-rerank-128\endcsname{+0.000}
+\expandafter\def\csname ci-repomem-holdout-rerank-128\endcsname{[-0.009, +0.010]}
+\expandafter\def\csname d-repomem-holdout-rerank-256\endcsname{+0.010}
+\expandafter\def\csname ci-repomem-holdout-rerank-256\endcsname{[+0.002, +0.017]}
+\expandafter\def\csname d-repomem-holdout-rerank-512\endcsname{+0.012}
+\expandafter\def\csname ci-repomem-holdout-rerank-512\endcsname{[+0.005, +0.019]}
+\expandafter\def\csname d-repomem-holdout-rerank-1024\endcsname{+0.001}
+\expandafter\def\csname ci-repomem-holdout-rerank-1024\endcsname{[-0.005, +0.008]}
+\expandafter\def\csname d-repomem-holdout-rerank-2048\endcsname{-0.006}
+\expandafter\def\csname ci-repomem-holdout-rerank-2048\endcsname{[-0.013, +0.001]}
+\expandafter\def\csname d-repomem-holdout-rerank-4096\endcsname{+0.032}
+\expandafter\def\csname ci-repomem-holdout-rerank-4096\endcsname{[+0.026, +0.037]}
 \expandafter\def\csname d-repomem-holdout-hybrid-live-128\endcsname{+0.001}
 \expandafter\def\csname ci-repomem-holdout-hybrid-live-128\endcsname{[-0.005, +0.007]}
 \expandafter\def\csname d-repomem-holdout-hybrid-live-256\endcsname{+0.012}
@@ -2582,9 +2795,9 @@
 \expandafter\def\csname d-repomem-holdout-hybrid-live-4096\endcsname{+0.019}
 \expandafter\def\csname ci-repomem-holdout-hybrid-live-4096\endcsname{[+0.013, +0.025]}
 \expandafter\def\csname d-repomem-holdout--density-128\endcsname{-0.015}
-\expandafter\def\csname ci-repomem-holdout--density-128\endcsname{[-0.019, -0.010]}
+\expandafter\def\csname ci-repomem-holdout--density-128\endcsname{[-0.020, -0.010]}
 \expandafter\def\csname d-repomem-holdout--density-256\endcsname{-0.020}
-\expandafter\def\csname ci-repomem-holdout--density-256\endcsname{[-0.026, -0.015]}
+\expandafter\def\csname ci-repomem-holdout--density-256\endcsname{[-0.025, -0.015]}
 \expandafter\def\csname d-repomem-holdout--density-512\endcsname{-0.008}
 \expandafter\def\csname ci-repomem-holdout--density-512\endcsname{[-0.011, -0.005]}
 \expandafter\def\csname d-repomem-holdout--density-1024\endcsname{-0.007}
@@ -2594,7 +2807,7 @@
 \expandafter\def\csname d-repomem-holdout--density-4096\endcsname{-0.001}
 \expandafter\def\csname ci-repomem-holdout--density-4096\endcsname{[-0.002, +0.000]}
 \expandafter\def\csname d-repomem-holdout--coverage-128\endcsname{+0.011}
-\expandafter\def\csname ci-repomem-holdout--coverage-128\endcsname{[+0.008, +0.015]}
+\expandafter\def\csname ci-repomem-holdout--coverage-128\endcsname{[+0.007, +0.015]}
 \expandafter\def\csname d-repomem-holdout--coverage-256\endcsname{+0.012}
 \expandafter\def\csname ci-repomem-holdout--coverage-256\endcsname{[+0.008, +0.016]}
 \expandafter\def\csname d-repomem-holdout--coverage-512\endcsname{+0.002}
@@ -2608,7 +2821,7 @@
 \expandafter\def\csname d-repomem-holdout--redundancy-128\endcsname{-0.000}
 \expandafter\def\csname ci-repomem-holdout--redundancy-128\endcsname{[-0.001, -0.000]}
 \expandafter\def\csname d-repomem-holdout--redundancy-256\endcsname{-0.001}
-\expandafter\def\csname ci-repomem-holdout--redundancy-256\endcsname{[-0.002, +0.000]}
+\expandafter\def\csname ci-repomem-holdout--redundancy-256\endcsname{[-0.002, -0.000]}
 \expandafter\def\csname d-repomem-holdout--redundancy-512\endcsname{+0.000}
 \expandafter\def\csname ci-repomem-holdout--redundancy-512\endcsname{[-0.000, +0.001]}
 \expandafter\def\csname d-repomem-holdout--redundancy-1024\endcsname{-0.000}
@@ -2618,17 +2831,17 @@
 \expandafter\def\csname d-repomem-holdout--redundancy-4096\endcsname{+0.000}
 \expandafter\def\csname ci-repomem-holdout--redundancy-4096\endcsname{[-0.000, +0.000]}
 \expandafter\def\csname d-repomem-holdout--validity-128\endcsname{+0.016}
-\expandafter\def\csname ci-repomem-holdout--validity-128\endcsname{[+0.007, +0.024]}
+\expandafter\def\csname ci-repomem-holdout--validity-128\endcsname{[+0.007, +0.025]}
 \expandafter\def\csname d-repomem-holdout--validity-256\endcsname{+0.017}
 \expandafter\def\csname ci-repomem-holdout--validity-256\endcsname{[+0.011, +0.023]}
 \expandafter\def\csname d-repomem-holdout--validity-512\endcsname{+0.015}
-\expandafter\def\csname ci-repomem-holdout--validity-512\endcsname{[+0.009, +0.019]}
+\expandafter\def\csname ci-repomem-holdout--validity-512\endcsname{[+0.010, +0.020]}
 \expandafter\def\csname d-repomem-holdout--validity-1024\endcsname{+0.005}
-\expandafter\def\csname ci-repomem-holdout--validity-1024\endcsname{[+0.001, +0.009]}
+\expandafter\def\csname ci-repomem-holdout--validity-1024\endcsname{[+0.001, +0.010]}
 \expandafter\def\csname d-repomem-holdout--validity-2048\endcsname{+0.004}
 \expandafter\def\csname ci-repomem-holdout--validity-2048\endcsname{[-0.001, +0.008]}
 \expandafter\def\csname d-repomem-holdout--validity-4096\endcsname{+0.005}
-\expandafter\def\csname ci-repomem-holdout--validity-4096\endcsname{[+0.002, +0.008]}
+\expandafter\def\csname ci-repomem-holdout--validity-4096\endcsname{[+0.001, +0.008]}
 \expandafter\def\csname d-repomem-holdout--supersession-128\endcsname{-0.001}
 \expandafter\def\csname ci-repomem-holdout--supersession-128\endcsname{[-0.003, -0.000]}
 \expandafter\def\csname d-repomem-holdout--supersession-256\endcsname{-0.002}
@@ -2638,7 +2851,7 @@
 \expandafter\def\csname d-repomem-holdout--supersession-1024\endcsname{+0.001}
 \expandafter\def\csname ci-repomem-holdout--supersession-1024\endcsname{[-0.003, +0.005]}
 \expandafter\def\csname d-repomem-holdout--supersession-2048\endcsname{-0.002}
-\expandafter\def\csname ci-repomem-holdout--supersession-2048\endcsname{[-0.006, +0.001]}
+\expandafter\def\csname ci-repomem-holdout--supersession-2048\endcsname{[-0.006, +0.002]}
 \expandafter\def\csname d-repomem-holdout--supersession-4096\endcsname{-0.004}
 \expandafter\def\csname ci-repomem-holdout--supersession-4096\endcsname{[-0.005, -0.002]}
 \expandafter\def\csname d-repomem-holdout--activation-128\endcsname{+0.000}
@@ -2656,19 +2869,50 @@
 \expandafter\def\csname d-repomem-holdout-kanerva-first-128\endcsname{+0.023}
 \expandafter\def\csname ci-repomem-holdout-kanerva-first-128\endcsname{[+0.016, +0.030]}
 \expandafter\def\csname d-repomem-holdout-kanerva-first-256\endcsname{+0.028}
-\expandafter\def\csname ci-repomem-holdout-kanerva-first-256\endcsname{[+0.021, +0.035]}
+\expandafter\def\csname ci-repomem-holdout-kanerva-first-256\endcsname{[+0.022, +0.035]}
 \expandafter\def\csname d-repomem-holdout-kanerva-first-512\endcsname{+0.024}
 \expandafter\def\csname ci-repomem-holdout-kanerva-first-512\endcsname{[+0.018, +0.029]}
 \expandafter\def\csname d-repomem-holdout-kanerva-first-1024\endcsname{+0.016}
 \expandafter\def\csname ci-repomem-holdout-kanerva-first-1024\endcsname{[+0.011, +0.021]}
 \expandafter\def\csname d-repomem-holdout-kanerva-first-2048\endcsname{+0.009}
-\expandafter\def\csname ci-repomem-holdout-kanerva-first-2048\endcsname{[+0.004, +0.013]}
+\expandafter\def\csname ci-repomem-holdout-kanerva-first-2048\endcsname{[+0.005, +0.013]}
 \expandafter\def\csname d-repomem-holdout-kanerva-first-4096\endcsname{-0.001}
 \expandafter\def\csname ci-repomem-holdout-kanerva-first-4096\endcsname{[-0.002, +0.000]}
+\expandafter\def\csname d-repomem-holdout-kanerva-ce-128\endcsname{-0.016}
+\expandafter\def\csname ci-repomem-holdout-kanerva-ce-128\endcsname{[-0.022, -0.009]}
+\expandafter\def\csname d-repomem-holdout-kanerva-ce-256\endcsname{-0.012}
+\expandafter\def\csname ci-repomem-holdout-kanerva-ce-256\endcsname{[-0.019, -0.005]}
+\expandafter\def\csname d-repomem-holdout-kanerva-ce-512\endcsname{-0.004}
+\expandafter\def\csname ci-repomem-holdout-kanerva-ce-512\endcsname{[-0.009, +0.000]}
+\expandafter\def\csname d-repomem-holdout-kanerva-ce-1024\endcsname{-0.001}
+\expandafter\def\csname ci-repomem-holdout-kanerva-ce-1024\endcsname{[-0.005, +0.002]}
+\expandafter\def\csname d-repomem-holdout-kanerva-ce-2048\endcsname{+0.000}
+\expandafter\def\csname ci-repomem-holdout-kanerva-ce-2048\endcsname{[-0.004, +0.004]}
+\expandafter\def\csname d-repomem-holdout-kanerva-ce-4096\endcsname{+0.002}
+\expandafter\def\csname ci-repomem-holdout-kanerva-ce-4096\endcsname{[-0.000, +0.004]}
 \expandafter\def\csname v-n-repomem-holdout\endcsname{3168}
 \expandafter\def\csname v-latp50-repomem-holdout\endcsname{12.5}
+\expandafter\def\csname v-cewin-repomem-holdout-hybrid\endcsname{0}
+\expandafter\def\csname v-celoss-repomem-holdout-hybrid\endcsname{1}
+\expandafter\def\csname v-cewin-repomem-holdout-bm25\endcsname{5}
+\expandafter\def\csname v-celoss-repomem-holdout-bm25\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-holdout-dense\endcsname{0}
+\expandafter\def\csname v-celoss-repomem-holdout-dense\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-holdout-mmr\endcsname{4}
+\expandafter\def\csname v-celoss-repomem-holdout-mmr\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-holdout-facility\endcsname{6}
+\expandafter\def\csname v-celoss-repomem-holdout-facility\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-holdout-gen-agents\endcsname{5}
+\expandafter\def\csname v-celoss-repomem-holdout-gen-agents\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-holdout-recency\endcsname{6}
+\expandafter\def\csname v-celoss-repomem-holdout-recency\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-holdout-rerank\endcsname{1}
+\expandafter\def\csname v-celoss-repomem-holdout-rerank\endcsname{0}
+\expandafter\def\csname v-cewin-repomem-holdout-hybrid-live\endcsname{0}
+\expandafter\def\csname v-celoss-repomem-holdout-hybrid-live\endcsname{0}
+\expandafter\def\csname v-latce-repomem-holdout\endcsname{54}
 \expandafter\def\csname v-pwin-repomem-holdout-hybrid\endcsname{0}
-\expandafter\def\csname v-ploss-repomem-holdout-hybrid\endcsname{1}
+\expandafter\def\csname v-ploss-repomem-holdout-hybrid\endcsname{0}
 \expandafter\def\csname v-pwin-repomem-holdout-bm25\endcsname{6}
 \expandafter\def\csname v-ploss-repomem-holdout-bm25\endcsname{0}
 \expandafter\def\csname v-pwin-repomem-holdout-dense\endcsname{0}
@@ -2681,7 +2925,7 @@
 \expandafter\def\csname v-ploss-repomem-holdout-gen-agents\endcsname{0}
 \expandafter\def\csname v-pwin-repomem-holdout-recency\endcsname{6}
 \expandafter\def\csname v-ploss-repomem-holdout-recency\endcsname{0}
-\expandafter\def\csname v-pwin-repomem-holdout-rerank\endcsname{0}
+\expandafter\def\csname v-pwin-repomem-holdout-rerank\endcsname{1}
 \expandafter\def\csname v-ploss-repomem-holdout-rerank\endcsname{0}
 \expandafter\def\csname v-pwin-repomem-holdout-hybrid-live\endcsname{0}
 \expandafter\def\csname v-ploss-repomem-holdout-hybrid-live\endcsname{0}
@@ -2691,80 +2935,92 @@
 \expandafter\def\csname v-stalechanged-bm25\endcsname{0.760}
 \expandafter\def\csname v-stalechanged--supersession\endcsname{0.698}
 \expandafter\def\csname v-dens-locomo\endcsname{0.023}
-\expandafter\def\csname v-mem0-512\endcsname{0.850}
-\expandafter\def\csname v-mem0ours-512\endcsname{0.975}
-\expandafter\def\csname v-mem0hyb-512\endcsname{0.900}
-\expandafter\def\csname v-mem0-1024\endcsname{0.925}
-\expandafter\def\csname v-mem0ours-1024\endcsname{0.975}
-\expandafter\def\csname v-mem0hyb-1024\endcsname{0.875}
+\expandafter\def\csname v-mem0-512\endcsname{0.783}
+\expandafter\def\csname v-mem0ours-512\endcsname{0.790}
+\expandafter\def\csname v-mem0hyb-512\endcsname{0.767}
+\expandafter\def\csname v-mem0-1024\endcsname{0.829}
+\expandafter\def\csname v-mem0ours-1024\endcsname{0.898}
+\expandafter\def\csname v-mem0hyb-1024\endcsname{0.873}
 \expandafter\def\csname v-mem0n\endcsname{40}
-\expandafter\def\csname v-mem0add\endcsname{18}
-\expandafter\def\csname v-mem0search\endcsname{39}
+\expandafter\def\csname v-mem0add\endcsname{14}
+\expandafter\def\csname v-mem0search\endcsname{31}
+\expandafter\def\csname v-m2v-lme-kanerva\endcsname{0.860}
+\expandafter\def\csname v-m2v-lme-hybrid\endcsname{0.809}
+\expandafter\def\csname v-m2v-lme-dense\endcsname{0.784}
+\expandafter\def\csname v-m2v-locomo-kanerva\endcsname{0.715}
+\expandafter\def\csname v-m2v-locomo-hybrid\endcsname{0.693}
+\expandafter\def\csname v-m2v-locomo-dense\endcsname{0.579}
+\expandafter\def\csname v-m2v-repomem-plain-kanerva\endcsname{0.876}
+\expandafter\def\csname v-m2v-repomem-plain-hybrid\endcsname{0.891}
+\expandafter\def\csname v-m2v-repomem-plain-dense\endcsname{0.844}
 \expandafter\def\csname v-full-lme\endcsname{107{,}994}
 \expandafter\def\csname v-full-locomo\endcsname{26{,}549}
 \expandafter\def\csname v-on-lme-static\endcsname{0.772}
 \expandafter\def\csname v-on-lme-online\endcsname{0.775}
 \expandafter\def\csname v-on-lme-online-ucb\endcsname{0.772}
 \expandafter\def\csname v-on-lme-online-noisy\endcsname{0.756}
+\expandafter\def\csname v-on-lme-online-debiased\endcsname{0.778}
 \expandafter\def\csname v-on-lme-cold-static\endcsname{0.706}
 \expandafter\def\csname v-on-lme-cold-online\endcsname{0.769}
 \expandafter\def\csname v-on-locomo-static\endcsname{0.664}
 \expandafter\def\csname v-on-locomo-online\endcsname{0.672}
 \expandafter\def\csname v-on-locomo-online-ucb\endcsname{0.675}
 \expandafter\def\csname v-on-locomo-online-noisy\endcsname{0.608}
+\expandafter\def\csname v-on-locomo-online-debiased\endcsname{0.656}
 \expandafter\def\csname v-on-locomo-cold-static\endcsname{0.588}
 \expandafter\def\csname v-on-locomo-cold-online\endcsname{0.665}
 \expandafter\def\csname v-on-repomem-static\endcsname{0.897}
 \expandafter\def\csname v-on-repomem-online\endcsname{0.902}
 \expandafter\def\csname v-on-repomem-online-ucb\endcsname{0.902}
 \expandafter\def\csname v-on-repomem-online-noisy\endcsname{0.856}
+\expandafter\def\csname v-on-repomem-online-debiased\endcsname{0.902}
 \expandafter\def\csname v-on-repomem-cold-static\endcsname{0.860}
 \expandafter\def\csname v-on-repomem-cold-online\endcsname{0.899}
-\expandafter\def\csname v-slope-known\endcsname{0.28}
-\expandafter\def\csname v-slope-estimated\endcsname{0.74}
+\expandafter\def\csname v-slope-known\endcsname{0.26}
+\expandafter\def\csname v-slope-estimated\endcsname{0.25}
 \expandafter\def\csname v-slope-blind\endcsname{0.97}
-\expandafter\def\csname v-regret-known\endcsname{23}
-\expandafter\def\csname v-regret-estimated\endcsname{174}
-\expandafter\def\csname v-regret-blind\endcsname{1997}
+\expandafter\def\csname v-regret-known\endcsname{22}
+\expandafter\def\csname v-regret-estimated\endcsname{26}
+\expandafter\def\csname v-regret-blind\endcsname{2015}
 \expandafter\def\csname v-certmean\endcsname{0.707}
 \expandafter\def\csname v-certmin\endcsname{0.600}
 \expandafter\def\csname v-certn\endcsname{1600}
 \expandafter\def\csname v-con-locomo-None-0.0\endcsname{0.722}
 \expandafter\def\csname v-consave-locomo-None-0.0\endcsname{0.0}
-\expandafter\def\csname v-con-locomo-0.5-0.3\endcsname{0.029}
-\expandafter\def\csname v-consave-locomo-0.5-0.3\endcsname{69.4}
-\expandafter\def\csname v-con-locomo-0.5-0.5\endcsname{0.031}
-\expandafter\def\csname v-consave-locomo-0.5-0.5\endcsname{49.8}
-\expandafter\def\csname v-con-locomo-0.6-0.3\endcsname{0.166}
-\expandafter\def\csname v-consave-locomo-0.6-0.3\endcsname{62.7}
-\expandafter\def\csname v-con-locomo-0.6-0.5\endcsname{0.177}
-\expandafter\def\csname v-consave-locomo-0.6-0.5\endcsname{45.0}
-\expandafter\def\csname v-con-locomo-0.7-0.3\endcsname{0.492}
-\expandafter\def\csname v-consave-locomo-0.7-0.3\endcsname{38.0}
-\expandafter\def\csname v-con-locomo-0.7-0.5\endcsname{0.506}
-\expandafter\def\csname v-consave-locomo-0.7-0.5\endcsname{27.4}
-\expandafter\def\csname v-con-locomo-0.8-0.3\endcsname{0.688}
-\expandafter\def\csname v-consave-locomo-0.8-0.3\endcsname{9.1}
-\expandafter\def\csname v-con-locomo-0.8-0.5\endcsname{0.695}
-\expandafter\def\csname v-consave-locomo-0.8-0.5\endcsname{6.7}
+\expandafter\def\csname v-con-locomo-0.6-0.3\endcsname{0.455}
+\expandafter\def\csname v-consave-locomo-0.6-0.3\endcsname{55.0}
+\expandafter\def\csname v-con-locomo-0.6-0.5\endcsname{0.520}
+\expandafter\def\csname v-consave-locomo-0.6-0.5\endcsname{40.0}
+\expandafter\def\csname v-con-locomo-0.7-0.3\endcsname{0.608}
+\expandafter\def\csname v-consave-locomo-0.7-0.3\endcsname{31.7}
+\expandafter\def\csname v-con-locomo-0.7-0.5\endcsname{0.635}
+\expandafter\def\csname v-consave-locomo-0.7-0.5\endcsname{23.0}
+\expandafter\def\csname v-con-locomo-0.8-0.3\endcsname{0.695}
+\expandafter\def\csname v-consave-locomo-0.8-0.3\endcsname{7.9}
+\expandafter\def\csname v-con-locomo-0.8-0.5\endcsname{0.708}
+\expandafter\def\csname v-consave-locomo-0.8-0.5\endcsname{5.6}
+\expandafter\def\csname v-con-locomo-0.9-0.3\endcsname{0.720}
+\expandafter\def\csname v-consave-locomo-0.9-0.3\endcsname{0.7}
+\expandafter\def\csname v-con-locomo-0.9-0.5\endcsname{0.722}
+\expandafter\def\csname v-consave-locomo-0.9-0.5\endcsname{0.5}
 \expandafter\def\csname v-con-lme-None-0.0\endcsname{0.932}
 \expandafter\def\csname v-consave-lme-None-0.0\endcsname{0.0}
-\expandafter\def\csname v-con-lme-0.5-0.3\endcsname{0.258}
-\expandafter\def\csname v-consave-lme-0.5-0.3\endcsname{68.7}
-\expandafter\def\csname v-con-lme-0.5-0.5\endcsname{0.125}
-\expandafter\def\csname v-consave-lme-0.5-0.5\endcsname{49.1}
-\expandafter\def\csname v-con-lme-0.6-0.3\endcsname{0.519}
-\expandafter\def\csname v-consave-lme-0.6-0.3\endcsname{66.1}
-\expandafter\def\csname v-con-lme-0.6-0.5\endcsname{0.381}
-\expandafter\def\csname v-consave-lme-0.6-0.5\endcsname{47.3}
-\expandafter\def\csname v-con-lme-0.7-0.3\endcsname{0.725}
-\expandafter\def\csname v-consave-lme-0.7-0.3\endcsname{56.8}
-\expandafter\def\csname v-con-lme-0.7-0.5\endcsname{0.757}
-\expandafter\def\csname v-consave-lme-0.7-0.5\endcsname{40.7}
-\expandafter\def\csname v-con-lme-0.8-0.3\endcsname{0.804}
-\expandafter\def\csname v-consave-lme-0.8-0.3\endcsname{28.7}
-\expandafter\def\csname v-con-lme-0.8-0.5\endcsname{0.842}
-\expandafter\def\csname v-consave-lme-0.8-0.5\endcsname{20.7}
+\expandafter\def\csname v-con-lme-0.6-0.3\endcsname{0.675}
+\expandafter\def\csname v-consave-lme-0.6-0.3\endcsname{63.2}
+\expandafter\def\csname v-con-lme-0.6-0.5\endcsname{0.682}
+\expandafter\def\csname v-consave-lme-0.6-0.5\endcsname{45.3}
+\expandafter\def\csname v-con-lme-0.7-0.3\endcsname{0.753}
+\expandafter\def\csname v-consave-lme-0.7-0.3\endcsname{54.0}
+\expandafter\def\csname v-con-lme-0.7-0.5\endcsname{0.766}
+\expandafter\def\csname v-consave-lme-0.7-0.5\endcsname{38.8}
+\expandafter\def\csname v-con-lme-0.8-0.3\endcsname{0.816}
+\expandafter\def\csname v-consave-lme-0.8-0.3\endcsname{27.4}
+\expandafter\def\csname v-con-lme-0.8-0.5\endcsname{0.878}
+\expandafter\def\csname v-consave-lme-0.8-0.5\endcsname{19.7}
+\expandafter\def\csname v-con-lme-0.9-0.3\endcsname{0.946}
+\expandafter\def\csname v-consave-lme-0.9-0.3\endcsname{3.3}
+\expandafter\def\csname v-con-lme-0.9-0.5\endcsname{0.946}
+\expandafter\def\csname v-consave-lme-0.9-0.5\endcsname{2.4}
 \expandafter\def\csname v-rdviol\endcsname{0}
 \expandafter\def\csname v-rdtotal\endcsname{2100}
 \expandafter\def\csname v-rd-0.1\endcsname{0.756}
@@ -2810,20 +3066,20 @@
 \expandafter\def\csname v-mr-96@2048\endcsname{0.911}
 \expandafter\def\csname v-mrcut-96@2048\endcsname{23.1}
 \expandafter\def\csname v-p50-hybrid@1000\endcsname{48.9}
-\expandafter\def\csname v-p95-hybrid@1000\endcsname{58.0}
-\expandafter\def\csname v-wr-hybrid@1000\endcsname{0.34}
+\expandafter\def\csname v-p95-hybrid@1000\endcsname{56.6}
+\expandafter\def\csname v-wr-hybrid@1000\endcsname{0.31}
 \expandafter\def\csname v-p50-lexical@1000\endcsname{24.4}
-\expandafter\def\csname v-p95-lexical@1000\endcsname{30.0}
-\expandafter\def\csname v-wr-lexical@1000\endcsname{0.34}
-\expandafter\def\csname v-p50-hybrid@10000\endcsname{53.5}
-\expandafter\def\csname v-p95-hybrid@10000\endcsname{65.3}
-\expandafter\def\csname v-wr-hybrid@10000\endcsname{0.34}
-\expandafter\def\csname v-p50-lexical@10000\endcsname{27.7}
-\expandafter\def\csname v-p95-lexical@10000\endcsname{36.6}
-\expandafter\def\csname v-wr-lexical@10000\endcsname{0.34}
-\expandafter\def\csname v-p50-hybrid@100000\endcsname{85.1}
-\expandafter\def\csname v-p95-hybrid@100000\endcsname{120.1}
+\expandafter\def\csname v-p95-lexical@1000\endcsname{29.9}
+\expandafter\def\csname v-wr-lexical@1000\endcsname{0.31}
+\expandafter\def\csname v-p50-hybrid@10000\endcsname{53.4}
+\expandafter\def\csname v-p95-hybrid@10000\endcsname{65.0}
+\expandafter\def\csname v-wr-hybrid@10000\endcsname{0.33}
+\expandafter\def\csname v-p50-lexical@10000\endcsname{27.6}
+\expandafter\def\csname v-p95-lexical@10000\endcsname{36.1}
+\expandafter\def\csname v-wr-lexical@10000\endcsname{0.33}
+\expandafter\def\csname v-p50-hybrid@100000\endcsname{84.5}
+\expandafter\def\csname v-p95-hybrid@100000\endcsname{119.7}
 \expandafter\def\csname v-wr-hybrid@100000\endcsname{0.32}
 \expandafter\def\csname v-p50-lexical@100000\endcsname{52.8}
-\expandafter\def\csname v-p95-lexical@100000\endcsname{82.8}
+\expandafter\def\csname v-p95-lexical@100000\endcsname{82.7}
 \expandafter\def\csname v-wr-lexical@100000\endcsname{0.32}

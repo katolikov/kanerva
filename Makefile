@@ -1,7 +1,7 @@
 PY := .venv/bin/python
 export PYTHONPATH := src:.
 
-.PHONY: install test data reproduce reproduce-fast figures paper check plugin
+.PHONY: install test data reproduce reproduce-fast figures paper check plugin fit
 
 install:
 	uv venv --python 3.12 .venv
@@ -35,7 +35,15 @@ figures:
 	$(PY) -m experiments.analysis
 
 paper:
-	cd paper && ../.tools/tectonic -X compile paper.tex --keep-logs
+	$(PY) scripts/make_macros.py
+	cd paper && ../.tools/tectonic paper.tex --keep-logs --reruns 3
 
 check:
 	$(PY) scripts/check_numbers.py
+
+fit:
+	$(PY) -m experiments.fit_prior
+
+tools:
+	mkdir -p .tools
+	curl -sL "https://github.com/tectonic-typesetting/tectonic/releases/download/tectonic%400.17.0/tectonic-0.17.0-aarch64-apple-darwin.tar.gz" | tar -xz -C .tools

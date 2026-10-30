@@ -24,6 +24,8 @@ ALLOWED = {
     "0.316",  # the proved worst-case constant, (1 - 1/e) / 2
     "2.2.1",  # Mem0 version
     "0.1", "0.5",  # distortion rates named in the text
+    "0.05",  # significance level
+    "0.8", "0.9",  # consolidation thresholds, which are inputs
 }
 MACRO = re.compile(r"\\(R|T|St|D|CI)\{([^}]*)\}\{([^}]*)\}\{([^}]*)\}|\\V\{([^}]*)\}")
 PREFIX = {"R": "r", "T": "t", "St": "s", "D": "d", "CI": "ci"}
