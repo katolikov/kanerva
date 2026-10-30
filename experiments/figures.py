@@ -21,16 +21,12 @@ SERIES = (
     ("hybrid", "Hybrid", 3),
     ("bm25", "BM25", 4),
 )
-THEMES = {
-    "light": {"surface": "#ffffff", "ink": "#0b0b0b", "muted": "#52514e", "grid": "#e6e5e0",
-              "series": ("#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4")},
-    "dark": {"surface": "#0d1117", "ink": "#f0efec", "muted": "#c3c2b7", "grid": "#2a2f38",
-             "series": ("#3987e5", "#d95926", "#199e70", "#c98500", "#d55181")},
-}
+THEME = {"surface": "#fbf6ec", "ink": "#2a1d14", "muted": "#6b5544", "grid": "#e8dcc6",
+         "series": ("#b9481f", "#d08a00", "#008f80", "#8b4aa8", "#5f7f1a")}
 
 
 def draw(path: Path, theme: dict, width: float = 9.6, height: float = 4.1) -> None:
-    plt.rcParams.update({"font.family": ["Helvetica Neue", "Helvetica", "Arial", "DejaVu Sans"], "font.size": 11})
+    plt.rcParams.update({"font.family": ["Iowan Old Style", "Georgia", "DejaVu Serif"], "font.size": 12})
     fig, axes = plt.subplots(1, len(PANELS), figsize=(width, height), sharey=True, facecolor=theme["surface"])
     handles = []
     for ax, (name, title) in zip(axes, PANELS.items()):
@@ -48,7 +44,7 @@ def draw(path: Path, theme: dict, width: float = 9.6, height: float = 4.1) -> No
         ax.set_xticks(BUDGETS, [str(b) for b in BUDGETS])
         ax.minorticks_off()
         ax.set_ylim(0.2, 1.0)
-        ax.set_title(title, color=theme["ink"], fontsize=12, fontweight="bold", loc="left", pad=12)
+        ax.set_title(title, color=theme["ink"], fontsize=13.5, fontweight="bold", loc="left", pad=12)
         ax.set_xlabel("Token budget", color=theme["muted"])
         ax.grid(axis="y", color=theme["grid"], linewidth=1)
         ax.tick_params(colors=theme["muted"], length=0)
@@ -66,9 +62,8 @@ def draw(path: Path, theme: dict, width: float = 9.6, height: float = 4.1) -> No
 
 
 def main() -> None:
-    for name, theme in THEMES.items():
-        draw(ROOT / "docs" / "assets" / f"recall-{name}.png", theme)
-    draw(ROOT / "paper" / "figs" / "recall.pdf", THEMES["light"])
+    draw(ROOT / "docs" / "assets" / "recall.png", THEME)
+    draw(ROOT / "paper" / "figs" / "recall.pdf", THEME | {"surface": "#ffffff", "grid": "#e6e5e0"})
 
 
 if __name__ == "__main__":

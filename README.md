@@ -3,12 +3,9 @@
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-3de8b5?style=flat-square" alt="License: Apache-2.0"></a>
-  <img src="https://img.shields.io/badge/python-3.10%2B-4cc2ff?style=flat-square" alt="Python 3.10+">
-  <a href="https://github.com/katolikov/kanerva/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/katolikov/kanerva/ci.yml?branch=main&style=flat-square&label=tests" alt="Tests"></a>
-  <img src="https://img.shields.io/badge/Claude%20Code-plugin-3de8b5?style=flat-square" alt="Claude Code plugin">
-  <img src="https://img.shields.io/badge/OpenCode-plugin-4cc2ff?style=flat-square" alt="OpenCode plugin">
-  <img src="https://img.shields.io/badge/MCP-server-3de8b5?style=flat-square" alt="MCP server">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-a8431d" alt="License: Apache-2.0"></a>
+  <img src="https://img.shields.io/badge/python-3.10%2B-b98a5e" alt="Python 3.10+">
+  <a href="https://github.com/katolikov/kanerva/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/katolikov/kanerva/ci.yml?branch=main&label=tests&color=5f7f1a" alt="Tests"></a>
 </p>
 
 Coding agents start every session from zero. You explain the test command again, the deploy steps again, the bug you already fixed last week. Memory tools help, but most of them paste the top few similar notes into your context, whatever those notes cost and whether or not they are still true.
@@ -93,10 +90,7 @@ The name comes from Pentti Kanerva, whose sparse distributed memory showed how a
 ## Benchmarks
 
 <!-- results:start -->
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/recall-dark.png">
-  <img src="docs/assets/recall-light.png" alt="Evidence recovered at each token budget on held-out data" width="100%">
-</picture>
+<img src="docs/assets/recall.png" alt="Evidence recovered at each token budget on held-out data" width="100%">
 
 Share of the needed evidence that made it into the context, on held-out data: 984 questions over 55 BEAM conversations and 1,248 queries over five Python repositories, none of which were used for fitting. These are retrieval metrics, with no LLM in the loop, and code history is shown without keys. "Kanerva, full" uses the MiniLM sentence-embedding model through the library. The plugins run the two lighter setups.
 

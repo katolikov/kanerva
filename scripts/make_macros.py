@@ -152,10 +152,7 @@ def update_readme(data: dict, tests: dict, latency: dict) -> None:
     unkeyed = tests["repomem-fresh-plain"]["stale_on_changed_facts"]
     static_stale = tests["repomem-fresh-static"]["stale_on_changed_facts"]["kanerva"]["stale_any"]
     lift = tests["beam"]["kanerva vs rerank"]["mean"]
-    text = f"""<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/recall-dark.png">
-  <img src="docs/assets/recall-light.png" alt="Evidence recovered at each token budget on held-out data" width="100%">
-</picture>
+    text = f"""<img src="docs/assets/recall.png" alt="Evidence recovered at each token budget on held-out data" width="100%">
 
 Share of the needed evidence that made it into the context, on held-out data: {data['beam']['meta']['queries']:,} questions over 55 BEAM conversations and {data['repomem-fresh']['meta']['queries']:,} queries over five Python repositories, none of which were used for fitting. These are retrieval metrics, with no LLM in the loop, and code history is shown without keys. "Kanerva, full" uses the MiniLM sentence-embedding model through the library. The plugins run the two lighter setups.
 
