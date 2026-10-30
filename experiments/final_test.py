@@ -5,6 +5,7 @@ Steps: score cross-encoder pairs in one process, run every method, then write pa
 
 from __future__ import annotations
 
+import gzip
 import json
 import os
 import sys
@@ -116,6 +117,24 @@ def tests(all_records: dict[str, list[dict]]) -> None:
     (RESULTS / "fresh_tests.json").write_text(json.dumps(report, indent=1))
 
 
+def by_track(name: str) -> dict:
+    """Recall on RepoMem's fact and task tracks at each budget, from the stored per-query rows."""
+    rows = json.load(gzip.open(RESULTS / "raw" / f"fresh_{name}.json.gz", "rt"))
+    out: dict = {}
+    for track, member in (("fact", lambda c: c != "task"), ("task", lambda c: c == "task")):
+        for method in sorted({r["method"] for r in rows}):
+            for budget in BUDGETS:
+                values = [r["recall"] for r in rows if r["method"] == method and r["budget"] == budget and member(r["category"])]
+                out[f"{track}/{method}@{budget}"] = float(np.mean(values))
+    return out
+
+
+def tracks() -> None:
+    report = {"meta": {"experiment": "RepoMem tracks", "commit": git_commit()},
+              "results": {name: by_track(name) for name in ("repomem-fresh", "repomem-fresh-plain")}}
+    (RESULTS / "fresh_tracks.json").write_text(json.dumps(report, indent=1))
+
+
 def main() -> None:
     os.environ.setdefault("HF_HUB_OFFLINE", "1")
     for name in ("beam", "repomem-fresh"):
@@ -127,6 +146,7 @@ def main() -> None:
         os.environ["KANERVA_CE_CACHE"] = spec["cache"]
         outputs[name] = run(name, spec, {"bm25", "dense", "hybrid", "kanerva"}, RetrievalConfig(model="static"))
     tests(outputs)
+    tracks()
     print("commit", git_commit())
 
 

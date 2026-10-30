@@ -256,3 +256,4 @@ def main(names: list[str], tag: str, models: tuple[str, ...], rules: tuple[str, 
 if __name__ == "__main__":
     main(["lme", "locomo", "repomem", "beam-dev"], "", ("kanerva", "kanerva-ce", "kanerva-lex"), ("density",))
     main(["lme-m2v", "locomo-m2v", "repomem-m2v", "beam-dev-m2v"], "_static", ("kanerva",), ("density",))
+    main(["lme", "locomo", "repomem", "beam-dev"], "_rules", ("kanerva",), ("density", "rank", "dp"))

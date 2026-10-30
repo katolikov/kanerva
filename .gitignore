@@ -1,23 +1,61 @@
-.venv/
-__pycache__/
-*.pyc
-.pytest_cache/
-.ruff_cache/
-.mypy_cache/
-.tools/
-data/
-experiments/cache/
+# Secrets. Never commit these.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+id_rsa*
+id_ed25519*
+credentials*.json
+secrets*.json
+service-account*.json
+.npmrc
+.pypirc
+.netrc
+
+# Memory stores
 *.sqlite
 *.sqlite-wal
 *.sqlite-shm
-.DS_Store
-node_modules/
+.kanerva/
+
+# Python
+.venv/
+.venv-*/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
 dist/
 build/
-*.egg-info/
+
+# Node
+node_modules/
+*.tgz
+
+# Benchmarks and experiment output
+data/
+experiments/cache/
+results/raw/
+
+# Paper build
+.tools/
 paper/*.aux
 paper/*.log
 paper/*.out
 paper/*.bbl
 paper/*.blg
-.venv-*/
+
+# Editors, agents and OS
+.claude/
+.opencode/
+.cursor/
+.idea/
+.vscode/
+CLAUDE.local.md
+.DS_Store

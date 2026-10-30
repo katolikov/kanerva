@@ -1,1 +1,1464 @@
-{"meta": {"experiment": "systems", "system": "mem0ai 2.2.1 infer=False, qdrant local, all-MiniLM-L6-v2", "questions": 40, "wall_seconds": 226.4, "add_ms_per_turn": 9.292906409212415, "search_ms": 31.339210271835327}, "rows": [{"qid": "2ebe6c90", "budget": 128, "recall": 1.0, "tokens": 118}, {"qid": "2ebe6c90", "budget": 256, "recall": 1.0, "tokens": 254}, {"qid": "2ebe6c90", "budget": 512, "recall": 1.0, "tokens": 511}, {"qid": "2ebe6c90", "budget": 1024, "recall": 1.0, "tokens": 1023}, {"qid": "2ebe6c90", "budget": 2048, "recall": 1.0, "tokens": 2041}, {"qid": "2ebe6c90", "budget": 4096, "recall": 1.0, "tokens": 4087}, {"qid": "gpt4_7bc6cf22", "budget": 128, "recall": 1.0, "tokens": 128}, {"qid": "gpt4_7bc6cf22", "budget": 256, "recall": 1.0, "tokens": 243}, {"qid": "gpt4_7bc6cf22", "budget": 512, "recall": 1.0, "tokens": 505}, {"qid": "gpt4_7bc6cf22", "budget": 1024, "recall": 1.0, "tokens": 1021}, {"qid": "gpt4_7bc6cf22", "budget": 2048, "recall": 1.0, "tokens": 2041}, {"qid": "gpt4_7bc6cf22", "budget": 4096, "recall": 1.0, "tokens": 4093}, {"qid": "853b0a1d", "budget": 128, "recall": 0.0, "tokens": 127}, {"qid": "853b0a1d", "budget": 256, "recall": 1.0, "tokens": 256}, {"qid": "853b0a1d", "budget": 512, "recall": 1.0, "tokens": 512}, {"qid": "853b0a1d", "budget": 1024, "recall": 1.0, "tokens": 1017}, {"qid": "853b0a1d", "budget": 2048, "recall": 1.0, "tokens": 2044}, {"qid": "853b0a1d", "budget": 4096, "recall": 1.0, "tokens": 4095}, {"qid": "4adc0475", "budget": 128, "recall": 1.0, "tokens": 128}, {"qid": "4adc0475", "budget": 256, "recall": 1.0, "tokens": 254}, {"qid": "4adc0475", "budget": 512, "recall": 1.0, "tokens": 509}, {"qid": "4adc0475", "budget": 1024, "recall": 1.0, "tokens": 1021}, {"qid": "4adc0475", "budget": 2048, "recall": 1.0, "tokens": 2042}, {"qid": "4adc0475", "budget": 4096, "recall": 1.0, "tokens": 4091}, {"qid": "b29f3365", "budget": 128, "recall": 0.5, "tokens": 102}, {"qid": "b29f3365", "budget": 256, "recall": 0.5, "tokens": 247}, {"qid": "b29f3365", "budget": 512, "recall": 0.5, "tokens": 501}, {"qid": "b29f3365", "budget": 1024, "recall": 1.0, "tokens": 1022}, {"qid": "b29f3365", "budget": 2048, "recall": 1.0, "tokens": 2041}, {"qid": "b29f3365", "budget": 4096, "recall": 1.0, "tokens": 4075}, {"qid": "gpt4_b4a80587", "budget": 128, "recall": 0.5, "tokens": 118}, {"qid": "gpt4_b4a80587", "budget": 256, "recall": 0.0, "tokens": 252}, {"qid": "gpt4_b4a80587", "budget": 512, "recall": 0.5, "tokens": 509}, {"qid": "gpt4_b4a80587", "budget": 1024, "recall": 1.0, "tokens": 1014}, {"qid": "gpt4_b4a80587", "budget": 2048, "recall": 0.5, "tokens": 2046}, {"qid": "gpt4_b4a80587", "budget": 4096, "recall": 1.0, "tokens": 4089}, {"qid": "gpt4_98f46fc6", "budget": 128, "recall": 0.5, "tokens": 111}, {"qid": "gpt4_98f46fc6", "budget": 256, "recall": 0.5, "tokens": 245}, {"qid": "gpt4_98f46fc6", "budget": 512, "recall": 0.5, "tokens": 510}, {"qid": "gpt4_98f46fc6", "budget": 1024, "recall": 0.5, "tokens": 1010}, {"qid": "gpt4_98f46fc6", "budget": 2048, "recall": 0.5, "tokens": 2040}, {"qid": "gpt4_98f46fc6", "budget": 4096, "recall": 1.0, "tokens": 4095}, {"qid": "bc149d6b", "budget": 128, "recall": 0.5, "tokens": 107}, {"qid": "bc149d6b", "budget": 256, "recall": 0.5, "tokens": 256}, {"qid": "bc149d6b", "budget": 512, "recall": 0.5, "tokens": 493}, {"qid": "bc149d6b", "budget": 1024, "recall": 0.5, "tokens": 1007}, {"qid": "bc149d6b", "budget": 2048, "recall": 0.5, "tokens": 2044}, {"qid": "bc149d6b", "budget": 4096, "recall": 0.5, "tokens": 4082}, {"qid": "e4e14d04", "budget": 128, "recall": 0.0, "tokens": 107}, {"qid": "e4e14d04", "budget": 256, "recall": 0.0, "tokens": 243}, {"qid": "e4e14d04", "budget": 512, "recall": 0.5, "tokens": 509}, {"qid": "e4e14d04", "budget": 1024, "recall": 1.0, "tokens": 1006}, {"qid": "e4e14d04", "budget": 2048, "recall": 1.0, "tokens": 2048}, {"qid": "e4e14d04", "budget": 4096, "recall": 1.0, "tokens": 4090}, {"qid": "0db4c65d", "budget": 128, "recall": 0.5, "tokens": 124}, {"qid": "0db4c65d", "budget": 256, "recall": 1.0, "tokens": 254}, {"qid": "0db4c65d", "budget": 512, "recall": 1.0, "tokens": 511}, {"qid": "0db4c65d", "budget": 1024, "recall": 1.0, "tokens": 1022}, {"qid": "0db4c65d", "budget": 2048, "recall": 1.0, "tokens": 2035}, {"qid": "0db4c65d", "budget": 4096, "recall": 1.0, "tokens": 4091}, {"qid": "2133c1b5", "budget": 128, "recall": 0.5, "tokens": 126}, {"qid": "2133c1b5", "budget": 256, "recall": 1.0, "tokens": 250}, {"qid": "2133c1b5", "budget": 512, "recall": 1.0, "tokens": 509}, {"qid": "2133c1b5", "budget": 1024, "recall": 1.0, "tokens": 1024}, {"qid": "2133c1b5", "budget": 2048, "recall": 1.0, "tokens": 2048}, {"qid": "2133c1b5", "budget": 4096, "recall": 1.0, "tokens": 4094}, {"qid": "a89d7624", "budget": 128, "recall": 0.5, "tokens": 112}, {"qid": "a89d7624", "budget": 256, "recall": 1.0, "tokens": 254}, {"qid": "a89d7624", "budget": 512, "recall": 1.0, "tokens": 512}, {"qid": "a89d7624", "budget": 1024, "recall": 1.0, "tokens": 1019}, {"qid": "a89d7624", "budget": 2048, "recall": 1.0, "tokens": 2045}, {"qid": "a89d7624", "budget": 4096, "recall": 1.0, "tokens": 4095}, {"qid": "gpt4_88806d6e", "budget": 128, "recall": 0.0, "tokens": 117}, {"qid": "gpt4_88806d6e", "budget": 256, "recall": 0.0, "tokens": 249}, {"qid": "gpt4_88806d6e", "budget": 512, "recall": 1.0, "tokens": 508}, {"qid": "gpt4_88806d6e", "budget": 1024, "recall": 1.0, "tokens": 1021}, {"qid": "gpt4_88806d6e", "budget": 2048, "recall": 1.0, "tokens": 2040}, {"qid": "gpt4_88806d6e", "budget": 4096, "recall": 1.0, "tokens": 4093}, {"qid": "d23cf73b", "budget": 128, "recall": 0.25, "tokens": 121}, {"qid": "d23cf73b", "budget": 256, "recall": 0.5, "tokens": 237}, {"qid": "d23cf73b", "budget": 512, "recall": 0.0, "tokens": 501}, {"qid": "d23cf73b", "budget": 1024, "recall": 0.5, "tokens": 1004}, {"qid": "d23cf73b", "budget": 2048, "recall": 0.75, "tokens": 2043}, {"qid": "d23cf73b", "budget": 4096, "recall": 0.75, "tokens": 4093}, {"qid": "92a0aa75", "budget": 128, "recall": 0.0, "tokens": 126}, {"qid": "92a0aa75", "budget": 256, "recall": 0.0, "tokens": 252}, {"qid": "92a0aa75", "budget": 512, "recall": 0.0, "tokens": 509}, {"qid": "92a0aa75", "budget": 1024, "recall": 0.0, "tokens": 1022}, {"qid": "92a0aa75", "budget": 2048, "recall": 0.0, "tokens": 2048}, {"qid": "92a0aa75", "budget": 4096, "recall": 0.0, "tokens": 4093}, {"qid": "c14c00dd", "budget": 128, "recall": 1.0, "tokens": 122}, {"qid": "c14c00dd", "budget": 256, "recall": 1.0, "tokens": 250}, {"qid": "c14c00dd", "budget": 512, "recall": 1.0, "tokens": 510}, {"qid": "c14c00dd", "budget": 1024, "recall": 1.0, "tokens": 1023}, {"qid": "c14c00dd", "budget": 2048, "recall": 1.0, "tokens": 2036}, {"qid": "c14c00dd", "budget": 4096, "recall": 1.0, "tokens": 4093}, {"qid": "cf22b7bf", "budget": 128, "recall": 0.5, "tokens": 126}, {"qid": "cf22b7bf", "budget": 256, "recall": 0.0, "tokens": 256}, {"qid": "cf22b7bf", "budget": 512, "recall": 1.0, "tokens": 502}, {"qid": "cf22b7bf", "budget": 1024, "recall": 1.0, "tokens": 1023}, {"qid": "cf22b7bf", "budget": 2048, "recall": 1.0, "tokens": 2032}, {"qid": "cf22b7bf", "budget": 4096, "recall": 1.0, "tokens": 4088}, {"qid": "a4996e51", "budget": 128, "recall": 0.0, "tokens": 125}, {"qid": "a4996e51", "budget": 256, "recall": 0.0, "tokens": 249}, {"qid": "a4996e51", "budget": 512, "recall": 0.5, "tokens": 501}, {"qid": "a4996e51", "budget": 1024, "recall": 0.0, "tokens": 1015}, {"qid": "a4996e51", "budget": 2048, "recall": 1.0, "tokens": 2037}, {"qid": "a4996e51", "budget": 4096, "recall": 1.0, "tokens": 4079}, {"qid": "8c18457d", "budget": 128, "recall": 0.6666666666666666, "tokens": 119}, {"qid": "8c18457d", "budget": 256, "recall": 0.6666666666666666, "tokens": 246}, {"qid": "8c18457d", "budget": 512, "recall": 1.0, "tokens": 504}, {"qid": "8c18457d", "budget": 1024, "recall": 1.0, "tokens": 1022}, {"qid": "8c18457d", "budget": 2048, "recall": 1.0, "tokens": 2044}, {"qid": "8c18457d", "budget": 4096, "recall": 1.0, "tokens": 4096}, {"qid": "28bcfaac", "budget": 128, "recall": 0.0, "tokens": 120}, {"qid": "28bcfaac", "budget": 256, "recall": 0.0, "tokens": 250}, {"qid": "28bcfaac", "budget": 512, "recall": 1.0, "tokens": 511}, {"qid": "28bcfaac", "budget": 1024, "recall": 1.0, "tokens": 1020}, {"qid": "28bcfaac", "budget": 2048, "recall": 1.0, "tokens": 2027}, {"qid": "28bcfaac", "budget": 4096, "recall": 1.0, "tokens": 4096}, {"qid": "603deb26", "budget": 128, "recall": 0.0, "tokens": 128}, {"qid": "603deb26", "budget": 256, "recall": 0.0, "tokens": 254}, {"qid": "603deb26", "budget": 512, "recall": 0.5, "tokens": 511}, {"qid": "603deb26", "budget": 1024, "recall": 0.5, "tokens": 1015}, {"qid": "603deb26", "budget": 2048, "recall": 1.0, "tokens": 2037}, {"qid": "603deb26", "budget": 4096, "recall": 1.0, "tokens": 4087}, {"qid": "gpt4_5501fe77", "budget": 128, "recall": 0.3333333333333333, "tokens": 126}, {"qid": "gpt4_5501fe77", "budget": 256, "recall": 0.3333333333333333, "tokens": 253}, {"qid": "gpt4_5501fe77", "budget": 512, "recall": 0.3333333333333333, "tokens": 509}, {"qid": "gpt4_5501fe77", "budget": 1024, "recall": 1.0, "tokens": 1020}, {"qid": "gpt4_5501fe77", "budget": 2048, "recall": 1.0, "tokens": 2037}, {"qid": "gpt4_5501fe77", "budget": 4096, "recall": 1.0, "tokens": 4095}, {"qid": "157a136e", "budget": 128, "recall": 0.0, "tokens": 124}, {"qid": "157a136e", "budget": 256, "recall": 0.6666666666666666, "tokens": 249}, {"qid": "157a136e", "budget": 512, "recall": 1.0, "tokens": 506}, {"qid": "157a136e", "budget": 1024, "recall": 0.6666666666666666, "tokens": 1024}, {"qid": "157a136e", "budget": 2048, "recall": 0.6666666666666666, "tokens": 2041}, {"qid": "157a136e", "budget": 4096, "recall": 1.0, "tokens": 4095}, {"qid": "3d86fd0a", "budget": 128, "recall": 1.0, "tokens": 124}, {"qid": "3d86fd0a", "budget": 256, "recall": 1.0, "tokens": 252}, {"qid": "3d86fd0a", "budget": 512, "recall": 1.0, "tokens": 498}, {"qid": "3d86fd0a", "budget": 1024, "recall": 1.0, "tokens": 1024}, {"qid": "3d86fd0a", "budget": 2048, "recall": 1.0, "tokens": 2030}, {"qid": "3d86fd0a", "budget": 4096, "recall": 1.0, "tokens": 4089}, {"qid": "b320f3f8", "budget": 128, "recall": 1.0, "tokens": 120}, {"qid": "b320f3f8", "budget": 256, "recall": 1.0, "tokens": 254}, {"qid": "b320f3f8", "budget": 512, "recall": 1.0, "tokens": 494}, {"qid": "b320f3f8", "budget": 1024, "recall": 1.0, "tokens": 1006}, {"qid": "b320f3f8", "budget": 2048, "recall": 1.0, "tokens": 2040}, {"qid": "b320f3f8", "budget": 4096, "recall": 1.0, "tokens": 4082}, {"qid": "e982271f", "budget": 128, "recall": 0.0, "tokens": 112}, {"qid": "e982271f", "budget": 256, "recall": 1.0, "tokens": 246}, {"qid": "e982271f", "budget": 512, "recall": 1.0, "tokens": 512}, {"qid": "e982271f", "budget": 1024, "recall": 1.0, "tokens": 1021}, {"qid": "e982271f", "budget": 2048, "recall": 1.0, "tokens": 2032}, {"qid": "e982271f", "budget": 4096, "recall": 1.0, "tokens": 4089}, {"qid": "efc3f7c2", "budget": 128, "recall": 0.5, "tokens": 124}, {"qid": "efc3f7c2", "budget": 256, "recall": 0.5, "tokens": 254}, {"qid": "efc3f7c2", "budget": 512, "recall": 0.5, "tokens": 488}, {"qid": "efc3f7c2", "budget": 1024, "recall": 0.5, "tokens": 1021}, {"qid": "efc3f7c2", "budget": 2048, "recall": 0.5, "tokens": 2029}, {"qid": "efc3f7c2", "budget": 4096, "recall": 0.5, "tokens": 4084}, {"qid": "b9cfe692", "budget": 128, "recall": 0.5, "tokens": 126}, {"qid": "b9cfe692", "budget": 256, "recall": 0.5, "tokens": 249}, {"qid": "b9cfe692", "budget": 512, "recall": 0.5, "tokens": 505}, {"qid": "b9cfe692", "budget": 1024, "recall": 0.5, "tokens": 1023}, {"qid": "b9cfe692", "budget": 2048, "recall": 1.0, "tokens": 2042}, {"qid": "b9cfe692", "budget": 4096, "recall": 1.0, "tokens": 4091}, {"qid": "031748ae", "budget": 128, "recall": 0.0, "tokens": 122}, {"qid": "031748ae", "budget": 256, "recall": 1.0, "tokens": 251}, {"qid": "031748ae", "budget": 512, "recall": 1.0, "tokens": 512}, {"qid": "031748ae", "budget": 1024, "recall": 1.0, "tokens": 1022}, {"qid": "031748ae", "budget": 2048, "recall": 1.0, "tokens": 2041}, {"qid": "031748ae", "budget": 4096, "recall": 1.0, "tokens": 4085}, {"qid": "a82c026e", "budget": 128, "recall": 1.0, "tokens": 128}, {"qid": "a82c026e", "budget": 256, "recall": 1.0, "tokens": 252}, {"qid": "a82c026e", "budget": 512, "recall": 1.0, "tokens": 502}, {"qid": "a82c026e", "budget": 1024, "recall": 1.0, "tokens": 1015}, {"qid": "a82c026e", "budget": 2048, "recall": 1.0, "tokens": 2045}, {"qid": "a82c026e", "budget": 4096, "recall": 1.0, "tokens": 4090}, {"qid": "gpt4_1d4ab0c9", "budget": 128, "recall": 1.0, "tokens": 119}, {"qid": "gpt4_1d4ab0c9", "budget": 256, "recall": 1.0, "tokens": 249}, {"qid": "gpt4_1d4ab0c9", "budget": 512, "recall": 1.0, "tokens": 508}, {"qid": "gpt4_1d4ab0c9", "budget": 1024, "recall": 1.0, "tokens": 1021}, {"qid": "gpt4_1d4ab0c9", "budget": 2048, "recall": 1.0, "tokens": 2047}, {"qid": "gpt4_1d4ab0c9", "budget": 4096, "recall": 1.0, "tokens": 4096}, {"qid": "gpt4_e414231f", "budget": 128, "recall": 0.0, "tokens": 114}, {"qid": "gpt4_e414231f", "budget": 256, "recall": 0.0, "tokens": 245}, {"qid": "gpt4_e414231f", "budget": 512, "recall": 1.0, "tokens": 500}, {"qid": "gpt4_e414231f", "budget": 1024, "recall": 1.0, "tokens": 1022}, {"qid": "gpt4_e414231f", "budget": 2048, "recall": 1.0, "tokens": 2043}, {"qid": "gpt4_e414231f", "budget": 4096, "recall": 1.0, "tokens": 4088}, {"qid": "55241a1f", "budget": 128, "recall": 0.5, "tokens": 124}, {"qid": "55241a1f", "budget": 256, "recall": 0.5, "tokens": 256}, {"qid": "55241a1f", "budget": 512, "recall": 1.0, "tokens": 509}, {"qid": "55241a1f", "budget": 1024, "recall": 0.5, "tokens": 1023}, {"qid": "55241a1f", "budget": 2048, "recall": 1.0, "tokens": 2040}, {"qid": "55241a1f", "budget": 4096, "recall": 0.5, "tokens": 4086}, {"qid": "f685340e", "budget": 128, "recall": 0.5, "tokens": 118}, {"qid": "f685340e", "budget": 256, "recall": 0.0, "tokens": 256}, {"qid": "f685340e", "budget": 512, "recall": 1.0, "tokens": 510}, {"qid": "f685340e", "budget": 1024, "recall": 1.0, "tokens": 1015}, {"qid": "f685340e", "budget": 2048, "recall": 1.0, "tokens": 2048}, {"qid": "f685340e", "budget": 4096, "recall": 1.0, "tokens": 4094}, {"qid": "89527b6b", "budget": 128, "recall": 0.0, "tokens": 128}, {"qid": "89527b6b", "budget": 256, "recall": 0.0, "tokens": 248}, {"qid": "89527b6b", "budget": 512, "recall": 0.0, "tokens": 492}, {"qid": "89527b6b", "budget": 1024, "recall": 1.0, "tokens": 1014}, {"qid": "89527b6b", "budget": 2048, "recall": 1.0, "tokens": 2032}, {"qid": "89527b6b", "budget": 4096, "recall": 1.0, "tokens": 4093}, {"qid": "54026fce", "budget": 128, "recall": 1.0, "tokens": 127}, {"qid": "54026fce", "budget": 256, "recall": 1.0, "tokens": 240}, {"qid": "54026fce", "budget": 512, "recall": 1.0, "tokens": 503}, {"qid": "54026fce", "budget": 1024, "recall": 1.0, "tokens": 1000}, {"qid": "54026fce", "budget": 2048, "recall": 1.0, "tokens": 2041}, {"qid": "54026fce", "budget": 4096, "recall": 1.0, "tokens": 4086}, {"qid": "71315a70", "budget": 128, "recall": 0.0, "tokens": 127}, {"qid": "71315a70", "budget": 256, "recall": 0.5, "tokens": 256}, {"qid": "71315a70", "budget": 512, "recall": 1.0, "tokens": 509}, {"qid": "71315a70", "budget": 1024, "recall": 0.5, "tokens": 1017}, {"qid": "71315a70", "budget": 2048, "recall": 1.0, "tokens": 2037}, {"qid": "71315a70", "budget": 4096, "recall": 1.0, "tokens": 4084}, {"qid": "4dfccbf8", "budget": 128, "recall": 0.0, "tokens": 128}, {"qid": "4dfccbf8", "budget": 256, "recall": 1.0, "tokens": 244}, {"qid": "4dfccbf8", "budget": 512, "recall": 1.0, "tokens": 511}, {"qid": "4dfccbf8", "budget": 1024, "recall": 1.0, "tokens": 1016}, {"qid": "4dfccbf8", "budget": 2048, "recall": 1.0, "tokens": 2044}, {"qid": "4dfccbf8", "budget": 4096, "recall": 1.0, "tokens": 4019}, {"qid": "gpt4_1a1dc16d", "budget": 128, "recall": 0.0, "tokens": 128}, {"qid": "gpt4_1a1dc16d", "budget": 256, "recall": 0.5, "tokens": 255}, {"qid": "gpt4_1a1dc16d", "budget": 512, "recall": 1.0, "tokens": 507}, {"qid": "gpt4_1a1dc16d", "budget": 1024, "recall": 1.0, "tokens": 1014}, {"qid": "gpt4_1a1dc16d", "budget": 2048, "recall": 1.0, "tokens": 2044}, {"qid": "gpt4_1a1dc16d", "budget": 4096, "recall": 1.0, "tokens": 4088}, {"qid": "ef66a6e5", "budget": 128, "recall": 0.5, "tokens": 111}, {"qid": "ef66a6e5", "budget": 256, "recall": 1.0, "tokens": 249}, {"qid": "ef66a6e5", "budget": 512, "recall": 0.5, "tokens": 505}, {"qid": "ef66a6e5", "budget": 1024, "recall": 0.5, "tokens": 1023}, {"qid": "ef66a6e5", "budget": 2048, "recall": 1.0, "tokens": 2014}, {"qid": "ef66a6e5", "budget": 4096, "recall": 1.0, "tokens": 4065}]}
+{
+ "meta": {
+  "experiment": "systems",
+  "system": "mem0ai 2.2.1 infer=False, qdrant local, all-MiniLM-L6-v2",
+  "questions": 40,
+  "wall_seconds": 226.4,
+  "add_ms_per_turn": 9.292906409212415,
+  "search_ms": 31.339210271835327
+ },
+ "rows": [
+  {
+   "qid": "2ebe6c90",
+   "budget": 128,
+   "recall": 1.0,
+   "tokens": 118
+  },
+  {
+   "qid": "2ebe6c90",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 254
+  },
+  {
+   "qid": "2ebe6c90",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 511
+  },
+  {
+   "qid": "2ebe6c90",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1023
+  },
+  {
+   "qid": "2ebe6c90",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2041
+  },
+  {
+   "qid": "2ebe6c90",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4087
+  },
+  {
+   "qid": "gpt4_7bc6cf22",
+   "budget": 128,
+   "recall": 1.0,
+   "tokens": 128
+  },
+  {
+   "qid": "gpt4_7bc6cf22",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 243
+  },
+  {
+   "qid": "gpt4_7bc6cf22",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 505
+  },
+  {
+   "qid": "gpt4_7bc6cf22",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1021
+  },
+  {
+   "qid": "gpt4_7bc6cf22",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2041
+  },
+  {
+   "qid": "gpt4_7bc6cf22",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4093
+  },
+  {
+   "qid": "853b0a1d",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 127
+  },
+  {
+   "qid": "853b0a1d",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 256
+  },
+  {
+   "qid": "853b0a1d",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 512
+  },
+  {
+   "qid": "853b0a1d",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1017
+  },
+  {
+   "qid": "853b0a1d",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2044
+  },
+  {
+   "qid": "853b0a1d",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4095
+  },
+  {
+   "qid": "4adc0475",
+   "budget": 128,
+   "recall": 1.0,
+   "tokens": 128
+  },
+  {
+   "qid": "4adc0475",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 254
+  },
+  {
+   "qid": "4adc0475",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 509
+  },
+  {
+   "qid": "4adc0475",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1021
+  },
+  {
+   "qid": "4adc0475",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2042
+  },
+  {
+   "qid": "4adc0475",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4091
+  },
+  {
+   "qid": "b29f3365",
+   "budget": 128,
+   "recall": 0.5,
+   "tokens": 102
+  },
+  {
+   "qid": "b29f3365",
+   "budget": 256,
+   "recall": 0.5,
+   "tokens": 247
+  },
+  {
+   "qid": "b29f3365",
+   "budget": 512,
+   "recall": 0.5,
+   "tokens": 501
+  },
+  {
+   "qid": "b29f3365",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1022
+  },
+  {
+   "qid": "b29f3365",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2041
+  },
+  {
+   "qid": "b29f3365",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4075
+  },
+  {
+   "qid": "gpt4_b4a80587",
+   "budget": 128,
+   "recall": 0.5,
+   "tokens": 118
+  },
+  {
+   "qid": "gpt4_b4a80587",
+   "budget": 256,
+   "recall": 0.0,
+   "tokens": 252
+  },
+  {
+   "qid": "gpt4_b4a80587",
+   "budget": 512,
+   "recall": 0.5,
+   "tokens": 509
+  },
+  {
+   "qid": "gpt4_b4a80587",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1014
+  },
+  {
+   "qid": "gpt4_b4a80587",
+   "budget": 2048,
+   "recall": 0.5,
+   "tokens": 2046
+  },
+  {
+   "qid": "gpt4_b4a80587",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4089
+  },
+  {
+   "qid": "gpt4_98f46fc6",
+   "budget": 128,
+   "recall": 0.5,
+   "tokens": 111
+  },
+  {
+   "qid": "gpt4_98f46fc6",
+   "budget": 256,
+   "recall": 0.5,
+   "tokens": 245
+  },
+  {
+   "qid": "gpt4_98f46fc6",
+   "budget": 512,
+   "recall": 0.5,
+   "tokens": 510
+  },
+  {
+   "qid": "gpt4_98f46fc6",
+   "budget": 1024,
+   "recall": 0.5,
+   "tokens": 1010
+  },
+  {
+   "qid": "gpt4_98f46fc6",
+   "budget": 2048,
+   "recall": 0.5,
+   "tokens": 2040
+  },
+  {
+   "qid": "gpt4_98f46fc6",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4095
+  },
+  {
+   "qid": "bc149d6b",
+   "budget": 128,
+   "recall": 0.5,
+   "tokens": 107
+  },
+  {
+   "qid": "bc149d6b",
+   "budget": 256,
+   "recall": 0.5,
+   "tokens": 256
+  },
+  {
+   "qid": "bc149d6b",
+   "budget": 512,
+   "recall": 0.5,
+   "tokens": 493
+  },
+  {
+   "qid": "bc149d6b",
+   "budget": 1024,
+   "recall": 0.5,
+   "tokens": 1007
+  },
+  {
+   "qid": "bc149d6b",
+   "budget": 2048,
+   "recall": 0.5,
+   "tokens": 2044
+  },
+  {
+   "qid": "bc149d6b",
+   "budget": 4096,
+   "recall": 0.5,
+   "tokens": 4082
+  },
+  {
+   "qid": "e4e14d04",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 107
+  },
+  {
+   "qid": "e4e14d04",
+   "budget": 256,
+   "recall": 0.0,
+   "tokens": 243
+  },
+  {
+   "qid": "e4e14d04",
+   "budget": 512,
+   "recall": 0.5,
+   "tokens": 509
+  },
+  {
+   "qid": "e4e14d04",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1006
+  },
+  {
+   "qid": "e4e14d04",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2048
+  },
+  {
+   "qid": "e4e14d04",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4090
+  },
+  {
+   "qid": "0db4c65d",
+   "budget": 128,
+   "recall": 0.5,
+   "tokens": 124
+  },
+  {
+   "qid": "0db4c65d",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 254
+  },
+  {
+   "qid": "0db4c65d",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 511
+  },
+  {
+   "qid": "0db4c65d",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1022
+  },
+  {
+   "qid": "0db4c65d",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2035
+  },
+  {
+   "qid": "0db4c65d",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4091
+  },
+  {
+   "qid": "2133c1b5",
+   "budget": 128,
+   "recall": 0.5,
+   "tokens": 126
+  },
+  {
+   "qid": "2133c1b5",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 250
+  },
+  {
+   "qid": "2133c1b5",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 509
+  },
+  {
+   "qid": "2133c1b5",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1024
+  },
+  {
+   "qid": "2133c1b5",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2048
+  },
+  {
+   "qid": "2133c1b5",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4094
+  },
+  {
+   "qid": "a89d7624",
+   "budget": 128,
+   "recall": 0.5,
+   "tokens": 112
+  },
+  {
+   "qid": "a89d7624",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 254
+  },
+  {
+   "qid": "a89d7624",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 512
+  },
+  {
+   "qid": "a89d7624",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1019
+  },
+  {
+   "qid": "a89d7624",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2045
+  },
+  {
+   "qid": "a89d7624",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4095
+  },
+  {
+   "qid": "gpt4_88806d6e",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 117
+  },
+  {
+   "qid": "gpt4_88806d6e",
+   "budget": 256,
+   "recall": 0.0,
+   "tokens": 249
+  },
+  {
+   "qid": "gpt4_88806d6e",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 508
+  },
+  {
+   "qid": "gpt4_88806d6e",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1021
+  },
+  {
+   "qid": "gpt4_88806d6e",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2040
+  },
+  {
+   "qid": "gpt4_88806d6e",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4093
+  },
+  {
+   "qid": "d23cf73b",
+   "budget": 128,
+   "recall": 0.25,
+   "tokens": 121
+  },
+  {
+   "qid": "d23cf73b",
+   "budget": 256,
+   "recall": 0.5,
+   "tokens": 237
+  },
+  {
+   "qid": "d23cf73b",
+   "budget": 512,
+   "recall": 0.0,
+   "tokens": 501
+  },
+  {
+   "qid": "d23cf73b",
+   "budget": 1024,
+   "recall": 0.5,
+   "tokens": 1004
+  },
+  {
+   "qid": "d23cf73b",
+   "budget": 2048,
+   "recall": 0.75,
+   "tokens": 2043
+  },
+  {
+   "qid": "d23cf73b",
+   "budget": 4096,
+   "recall": 0.75,
+   "tokens": 4093
+  },
+  {
+   "qid": "92a0aa75",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 126
+  },
+  {
+   "qid": "92a0aa75",
+   "budget": 256,
+   "recall": 0.0,
+   "tokens": 252
+  },
+  {
+   "qid": "92a0aa75",
+   "budget": 512,
+   "recall": 0.0,
+   "tokens": 509
+  },
+  {
+   "qid": "92a0aa75",
+   "budget": 1024,
+   "recall": 0.0,
+   "tokens": 1022
+  },
+  {
+   "qid": "92a0aa75",
+   "budget": 2048,
+   "recall": 0.0,
+   "tokens": 2048
+  },
+  {
+   "qid": "92a0aa75",
+   "budget": 4096,
+   "recall": 0.0,
+   "tokens": 4093
+  },
+  {
+   "qid": "c14c00dd",
+   "budget": 128,
+   "recall": 1.0,
+   "tokens": 122
+  },
+  {
+   "qid": "c14c00dd",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 250
+  },
+  {
+   "qid": "c14c00dd",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 510
+  },
+  {
+   "qid": "c14c00dd",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1023
+  },
+  {
+   "qid": "c14c00dd",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2036
+  },
+  {
+   "qid": "c14c00dd",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4093
+  },
+  {
+   "qid": "cf22b7bf",
+   "budget": 128,
+   "recall": 0.5,
+   "tokens": 126
+  },
+  {
+   "qid": "cf22b7bf",
+   "budget": 256,
+   "recall": 0.0,
+   "tokens": 256
+  },
+  {
+   "qid": "cf22b7bf",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 502
+  },
+  {
+   "qid": "cf22b7bf",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1023
+  },
+  {
+   "qid": "cf22b7bf",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2032
+  },
+  {
+   "qid": "cf22b7bf",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4088
+  },
+  {
+   "qid": "a4996e51",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 125
+  },
+  {
+   "qid": "a4996e51",
+   "budget": 256,
+   "recall": 0.0,
+   "tokens": 249
+  },
+  {
+   "qid": "a4996e51",
+   "budget": 512,
+   "recall": 0.5,
+   "tokens": 501
+  },
+  {
+   "qid": "a4996e51",
+   "budget": 1024,
+   "recall": 0.0,
+   "tokens": 1015
+  },
+  {
+   "qid": "a4996e51",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2037
+  },
+  {
+   "qid": "a4996e51",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4079
+  },
+  {
+   "qid": "8c18457d",
+   "budget": 128,
+   "recall": 0.6666666666666666,
+   "tokens": 119
+  },
+  {
+   "qid": "8c18457d",
+   "budget": 256,
+   "recall": 0.6666666666666666,
+   "tokens": 246
+  },
+  {
+   "qid": "8c18457d",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 504
+  },
+  {
+   "qid": "8c18457d",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1022
+  },
+  {
+   "qid": "8c18457d",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2044
+  },
+  {
+   "qid": "8c18457d",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4096
+  },
+  {
+   "qid": "28bcfaac",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 120
+  },
+  {
+   "qid": "28bcfaac",
+   "budget": 256,
+   "recall": 0.0,
+   "tokens": 250
+  },
+  {
+   "qid": "28bcfaac",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 511
+  },
+  {
+   "qid": "28bcfaac",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1020
+  },
+  {
+   "qid": "28bcfaac",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2027
+  },
+  {
+   "qid": "28bcfaac",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4096
+  },
+  {
+   "qid": "603deb26",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 128
+  },
+  {
+   "qid": "603deb26",
+   "budget": 256,
+   "recall": 0.0,
+   "tokens": 254
+  },
+  {
+   "qid": "603deb26",
+   "budget": 512,
+   "recall": 0.5,
+   "tokens": 511
+  },
+  {
+   "qid": "603deb26",
+   "budget": 1024,
+   "recall": 0.5,
+   "tokens": 1015
+  },
+  {
+   "qid": "603deb26",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2037
+  },
+  {
+   "qid": "603deb26",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4087
+  },
+  {
+   "qid": "gpt4_5501fe77",
+   "budget": 128,
+   "recall": 0.3333333333333333,
+   "tokens": 126
+  },
+  {
+   "qid": "gpt4_5501fe77",
+   "budget": 256,
+   "recall": 0.3333333333333333,
+   "tokens": 253
+  },
+  {
+   "qid": "gpt4_5501fe77",
+   "budget": 512,
+   "recall": 0.3333333333333333,
+   "tokens": 509
+  },
+  {
+   "qid": "gpt4_5501fe77",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1020
+  },
+  {
+   "qid": "gpt4_5501fe77",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2037
+  },
+  {
+   "qid": "gpt4_5501fe77",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4095
+  },
+  {
+   "qid": "157a136e",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 124
+  },
+  {
+   "qid": "157a136e",
+   "budget": 256,
+   "recall": 0.6666666666666666,
+   "tokens": 249
+  },
+  {
+   "qid": "157a136e",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 506
+  },
+  {
+   "qid": "157a136e",
+   "budget": 1024,
+   "recall": 0.6666666666666666,
+   "tokens": 1024
+  },
+  {
+   "qid": "157a136e",
+   "budget": 2048,
+   "recall": 0.6666666666666666,
+   "tokens": 2041
+  },
+  {
+   "qid": "157a136e",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4095
+  },
+  {
+   "qid": "3d86fd0a",
+   "budget": 128,
+   "recall": 1.0,
+   "tokens": 124
+  },
+  {
+   "qid": "3d86fd0a",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 252
+  },
+  {
+   "qid": "3d86fd0a",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 498
+  },
+  {
+   "qid": "3d86fd0a",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1024
+  },
+  {
+   "qid": "3d86fd0a",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2030
+  },
+  {
+   "qid": "3d86fd0a",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4089
+  },
+  {
+   "qid": "b320f3f8",
+   "budget": 128,
+   "recall": 1.0,
+   "tokens": 120
+  },
+  {
+   "qid": "b320f3f8",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 254
+  },
+  {
+   "qid": "b320f3f8",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 494
+  },
+  {
+   "qid": "b320f3f8",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1006
+  },
+  {
+   "qid": "b320f3f8",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2040
+  },
+  {
+   "qid": "b320f3f8",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4082
+  },
+  {
+   "qid": "e982271f",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 112
+  },
+  {
+   "qid": "e982271f",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 246
+  },
+  {
+   "qid": "e982271f",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 512
+  },
+  {
+   "qid": "e982271f",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1021
+  },
+  {
+   "qid": "e982271f",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2032
+  },
+  {
+   "qid": "e982271f",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4089
+  },
+  {
+   "qid": "efc3f7c2",
+   "budget": 128,
+   "recall": 0.5,
+   "tokens": 124
+  },
+  {
+   "qid": "efc3f7c2",
+   "budget": 256,
+   "recall": 0.5,
+   "tokens": 254
+  },
+  {
+   "qid": "efc3f7c2",
+   "budget": 512,
+   "recall": 0.5,
+   "tokens": 488
+  },
+  {
+   "qid": "efc3f7c2",
+   "budget": 1024,
+   "recall": 0.5,
+   "tokens": 1021
+  },
+  {
+   "qid": "efc3f7c2",
+   "budget": 2048,
+   "recall": 0.5,
+   "tokens": 2029
+  },
+  {
+   "qid": "efc3f7c2",
+   "budget": 4096,
+   "recall": 0.5,
+   "tokens": 4084
+  },
+  {
+   "qid": "b9cfe692",
+   "budget": 128,
+   "recall": 0.5,
+   "tokens": 126
+  },
+  {
+   "qid": "b9cfe692",
+   "budget": 256,
+   "recall": 0.5,
+   "tokens": 249
+  },
+  {
+   "qid": "b9cfe692",
+   "budget": 512,
+   "recall": 0.5,
+   "tokens": 505
+  },
+  {
+   "qid": "b9cfe692",
+   "budget": 1024,
+   "recall": 0.5,
+   "tokens": 1023
+  },
+  {
+   "qid": "b9cfe692",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2042
+  },
+  {
+   "qid": "b9cfe692",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4091
+  },
+  {
+   "qid": "031748ae",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 122
+  },
+  {
+   "qid": "031748ae",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 251
+  },
+  {
+   "qid": "031748ae",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 512
+  },
+  {
+   "qid": "031748ae",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1022
+  },
+  {
+   "qid": "031748ae",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2041
+  },
+  {
+   "qid": "031748ae",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4085
+  },
+  {
+   "qid": "a82c026e",
+   "budget": 128,
+   "recall": 1.0,
+   "tokens": 128
+  },
+  {
+   "qid": "a82c026e",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 252
+  },
+  {
+   "qid": "a82c026e",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 502
+  },
+  {
+   "qid": "a82c026e",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1015
+  },
+  {
+   "qid": "a82c026e",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2045
+  },
+  {
+   "qid": "a82c026e",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4090
+  },
+  {
+   "qid": "gpt4_1d4ab0c9",
+   "budget": 128,
+   "recall": 1.0,
+   "tokens": 119
+  },
+  {
+   "qid": "gpt4_1d4ab0c9",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 249
+  },
+  {
+   "qid": "gpt4_1d4ab0c9",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 508
+  },
+  {
+   "qid": "gpt4_1d4ab0c9",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1021
+  },
+  {
+   "qid": "gpt4_1d4ab0c9",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2047
+  },
+  {
+   "qid": "gpt4_1d4ab0c9",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4096
+  },
+  {
+   "qid": "gpt4_e414231f",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 114
+  },
+  {
+   "qid": "gpt4_e414231f",
+   "budget": 256,
+   "recall": 0.0,
+   "tokens": 245
+  },
+  {
+   "qid": "gpt4_e414231f",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 500
+  },
+  {
+   "qid": "gpt4_e414231f",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1022
+  },
+  {
+   "qid": "gpt4_e414231f",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2043
+  },
+  {
+   "qid": "gpt4_e414231f",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4088
+  },
+  {
+   "qid": "55241a1f",
+   "budget": 128,
+   "recall": 0.5,
+   "tokens": 124
+  },
+  {
+   "qid": "55241a1f",
+   "budget": 256,
+   "recall": 0.5,
+   "tokens": 256
+  },
+  {
+   "qid": "55241a1f",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 509
+  },
+  {
+   "qid": "55241a1f",
+   "budget": 1024,
+   "recall": 0.5,
+   "tokens": 1023
+  },
+  {
+   "qid": "55241a1f",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2040
+  },
+  {
+   "qid": "55241a1f",
+   "budget": 4096,
+   "recall": 0.5,
+   "tokens": 4086
+  },
+  {
+   "qid": "f685340e",
+   "budget": 128,
+   "recall": 0.5,
+   "tokens": 118
+  },
+  {
+   "qid": "f685340e",
+   "budget": 256,
+   "recall": 0.0,
+   "tokens": 256
+  },
+  {
+   "qid": "f685340e",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 510
+  },
+  {
+   "qid": "f685340e",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1015
+  },
+  {
+   "qid": "f685340e",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2048
+  },
+  {
+   "qid": "f685340e",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4094
+  },
+  {
+   "qid": "89527b6b",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 128
+  },
+  {
+   "qid": "89527b6b",
+   "budget": 256,
+   "recall": 0.0,
+   "tokens": 248
+  },
+  {
+   "qid": "89527b6b",
+   "budget": 512,
+   "recall": 0.0,
+   "tokens": 492
+  },
+  {
+   "qid": "89527b6b",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1014
+  },
+  {
+   "qid": "89527b6b",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2032
+  },
+  {
+   "qid": "89527b6b",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4093
+  },
+  {
+   "qid": "54026fce",
+   "budget": 128,
+   "recall": 1.0,
+   "tokens": 127
+  },
+  {
+   "qid": "54026fce",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 240
+  },
+  {
+   "qid": "54026fce",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 503
+  },
+  {
+   "qid": "54026fce",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1000
+  },
+  {
+   "qid": "54026fce",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2041
+  },
+  {
+   "qid": "54026fce",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4086
+  },
+  {
+   "qid": "71315a70",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 127
+  },
+  {
+   "qid": "71315a70",
+   "budget": 256,
+   "recall": 0.5,
+   "tokens": 256
+  },
+  {
+   "qid": "71315a70",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 509
+  },
+  {
+   "qid": "71315a70",
+   "budget": 1024,
+   "recall": 0.5,
+   "tokens": 1017
+  },
+  {
+   "qid": "71315a70",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2037
+  },
+  {
+   "qid": "71315a70",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4084
+  },
+  {
+   "qid": "4dfccbf8",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 128
+  },
+  {
+   "qid": "4dfccbf8",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 244
+  },
+  {
+   "qid": "4dfccbf8",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 511
+  },
+  {
+   "qid": "4dfccbf8",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1016
+  },
+  {
+   "qid": "4dfccbf8",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2044
+  },
+  {
+   "qid": "4dfccbf8",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4019
+  },
+  {
+   "qid": "gpt4_1a1dc16d",
+   "budget": 128,
+   "recall": 0.0,
+   "tokens": 128
+  },
+  {
+   "qid": "gpt4_1a1dc16d",
+   "budget": 256,
+   "recall": 0.5,
+   "tokens": 255
+  },
+  {
+   "qid": "gpt4_1a1dc16d",
+   "budget": 512,
+   "recall": 1.0,
+   "tokens": 507
+  },
+  {
+   "qid": "gpt4_1a1dc16d",
+   "budget": 1024,
+   "recall": 1.0,
+   "tokens": 1014
+  },
+  {
+   "qid": "gpt4_1a1dc16d",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2044
+  },
+  {
+   "qid": "gpt4_1a1dc16d",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4088
+  },
+  {
+   "qid": "ef66a6e5",
+   "budget": 128,
+   "recall": 0.5,
+   "tokens": 111
+  },
+  {
+   "qid": "ef66a6e5",
+   "budget": 256,
+   "recall": 1.0,
+   "tokens": 249
+  },
+  {
+   "qid": "ef66a6e5",
+   "budget": 512,
+   "recall": 0.5,
+   "tokens": 505
+  },
+  {
+   "qid": "ef66a6e5",
+   "budget": 1024,
+   "recall": 0.5,
+   "tokens": 1023
+  },
+  {
+   "qid": "ef66a6e5",
+   "budget": 2048,
+   "recall": 1.0,
+   "tokens": 2014
+  },
+  {
+   "qid": "ef66a6e5",
+   "budget": 4096,
+   "recall": 1.0,
+   "tokens": 4065
+  }
+ ],
+ "same_questions": {
+  "512": {
+   "mem0": 0.7833333333333333,
+   "first_version": 0.7854166666666667,
+   "hybrid": 0.7708333333333333
+  },
+  "1024": {
+   "mem0": 0.8291666666666666,
+   "first_version": 0.8770833333333332,
+   "hybrid": 0.8458333333333332
+  }
+ }
+}

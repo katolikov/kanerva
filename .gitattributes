@@ -1,0 +1,10 @@
+* text=auto
+*.sh text eol=lf
+*.pdf binary
+*.png binary
+*.npz binary
+
+paper/** linguist-documentation
+results/** linguist-generated
+plugins/*/lib/** linguist-vendored
+src/kanerva/relevance_model.json linguist-generated

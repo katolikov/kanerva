@@ -68,7 +68,7 @@ def draw(path: Path, theme: dict, width: float = 9.6, height: float = 4.1) -> No
 def main() -> None:
     for name, theme in THEMES.items():
         draw(ROOT / "docs" / "assets" / f"recall-{name}.png", theme)
-    draw(ROOT / "paper" / "figs" / "recall.pdf", THEMES["light"], width=7.2, height=3.3)
+    draw(ROOT / "paper" / "figs" / "recall.pdf", THEMES["light"])
 
 
 if __name__ == "__main__":

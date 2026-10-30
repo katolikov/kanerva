@@ -8,5 +8,10 @@
   "full_tokens": 30347.285714285714,
   "gold_tokens": 46.08999081726355,
   "other_tokens": 29.997305389221555
+ },
+ "beam": {
+  "full_tokens": 379187.4,
+  "gold_tokens": 232.07311893203882,
+  "other_tokens": 481.76487189008543
  }
 }

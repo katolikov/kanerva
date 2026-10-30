@@ -67,7 +67,7 @@ Let $X$ be a cluster of sentences with weights $p$ ($\sum_x p_x=1$), costs $c$, 
 Let $Z_\ell$ be the first $\ell$ picks of density greedy on $\Phi$, with rate $R_\ell=c(Z_\ell)$. For every summary $Z^\star$ of rate $R^\star$,
 \[D(Z_\ell)\le e^{-R_\ell/R^\star}+\big(1-e^{-R_\ell/R^\star}\big)D(Z^\star).\]
 Moreover, for every query vector $e_q$ and every $\ell_{\mathrm{u}}$-Lipschitz item score $u_q(x)=\phi(\langle e_q,e_x\rangle)$,
-\[\mathbb{E}_{x\sim p}\big[u_q(x)-u_q(z(x))\big]\le \ell_{\mathrm{u}}\sqrt{2\,D(Z_\ell)},\qquad z(x)=\arg\max_{z\in Z_\ell}s(x,z).\]
+\begin{gather*}\mathbb{E}_{x\sim p}\big[u_q(x)-u_q(z(x))\big]\le \ell_{\mathrm{u}}\sqrt{2\,D(Z_\ell)},\\ z(x)=\arg\max_{z\in Z_\ell}s(x,z).\end{gather*}
 \end{theorem}
 The token saving is $c(X)-R_\ell$, so distortion decays exponentially in rate against any reference summary. The statement covers the greedy prefix; the implementation continues past the first sentence that does not fit, as a heuristic. The bound averages over $p$ and says nothing about a rare needle in the cluster. That is why consolidation here keeps the sources: if the summary is retrieved, \textsc{Expand} recovers any source at the cost of its tokens.
 

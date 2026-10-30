@@ -1,0 +1,29 @@
+\begin{tabular}{@{}lllrrrr@{}}\toprule
+Dataset & Comparison & $B$ & $\Delta$ recall & Unit CI & Units $+$ & $p$ \\\midrule
+BEAM-100K and 500K & Wide pool and neighbours & 1024 & +0.021 & [+0.008, +0.033] & 36/55 & 0.006 \\
+BEAM-100K and 500K & Wide pool and neighbours & mean & +0.016 & [+0.009, +0.022] & 42/55 & $<$0.001 \\
+BEAM-100K and 500K & Cost density & 1024 & +0.016 & [+0.006, +0.026] & 35/55 & 0.005 \\
+BEAM-100K and 500K & Cost density & mean & +0.016 & [+0.012, +0.020] & 47/55 & $<$0.001 \\
+BEAM-100K and 500K & Validity & 1024 & +0.000 & [-0.007, +0.007] & 12/55 & 0.947 \\
+BEAM-100K and 500K & Validity & mean & -0.003 & [-0.006, -0.000] & 16/55 & 0.050 \\
+BEAM-100K and 500K & Near-twin rules & 1024 & +0.000 & [-0.006, +0.007] & 12/55 & 0.947 \\
+BEAM-100K and 500K & Near-twin rules & mean & -0.003 & [-0.005, +0.000] & 17/55 & 0.070 \\
+\addlinespace
+RepoMem, keys & Wide pool and neighbours & 1024 & -0.001 & [-0.005, +0.002] & 2/5 & 1.000 \\
+RepoMem, keys & Wide pool and neighbours & mean & -0.000 & [-0.003, +0.003] & 2/5 & 0.938 \\
+RepoMem, keys & Cost density & 1024 & -0.000 & [-0.003, +0.002] & 2/5 & 1.000 \\
+RepoMem, keys & Cost density & mean & -0.000 & [-0.004, +0.003] & 3/5 & 0.812 \\
+RepoMem, keys & Validity & 1024 & -0.004 & [-0.038, +0.021] & 3/5 & 1.000 \\
+RepoMem, keys & Validity & mean & +0.008 & [-0.023, +0.038] & 4/5 & 0.562 \\
+RepoMem, keys & Near-twin rules & 1024 & -0.009 & [-0.039, +0.013] & 2/5 & 1.000 \\
+RepoMem, keys & Near-twin rules & mean & -0.007 & [-0.030, +0.008] & 2/5 & 0.750 \\
+\addlinespace
+RepoMem, no keys & Wide pool and neighbours & 1024 & -0.003 & [-0.008, +0.001] & 1/5 & 1.000 \\
+RepoMem, no keys & Wide pool and neighbours & mean & -0.001 & [-0.004, +0.003] & 2/5 & 0.938 \\
+RepoMem, no keys & Cost density & 1024 & +0.000 & [-0.005, +0.004] & 3/5 & 1.000 \\
+RepoMem, no keys & Cost density & mean & +0.001 & [-0.002, +0.004] & 3/5 & 0.750 \\
+RepoMem, no keys & Validity & 1024 & -0.019 & [-0.056, +0.010] & 1/5 & 1.000 \\
+RepoMem, no keys & Validity & mean & -0.008 & [-0.041, +0.023] & 2/5 & 0.625 \\
+RepoMem, no keys & Near-twin rules & 1024 & -0.019 & [-0.055, +0.010] & 1/5 & 1.000 \\
+RepoMem, no keys & Near-twin rules & mean & -0.008 & [-0.040, +0.022] & 2/5 & 0.625 \\
+\bottomrule\end{tabular}

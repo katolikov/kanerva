@@ -1,8 +1,8 @@
 """Verify that the paper's numbers come from results/*.json.
 
-1. Regenerates paper/generated/ and fails if the committed files differ.
+1. Regenerates paper/generated/ and the README results block, and fails if anything changes.
 2. Fails if result-bearing sections contain literal decimals or percentages outside the allowlist.
-3. Fails if the PDF's macro use is undefined: every \\R, \\T, \\St, \\D, \\CI and \\V key must exist.
+3. Fails if any \\R or \\V key used in the paper is undefined.
 4. Confirms that every result file records its commit.
 """
 
@@ -19,17 +19,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 GENERATED = ROOT / "paper" / "generated"
-SECTIONS = ["abstract.tex", "experiments.tex", "conclusion.tex", "limitations.tex"]
+SECTIONS = ROOT / "paper" / "sections"
+RESULT_SECTIONS = ["abstract.tex", "experiments.tex", "conclusion.tex", "limitations.tex", "summaries.tex"]
 ALLOWED = {
     "0.316",  # the proved worst-case constant, (1 - 1/e) / 2
-    "2.2.1",  # Mem0 version
-    "0.1", "0.5",  # distortion rates named in the text
     "0.05",  # significance level
-    "0.7", "0.8", "0.9", "0.97",  # similarity thresholds, which are inputs
-    "0.95",  # a qualitative floor for saturated fact queries, checked in the category table
+    "0.5", "0.7", "0.8", "0.9", "0.97",  # thresholds and rates, which are inputs
 }
-MACRO = re.compile(r"\\(R|T|St|D|CI|Err|Inj)\{([^}]*)\}\{([^}]*)\}\{([^}]*)\}|\\V\{([^}]*)\}")
-PREFIX = {"R": "r", "T": "t", "St": "s", "D": "d", "CI": "ci", "Err": "e", "Inj": "i"}
+ALLOWED_PERCENT = {"20\\%"}  # the reward noise, an input
+NO_COMMIT = {"dataset_stats.json", "systems_mem0.json"}
+MACRO = re.compile(r"\\R\{([^}]*)\}\{([^}]*)\}\{([^}]*)\}|\\V\{([^}]*)\}")
 
 
 def main() -> int:
@@ -45,30 +44,21 @@ def main() -> int:
         errors.append("README results block is out of date against results/")
 
     macros = (GENERATED / "macros.tex").read_text()
-    summaries = (ROOT / "paper" / "sections" / "summaries.tex")
-    texts = {name: (ROOT / "paper" / "sections" / name).read_text() for name in SECTIONS}
-    if summaries.exists():
-        texts["summaries.tex"] = summaries.read_text()
     checked = 0
-    for name, text in texts.items():
-        for match in re.finditer(r"(?<![\w.{-])\d+\.\d+(?:\.\d+)?(?![\w}])|\d+(?:\.\d+)?\\%", text):
-            if match.group(0) not in ALLOWED and "95\\%" not in match.group(0) and "20\\%" not in match.group(0) and "12\\%" not in match.group(0):
-                errors.append(f"{name}: literal number {match.group(0)!r}")
+    for path in sorted(SECTIONS.glob("*.tex")):
+        text = path.read_text()
+        if path.name in RESULT_SECTIONS:
+            for match in re.finditer(r"(?<![\w.{-])\d+\.\d+(?:\.\d+)?(?![\w}])|\d+(?:\.\d+)?\\%", text):
+                if match.group(0) not in ALLOWED | ALLOWED_PERCENT:
+                    errors.append(f"{path.name}: literal number {match.group(0)!r}")
         for m in MACRO.finditer(text):
-            if m.group(5) is not None:
-                key = f"v-{m.group(5)}"
-            else:
-                key = f"{PREFIX[m.group(1)]}-{m.group(2)}-{m.group(3)}-{m.group(4)}"
+            key = f"v-{m.group(4)}" if m.group(4) is not None else f"r-{m.group(1)}-{m.group(2)}-{m.group(3)}"
             checked += 1
             if f"\\csname {key}\\endcsname" not in macros:
-                errors.append(f"{name}: undefined macro key {key}")
+                errors.append(f"{path.name}: undefined macro key {key}")
 
     for path in sorted((ROOT / "results").glob("*.json")):
-        data = json.loads(path.read_text())
-        if path.name in ("fitted_prior.json", "tuning.json", "comparison.json", "dataset_stats.json"):
-            continue
-        meta = data.get("meta", {})
-        if path.name != "systems_mem0.json" and not meta.get("commit"):
+        if path.name not in NO_COMMIT and not json.loads(path.read_text()).get("meta", {}).get("commit"):
             errors.append(f"{path.name}: no commit recorded")
 
     for line in errors:

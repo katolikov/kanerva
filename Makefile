@@ -1,7 +1,7 @@
 PY := .venv/bin/python
 export PYTHONPATH := src:.
 
-.PHONY: install test data reproduce reproduce-fast figures paper check plugin fit
+.PHONY: install test data reproduce figures paper check plugin fit
 
 install:
 	uv venv --python 3.12 .venv
@@ -9,30 +9,24 @@ install:
 
 test:
 	.venv/bin/pytest -q
-	cd plugins/opencode && npm test
+	cd plugins/opencode && npm ci && npm run typecheck && npm test
 
 plugin:
-	scripts/sync_plugin.sh
+	sh scripts/sync_plugin.sh
 
 data:
 	$(PY) scripts/fetch_data.py
 	$(PY) -m experiments.repomem
-	$(PY) -m experiments.embed_cache lme
-	$(PY) -m experiments.embed_cache locomo
-	$(PY) -m experiments.embed_cache repomem
-	$(PY) -m experiments.embed_cache repomem-holdout
-	$(PY) -m experiments.embed_cache lme minishlab/potion-base-8M
-	$(PY) -m experiments.embed_cache locomo minishlab/potion-base-8M
-	$(PY) -m experiments.embed_cache repomem minishlab/potion-base-8M
+	for name in lme locomo repomem repomem-holdout repomem-fresh beam; do \
+	  $(PY) -m experiments.embed_cache $$name; \
+	  $(PY) -m experiments.embed_cache $$name minishlab/potion-base-8M; \
+	done
 
 reproduce:
 	$(PY) -m experiments.reproduce
 
-reproduce-fast:
-	$(PY) -m experiments.reproduce --fast
-
 figures:
-	$(PY) -m experiments.analysis
+	$(PY) -m experiments.figures
 
 paper:
 	$(PY) scripts/make_macros.py
@@ -42,7 +36,7 @@ check:
 	$(PY) scripts/check_numbers.py
 
 fit:
-	$(PY) -m experiments.fit_prior
+	$(PY) -m experiments.fit_relevance
 
 tools:
 	mkdir -p .tools

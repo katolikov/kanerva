@@ -1,0 +1,65 @@
+\begin{tabular}{@{}lllrrrr@{}}\toprule
+Dataset & Comparison & $B$ & $\Delta$ recall & Unit CI & Units $+$ & $p$ \\\midrule
+BEAM-100K and 500K & \kanerva vs hybrid & 128 & +0.025 & [+0.010, +0.038] & 34/55 & 0.001 \\
+BEAM-100K and 500K & \kanerva vs hybrid & 1024 & +0.205 & [+0.184, +0.227] & 55/55 & $<$0.001 \\
+BEAM-100K and 500K & \kanerva vs hybrid & 4096 & +0.224 & [+0.203, +0.246] & 55/55 & $<$0.001 \\
+BEAM-100K and 500K & \kanerva vs hybrid & mean & +0.127 & [+0.114, +0.140] & 55/55 & $<$0.001 \\
+BEAM-100K and 500K & \kanerva vs reranker & 128 & +0.003 & [-0.013, +0.018] & 29/55 & 0.739 \\
+BEAM-100K and 500K & \kanerva vs reranker & 1024 & +0.147 & [+0.121, +0.172] & 51/55 & $<$0.001 \\
+BEAM-100K and 500K & \kanerva vs reranker & 4096 & +0.178 & [+0.156, +0.200] & 55/55 & $<$0.001 \\
+BEAM-100K and 500K & \kanerva vs reranker & mean & +0.088 & [+0.072, +0.102] & 52/55 & $<$0.001 \\
+BEAM-100K and 500K & \kanerva vs first version & 128 & +0.012 & [-0.001, +0.025] & 33/55 & 0.128 \\
+BEAM-100K and 500K & \kanerva vs first version & 1024 & +0.142 & [+0.120, +0.164] & 52/55 & $<$0.001 \\
+BEAM-100K and 500K & \kanerva vs first version & 4096 & +0.154 & [+0.136, +0.174] & 55/55 & $<$0.001 \\
+BEAM-100K and 500K & \kanerva vs first version & mean & +0.086 & [+0.074, +0.098] & 53/55 & $<$0.001 \\
+BEAM-100K and 500K & + reranker vs reranker & 128 & +0.028 & [+0.015, +0.041] & 41/55 & $<$0.001 \\
+BEAM-100K and 500K & + reranker vs reranker & 1024 & +0.156 & [+0.133, +0.178] & 53/55 & $<$0.001 \\
+BEAM-100K and 500K & + reranker vs reranker & 4096 & +0.177 & [+0.155, +0.198] & 54/55 & $<$0.001 \\
+BEAM-100K and 500K & + reranker vs reranker & mean & +0.106 & [+0.092, +0.119] & 54/55 & $<$0.001 \\
+BEAM-100K and 500K & Lexical vs BM25 & 128 & +0.010 & [-0.002, +0.023] & 28/55 & 0.125 \\
+BEAM-100K and 500K & Lexical vs BM25 & 1024 & +0.178 & [+0.150, +0.203] & 54/55 & $<$0.001 \\
+BEAM-100K and 500K & Lexical vs BM25 & 4096 & +0.210 & [+0.186, +0.234] & 55/55 & $<$0.001 \\
+BEAM-100K and 500K & Lexical vs BM25 & mean & +0.114 & [+0.101, +0.128] & 55/55 & $<$0.001 \\
+\addlinespace
+RepoMem, keys & \kanerva vs hybrid & 128 & +0.070 & [+0.027, +0.125] & 5/5 & 0.375 \\
+RepoMem, keys & \kanerva vs hybrid & 1024 & -0.000 & [-0.036, +0.021] & 4/5 & 1.000 \\
+RepoMem, keys & \kanerva vs hybrid & 4096 & -0.025 & [-0.069, +0.012] & 3/5 & 1.000 \\
+RepoMem, keys & \kanerva vs hybrid & mean & +0.007 & [-0.024, +0.028] & 4/5 & 0.625 \\
+RepoMem, keys & \kanerva vs reranker & 128 & +0.055 & [+0.026, +0.101] & 5/5 & 0.375 \\
+RepoMem, keys & \kanerva vs reranker & 1024 & -0.003 & [-0.031, +0.018] & 4/5 & 1.000 \\
+RepoMem, keys & \kanerva vs reranker & 4096 & -0.025 & [-0.069, +0.012] & 3/5 & 1.000 \\
+RepoMem, keys & \kanerva vs reranker & mean & +0.004 & [-0.022, +0.020] & 4/5 & 0.875 \\
+RepoMem, keys & \kanerva vs first version & 128 & +0.023 & [+0.007, +0.040] & 4/5 & 0.750 \\
+RepoMem, keys & \kanerva vs first version & 1024 & +0.012 & [+0.001, +0.025] & 4/5 & 0.938 \\
+RepoMem, keys & \kanerva vs first version & 4096 & +0.011 & [-0.002, +0.023] & 4/5 & 1.000 \\
+RepoMem, keys & \kanerva vs first version & mean & +0.011 & [+0.006, +0.017] & 5/5 & 0.062 \\
+RepoMem, keys & + reranker vs reranker & 128 & +0.056 & [+0.030, +0.094] & 5/5 & 0.375 \\
+RepoMem, keys & + reranker vs reranker & 1024 & -0.006 & [-0.033, +0.012] & 3/5 & 1.000 \\
+RepoMem, keys & + reranker vs reranker & 4096 & -0.025 & [-0.069, +0.013] & 3/5 & 1.000 \\
+RepoMem, keys & + reranker vs reranker & mean & +0.004 & [-0.023, +0.020] & 4/5 & 0.812 \\
+RepoMem, keys & Lexical vs BM25 & 128 & +0.071 & [+0.030, +0.126] & 5/5 & 0.375 \\
+RepoMem, keys & Lexical vs BM25 & 1024 & -0.002 & [-0.043, +0.029] & 4/5 & 1.000 \\
+RepoMem, keys & Lexical vs BM25 & 4096 & -0.035 & [-0.072, -0.006] & 0/5 & 0.625 \\
+RepoMem, keys & Lexical vs BM25 & mean & +0.008 & [-0.025, +0.035] & 4/5 & 0.562 \\
+\addlinespace
+RepoMem, no keys & \kanerva vs hybrid & 128 & +0.037 & [-0.003, +0.096] & 4/5 & 1.000 \\
+RepoMem, no keys & \kanerva vs hybrid & 1024 & -0.014 & [-0.052, +0.011] & 3/5 & 1.000 \\
+RepoMem, no keys & \kanerva vs hybrid & 4096 & -0.034 & [-0.082, +0.004] & 2/5 & 1.000 \\
+RepoMem, no keys & \kanerva vs hybrid & mean & -0.009 & [-0.041, +0.017] & 3/5 & 0.812 \\
+RepoMem, no keys & \kanerva vs reranker & 128 & +0.024 & [-0.009, +0.071] & 3/5 & 1.000 \\
+RepoMem, no keys & \kanerva vs reranker & 1024 & -0.016 & [-0.049, +0.011] & 2/5 & 1.000 \\
+RepoMem, no keys & \kanerva vs reranker & 4096 & -0.034 & [-0.082, +0.004] & 2/5 & 1.000 \\
+RepoMem, no keys & \kanerva vs reranker & mean & -0.013 & [-0.042, +0.010] & 3/5 & 0.562 \\
+RepoMem, no keys & \kanerva vs first version & 128 & +0.037 & [+0.012, +0.069] & 4/5 & 0.625 \\
+RepoMem, no keys & \kanerva vs first version & 1024 & +0.010 & [+0.003, +0.018] & 5/5 & 0.375 \\
+RepoMem, no keys & \kanerva vs first version & 4096 & +0.010 & [-0.003, +0.023] & 4/5 & 0.625 \\
+RepoMem, no keys & \kanerva vs first version & mean & +0.015 & [+0.010, +0.025] & 5/5 & 0.062 \\
+RepoMem, no keys & + reranker vs reranker & 128 & +0.018 & [-0.008, +0.057] & 4/5 & 1.000 \\
+RepoMem, no keys & + reranker vs reranker & 1024 & -0.020 & [-0.048, +0.006] & 2/5 & 1.000 \\
+RepoMem, no keys & + reranker vs reranker & 4096 & -0.035 & [-0.083, +0.003] & 1/5 & 1.000 \\
+RepoMem, no keys & + reranker vs reranker & mean & -0.015 & [-0.040, +0.007] & 2/5 & 0.438 \\
+RepoMem, no keys & Lexical vs BM25 & 128 & +0.047 & [+0.005, +0.103] & 3/5 & 1.000 \\
+RepoMem, no keys & Lexical vs BM25 & 1024 & -0.017 & [-0.056, +0.015] & 2/5 & 1.000 \\
+RepoMem, no keys & Lexical vs BM25 & 4096 & -0.044 & [-0.086, -0.014] & 0/5 & 0.375 \\
+RepoMem, no keys & Lexical vs BM25 & mean & -0.009 & [-0.043, +0.019] & 3/5 & 0.750 \\
+\bottomrule\end{tabular}
