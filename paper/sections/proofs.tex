@@ -15,7 +15,7 @@ Let there be $k$ facets of equal weight. Facet 1 has $k$ duplicates, each with m
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{prop:recency}]
-Recency selects only from the $\lfloor B/c_{\min}\rfloor$ newest items, which exclude the item in question. A relevance rule does not depend on the items' order in time.
+Walking from newest to oldest, keep each item that fits. Since the later items cost more than $B$ in total, one of them fails to fit, and at that moment the remaining budget is below its cost, which is at most $c(m)$. The remaining budget only shrinks afterwards, so $m$ never fits. A relevance rule does not depend on the items' order in time.
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{prop:stale}]
@@ -48,7 +48,7 @@ Let $B_t=V_t^{-1/2}(\sum_{i\in A_t}x_ix_i^\top)V_t^{-1/2}$, positive semidefinit
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:regret}]
-\emph{Good event.} Order items within a round arbitrarily. Features in a round are fixed before its rewards, so the sequence is predictable, and the self-normalized bound \cite[Theorem~2]{abbasi2011improved}, applied to $\theta^\star-\theta_0$ with targets $y-x^\top\theta_0$, gives with probability at least $1-\delta/4$ for all $t$: $\|\hat\theta_t-\theta^\star\|_{V_t}\le\beta_T$. The sequence has at most $KT$ terms. So $|x^\top\hat\theta_t-x^\top\theta^\star|\le\beta_T\|x\|_{V_t^{-1}}$ for every $x$ by Cauchy--Schwarz. Combined with the validity event (probability at least $1-\delta/2$), and writing $\bar\rho_{t,m}=\min(1,\hat\rho_{t,m}+\varepsilon_{t,m})$ and $\bar\mu_{t,m}$ for the clipped upper confidence bound,
+\emph{Good event.} Order items within a round arbitrarily, and take the filtration that reveals a round's $Z$ values before its rewards. Then $X_{t,m}=Z_{t,m}x_{t,m}$ is predictable, $Z_{t,m}\xi_{t,m}$ is conditionally $R$-sub-Gaussian, and items with $Z=0$ contribute nothing. The self-normalized bound \cite[Theorem~2]{abbasi2011improved}, applied to $\theta^\star-\theta_0$ with targets $y-x^\top\theta_0$, gives with probability at least $1-\delta/4$ for all $t$: $\|\hat\theta_t-\theta^\star\|_{V_t}\le\beta_T$. The sequence has at most $KT$ terms. So $|x^\top\hat\theta_t-x^\top\theta^\star|\le\beta_T\|x\|_{V_t^{-1}}$ for every $x$ by Cauchy--Schwarz. Combined with the validity event (probability at least $1-\delta/2$), and writing $\bar\rho_{t,m}=\min(1,\hat\rho_{t,m}+\varepsilon_{t,m})$ and $\bar\mu_{t,m}$ for the clipped upper confidence bound,
 \[\rho_{t,m}\le\bar\rho_{t,m}\le\rho_{t,m}+2\varepsilon_{t,m},\qquad\mu_{t,m}\le\bar\mu_{t,m}\le\mu_{t,m}+b_{t,m},\quad b_{t,m}:=\min(1,2\beta_T\|x_{t,m}\|_{V_t^{-1}}).\]
 Clipping preserves the lower bound as $\mu_{t,m}\in[0,1]$. In particular $w^\star_t\le\bar w_t$ coordinate-wise.
 
@@ -56,15 +56,17 @@ Clipping preserves the lower bound as $\mu_{t,m}\in[0,1]$. In particular $w^\sta
 \[\alpha F_t(S^\star_t;w^\star_t)\le\alpha F_t(S_t^\star;\bar w_t)\le F_t(S_t;\bar w_t)\le F_t(S_t;w^\star_t)+L\sum_{m\in S_t}(\bar w_{t,m}-w^\star_{t,m}).\]
 Moreover, $\bar w-w^\star=\bar\rho\bar\mu-\rho\mu=\rho(\bar\mu-\mu)+(\bar\rho-\rho)\bar\mu\le\rho\,b+2\varepsilon$.
 
-\emph{Summation.} $b_{t,m}$ is determined by the history before round $t$, while $\mathbb{E}[Z_{t,m}\mid\text{history}]=\rho_{t,m}$. So $(\rho_{t,m}-Z_{t,m})b_{t,m}$ is a martingale difference sequence bounded by $1$ in absolute value, with at most $KT$ terms, and Azuma--Hoeffding gives, with probability at least $1-\delta/4$, $\sum\rho b\le\sum Zb+\sqrt{2KT\log(4/\delta)}$. The items with $Z=1$ are exactly the ones entering $V$. By Cauchy--Schwarz and Lemma~\ref{lem:potential},
+\emph{Summation.} $b_{t,m}$ is determined by the history before round $t$, and $\mathbb{E}[Z_{t,m}\mid\text{history}]=\rho_{t,m}$, while $Z$ values within a round may be dependent. So $D_t=\sum_{m\in S_t}(\rho_{t,m}-Z_{t,m})b_{t,m}$ is a martingale difference sequence with $|D_t|\le K$, and Azuma--Hoeffding gives, with probability at least $1-\delta/4$, $\sum_t\sum_{m\in S_t}\rho_{t,m} b_{t,m}\le\sum_t\sum_{m\in S_t}Z_{t,m}b_{t,m}+K\sqrt{2T\log(4/\delta)}$. The items with $Z=1$ are exactly the ones entering $V$. By Cauchy--Schwarz and Lemma~\ref{lem:potential},
 \[\sum_{t}\sum_{m\in S_t}Z_{t,m}b_{t,m}\le2\beta_T\sqrt{KT\sum_t\sum_{m:Z=1}\|x_{t,m}\|^2_{V_t^{-1}}}\le2\beta_T\sqrt{2dKT\log(1+KT/(d\lambda))}.\]
-A union bound over the three events finishes the proof.
+A union bound over the three events finishes the proof, and $\sum_t\sum_{m\in S_t}2\varepsilon_{t,m}$ is the remaining term.
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{prop:hazard}]
-$G=\lambda\sum_iL_i\sim\mathrm{Gamma}(n,1)$ and $\lambda/\hat\lambda=G/n$. Chernoff bounds for the Gamma distribution give $\Pr[G/n\ge1+\eta]\le\exp(-n(\eta-\log(1+\eta)))$ and $\Pr[G/n\le1-\eta]\le\exp(-n(-\eta-\log(1-\eta)))$. For $\eta\in(0,1]$, $\eta-\log(1+\eta)\ge\eta^2/6$ and $-\eta-\log(1-\eta)\ge\eta^2/2$. So $\Pr[|G/n-1|\ge\eta]\le2\exp(-n\eta^2/6)$. Set $\eta=\sqrt{6\log(2/\delta)/n}$, which is at most $\frac12$ by the assumption on $n$.
+Write $\lambda=\lambda_k$. The change count $N(s)$ has intensity $\lambda Y(s)$, where $Y$ is the predictable number of items at risk, and $E(s)=\int_0^sY$. For any fixed real $\theta$, $M_\theta(s)=\exp(\theta N(s)-\lambda(e^\theta-1)E(s))$ is a non-negative local martingale with $M_\theta(0)=1$, hence a supermartingale, so $\Pr[M_\theta\ge2/\delta]\le\delta/2$ at the stopping time by Markov's inequality and optional stopping.
 
-On the complement write $g=G/n\in[\frac12,\frac32]$ so $\hat\lambda=\lambda/g$. By the mean value theorem, for some $\sigma$ between $1$ and $1/g$, so $\sigma\ge2/3$, we have $|e^{-\lambda a/g}-e^{-\lambda a}|=|1/g-1|\,\lambda a\,e^{-\sigma\lambda a}$. Since $\sup_{u\ge0}ue^{-\sigma u}=1/(e\sigma)\le3/(2e)$ and $|1/g-1|=|1-g|/g\le2\eta$, the difference is at most $3\eta/e$, for all $a$ at once.
+Let $\ell=\log(2/\delta)$ and $\theta=\sqrt{\ell/(\lambda E_0)}=\eta/2\le\frac14$. Taking $+\theta$ and using $(e^\theta-1)/\theta\le1+\theta$ on $[0,1]$: $N\le\lambda E(1+\theta)+\ell/\theta$. Taking $-\theta$ and using $(1-e^{-\theta})/\theta\ge1-\theta$: $N\ge\lambda E(1-\theta)-\ell/\theta$. Dividing by $\lambda E$ and using $E\ge E_0$, with $\ell/(\theta\lambda E_0)=\theta$, gives $|\hat\lambda/\lambda-1|\le2\theta=\eta$.
+
+Put $s=\hat\lambda/\lambda\in[\frac12,\frac32]$. By the mean value theorem, for some $\sigma$ between $1$ and $s$, so $\sigma\ge\frac12$, we have $|e^{-s\lambda a}-e^{-\lambda a}|=|s-1|\,\lambda a\,e^{-\sigma\lambda a}\le\eta/(e\sigma)\le2\eta/e$, using $\sup_{u\ge0}ue^{-\sigma u}=1/(e\sigma)$, for all $a$ at once.
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{prop:blind}]

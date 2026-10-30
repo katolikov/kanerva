@@ -14,11 +14,22 @@ from experiments.embed_cache import TextCache
 from experiments.harness import RESULTS, apply_write, git_commit, new_memory
 from experiments.registry import load
 from kanerva import Memory, RetrievalConfig
-from kanerva.consolidate import consolidate, extract_summary, forget
-from kanerva.embed import HashingEmbedder
-from kanerva.text import split_sentences
+from kanerva.consolidate import consolidate, forget
+from kanerva.embed import SentenceTransformerEmbedder
 
 BUDGET = 1024
+_embedder = None
+
+
+def embedder():
+    """One CPU MiniLM per worker, so that summaries live in the same space as the stored vectors."""
+    global _embedder
+    if _embedder is None:
+        import torch
+
+        torch.set_num_threads(1)
+        _embedder = SentenceTransformerEmbedder(device="cpu")
+    return _embedder
 
 
 def dump(name: str, payload: dict) -> None:
@@ -34,6 +45,7 @@ def _consolidation_job(args: tuple) -> dict:
     for turn in stream.writes:
         apply_write(mem, cache, turn, id_of, False)
     before = mem.stats()["active_tokens"]
+    mem.embedder = embedder() if threshold is not None else None
     report = consolidate(mem, threshold=threshold, rate=rate) if threshold is not None else None
     parents: dict[int, int] = {}
     for row in mem.db.execute("SELECT id, parents FROM items WHERE kind='semantic' AND parents<>'[]'"):
@@ -44,10 +56,9 @@ def _consolidation_job(args: tuple) -> dict:
         gold = {id_of[t] for t in query.gold if t in id_of}
         if not gold:
             continue
-        mapped = {parents.get(g, g) for g in gold}
         result = mem.retrieve(query.question, BUDGET, now=query.now, query_vector=cache.vector(query.question), record=False)
         chosen = {i.id for i in result.items}
-        recalls.append(len(chosen & mapped) / len(mapped))
+        recalls.append(sum(parents.get(g, g) in chosen for g in gold) / len(gold))
     out = {"before": before, "after": mem.stats()["active_tokens"], "recall": recalls,
            "clusters": report.clusters if report else 0, "sources": report.sources if report else 0,
            "distortion": report.distortion if report else 0.0}
@@ -57,14 +68,14 @@ def _consolidation_job(args: tuple) -> dict:
 
 def consolidation() -> None:
     results: dict = {}
-    grid = [(None, 0.0)] + [(t, r) for t in (0.6, 0.7, 0.8, 0.9) for r in (0.3, 0.5)]
+    grid = [(None, 0.0)] + [(t, 0.5) for t in (0.7, 0.8, 0.9)]
     for dataset in ("locomo", "lme"):
         streams = [s for s in load(dataset) if s.split == "test"]
         if dataset == "lme":
-            streams = streams[:60]
+            streams = random.Random(0).sample(streams, 60)
         for threshold, rate in grid:
             jobs = [(s, dataset, threshold, rate) for s in streams]
-            with ProcessPoolExecutor(8) as pool:
+            with ProcessPoolExecutor(6) as pool:
                 rows = list(pool.map(_consolidation_job, jobs))
             before, after = sum(r["before"] for r in rows), sum(r["after"] for r in rows)
             recall = [x for r in rows for x in r["recall"]]
@@ -74,34 +85,6 @@ def consolidation() -> None:
                             "clusters": sum(r["clusters"] for r in rows), "sources": sum(r["sources"] for r in rows)}
             print(key, {k: round(v, 4) if isinstance(v, float) else v for k, v in results[key].items()}, flush=True)
     dump("consolidation", {"results": results, "meta": {"budget": BUDGET, "lme_streams": 60}})
-
-
-def rate_distortion() -> None:
-    """Empirical D(R) on real clusters of sentences, against the bound of Theorem 3 with Z* = X."""
-    streams = [s for s in load("locomo") if s.split == "test"]
-    embedder = HashingEmbedder()
-    rng = random.Random(0)
-    rates = (0.1, 0.2, 0.3, 0.5, 0.75, 1.0)
-    curves: dict = {r: [] for r in rates}
-    violations = 0
-    total = 0
-    for stream in streams:
-        turns = [t.text for t in stream.writes]
-        rng.shuffle(turns)
-        for start in range(0, min(len(turns), 400), 8):
-            sentences = list(dict.fromkeys(s for t in turns[start:start + 8] for s in split_sentences(t)))
-            if len(sentences) < 4:
-                continue
-            count = lambda s: len(s.split())
-            cost = sum(count(s) for s in sentences)
-            for r in rates:
-                _, d = extract_summary(sentences, embedder, count, max(int(r * cost), 1))
-                curves[r].append(d)
-                total += 1
-                violations += d > np.exp(-r) + 1e-9
-    dump("rate_distortion", {"rates": rates, "mean_distortion": [float(np.mean(curves[r])) for r in rates],
-                             "bound": [float(np.exp(-r)) for r in rates], "violations": int(violations), "total": total,
-                             "meta": {"embedder": "hashing"}})
 
 
 def _forgetting_job(args: tuple) -> dict:
@@ -149,7 +132,8 @@ def forgetting() -> None:
                      "max_tokens": float(np.mean([max(t["tokens"] for t in r["trace"]) for r in rows if r["trace"]])),
                      "trace": rows[0]["trace"]}
         print(name, {k: round(v, 3) for k, v in out[name].items() if k != "trace"}, flush=True)
-    dump("forgetting", {"results": out, "meta": {"budget": BUDGET, "streams": len(streams)}})
+    days = [(s.writes[-1].at - s.writes[0].at) / 86400 / 13 for s in streams]
+    dump("forgetting", {"results": out, "meta": {"budget": BUDGET, "streams": len(streams), "session_days": float(np.mean(days))}})
 
 
 def _snippet_job(args: tuple) -> dict:
@@ -211,10 +195,16 @@ def scale() -> None:
             out[f"{mode}@{n}"] = {"write_ms": write_ms, "p50_ms": float(np.percentile(latencies, 50)), "p95_ms": float(np.percentile(latencies, 95))}
             print(mode, n, out[f"{mode}@{n}"], flush=True)
         mem.close()
-    dump("scale", {"results": out})
+    model = SentenceTransformerEmbedder(device="cpu")
+    encode = []
+    for query in questions[:50]:
+        start = time.perf_counter()
+        model.encode([query.question])
+        encode.append((time.perf_counter() - start) * 1000)
+    dump("scale", {"results": out, "query_encode_ms": float(np.median(encode[5:]))})
 
 
 if __name__ == "__main__":
-    jobs = {"consolidation": consolidation, "rd": rate_distortion, "forgetting": forgetting, "multires": multires, "scale": scale}
+    jobs = {"consolidation": consolidation, "forgetting": forgetting, "multires": multires, "scale": scale}
     for name in sys.argv[1:] or jobs:
         jobs[name]()

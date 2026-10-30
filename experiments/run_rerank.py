@@ -60,7 +60,7 @@ def run(name: str, dataset: str, keyed: bool) -> None:
                 continue
             ctx = Context(mem, query.question, query.now, cache.vector(query.question))
             pool = ctx.hybrid()[:POOL]
-            rows = mem._fetch(pool)
+            rows = mem._fetch(ctx.hybrid())
             t0 = time.perf_counter()
             scores = model.predict([(query.question, rows[i]["text"][:1500]) for i in pool], batch_size=64, show_progress_bar=False)
             ms = (time.perf_counter() - t0) * 1000
@@ -68,7 +68,7 @@ def run(name: str, dataset: str, keyed: bool) -> None:
                 logits[pair_key(query.question, rows[i]["text"])] = round(float(value), 4)
             if stream.split == "dev":
                 continue
-            order = [pool[i] for i in np.argsort(-np.asarray(scores))]
+            order = [pool[i] for i in np.argsort(-np.asarray(scores))] + ctx.hybrid()[POOL:]
             for budget in BUDGETS:
                 ids = fill(order, ctx, budget)
                 row = {"method": "rerank", "budget": budget, "qid": query.qid, "category": query.category, "stream": stream.name}

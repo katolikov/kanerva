@@ -24,7 +24,7 @@ METRICS = ("recall", "all", "any", "tokens", "precision", "stale_any", "stale_er
 
 def git_commit() -> str:
     try:
-        return subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
+        return subprocess.run(["git", "-C", str(ROOT), "describe", "--always", "--dirty", "--abbrev=12"], capture_output=True, text=True, check=True).stdout.strip()
     except subprocess.CalledProcessError:
         return "uncommitted"
 

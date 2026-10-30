@@ -48,6 +48,32 @@ def digest(text: str) -> str:
     return hashlib.sha1(text.encode()).hexdigest()
 
 
+def load_lme_updates() -> list[Stream]:
+    """Natural-language staleness: knowledge-update questions with evidence in more than one session.
+
+    The evidence turns of the latest session are gold, and those of earlier sessions hold the outdated fact.
+    """
+    raw = {q["question_id"]: q for q in json.loads((DATA / "longmemeval" / "longmemeval_s_cleaned.json").read_text())}
+    streams = []
+    for stream in load_longmemeval():
+        q = raw[stream.name]
+        if q["question_type"] != "knowledge-update":
+            continue
+        latest: list[str] = []
+        earlier: list[str] = []
+        for session in q["haystack_sessions"]:  # sessions are in date order
+            flagged = [f"{t['role']}: {t['content']}" for t in session if t.get("has_answer")]
+            if flagged:
+                earlier.extend(latest)
+                latest = flagged
+        if earlier:
+            query = stream.queries[0]
+            query.gold, query.stale = set(latest), set(earlier) - set(latest)
+            query.category = "update"
+            streams.append(stream)
+    return streams
+
+
 def _lme_time(value: str) -> float:
     dt = datetime.strptime(value.split(" (")[0] + " " + value.split(") ")[1], "%Y/%m/%d %H:%M")
     return dt.replace(tzinfo=timezone.utc).timestamp()

@@ -10,21 +10,22 @@ $\tau^{\mathrm{end}}$ and a pointer to its successor. Nothing is rewritten, so h
 
 \subsection{Read path}
 Algorithm~\ref{alg:retrieve} shows retrieval. Candidates are the union of the top-100 lexical and dense hits. Features combine rank and score signals,
-query-term coverage, ACT-R base-level activation \cite{anderson2004integrated}, and an item's feedback posterior, in $x(m,q)\in\mathbb{R}^{12}$. Facets are the query's content terms with
+query-term coverage, ACT-R base-level activation \cite{anderson2004integrated}, and an item's feedback posterior, in twelve features, plus three optional signals from a local reranker. Facets are the query's content terms with
 \emph{idf} weights plus one facet for the query as a whole.
 
 \begin{algorithm}[t]
 \caption{\textsc{Retrieve}$(q,B,t)$}\label{alg:retrieve}
 \begin{algorithmic}[1]
 \State $C\gets$ top-$N$ of FTS5 $\cup$ top-$N$ of dense search
+\State Remove superseded items, and items with a newer near-twin, unless $q$ asks for history
 \For{$m\in C$}
   \State $x_m\gets$ features of $(m,q)$;\quad $\mu_m\gets\mathrm{clip}_{[0,1]}\big(x_m^\top\hat\theta+\beta\|x_m\|_{V^{-1}}\big)$
-  \State $\rho_m\gets\rho_{\mathrm{stale}}$ if $m$ is superseded and $q$ has no historical intent, else Lomax survival \eqref{eq:lomax} at $t-\tau^{\mathrm{v}}(m)$
-  \State $\rho_m\gets\rho_m\prod_{m'\text{ newer}}\big(1-\pi\,g(s(m,m'))\big)$ \Comment{soft supersession}
+  \State $\rho_m\gets$ Lomax survival \eqref{eq:lomax} at $t-\tau^{\mathrm{v}}(m)$
+  \State $\rho_m\gets\rho_m\prod_{m'\text{ newer}}\big(1-\pi\,g(s(m,m'))\big)$ \Comment{no key}
   \State $w_m\gets\rho_m\mu_m$
 \EndFor
-\State $\mathcal{S}\gets\{\textsc{Greedy}(F,B,\varrho):\varrho\in\{1,\tfrac12,0\}\}\cup\{\arg\max_{c(m)\le B}F(\{m\})\}$
-\State \Return $\arg\max_{S\in\mathcal{S}}F(S)$ with certificate \eqref{eq:certificate}
+\State $\mathcal{S}\gets\{\textsc{Greedy}(F,B,\varrho):\varrho\in\{1,\tfrac12\}\}\cup\{\arg\max_{c(m)\le B}F(\{m\})\}$
+\State \Return $\arg\max_{S\in\mathcal{S}}F(S)$, and on request certificate \eqref{eq:certificate}
 \end{algorithmic}
 \end{algorithm}
 
@@ -50,17 +51,13 @@ exposure, the posterior predictive probability that an item confirmed $a$ days a
   \hat\rho_k(a)=\Big(1+\frac{a}{\beta+E_k}\Big)^{-(\alpha+n_k)} .
 \end{equation}
 The class hazards are estimated from the store's own version history, so stable classes stop decaying without any tuning.
-\eqref{eq:lomax} is a Lomax tail, a power law in $a$ for large ages. So the same mixture argument that gives this estimator reproduces the power-law decay observed
-in human memory and in the environment by Anderson and Schooler \cite{anderson1991reflections}; see Proposition~\ref{prop:lomax}.
-When keys are missing, for example with raw conversation, a newer item with similarity above $0.8$ discounts an older one (the product in Algorithm~\ref{alg:retrieve}).
-A query with historical intent (``previously'', ``used to'') disables supersession so that old versions stay reachable.
+\eqref{eq:lomax} is a Lomax tail, which is a power law for ages well beyond $\beta+E_k$; at smaller ages it behaves like an exponential. So the mixture argument behind this estimator gives the same tail as the power-law decay seen in human memory and in the environment \cite{anderson1991reflections}; see Proposition~\ref{prop:lomax}.
+
+Keyed facts have exact version chains: a superseded item is dropped from the candidates, and a query with historical intent (``previously'', ``used to'') brings old versions back with $\rho=1$. Text without keys has no such chain. For it we use a heuristic: a newer item with similarity above $0.8$ discounts an older one (the product in Algorithm~\ref{alg:retrieve}), and a newer near-twin above $0.97$ removes it. Without embeddings, the similarity comes from feature hashing. This rule fires only on near-identical text, so it suits structured notes and rarely fires on natural-language updates; Section~\ref{sec:experiments} measures both cases.
 
 \subsection{Learning}
 The policy keeps a ridge estimate with prior mean $\theta_0$ fitted on development data:
-$\hat\theta_t=\theta_0+V_t^{-1}\sum_{(x,y)}(y-x^\top\theta_0)x$ with $V_t=\lambda I+\sum xx^\top$. Feedback $y\in[0,1]$ says whether an injected item was used. Items known to be invalid at feedback
-time are skipped: they say nothing about $\mu$. The update is $O(d^2)$ by Sherman--Morrison per item and works offline. The reward signal in the plugin is execution-first: an injected item
-counts as used when its identifiers or paths appear in later tool calls or edits, and task success is taken from test commands, following the evidence that
-self-reports inflate reward \cite{asadolahi2026rewardinflation}.
+$\hat\theta_t=\theta_0+V_t^{-1}\sum_{(x,y)}(y-x^\top\theta_0)x$ with $V_t=\lambda I+\sum xx^\top$. Feedback $y\in[0,1]$ says whether an injected item was used, and a used item counts as reconfirmed. Items known to be invalid at feedback time are skipped, since they say nothing about $\mu$. The update is $O(d^2)$ by Sherman--Morrison per item and works offline. In the plugin, an injected item counts as used when its identifiers or paths appear in later tool calls or edits, and a failed test halves the reward, following the evidence that self-reports inflate reward \cite{asadolahi2026rewardinflation}. Item-level counters always update, but policy learning is opt-in, because Section~\ref{sec:experiments} finds it fragile under noise.
 
 \subsection{Consolidation and forgetting}
 Consolidation is reversible. Star clusters around a leader, with every member above a similarity threshold of $0.9$ by default, are summarized extractively: density greedy on a sentence-level facility location with rate $R$, which yields the rate--distortion
@@ -74,5 +71,5 @@ An item above a token threshold can be injected as a query-biased excerpt: the s
 
 \subsection{Complexity}
 With $N$ active items, $n\le2N_c$ candidates, $f$ facets, embedding dimension $D$, and $|S|=k$ selected: a write costs $O(\log N)$ plus one embedding; candidate generation costs $O(ND)$ by brute force
-(or sub-linear with an ANN index) plus the FTS5 query; greedy costs $O(k\,n\,(f+n))$ per run with vectorized marginal gains, and lazy evaluation \cite{minoux1978accelerated,leskovec2007cost} can reduce this further; building the similarity matrix costs $O(n^2D)$.
+(or sub-linear with an ANN index) plus the FTS5 query; greedy costs $O((k+r)\,n\,(f+n))$ per run with $r$ rejected items, and lazy evaluation \cite{minoux1978accelerated,leskovec2007cost} could reduce this further; building the similarity matrix costs $O(n^2D)$.
 A bandit update costs $O(kd^2)$. Space is $O(N(D+\bar c))$. The memory layer itself uses no LLM tokens; the only token cost is the injected $c(S)\le B$.

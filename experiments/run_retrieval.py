@@ -15,6 +15,8 @@ RUNS = {
     "repomem-keyed": {"dataset": "repomem", "keyed": True},
     "repomem-plain": {"dataset": "repomem", "keyed": False},
     "repomem-holdout": {"dataset": "repomem-holdout", "keyed": True, "split": "holdout"},
+    "repomem-holdout-plain": {"dataset": "repomem-holdout", "keyed": False, "split": "holdout"},
+    "lme-updates": {"dataset": "lme-updates", "cache": "lme", "keyed": False},
 }
 
 
@@ -43,7 +45,7 @@ def run(name: str) -> None:
     dataset = spec.get("dataset", name)
     streams = [s for s in load(dataset) if s.split == split]
     start = time.time()
-    records = run_dataset(streams, dataset, RetrievalConfig(), keyed=spec["keyed"], fixed_k=(3, 5, 10, 20))
+    records = run_dataset(streams, spec.get("cache", dataset), RetrievalConfig(), keyed=spec["keyed"], fixed_k=(3, 5, 10, 20))
     meta = {"experiment": "retrieval", "dataset": name, "split": split, "streams": len(streams), "budgets": BUDGETS,
             "seeds": "deterministic retrieval; RepoMem has 3 seeded streams per repository",
             "wall_seconds": round(time.time() - start, 1)}

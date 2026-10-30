@@ -10,7 +10,6 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.stats import wilcoxon
 
 from experiments.datasets import ROOT
 
@@ -18,10 +17,12 @@ RESULTS = ROOT / "results"
 FIGS = ROOT / "paper" / "figs"
 BUDGETS = (128, 256, 512, 1024, 2048, 4096)
 DATASETS = {"lme": "LongMemEval-S", "locomo": "LoCoMo", "repomem-keyed": "RepoMem (keys)", "repomem-plain": "RepoMem (no keys)",
-            "repomem-holdout": "RepoMem holdout (keys)"}
-BASELINES = ("hybrid", "bm25", "dense", "mmr", "facility", "gen-agents", "recency", "rerank", "hybrid-live")
+            "repomem-holdout": "RepoMem holdout (keys)", "repomem-holdout-plain": "RepoMem holdout (no keys)",
+            "lme-updates": "LongMemEval updates"}
+BASELINES = ("hybrid", "bm25", "dense", "mmr", "facility", "gen-agents", "recency", "rerank", "hybrid-live", "hybrid-dedup")
 ABLATIONS = ("-density", "-coverage", "-redundancy", "-validity", "-supersession", "-activation", "kanerva-first", "kanerva-ce")
 BOOT = 2000
+PERMUTATIONS = 20000
 
 INK = "#0b0b0b"
 MUTED = "#52514e"
@@ -55,26 +56,50 @@ def pivot(records: list[dict], metric: str) -> dict:
     return table
 
 
-def paired(a: dict, b: dict, rng: np.random.Generator) -> dict:
+def unit_of(name: str, stream: str) -> str | None:
+    """The independent unit: a conversation on LoCoMo, a repository on RepoMem, a question on LongMemEval."""
+    if name.startswith("repomem"):
+        return stream.rsplit("-", 1)[0]
+    return stream if name == "locomo" else None
+
+
+def sign_flip_p(d: np.ndarray, rng: np.random.Generator) -> float:
+    """Two-sided sign-flip permutation test on the mean; exact for up to 16 units."""
+    observed = abs(d.mean())
+    n = d.size
+    if observed == 0:
+        return 1.0
+    if n <= 16:
+        signs = ((np.arange(2**n)[:, None] >> np.arange(n)) & 1) * 2 - 1
+    else:
+        signs = rng.choice((-1.0, 1.0), size=(PERMUTATIONS, n))
+    return float((np.abs((signs * d).mean(axis=1)) >= observed - 1e-12).mean())
+
+
+def paired(a: dict, b: dict, rng: np.random.Generator, name: str) -> dict:
     keys = sorted(set(a) & set(b))
     x = np.array([a[k] for k in keys], dtype=float)
     y = np.array([b[k] for k in keys], dtype=float)
     d = x - y
     n = len(d)
     samples = d[rng.integers(0, n, size=(BOOT, n))].mean(axis=1)
-    clusters = sorted({k[0].rsplit("-", 1)[0] for k in keys})
+    units = [unit_of(name, k[0]) for k in keys]
     cluster_ci = None
-    if 3 <= len(clusters) <= 30:
-        groups = {c: d[[i for i, k in enumerate(keys) if k[0].rsplit("-", 1)[0] == c]] for c in clusters}
-        boots = []
-        for _ in range(BOOT):
-            picks = rng.integers(0, len(clusters), size=len(clusters))
-            boots.append(np.concatenate([groups[clusters[p]] for p in picks]).mean())
+    positive = None
+    if units[0] is not None:
+        labels = sorted(set(units))
+        groups = np.array([d[[i for i, u in enumerate(units) if u == c]].mean() for c in labels])
+        sizes = np.array([sum(1 for u in units if u == c) for c in labels], dtype=float)
+        picks = rng.integers(0, len(labels), size=(BOOT, len(labels)))
+        boots = (groups[picks] * sizes[picks]).sum(axis=1) / sizes[picks].sum(axis=1)
         cluster_ci = [float(np.percentile(boots, 2.5)), float(np.percentile(boots, 97.5))]
-    p = float(wilcoxon(d, zero_method="zsplit").pvalue) if np.any(d != 0) else 1.0
+        positive = f"{int((groups > 0).sum())}/{len(labels)}"
+        p = sign_flip_p(groups, rng)
+    else:
+        p = sign_flip_p(d, rng)
     return {"mean_a": float(x.mean()), "mean_b": float(y.mean()), "diff": float(d.mean()),
             "ci": [float(np.percentile(samples, 2.5)), float(np.percentile(samples, 97.5))],
-            "cluster_ci": cluster_ci, "p": p, "n": n}
+            "cluster_ci": cluster_ci, "units_positive": positive, "p": p, "n": n}
 
 
 def holm(entries: list[dict]) -> None:
@@ -83,6 +108,16 @@ def holm(entries: list[dict]) -> None:
     for rank, i in enumerate(order):
         running = max(running, min(1.0, entries[i]["p"] * (len(order) - rank)))
         entries[i]["p_holm"] = running
+
+
+def tally(tests: list[dict]) -> dict:
+    """Budgets where the interval on the independent unit excludes zero, on each side."""
+    def interval(t: dict) -> list[float]:
+        return t["cluster_ci"] or t["ci"]
+
+    wins = sum(interval(t)[0] > 0 for t in tests)
+    losses = sum(interval(t)[1] < 0 for t in tests)
+    return {"wins": wins, "losses": losses, "ties": len(tests) - wins - losses}
 
 
 def compare() -> dict:
@@ -95,34 +130,35 @@ def compare() -> dict:
         recall = pivot(records, "recall")
         tokens = pivot(records, "tokens")
         stale = pivot(records, "stale_error")
-        entry: dict = {"means": {}, "comparisons": {}, "ablations": {}, "tokens": {}, "stale_error": {}, "pareto": {}, "pareto_ce": {}}
+        changed = [r for r in records if "changed" in r["category"] or r["category"] == "update"]
+        stale_rows = pivot(changed, "stale_error")
+        inject_rows = pivot(changed, "stale_any")
+        entry: dict = {"means": {}, "comparisons": {}, "ablations": {}, "tokens": {}, "stale_error": {}, "pareto": {}, "pareto_ce": {},
+                       "stale_changed": {}, "inject_changed": {}, "changed_n": len({r["qid"] for r in changed})}
         methods = sorted({m for m, _ in recall})
         for m in methods:
             for b in sorted({b for mm, b in recall if mm == m}):
                 entry["means"][f"{m}@{b}"] = float(np.mean(list(recall[(m, b)].values())))
                 entry["tokens"][f"{m}@{b}"] = float(np.mean(list(tokens[(m, b)].values())))
                 entry["stale_error"][f"{m}@{b}"] = float(np.mean(list(stale[(m, b)].values())))
+                if (m, b) in stale_rows:
+                    entry["stale_changed"][f"{m}@{b}"] = float(np.mean(list(stale_rows[(m, b)].values())))
+                    entry["inject_changed"][f"{m}@{b}"] = float(np.mean(list(inject_rows[(m, b)].values())))
         groups = (("kanerva", BASELINES, "comparisons"), ("kanerva", ABLATIONS, "ablations"), ("kanerva-ce", BASELINES, "comparisons_ce"))
         for reference, group, key in groups:
             tests = []
             for other in group:
                 for b in BUDGETS:
                     if (other, b) in recall and (reference, b) in recall:
-                        result = paired(recall[(reference, b)], recall[(other, b)], rng)
+                        result = paired(recall[(reference, b)], recall[(other, b)], rng, name)
                         result["other"] = other
                         result["budget"] = b
                         tests.append(result)
             holm(tests)
             entry[key] = tests
         for other in BASELINES:
-            tests = [t for t in entry["comparisons"] if t["other"] == other]
-            wins = sum(t["diff"] > 0 and t["p_holm"] < 0.05 for t in tests)
-            losses = sum(t["diff"] < 0 and t["p_holm"] < 0.05 for t in tests)
-            entry["pareto"][other] = {"wins": wins, "losses": losses, "ties": len(tests) - wins - losses}
-            tests = [t for t in entry["comparisons_ce"] if t["other"] == other]
-            wins = sum(t["diff"] > 0 and t["p_holm"] < 0.05 for t in tests)
-            losses = sum(t["diff"] < 0 and t["p_holm"] < 0.05 for t in tests)
-            entry["pareto_ce"][other] = {"wins": wins, "losses": losses, "ties": len(tests) - wins - losses}
+            entry["pareto"][other] = tally([t for t in entry["comparisons"] if t["other"] == other])
+            entry["pareto_ce"][other] = tally([t for t in entry["comparisons_ce"] if t["other"] == other])
         categories = sorted({r["category"] for r in records})
         by_category: dict = {}
         for c in categories:
@@ -132,8 +168,6 @@ def compare() -> dict:
                     by_category.setdefault(c, {})[m] = float(np.mean(rows))
             by_category[c]["n"] = sum(1 for r in records if r["category"] == c and r["method"] == "kanerva" and r["budget"] == 1024)
         entry["by_category_1024"] = by_category
-        latency = [r["latency_ms"] for r in records if r["method"] == "kanerva"]
-        entry["latency_ms"] = {"p50": float(np.percentile(latency, 50)), "p95": float(np.percentile(latency, 95))}
         rerank_latency = [r["latency_ms"] for r in records if r["method"] == "rerank"]
         if rerank_latency:
             entry["latency_rerank_ms"] = float(np.percentile(rerank_latency, 50))
@@ -142,15 +176,23 @@ def compare() -> dict:
     return out
 
 
-def full_history() -> dict:
+def dataset_stats() -> dict:
+    """Store size in tokens, and how item length relates to being evidence."""
     from experiments.embed_cache import TextCache
     from experiments.registry import load
 
-    out = {}
+    out: dict = {}
     for name in ("lme", "locomo"):
         cache = TextCache(name)
-        out[name] = float(np.mean([sum(cache.count(t.text) + 8 for t in s.writes) for s in load(name) if s.split == "test"]))
-    (RESULTS / "full_history.json").write_text(json.dumps({"meta": {"commit": "derived from data"}, "tokens": out}, indent=1))
+        streams = [s for s in load(name) if s.split == "test"]
+        gold = {t for s in streams for q in s.queries for t in q.gold}
+        texts = {t.text for s in streams for t in s.writes}
+        out[name] = {
+            "full_tokens": float(np.mean([sum(cache.count(t.text) + 14 for t in s.writes) for s in streams])),
+            "gold_tokens": float(np.mean([cache.count(t) for t in gold])),
+            "other_tokens": float(np.mean([cache.count(t) for t in texts - gold])),
+        }
+    (RESULTS / "dataset_stats.json").write_text(json.dumps(out, indent=1))
     return out
 
 
@@ -226,7 +268,7 @@ def main() -> None:
     FIGS.mkdir(parents=True, exist_ok=True)
     setup()
     data = compare()
-    full_history()
+    dataset_stats()
     if data:
         pareto_figure(data)
     online_figure()

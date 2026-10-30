@@ -21,6 +21,8 @@ from .text import content_terms
 SESSION_BUDGET = int(os.environ.get("KANERVA_SESSION_BUDGET", "400"))
 PROMPT_BUDGET = int(os.environ.get("KANERVA_PROMPT_BUDGET", "600"))
 MIN_WEIGHT = float(os.environ.get("KANERVA_MIN_WEIGHT", "0.04"))
+LEARN = os.environ.get("KANERVA_LEARN") == "1"  # policy learning is opt-in: noisy rewards hurt in the experiments
+CONSOLIDATE_ON_COMPACT = os.environ.get("KANERVA_CONSOLIDATE") == "1"
 MAX_CONTEXT_CHARS = 9500  # Claude Code truncates injected strings at 10,000 characters
 
 _SESSION_SCHEMA = """
@@ -36,6 +38,7 @@ _DISTINCTIVE = re.compile(r"[A-Za-z_][\w./-]*[_./-][\w./-]+|[a-z]+[A-Z]\w+|[A-Z]
 
 def _open(cwd: str | None) -> tuple[Memory, str]:
     mem = Memory(db_path())
+    mem.config = mem.config.with_(learn=LEARN)
     mem.db.executescript(_SESSION_SCHEMA)
     return mem, project_scope(cwd)
 
@@ -48,8 +51,7 @@ def format_context(result, header: str) -> str:
 
 
 def _inject(mem: Memory, session: str, query: str, scope: str, budget: int, header: str) -> str:
-    result = mem.retrieve(query, budget, scope=scope)
-    result.items = [i for i in result.items if i.weight >= MIN_WEIGHT]
+    result = mem.retrieve(query, budget - mem.count_tokens(header), scope=scope, min_weight=MIN_WEIGHT)
     if result.retrieval_id is not None:
         mem.db.execute("INSERT INTO session_retrievals VALUES (?, ?)", (session, result.retrieval_id))
     return format_context(result, header)
@@ -78,7 +80,7 @@ def item_used(item_text: str, observed: str) -> bool:
 def resolve_feedback(mem: Memory, session: str) -> int:
     """Turn the session's execution trace into per-item rewards for its logged retrievals."""
     events = mem.db.execute("SELECT kind, text FROM session_events WHERE session=? ORDER BY at", (session,)).fetchall()
-    observed = "\n".join(e["text"] for e in events)
+    observed = "\n".join(e["text"] for e in events if e["kind"] in ("edit", "command", "tool"))
     tests = [e["text"] for e in events if e["kind"] == "test"]
     failed_last = bool(tests) and tests[-1].startswith("fail")
     rows = mem.db.execute("SELECT retrieval_id FROM session_retrievals WHERE session=?", (session,)).fetchall()
@@ -146,7 +148,8 @@ def handle(event: str, payload: dict) -> str:
             resolve_feedback(mem, session)
             return ""
         if event == "compact":
-            consolidate(mem, scope=scope)
+            if CONSOLIDATE_ON_COMPACT:
+                consolidate(mem, scope=scope)
             return ""
         if event == "compact_summary":
             summary = str(payload.get("compact_summary", ""))

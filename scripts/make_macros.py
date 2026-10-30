@@ -13,10 +13,10 @@ RESULTS = ROOT / "results"
 OUT = ROOT / "paper" / "generated"
 BUDGETS = (128, 256, 512, 1024, 2048, 4096)
 DATASETS = {"lme": "LongMemEval-S", "locomo": "LoCoMo", "repomem-keyed": "RepoMem, keys", "repomem-plain": "RepoMem, no keys",
-            "repomem-holdout": "RepoMem holdout, keys"}
+            "repomem-holdout": "RepoMem holdout, keys", "repomem-holdout-plain": "RepoMem holdout, no keys"}
 METHODS = {
     "kanerva": "\\kanerva", "kanerva-ce": "\\kanerva + reranker", "kanerva-first": "\\kanerva, first run", "kanerva-lex": "\\kanerva, lexical", "rerank": "Hybrid + reranker", "hybrid": "Hybrid RRF",
-    "hybrid-live": "Hybrid, live only", "bm25": "BM25", "dense": "Dense", "mmr": "MMR",
+    "hybrid-live": "Hybrid, live only", "hybrid-dedup": "Hybrid, newest of twins", "bm25": "BM25", "dense": "Dense", "mmr": "MMR",
     "facility": "Facility location", "gen-agents": "Generative Agents", "recency": "Recency",
 }
 ABLATIONS = {"-density": "no cost density", "-coverage": "no facets", "-redundancy": "no redundancy term", "-validity": "no validity",
@@ -53,7 +53,7 @@ def recall_table(comparison: dict) -> str:
         rows.append(f"\\multicolumn{{{len(BUDGETS) + 1}}}{{@{{}}l}}{{\\emph{{{title}}}}} \\\\")
         best = {b: max(means[f"{m}@{b}"] for m in METHODS if f"{m}@{b}" in means) for b in BUDGETS}
         for method, label in METHODS.items():
-            if f"{method}@128" not in means or (method in ("hybrid-live", "kanerva-first") and not name.startswith("repomem")):
+            if f"{method}@128" not in means or (method in ("hybrid-live", "hybrid-dedup", "kanerva-first") and not name.startswith("repomem")):
                 continue
             cells = []
             for b in BUDGETS:
@@ -67,7 +67,7 @@ def recall_table(comparison: dict) -> str:
 
 
 def diff_table(comparison: dict, key: str = "comparisons") -> str:
-    rows = ["\\begin{tabular}{@{}lllrrrr@{}}\\toprule", "Dataset & Rival & $B$ & $\\Delta$ recall & 95\\% CI & Cluster CI & $p_{\\text{Holm}}$ \\\\\\midrule"]
+    rows = ["\\begin{tabular}{@{}lllrrrrr@{}}\\toprule", "Dataset & Rival & $B$ & $\\Delta$ recall & Query CI & Unit CI & Units $+$ & $p$ \\\\\\midrule"]
     for name, title in DATASETS.items():
         if name not in comparison:
             continue
@@ -82,7 +82,7 @@ def diff_table(comparison: dict, key: str = "comparisons") -> str:
             rivals[b] = max(candidates, key=lambda t: t["mean_b"])
         for b, t in rivals.items():
             cluster = "---" if not t["cluster_ci"] else f"[{signed(t['cluster_ci'][0])}, {signed(t['cluster_ci'][1])}]"
-            rows.append(f"{title} & {METHODS[t['other']]} & {b} & {signed(t['diff'])} & [{signed(t['ci'][0])}, {signed(t['ci'][1])}] & {cluster} & {pvalue(t['p_holm'])} \\\\")
+            rows.append(f"{title} & {METHODS[t['other']]} & {b} & {signed(t['diff'])} & [{signed(t['ci'][0])}, {signed(t['ci'][1])}] & {cluster} & {t['units_positive'] or '---'} & {pvalue(t['p_holm'])} \\\\")
         rows.append("\\addlinespace")
     rows[-1] = "\\bottomrule\\end{tabular}"
     return "\n".join(rows)
@@ -107,18 +107,19 @@ def ablation_table(comparison: dict) -> str:
 
 
 def staleness_table(comparison: dict) -> str:
-    methods = ("kanerva", "-supersession", "-validity", "hybrid-live", "hybrid", "dense", "bm25", "rerank")
-    labels = {**METHODS, "-validity": "\\kanerva, no validity", "-supersession": "\\kanerva, no soft supersession"}
-    names = [n for n in ("repomem-keyed", "repomem-plain") if n in comparison]
-    rows = ["\\begin{tabular}{@{}l" + "rrr" * len(names) + "@{}}\\toprule"]
-    rows.append("Method & " + " & ".join(f"\\multicolumn{{3}}{{c}}{{{DATASETS[n]}}}" for n in names) + " \\\\")
-    rows.append(" & " + " & ".join("256 & 1024 & 4096" for _ in names) + " \\\\\\midrule")
+    methods = ("kanerva", "kanerva-lex", "-supersession", "-validity", "hybrid-live", "hybrid-dedup", "hybrid-newest", "hybrid", "dense", "bm25", "rerank")
+    labels = {**METHODS, "-validity": "\\kanerva, no validity", "-supersession": "\\kanerva, no soft supersession", "hybrid-newest": "Hybrid, newest first"}
+    names = [n for n in ("repomem-keyed", "repomem-plain", "repomem-holdout-plain", "lme-updates") if n in comparison]
+    titles = {"repomem-keyed": "RepoMem, keys", "repomem-plain": "RepoMem, no keys", "repomem-holdout-plain": "Holdout, no keys", "lme-updates": "LME updates"}
+    rows = ["\\begin{tabular}{@{}l" + "rr" * len(names) + "@{}}\\toprule"]
+    rows.append("Method & " + " & ".join(f"\\multicolumn{{2}}{{c}}{{{titles[n]}}}" for n in names) + " \\\\")
+    rows.append(" & " + " & ".join("inject & error" for _ in names) + " \\\\\\midrule")
     for m in methods:
         cells = []
         for n in names:
-            for b in (256, 1024, 4096):
-                v = comparison[n]["stale_error"].get(f"{m}@{b}")
-                cells.append("---" if v is None else fmt(v))
+            inject = comparison[n]["inject_changed"].get(f"{m}@1024")
+            error = comparison[n]["stale_changed"].get(f"{m}@1024")
+            cells.extend("---" if v is None else fmt(v) for v in (inject, error))
         rows.append(f"{labels[m]} & " + " & ".join(cells) + " \\\\")
     rows.append("\\bottomrule\\end{tabular}")
     return "\n".join(rows)
@@ -139,7 +140,7 @@ def category_table(comparison: dict) -> str:
 
 def update_readme(comparison: dict) -> None:
     rows = ["| Dataset | Budget | Kanerva | Kanerva + reranker | Hybrid RRF | Hybrid + reranker | BM25 |", "|---|---:|---:|---:|---:|---:|---:|"]
-    for name in ("lme", "locomo", "repomem-plain", "repomem-holdout"):
+    for name in ("lme", "locomo", "repomem-plain", "repomem-holdout-plain"):
         if name not in comparison:
             continue
         means = comparison[name]["means"]
@@ -148,13 +149,13 @@ def update_readme(comparison: dict) -> None:
             rows.append(f"| {DATASETS[name]} | {b} | " + " | ".join(cells) + " |")
     table = "\n".join(rows)
     stale = []
-    for name in ("repomem-plain", "repomem-keyed"):
+    for name in ("repomem-plain", "repomem-keyed", "lme-updates"):
         if name in comparison:
-            s = comparison[name]["stale_error"]
-            stale.append(f"{DATASETS[name]}: {fmt(s['kanerva@1024'])} for Kanerva, {fmt(s['hybrid@1024'])} for hybrid.")
+            s = comparison[name]["inject_changed"]
+            stale.append(f"{DATASETS.get(name, name)}: {fmt(s['kanerva@1024'])} for Kanerva, {fmt(s['hybrid@1024'])} for hybrid.")
     text = (
         "Evidence recall on test splits, with no LLM in the evaluation. Larger is better.\n\n" + table
-        + "\n\nStaleness error at 1024 tokens over all RepoMem queries. " + " ".join(stale)
+        + "\n\nShare of changed-fact queries where an outdated version is injected, at 1024 tokens. " + " ".join(stale)
         + "\n\nA cross-encoder reranker beats plain Kanerva at small budgets, and the reranker variant was designed after seeing "
         "those test results, so it needs confirming on fresh data. Hybrid retrieval beats Kanerva at large budgets on LoCoMo, and on "
         "recall on RepoMem without keys, where Kanerva trades a little recall for far fewer stale injections. "
@@ -178,6 +179,8 @@ def main() -> None:
         "\\newcommand{\\D}[3]{\\csname d-#1-#2-#3\\endcsname}",
         "\\newcommand{\\CI}[3]{\\csname ci-#1-#2-#3\\endcsname}",
         "\\newcommand{\\V}[1]{\\csname v-#1\\endcsname}",
+        "\\newcommand{\\Err}[3]{\\csname e-#1-#2-#3\\endcsname}",
+        "\\newcommand{\\Inj}[3]{\\csname i-#1-#2-#3\\endcsname}",
     ]
     comparison = load("comparison") or {}
     for name, entry in comparison.items():
@@ -194,7 +197,6 @@ def main() -> None:
             define(lines, f"d-{name}-{t['other']}-{t['budget']}", signed(t["diff"]))
             define(lines, f"ci-{name}-{t['other']}-{t['budget']}", f"[{signed(t['ci'][0])}, {signed(t['ci'][1])}]")
         define(lines, f"v-n-{name}", entry["comparisons"][0]["n"])
-        define(lines, f"v-latp50-{name}", f"{entry['latency_ms']['p50']:.1f}")
         for other, p in entry.get("pareto_ce", {}).items():
             define(lines, f"v-cewin-{name}-{other}", p["wins"])
             define(lines, f"v-celoss-{name}-{other}", p["losses"])
@@ -204,13 +206,12 @@ def main() -> None:
             define(lines, f"v-pwin-{name}-{other}", p["wins"])
             define(lines, f"v-ploss-{name}-{other}", p["losses"])
 
-    raw_keyed = RESULTS / "raw" / "retrieval_repomem-plain.json.gz"
-    if raw_keyed.exists():
-        import gzip
-
-        records = [r for r in json.load(gzip.open(raw_keyed, "rt")) if r["budget"] == 1024 and "changed" in r["category"]]
-        for method in ("kanerva", "hybrid", "dense", "bm25", "-supersession"):
-            define(lines, f"v-stalechanged-{method}", fmt(float(np.mean([r["stale_error"] for r in records if r["method"] == method]))))
+    for name, entry in comparison.items():
+        for key, value in entry["stale_changed"].items():
+            m, b = key.split("@")
+            define(lines, f"e-{name}-{m}-{b}", fmt(value))
+            define(lines, f"i-{name}-{m}-{b}", fmt(entry["inject_changed"][key]))
+        define(lines, f"v-nchanged-{name}", entry["changed_n"])
     if comparison:
         gains = [-t["diff"] for t in comparison["locomo"]["ablations"] if t["other"] == "-density"]
         define(lines, "v-dens-locomo", fmt(max(gains)))
@@ -239,10 +240,12 @@ def main() -> None:
             for method in ("kanerva", "hybrid", "dense"):
                 define(lines, f"v-m2v-{name}-{method}", fmt(small["summary"][f"{method}@1024"]["recall"]))
 
-    full = load("full_history")
-    if full:
-        for name, value in full["tokens"].items():
-            define(lines, f"v-full-{name}", f"{value:,.0f}".replace(",", "{,}"))
+    stats = load("dataset_stats")
+    if stats:
+        for name, entry in stats.items():
+            define(lines, f"v-full-{name}", f"{entry['full_tokens']:,.0f}".replace(",", "{,}"))
+            define(lines, f"v-goldtok-{name}", f"{entry['gold_tokens']:.0f}")
+            define(lines, f"v-othertok-{name}", f"{entry['other_tokens']:.0f}")
 
     online = load("online")
     online_rows = ""
@@ -288,13 +291,6 @@ def main() -> None:
         rows.append("\\bottomrule\\end{tabular}")
         (OUT / "table_consolidation.tex").write_text("\n".join(rows))
 
-    rd = load("rate_distortion")
-    if rd:
-        define(lines, "v-rdviol", rd["violations"])
-        define(lines, "v-rdtotal", rd["total"])
-        for r, d in zip(rd["rates"], rd["mean_distortion"]):
-            define(lines, f"v-rd-{r}", fmt(d))
-
     forgetting = load("forgetting")
     if forgetting:
         rows = ["\\begin{tabular}{@{}lrrr@{}}\\toprule", "Policy & Active items & Active tokens & Recall@1024 \\\\\\midrule"]
@@ -302,6 +298,7 @@ def main() -> None:
             rows.append(f"{name} & {entry['final_active']:.0f} & {entry['final_tokens']:.0f} & {fmt(entry['recall'])} \\\\")
             define(lines, f"v-fg-{name}", fmt(entry["recall"]))
             define(lines, f"v-fgt-{name}", f"{entry['final_tokens']:.0f}")
+        define(lines, "v-gapdays", f"{forgetting['meta']['session_days']:.0f}")
         rows.append("\\bottomrule\\end{tabular}")
         (OUT / "table_forgetting.tex").write_text("\n".join(rows))
 
@@ -317,6 +314,7 @@ def main() -> None:
             define(lines, f"v-p50-{key}", f"{entry['p50_ms']:.1f}")
             define(lines, f"v-p95-{key}", f"{entry['p95_ms']:.1f}")
             define(lines, f"v-wr-{key}", f"{entry['write_ms']:.2f}")
+        define(lines, "v-encode", f"{scale['query_encode_ms']:.0f}")
 
     (OUT / "macros.tex").write_text("\n".join(lines) + "\n")
     if comparison:

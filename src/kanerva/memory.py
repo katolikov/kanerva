@@ -15,8 +15,8 @@ from typing import Callable, Iterable, Sequence
 import numpy as np
 
 from .bandit import LinearBandit
-from .embed import Embedder
-from .policy import LEXICAL_THETA, RERANK_THETA, Candidates, RetrievalConfig, feature_matrix
+from .embed import Embedder, HashingEmbedder
+from .policy import LEXICAL_THETA, RERANK_THETA, Candidates, RetrievalConfig, feature_matrix, subset
 from .secrets_filter import redact
 from .select import SelectionProblem, budgeted_select, optimality_certificate, value
 from .text import approx_tokens, content_terms, fts_query, light_stem, query_snippet, search_text, tokenize
@@ -334,6 +334,9 @@ class Memory:
         ids = list(dict.fromkeys([i for i, _ in lexical] + [i for i, _ in dense]))
         rows = self._fetch(ids)
         ids = [i for i in ids if i in rows]
+        historical = bool(_HISTORICAL.search(query))
+        if cfg.use_validity and cfg.drop_superseded and not historical:
+            ids = [i for i in ids if rows[i]["valid_to"] is None]
         terms, term_weights = self._facets(query, scope)
         stems = {i: {light_stem(t) for t in tokenize(rows[i]["text"])} for i in ids}
         n = len(ids)
@@ -342,7 +345,6 @@ class Memory:
             for idx, i in enumerate(ids):
                 cover[idx] = sum(w for t, w in zip(terms, term_weights) if t in stems[i])
         ages = self._access_ages(ids, now)
-        historical = bool(_HISTORICAL.search(query))
         validity = np.ones(n)
         activation = np.zeros(n)
         usefulness = np.full(n, 0.5)
@@ -373,8 +375,12 @@ class Memory:
         vectors = None
         if n and all(e is not None for e in embedded):
             vectors = np.frombuffer(b"".join(embedded), dtype=np.float32).reshape(n, -1)
-        if cfg.use_validity and cfg.use_supersession and vectors is not None and n > 1 and not historical:
-            self._soft_supersession(cand, rows, vectors, cfg)
+        if cfg.use_validity and cfg.use_supersession and n > 1 and not historical:
+            twins = vectors if vectors is not None else HashingEmbedder().encode([rows[i]["text"] for i in ids])
+            keep = self._soft_supersession(cand, rows, twins, cfg)
+            if not keep.all():
+                cand = subset(cand, keep)
+                vectors = None if vectors is None else vectors[keep]
         return cand, rows, vectors, terms, term_weights, stems
 
     def _rerank(self, query: str, cand: Candidates, rows, cfg: RetrievalConfig) -> None:
@@ -390,16 +396,22 @@ class Memory:
         cand.rerank_rank[order] = np.arange(order.size)
         cand.rerank_score[pool[known]] = 1.0 / (1.0 + np.exp(-logits[known]))
 
-    def _soft_supersession(self, cand: Candidates, rows, vectors: np.ndarray, cfg: RetrievalConfig) -> None:
+    def _soft_supersession(self, cand: Candidates, rows, vectors: np.ndarray, cfg: RetrievalConfig) -> np.ndarray:
+        """Discount older near-duplicates of newer items, and return the mask of items to keep.
+
+        This is a heuristic for text without keys. Keyed items have exact version chains and are exempt.
+        """
         sim = vectors @ vectors.T
         np.fill_diagonal(sim, 0.0)
-        created = np.array([rows[i]["created_at"] for i in cand.ids])
+        confirmed = np.array([rows[i]["confirmed_at"] for i in cand.ids])
+        newer = confirmed[None, :] > confirmed[:, None]
         tau = cfg.supersession_threshold
-        gate = np.clip((sim - tau) / (1.0 - tau), 0.0, 1.0) * (created[None, :] > created[:, None])
+        gate = np.clip((sim - tau) / (1.0 - tau), 0.0, 1.0) * newer
+        unkeyed = np.array([rows[i]["key"] is None for i in cand.ids], dtype=bool)
         if not cfg.soft_supersede_keyed:
-            unkeyed = np.array([rows[i]["key"] is None for i in cand.ids], dtype=float)
             gate = gate * unkeyed[:, None]
         cand.validity = cand.validity * np.prod(1.0 - cfg.supersession_strength * gate, axis=1)
+        return ~(((sim >= cfg.supersession_drop) & newer).any(axis=1) & unkeyed)
 
     def build_problem(
         self,
@@ -467,11 +479,12 @@ class Memory:
         query_vector: np.ndarray | None = None,
         record: bool = True,
         certificate: bool = False,
+        min_weight: float = 0.0,
     ) -> RetrievalResult:
         cfg = config or self.config
         now = time.time() if now is None else now
         prepared = self.prepare(query, now, scope, cfg, query_vector)
-        return self.select(prepared, budget, record=record, certificate=certificate)
+        return self.select(prepared, budget, record=record, certificate=certificate, min_weight=min_weight)
 
     def prepare(
         self,
@@ -492,12 +505,15 @@ class Memory:
             problem, x, snippets = self.build_problem(cand, rows, vectors, terms, term_weights, stems, cfg, bandit)
         return Prepared(query, now, cfg, cand, rows, problem, x, snippets)
 
-    def select(self, prepared: Prepared, budget: int, record: bool = True, certificate: bool = False) -> RetrievalResult:
+    def select(
+        self, prepared: Prepared, budget: int, record: bool = True, certificate: bool = False, min_weight: float = 0.0
+    ) -> RetrievalResult:
         problem = prepared.problem
         if problem is None:
             return RetrievalResult([], 0, budget)
         cand, rows = prepared.candidates, prepared.rows
         chosen = budgeted_select(problem, budget, prepared.config.cost_exponents)
+        chosen = [i for i in chosen if problem.weights[i] >= min_weight]
         chosen.sort(key=lambda i: -problem.weights[i])
         items = [self._item(rows[cand.ids[i]], float(problem.weights[i]), prepared.snippets.get(i)) for i in chosen]
         result = RetrievalResult(
@@ -549,12 +565,17 @@ class Memory:
         x = np.frombuffer(row["features"], dtype=np.float64).reshape(len(ids), -1)
         y = np.array([float(rewards.get(i, 0.0)) for i in ids])
         live = np.array([self._live(i) for i in ids], dtype=bool)
-        self.bandit.update(x[live], y[live])
+        if self.config.learn:
+            self.bandit.update(x[live], y[live])
         for item_id, reward in zip(ids, y):
             self.db.execute(
                 "UPDATE items SET used = used + ?, unused = unused + ? WHERE id=?",
                 (float(reward), 1.0 - float(reward), item_id),
             )
+            if reward >= 0.5:  # use in a task counts as a fresh confirmation that the fact holds
+                self.db.execute(
+                    "UPDATE items SET confirmed_at = max(confirmed_at, ?) WHERE id=?", (row["at"], item_id)
+                )
         self.db.execute("UPDATE retrievals SET resolved=1 WHERE id=?", (retrieval_id,))
         self._save_state()
         return len(ids)

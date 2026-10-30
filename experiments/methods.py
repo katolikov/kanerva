@@ -22,7 +22,7 @@ class Context:
     now: float
     qvec: np.ndarray
     limit: int = 100
-    overhead: int = 8
+    overhead: int = 14
     cache: dict = field(default_factory=dict)
 
     def lexical(self) -> list[tuple[int, float]]:
@@ -89,6 +89,31 @@ def hybrid_live(ctx: Context, budget: int) -> list[int]:
     order = ctx.hybrid()
     rows = ctx.mem._fetch(order)
     return fill([i for i in order if rows[i]["valid_to"] is None], ctx, budget)
+
+
+def hybrid_newest(ctx: Context, budget: int) -> list[int]:
+    """The hybrid selection, listed newest first. Same set as hybrid, so only the order changes."""
+    chosen = hybrid(ctx, budget)
+    rows = ctx.mem._fetch(chosen)
+    return sorted(chosen, key=lambda i: -rows[i]["created_at"])
+
+
+def hybrid_dedup(ctx: Context, budget: int, threshold: float = 0.97) -> list[int]:
+    """Hybrid with older near-duplicates removed, listed newest first: a one-line staleness rule."""
+    if "dedup" not in ctx.cache:
+        ids = ctx.hybrid()
+        if not ids:
+            return []
+        vectors = _vectors(ctx, ids)
+        rows = ctx.mem._fetch(ids)
+        created = np.array([rows[i]["created_at"] for i in ids])
+        sim = vectors @ vectors.T
+        np.fill_diagonal(sim, 0.0)
+        drop = ((sim >= threshold) & (created[None, :] > created[:, None])).any(axis=1)
+        ctx.cache["dedup"] = [i for i, d in zip(ids, drop) if not d]
+    chosen = fill(ctx.cache["dedup"], ctx, budget)
+    rows = ctx.mem._fetch(chosen)
+    return sorted(chosen, key=lambda i: -rows[i]["created_at"])
 
 
 def _vectors(ctx: Context, ids: list[int]) -> np.ndarray:
@@ -180,6 +205,8 @@ BASELINES = {
     "dense": dense,
     "hybrid": hybrid,
     "hybrid-live": hybrid_live,
+    "hybrid-newest": hybrid_newest,
+    "hybrid-dedup": hybrid_dedup,
     "mmr": mmr,
     "gen-agents": generative_agents,
     "facility": facility_location,

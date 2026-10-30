@@ -24,16 +24,16 @@ FEATURES = (
     "rerank_score",
 )
 
-DEFAULT_THETA = (0.0045, -0.0863, -0.0309, 0.0345, -0.0048, -0.0215, 0.0032, 0.0, 0.1559, 0.0934, 0.2436, 0.1367, 0.0, 0.0, 0.0)
-LEXICAL_THETA = (-0.0204, -0.0302, 0.0, 0.0371, 0.0, 0.0264, 0.0207, 0.0, 0.0, 0.0782, 0.3399, 0.0, 0.0, 0.0, 0.0)
-RERANK_THETA = (0.0013, -0.0346, 0.0025, 0.0272, -0.0065, -0.0153, 0.0033, 0.0, 0.0121, 0.0318, 0.1045, 0.0576, 0.4723, -0.0845, 0.0276)
+DEFAULT_THETA = (0.0048, -0.0876, -0.0289, 0.0381, -0.006, -0.0223, 0.0026, 0.0, 0.1523, 0.0938, 0.2418, 0.1369, 0.0, 0.0, 0.0)
+LEXICAL_THETA = (-0.021, -0.0316, 0.0, 0.0407, 0.0, 0.0239, 0.0227, 0.0, 0.0, 0.07, 0.3406, 0.0, 0.0, 0.0, 0.0)
+RERANK_THETA = (0.0013, -0.0339, 0.0062, 0.0303, -0.0071, -0.0156, 0.0027, 0.0, 0.0066, 0.0336, 0.0993, 0.0534, 0.485, -0.0877, 0.0243)
 
 
 @dataclass(frozen=True)
 class RetrievalConfig:
     candidates: int = 100
     rank_kappa: float = 10.0
-    item_overhead: int = 8
+    item_overhead: int = 14  # the rendered prefix '[#id date] ' costs 11 to 15 tokens
 
     use_dense: bool = True
     use_reranker: bool = False
@@ -50,13 +50,16 @@ class RetrievalConfig:
     snippet_tokens: int = 40
 
     use_validity: bool = True
+    drop_superseded: bool = True  # exact version chains: old versions leave unless the query asks for history
     use_supersession: bool = True
     supersession_threshold: float = 0.8
     supersession_strength: float = 0.8
+    supersession_drop: float = 0.97  # an unkeyed item with a newer twin this similar is removed outright
     soft_supersede_keyed: bool = False  # keyed items have exact version chains, so similarity is not evidence
     stale_factor: float = 0.05
 
     use_bandit: bool = True
+    learn: bool = True
     bandit_beta: float = 0.0
     bandit_ridge: float = 16.0
     theta0: tuple[float, ...] = DEFAULT_THETA
@@ -80,6 +83,26 @@ class Candidates:
     validity: np.ndarray | None = None
     rerank_rank: np.ndarray | None = None
     rerank_score: np.ndarray | None = None
+
+
+def subset(c: Candidates, keep: np.ndarray) -> Candidates:
+    """The candidates selected by a boolean mask."""
+    def pick(values: np.ndarray | None) -> np.ndarray | None:
+        return None if values is None else values[keep]
+
+    return Candidates(
+        ids=[i for i, k in zip(c.ids, keep) if k],
+        lex_rank=pick(c.lex_rank),
+        dense_rank=pick(c.dense_rank),
+        lex_score=pick(c.lex_score),
+        dense_score=pick(c.dense_score),
+        term_cover=pick(c.term_cover),
+        activation=pick(c.activation),
+        usefulness=pick(c.usefulness),
+        validity=pick(c.validity),
+        rerank_rank=pick(c.rerank_rank),
+        rerank_score=pick(c.rerank_score),
+    )
 
 
 def feature_matrix(c: Candidates, cfg: RetrievalConfig) -> np.ndarray:

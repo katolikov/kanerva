@@ -234,7 +234,7 @@ def stream_for(data: dict, seed: int) -> Stream:
         kind, name, value, path = fact
         text = render_fact(kind, name, value, path)
         chain = versions.setdefault(key, [])
-        if chain and chain[-1][3] == value:
+        if chain and chain[-1][0] == text:
             writes.append(Turn(text, at, key=key, kind="semantic"))  # reconfirmation
             return
         chain.append((text, kind, name, value, path))
@@ -253,7 +253,7 @@ def stream_for(data: dict, seed: int) -> Stream:
         commits = sorted(commits, key=lambda c: c["at"])
         for commit in commits:
             writes.append(Turn(_commit_note(commit), commit["at"]))
-        changed = [k for k, f in after["facts"].items() if k in before["facts"] and before["facts"][k][2] != f[2]]
+        changed = [k for k, f in after["facts"].items() if k in before["facts"] and before["facts"][k][2:] != f[2:]]
         changed_paths = {after["facts"][k][3] for k in changed}
         touched = {f for c in window for f in c["files"]} | changed_paths
         for key in changed:
@@ -268,7 +268,7 @@ def stream_for(data: dict, seed: int) -> Stream:
             past_commits.extend(commits)
             continue
         now = after["at"] + span_days * 86400 * 0.01
-        known = [k for k, chain in versions.items() if k in after["facts"] and chain[-1][3] == after["facts"][k][2]]
+        known = [k for k, chain in versions.items() if k in after["facts"] and chain[-1][0] == render_fact(*after["facts"][k])]
         moved = [k for k in known if len(versions[k]) > 1]
         still = [k for k in known if len(versions[k]) == 1]
         rng.shuffle(moved)

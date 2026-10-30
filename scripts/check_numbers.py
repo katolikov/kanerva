@@ -27,8 +27,8 @@ ALLOWED = {
     "0.05",  # significance level
     "0.8", "0.9",  # consolidation thresholds, which are inputs
 }
-MACRO = re.compile(r"\\(R|T|St|D|CI)\{([^}]*)\}\{([^}]*)\}\{([^}]*)\}|\\V\{([^}]*)\}")
-PREFIX = {"R": "r", "T": "t", "St": "s", "D": "d", "CI": "ci"}
+MACRO = re.compile(r"\\(R|T|St|D|CI|Err|Inj)\{([^}]*)\}\{([^}]*)\}\{([^}]*)\}|\\V\{([^}]*)\}")
+PREFIX = {"R": "r", "T": "t", "St": "s", "D": "d", "CI": "ci", "Err": "e", "Inj": "i"}
 
 
 def main() -> int:

@@ -8,7 +8,7 @@ item states, and parent links $P$ to the items it was consolidated from. Items s
 \paragraph{Validity and usefulness.} Fix a step context (query) $q$. Let $\rho_t(m)=\Pr[m \text{ still holds at } t]$ and
 $\mu_q(m)=\Pr[m\text{ helps with }q\mid m\text{ holds}]$. The \emph{effective weight} of an item is
 $w_q(m)=\rho_t(m)\,\mu_q(m)$. Separating the two matters: $\rho$ moves with time and changes in the world, $\mu$ with the
-query. Section~\ref{sec:theory} shows that a learner which conflates them has linear regret.
+query. Section~\ref{sec:theory} shows that a learner with no age or version information has linear regret.
 
 \paragraph{Selection.} Injecting $S\subseteq M_t$ has utility $U(S\mid q)$, and the context budget is a hard constraint:
 \begin{equation}\label{eq:budgeted}
@@ -79,7 +79,7 @@ remove. Proofs are in Appendix~\ref{app:proofs}. Write $\mathrm{OPT}$ for the op
 
 \begin{proposition}[Cost blindness]\label{prop:cost}
 Any rule that fills the budget in the order of a score independent of $c$ (top-$k$ fill, MMR, reciprocal rank fusion, reranking) has
-worst-case ratio at most $c_{\min}/B$ against $\mathrm{OPT}$, even for additive $U$.
+worst-case ratio at most $1/\lfloor B/c_{\min}\rfloor$ against $\mathrm{OPT}$, even for additive $U$.
 \end{proposition}
 
 \begin{proposition}[Redundancy blindness]\label{prop:redundancy}
@@ -87,7 +87,7 @@ Any modular rule has worst-case ratio at most $1/k$ on coverage objectives with 
 \end{proposition}
 
 \begin{proposition}[Recency as proxy]\label{prop:recency}
-A relevant item followed by more than $B/c_{\min}$ later items is never injected by recency-only selection, however relevant it is, whereas a rule that scores by relevance injects it whenever it outranks those items.
+A relevant item $m$ followed by later items of total cost above $B$, each no larger than $m$, is never injected by recency-only selection, however relevant it is, whereas a rule that scores by relevance injects it whenever it outranks those items.
 \end{proposition}
 
 \begin{proposition}[Time-invariant scoring]\label{prop:stale}
