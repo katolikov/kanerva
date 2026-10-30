@@ -46,7 +46,8 @@ def _open(cwd: str | None) -> tuple[Memory, str]:
 def format_context(result, header: str) -> str:
     if not result.items:
         return ""
-    lines = [header] + [item.render() for item in result.items]
+    items = sorted(result.items, key=lambda item: -item.created_at)  # newest first, so that updates read as updates
+    lines = [header] + [item.render() for item in items]
     return "\n".join(lines)[:MAX_CONTEXT_CHARS]
 
 

@@ -1,18 +1,18 @@
-\begin{tabular}{@{}lllrrrr@{}}\toprule
-Dataset & Rival & $B$ & $\Delta$ recall & 95\% CI & Cluster CI & $p_{\text{Holm}}$ \\\midrule
-LongMemEval-S & Hybrid + reranker & 256 & -0.015 & [-0.030, -0.002] & --- & 1.000 \\
-LongMemEval-S & Hybrid + reranker & 1024 & +0.015 & [-0.001, +0.032] & --- & 1.000 \\
-LongMemEval-S & Hybrid + reranker & 4096 & +0.021 & [+0.008, +0.035] & --- & 1.000 \\
+\begin{tabular}{@{}lllrrrrr@{}}\toprule
+Dataset & Rival & $B$ & $\Delta$ recall & Query CI & Unit CI & Units $+$ & $p$ \\\midrule
+LongMemEval-S & Hybrid + reranker & 256 & -0.010 & [-0.023, +0.003] & --- & --- & 0.405 \\
+LongMemEval-S & Hybrid + reranker & 1024 & +0.021 & [+0.005, +0.037] & --- & --- & 0.049 \\
+LongMemEval-S & Hybrid + reranker & 4096 & +0.022 & [+0.009, +0.037] & --- & --- & 0.011 \\
 \addlinespace
-LoCoMo & Hybrid + reranker & 256 & +0.002 & [-0.008, +0.012] & --- & 1.000 \\
-LoCoMo & Hybrid + reranker & 1024 & +0.026 & [+0.016, +0.037] & --- & 0.256 \\
-LoCoMo & Hybrid RRF & 4096 & -0.019 & [-0.028, -0.010] & --- & 0.202 \\
+LoCoMo & Hybrid + reranker & 256 & +0.003 & [-0.007, +0.014] & [-0.005, +0.012] & 3/7 & 1.000 \\
+LoCoMo & Hybrid + reranker & 1024 & +0.024 & [+0.014, +0.036] & [+0.013, +0.037] & 7/7 & 0.938 \\
+LoCoMo & Hybrid, newest of twins & 4096 & -0.014 & [-0.023, -0.005] & [-0.022, -0.007] & 0/7 & 0.938 \\
 \addlinespace
-RepoMem, keys & Dense & 256 & +0.007 & [+0.001, +0.012] & [-0.006, +0.022] & 1.000 \\
-RepoMem, keys & Hybrid + reranker & 1024 & -0.007 & [-0.010, -0.003] & [-0.010, -0.004] & 0.133 \\
-RepoMem, keys & MMR & 4096 & -0.000 & [-0.002, +0.001] & [-0.000, +0.000] & 1.000 \\
+RepoMem, keys & Hybrid, live only & 256 & +0.009 & [+0.005, +0.014] & [+0.007, +0.012] & 6/6 & 1.000 \\
+RepoMem, keys & Hybrid, live only & 1024 & -0.005 & [-0.009, -0.002] & [-0.010, -0.001] & 1/6 & 1.000 \\
+RepoMem, keys & Hybrid, live only & 4096 & -0.004 & [-0.006, -0.002] & [-0.007, -0.001] & 1/6 & 1.000 \\
 \addlinespace
-RepoMem holdout, keys & Dense & 256 & +0.016 & [+0.008, +0.024] & [-0.009, +0.043] & 1.000 \\
-RepoMem holdout, keys & Hybrid + reranker & 1024 & +0.002 & [-0.003, +0.008] & [-0.024, +0.031] & 0.223 \\
-RepoMem holdout, keys & Hybrid RRF & 4096 & -0.005 & [-0.008, -0.001] & [-0.010, +0.003] & 0.004 \\
+RepoMem holdout, keys & Hybrid, live only & 256 & +0.009 & [+0.003, +0.016] & [-0.001, +0.018] & 3/4 & 1.000 \\
+RepoMem holdout, keys & Hybrid, live only & 1024 & -0.005 & [-0.010, +0.000] & [-0.020, +0.017] & 1/4 & 1.000 \\
+RepoMem holdout, keys & Hybrid, live only & 4096 & -0.021 & [-0.026, -0.017] & [-0.027, -0.016] & 0/4 & 1.000 \\
 \bottomrule\end{tabular}

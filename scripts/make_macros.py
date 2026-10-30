@@ -53,7 +53,7 @@ def recall_table(comparison: dict) -> str:
         rows.append(f"\\multicolumn{{{len(BUDGETS) + 1}}}{{@{{}}l}}{{\\emph{{{title}}}}} \\\\")
         best = {b: max(means[f"{m}@{b}"] for m in METHODS if f"{m}@{b}" in means) for b in BUDGETS}
         for method, label in METHODS.items():
-            if f"{method}@128" not in means or (method in ("hybrid-live", "hybrid-dedup", "kanerva-first") and not name.startswith("repomem")):
+            if f"{method}@128" not in means or (method in ("hybrid-live", "hybrid-dedup") and not name.startswith("repomem")) or (method == "kanerva-first" and name not in ("repomem-keyed", "repomem-holdout")):
                 continue
             cells = []
             for b in BUDGETS:

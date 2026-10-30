@@ -77,6 +77,8 @@ def run_stream(args: tuple) -> list[dict]:
     configs = variants(base)
     for name, cfg in configs.items():
         methods[name] = kanerva_variant(cfg.with_(use_bandit=False))
+    if not (selected and "kanerva-ce" in selected):
+        methods.pop("kanerva-ce")
     if selected:
         methods = {k: v for k, v in methods.items() if k in selected}
     fixed = {f"hybrid-k{k}": k for k in fixed_k}

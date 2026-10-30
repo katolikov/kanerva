@@ -1,6 +1,6 @@
 # Kanerva
 
-Local memory for coding agents that injects only what the current step needs, under a hard token budget, and knows when a stored fact has gone stale.
+Local memory for coding agents that injects only what the current step needs, under a hard token budget, and keeps outdated versions of a fact out of the context.
 
 Kanerva runs on SQLite with no LLM in the loop. It works with Claude Code and OpenCode, and with any MCP client.
 
@@ -11,8 +11,8 @@ Kanerva runs on SQLite with no LLM in the loop. It works with Claude Code and Op
 Agent memory products mostly fetch the top-k similar notes. That ignores what a note costs in tokens, ignores what the other notes already say, and has no idea whether a note is still true. Kanerva treats memory as budgeted selection:
 
 - **Selection** maximizes a monotone submodular objective under a token budget, and each query carries a certificate of its optimality gap.
-- **Validity** is modelled apart from usefulness. Change rates are learned per class of fact from the store's own version history.
-- **Learning** updates a small linear policy from execution signals, such as whether a note's identifiers reappeared in later tool calls.
+- **Validity** is modelled apart from usefulness. Keyed facts have exact version chains, near-identical newer notes replace older ones, and change rates are learned per class of fact from the store's own history.
+- **Learning** can update a small linear policy from execution signals, such as whether a note's identifiers reappeared in later tool calls. It is opt-in (`KANERVA_LEARN=1`), because noisy rewards made it worse than not learning in our experiments.
 - **Consolidation is reversible.** Summaries keep links to their sources, and nothing is deleted without an explicit command.
 
 ## Demo
@@ -47,7 +47,7 @@ scripts/sync_plugin.sh
 claude --plugin-dir ./plugins/claude-code
 ```
 
-The plugin injects memory on `SessionStart` and `UserPromptSubmit`, captures edits and test commands on `PostToolUse`, resolves feedback on `Stop`, and consolidates on `PreCompact`. Skills: `/kanerva:memory`, `/kanerva:remember`, `/kanerva:forget`.
+The plugin injects memory on `SessionStart` and `UserPromptSubmit`, captures edits and test commands on `PostToolUse`, resolves feedback on `Stop`, and stores the compaction summary on `PostCompact`. Skills: `/kanerva:memory`, `/kanerva:remember`, `/kanerva:forget`.
 
 ### OpenCode
 
@@ -91,20 +91,20 @@ Evidence recall on test splits, with no LLM in the evaluation. Larger is better.
 
 | Dataset | Budget | Kanerva | Kanerva + reranker | Hybrid RRF | Hybrid + reranker | BM25 |
 |---|---:|---:|---:|---:|---:|---:|
-| LongMemEval-S | 256 | 0.655 | 0.713 | 0.607 | 0.729 | 0.604 |
-| LongMemEval-S | 1024 | 0.860 | 0.884 | 0.761 | 0.870 | 0.769 |
-| LongMemEval-S | 4096 | 0.934 | 0.954 | 0.906 | 0.933 | 0.850 |
-| LoCoMo | 256 | 0.566 | 0.634 | 0.475 | 0.632 | 0.559 |
-| LoCoMo | 1024 | 0.722 | 0.757 | 0.682 | 0.731 | 0.702 |
-| LoCoMo | 4096 | 0.842 | 0.854 | 0.873 | 0.773 | 0.798 |
-| RepoMem, no keys | 256 | 0.835 | n/a | 0.842 | n/a | 0.795 |
-| RepoMem, no keys | 1024 | 0.890 | n/a | 0.908 | n/a | 0.886 |
-| RepoMem, no keys | 4096 | 0.950 | n/a | 0.949 | n/a | 0.915 |
-| RepoMem holdout, keys | 256 | 0.740 | 0.752 | 0.730 | 0.731 | 0.685 |
-| RepoMem holdout, keys | 1024 | 0.834 | 0.835 | 0.828 | 0.833 | 0.794 |
-| RepoMem holdout, keys | 4096 | 0.905 | 0.903 | 0.908 | 0.873 | 0.884 |
+| LongMemEval-S | 256 | 0.629 | 0.687 | 0.588 | 0.697 | 0.599 |
+| LongMemEval-S | 1024 | 0.849 | 0.882 | 0.759 | 0.862 | 0.746 |
+| LongMemEval-S | 4096 | 0.931 | 0.954 | 0.904 | 0.932 | 0.854 |
+| LoCoMo | 256 | 0.541 | 0.617 | 0.449 | 0.614 | 0.540 |
+| LoCoMo | 1024 | 0.713 | 0.746 | 0.640 | 0.722 | 0.689 |
+| LoCoMo | 4096 | 0.824 | 0.842 | 0.856 | 0.856 | 0.793 |
+| RepoMem, no keys | 256 | 0.844 | n/a | 0.831 | n/a | 0.795 |
+| RepoMem, no keys | 1024 | 0.888 | n/a | 0.903 | n/a | 0.879 |
+| RepoMem, no keys | 4096 | 0.939 | n/a | 0.947 | n/a | 0.915 |
+| RepoMem holdout, no keys | 256 | 0.725 | n/a | 0.746 | n/a | 0.698 |
+| RepoMem holdout, no keys | 1024 | 0.809 | n/a | 0.835 | n/a | 0.800 |
+| RepoMem holdout, no keys | 4096 | 0.882 | n/a | 0.909 | n/a | 0.889 |
 
-Staleness error at 1024 tokens over all RepoMem queries. RepoMem, no keys: 0.016 for Kanerva, 0.369 for hybrid. RepoMem, keys: 0.003 for Kanerva, 0.375 for hybrid.
+Share of changed-fact queries where an outdated version is injected, at 1024 tokens. RepoMem, no keys: 0.286 for Kanerva, 0.993 for hybrid. RepoMem, keys: 0.000 for Kanerva, 0.993 for hybrid. lme-updates: 0.979 for Kanerva, 0.894 for hybrid.
 
 A cross-encoder reranker beats plain Kanerva at small budgets, and the reranker variant was designed after seeing those test results, so it needs confirming on fresh data. Hybrid retrieval beats Kanerva at large budgets on LoCoMo, and on recall on RepoMem without keys, where Kanerva trades a little recall for far fewer stale injections. The paper reports every such case, with confidence intervals.
 <!-- results:end -->
@@ -116,8 +116,8 @@ A cross-encoder reranker beats plain Kanerva at small budgets, and the reranker 
 | LLM needed on write | no | model writes the notes | yes, for fact extraction | yes | agent tool calls |
 | Hard token budget | yes | 200 lines or 25 KB, unranked | no, top-k | no, top-k | block sizes |
 | Redundancy-aware selection | yes | no | no | no | no |
-| Staleness | probabilistic and versioned | none | LLM update or delete, decay on the platform | bi-temporal edges | agent-managed |
-| Learns from feedback | linear policy | no | no | no | no |
+| Staleness | version chains, near-twin rule, hazard model | none | LLM update or delete, decay on the platform | bi-temporal edges | agent-managed |
+| Learns from feedback | linear policy, opt-in | no | no | no | no |
 | Runs without a service | yes | yes | yes, with a local vector store | needs a graph DB | server or CLI |
 | Maturity | research prototype | production | production | production | production |
 | Evaluated with an LLM | **no** | n/a | yes, vendor-run | yes, vendor-run | yes, vendor-run |

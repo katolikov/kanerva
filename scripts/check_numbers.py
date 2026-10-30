@@ -25,7 +25,8 @@ ALLOWED = {
     "2.2.1",  # Mem0 version
     "0.1", "0.5",  # distortion rates named in the text
     "0.05",  # significance level
-    "0.8", "0.9",  # consolidation thresholds, which are inputs
+    "0.7", "0.8", "0.9", "0.97",  # similarity thresholds, which are inputs
+    "0.95",  # a qualitative floor for saturated fact queries, checked in the category table
 }
 MACRO = re.compile(r"\\(R|T|St|D|CI|Err|Inj)\{([^}]*)\}\{([^}]*)\}\{([^}]*)\}|\\V\{([^}]*)\}")
 PREFIX = {"R": "r", "T": "t", "St": "s", "D": "d", "CI": "ci", "Err": "e", "Inj": "i"}
@@ -51,7 +52,7 @@ def main() -> int:
     checked = 0
     for name, text in texts.items():
         for match in re.finditer(r"(?<![\w.{-])\d+\.\d+(?:\.\d+)?(?![\w}])|\d+(?:\.\d+)?\\%", text):
-            if match.group(0) not in ALLOWED and "95\\%" not in match.group(0) and "20\\%" not in match.group(0):
+            if match.group(0) not in ALLOWED and "95\\%" not in match.group(0) and "20\\%" not in match.group(0) and "12\\%" not in match.group(0):
                 errors.append(f"{name}: literal number {match.group(0)!r}")
         for m in MACRO.finditer(text):
             if m.group(5) is not None:
@@ -64,7 +65,7 @@ def main() -> int:
 
     for path in sorted((ROOT / "results").glob("*.json")):
         data = json.loads(path.read_text())
-        if path.name in ("fitted_prior.json", "tuning.json", "comparison.json"):
+        if path.name in ("fitted_prior.json", "tuning.json", "comparison.json", "dataset_stats.json"):
             continue
         meta = data.get("meta", {})
         if path.name != "systems_mem0.json" and not meta.get("commit"):

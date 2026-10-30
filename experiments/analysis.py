@@ -42,6 +42,7 @@ LABEL = {"kanerva": "Kanerva", "kanerva-ce": "Kanerva + reranker", "hybrid": "Hy
 
 def load_raw(name: str) -> list[dict]:
     records = json.load(gzip.open(RESULTS / "raw" / f"retrieval_{name}.json.gz", "rt"))
+    records = [r for r in records if r["method"] != "kanerva-ce"]  # that variant comes from the ce_ run, with its reranker
     for prefix in ("rerank", "ce"):
         extra = RESULTS / "raw" / f"{prefix}_{name}.json.gz"
         if extra.exists():

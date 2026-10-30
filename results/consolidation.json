@@ -6,203 +6,93 @@
    "tokens_before": 150326,
    "tokens_after": 150326,
    "saving": 0.0,
-   "recall": 0.7218365783702239,
+   "recall": 0.712861848896506,
    "n": 1483,
    "clusters": 0,
    "sources": 0
-  },
-  "locomo|0.6|0.3": {
-   "threshold": 0.6,
-   "rate": 0.3,
-   "tokens_before": 150326,
-   "tokens_after": 67654,
-   "saving": 0.5499514388728497,
-   "recall": 0.4554449203302878,
-   "n": 1483,
-   "clusters": 668,
-   "sources": 3463
-  },
-  "locomo|0.6|0.5": {
-   "threshold": 0.6,
-   "rate": 0.5,
-   "tokens_before": 150326,
-   "tokens_after": 90259,
-   "saving": 0.399578249936804,
-   "recall": 0.5199131673002205,
-   "n": 1483,
-   "clusters": 656,
-   "sources": 3450
-  },
-  "locomo|0.7|0.3": {
-   "threshold": 0.7,
-   "rate": 0.3,
-   "tokens_before": 150326,
-   "tokens_after": 102668,
-   "saving": 0.31703098599044743,
-   "recall": 0.6079386328593024,
-   "n": 1483,
-   "clusters": 611,
-   "sources": 2030
   },
   "locomo|0.7|0.5": {
    "threshold": 0.7,
    "rate": 0.5,
    "tokens_before": 150326,
-   "tokens_after": 115679,
-   "saving": 0.23047909210648854,
-   "recall": 0.6352395779620007,
+   "tokens_after": 115721,
+   "saving": 0.23019969932014417,
+   "recall": 0.6721880480562988,
    "n": 1483,
-   "clusters": 583,
-   "sources": 1983
-  },
-  "locomo|0.8|0.3": {
-   "threshold": 0.8,
-   "rate": 0.3,
-   "tokens_before": 150326,
-   "tokens_after": 138384,
-   "saving": 0.07944068225057543,
-   "recall": 0.6951121896274806,
-   "n": 1483,
-   "clusters": 220,
-   "sources": 584
+   "clusters": 577,
+   "sources": 1972
   },
   "locomo|0.8|0.5": {
    "threshold": 0.8,
    "rate": 0.5,
    "tokens_before": 150326,
-   "tokens_after": 141884,
-   "saving": 0.05615795005521329,
-   "recall": 0.7079123467773264,
+   "tokens_after": 141927,
+   "saving": 0.055871905059670324,
+   "recall": 0.7111353299591412,
    "n": 1483,
-   "clusters": 199,
-   "sources": 541
-  },
-  "locomo|0.9|0.3": {
-   "threshold": 0.9,
-   "rate": 0.3,
-   "tokens_before": 150326,
-   "tokens_after": 149342,
-   "saving": 0.006545773851496128,
-   "recall": 0.7196386526726353,
-   "n": 1483,
-   "clusters": 32,
-   "sources": 77
+   "clusters": 195,
+   "sources": 535
   },
   "locomo|0.9|0.5": {
    "threshold": 0.9,
    "rate": 0.5,
    "tokens_before": 150326,
-   "tokens_after": 149590,
-   "saving": 0.00489602597022476,
-   "recall": 0.7219315946149367,
+   "tokens_after": 149633,
+   "saving": 0.004609980974681682,
+   "recall": 0.7155253687886164,
    "n": 1483,
-   "clusters": 30,
-   "sources": 73
+   "clusters": 29,
+   "sources": 71
   },
   "lme|None|0.0": {
    "threshold": null,
    "rate": 0.0,
-   "tokens_before": 6231938,
-   "tokens_after": 6231938,
+   "tokens_before": 6265039,
+   "tokens_after": 6265039,
    "saving": 0.0,
-   "recall": 0.9322222222222222,
+   "recall": 0.8736111111111111,
    "n": 60,
    "clusters": 0,
    "sources": 0
   },
-  "lme|0.6|0.3": {
-   "threshold": 0.6,
-   "rate": 0.3,
-   "tokens_before": 6231938,
-   "tokens_after": 2294522,
-   "saving": 0.6318124474280713,
-   "recall": 0.675,
-   "n": 60,
-   "clusters": 7440,
-   "sources": 24760
-  },
-  "lme|0.6|0.5": {
-   "threshold": 0.6,
-   "rate": 0.5,
-   "tokens_before": 6231938,
-   "tokens_after": 3407054,
-   "saving": 0.4532914159287207,
-   "recall": 0.6819444444444446,
-   "n": 60,
-   "clusters": 7428,
-   "sources": 24785
-  },
-  "lme|0.7|0.3": {
-   "threshold": 0.7,
-   "rate": 0.3,
-   "tokens_before": 6231938,
-   "tokens_after": 2866706,
-   "saving": 0.5399976700666791,
-   "recall": 0.7533333333333333,
-   "n": 60,
-   "clusters": 7922,
-   "sources": 20705
-  },
   "lme|0.7|0.5": {
    "threshold": 0.7,
    "rate": 0.5,
-   "tokens_before": 6231938,
-   "tokens_after": 3812586,
-   "saving": 0.38821823965514424,
-   "recall": 0.7658333333333333,
+   "tokens_before": 6265039,
+   "tokens_after": 3795022,
+   "saving": 0.3942540501344046,
+   "recall": 0.7277777777777777,
    "n": 60,
-   "clusters": 7900,
-   "sources": 20693
-  },
-  "lme|0.8|0.3": {
-   "threshold": 0.8,
-   "rate": 0.3,
-   "tokens_before": 6231938,
-   "tokens_after": 4522984,
-   "saving": 0.27422512868388615,
-   "recall": 0.8155555555555555,
-   "n": 60,
-   "clusters": 4632,
-   "sources": 10309
+   "clusters": 7985,
+   "sources": 20806
   },
   "lme|0.8|0.5": {
    "threshold": 0.8,
    "rate": 0.5,
-   "tokens_before": 6231938,
-   "tokens_after": 5001322,
-   "saving": 0.19746923027796492,
-   "recall": 0.8780555555555555,
+   "tokens_before": 6265039,
+   "tokens_after": 5018798,
+   "saving": 0.19891991095346728,
+   "recall": 0.826388888888889,
    "n": 60,
-   "clusters": 4593,
-   "sources": 10248
-  },
-  "lme|0.9|0.3": {
-   "threshold": 0.9,
-   "rate": 0.3,
-   "tokens_before": 6231938,
-   "tokens_after": 6026324,
-   "saving": 0.03299358883223802,
-   "recall": 0.9455555555555556,
-   "n": 60,
-   "clusters": 514,
-   "sources": 1091
+   "clusters": 4625,
+   "sources": 10327
   },
   "lme|0.9|0.5": {
    "threshold": 0.9,
    "rate": 0.5,
-   "tokens_before": 6231938,
-   "tokens_after": 6083517,
-   "saving": 0.02381618687477316,
-   "recall": 0.9455555555555556,
+   "tokens_before": 6265039,
+   "tokens_after": 6130709,
+   "saving": 0.021441207309323973,
+   "recall": 0.8736111111111111,
    "n": 60,
-   "clusters": 486,
-   "sources": 1038
+   "clusters": 458,
+   "sources": 1015
   }
  },
  "meta": {
   "budget": 1024,
   "lme_streams": 60,
   "experiment": "consolidation",
-  "commit": "2861bd9e3f897e21b50f8d1f62f9d7fe41c17c28"
+  "commit": "4fe63379cfe3-dirty"
  }
 }

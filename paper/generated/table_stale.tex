@@ -1,12 +1,15 @@
-\begin{tabular}{@{}lrrrrrr@{}}\toprule
-Method & \multicolumn{3}{c}{RepoMem, keys} & \multicolumn{3}{c}{RepoMem, no keys} \\
- & 256 & 1024 & 4096 & 256 & 1024 & 4096 \\\midrule
-\kanerva & 0.002 & 0.003 & 0.004 & 0.016 & 0.016 & 0.016 \\
-\kanerva, no soft supersession & 0.002 & 0.003 & 0.004 & 0.365 & 0.368 & 0.368 \\
-\kanerva, no validity & 0.370 & 0.373 & 0.373 & 0.365 & 0.368 & 0.368 \\
-Hybrid, live only & 0.000 & 0.000 & 0.000 & 0.363 & 0.369 & 0.371 \\
-Hybrid RRF & 0.369 & 0.375 & 0.376 & 0.363 & 0.369 & 0.371 \\
-Dense & 0.221 & 0.223 & 0.223 & 0.220 & 0.222 & 0.222 \\
-BM25 & 0.375 & 0.404 & 0.410 & 0.372 & 0.401 & 0.407 \\
-Hybrid + reranker & 0.250 & 0.252 & 0.252 & --- & --- & --- \\
+\begin{tabular}{@{}lrrrrrrrr@{}}\toprule
+Method & \multicolumn{2}{c}{RepoMem, keys} & \multicolumn{2}{c}{RepoMem, no keys} & \multicolumn{2}{c}{Holdout, no keys} & \multicolumn{2}{c}{LME updates} \\
+ & inject & error & inject & error & inject & error & inject & error \\\midrule
+\kanerva & 0.000 & 0.000 & 0.286 & 0.018 & 0.539 & 0.049 & 0.979 & 0.489 \\
+\kanerva, lexical & 0.000 & 0.000 & 0.279 & 0.025 & 0.523 & 0.082 & 0.936 & 0.553 \\
+\kanerva, no soft supersession & 0.000 & 0.000 & 0.997 & 0.694 & 0.987 & 0.641 & 0.979 & 0.553 \\
+\kanerva, no validity & 0.997 & 0.702 & 0.997 & 0.694 & 0.987 & 0.641 & 0.979 & 0.553 \\
+Hybrid, live only & 0.000 & 0.000 & 0.993 & 0.696 & 0.987 & 0.642 & 0.894 & 0.468 \\
+Hybrid, newest of twins & 0.307 & 0.000 & 0.315 & 0.018 & 0.632 & 0.033 & 0.894 & 0.064 \\
+Hybrid, newest first & 0.993 & 0.002 & 0.993 & 0.019 & 0.987 & 0.039 & 0.894 & 0.064 \\
+Hybrid RRF & 0.993 & 0.705 & 0.993 & 0.696 & 0.987 & 0.642 & 0.894 & 0.468 \\
+Dense & 0.999 & 0.455 & 0.999 & 0.454 & 0.985 & 0.449 & 0.851 & 0.489 \\
+BM25 & 0.968 & 0.765 & 0.968 & 0.758 & 0.949 & 0.699 & 0.915 & 0.596 \\
+Hybrid + reranker & 0.998 & 0.485 & --- & --- & --- & --- & --- & --- \\
 \bottomrule\end{tabular}
