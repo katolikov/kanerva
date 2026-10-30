@@ -44,6 +44,11 @@ Or point your config at a checkout:
 
 The plugin looks for `KANERVA_COMMAND`, then a `kanerva` command on your `PATH`, then runs its bundled copy through `uv` or `python3`. If memory ever fails, OpenCode carries on without it.
 
+## Troubleshooting
+
+- **`opencode run` hangs in a script.** Without a terminal it waits for the end of stdin, with or without this plugin. Add `< /dev/null`.
+- **The first session has no `memory_*` tools.** The MCP server is still starting. They are there from the next model call.
+
 ## Development
 
 ```bash
