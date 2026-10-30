@@ -1,7 +1,7 @@
 {
  "meta": {
   "experiment": "candidate pool recall",
-  "commit": "8e0339e8b1e4"
+  "commit": "725fae4d7b3c"
  },
  "results": {
   "beam-dev": {

@@ -15,7 +15,7 @@
   "items": 40,
   "budget": 30.0,
   "horizon": 4000,
-  "commit": "4fe63379cfe3-dirty",
+  "commit": "d648c44abdad-dirty",
   "wall_seconds": 74.2
  },
  "checkpoints": [

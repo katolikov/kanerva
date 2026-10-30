@@ -2,7 +2,7 @@
  "meta": {
   "experiment": "cross-fitted model comparison",
   "folds": 5,
-  "commit": "2a073495be3a-dirty"
+  "commit": "756c62bb38a6-dirty"
  },
  "results": {
   "lme-m2v": {

@@ -93,6 +93,6 @@
   "budget": 1024,
   "lme_streams": 60,
   "experiment": "consolidation",
-  "commit": "2a073495be3a-dirty"
+  "commit": "756c62bb38a6-dirty"
  }
 }

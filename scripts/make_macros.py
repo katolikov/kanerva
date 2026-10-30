@@ -150,7 +150,6 @@ def update_readme(data: dict, tests: dict, latency: dict) -> None:
     beam, plain = data["beam"]["summary"], data["repomem-fresh-plain"]["summary"]
     static_code = data["repomem-fresh-static"]["summary"]
     unkeyed = tests["repomem-fresh-plain"]["stale_on_changed_facts"]
-    keyed = tests["repomem-fresh"]["stale_on_changed_facts"]
     static_stale = tests["repomem-fresh-static"]["stale_on_changed_facts"]["kanerva"]["stale_any"]
     lift = tests["beam"]["kanerva vs rerank"]["mean"]
     text = f"""<picture>

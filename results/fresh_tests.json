@@ -1,7 +1,7 @@
 {
  "meta": {
   "experiment": "paired tests on the held-out data",
-  "commit": "79de01caca22-dirty"
+  "commit": "afdecacef704-dirty"
  },
  "beam": {
   "kanerva vs hybrid": {
