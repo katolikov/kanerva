@@ -193,3 +193,23 @@ def test_lexical_only_store_works_without_embeddings():
     result = mem.retrieve("where is parseConfigFile?", 100, now=T0 + 1, config=RetrievalConfig(gamma=0.0))
     assert result.items
     mem.close()
+
+
+def _validity(mem, query, now):
+    prepared = mem.prepare(query, now)
+    return dict(zip(prepared.candidates.ids, prepared.candidates.validity))
+
+
+def test_soft_supersession_discounts_older_unkeyed_near_duplicates(mem):
+    old = mem.write("The cache lives in redis on port 6379 for the billing service", at=T0)
+    new = mem.write("The cache lives in redis on port 6380 for the billing service", at=T0 + DAY)
+    validity = _validity(mem, "which port does the billing cache use?", T0 + 2 * DAY)
+    assert validity[old] < 0.8 * validity[new]
+
+
+def test_soft_supersession_leaves_keyed_items_alone(mem):
+    text = "get_user(user_id, timeout={}) is the signature, defined in src/users.py"
+    a = mem.write(text.format(30), key="sig:get_user", at=T0)
+    b = mem.write(text.format(31), key="sig:get_admin", at=T0 + DAY)
+    validity = _validity(mem, "get_user signature", T0 + 2 * DAY)
+    assert validity[a] == pytest.approx(validity[b], rel=0.05)

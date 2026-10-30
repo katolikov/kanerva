@@ -53,7 +53,7 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("id", type=int)
     p.add_argument("--hard", action="store_true", help="delete permanently")
     p = sub.add_parser("maintain")
-    p.add_argument("--idle-days", type=float, default=180)
+    p.add_argument("--idle-days", type=float)
     p.add_argument("--capacity", type=int)
     p = sub.add_parser("export")
     p.add_argument("path", nargs="?")

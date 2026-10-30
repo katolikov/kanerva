@@ -63,15 +63,14 @@ counts as used when its identifiers or paths appear in later tool calls or edits
 self-reports inflate reward \cite{asadolahi2026rewardinflation}.
 
 \subsection{Consolidation and forgetting}
-Consolidation is reversible. Items whose similarity graph forms a cluster are summarized extractively: density greedy on a sentence-level facility location with rate $R$, which yields the rate--distortion
+Consolidation is reversible. Star clusters around a leader, with every member above a similarity threshold of $0.9$ by default, are summarized extractively: density greedy on a sentence-level facility location with rate $R$, which yields the rate--distortion
 guarantee of Theorem~\ref{thm:rd}. The summary is a new semantic item with parent links, the sources move to an archive tier, and \textsc{Expand} restores them on demand.
 This follows the evidence that repeated irreversible rewriting erodes detail \cite{colaco2026ratedistortion,zhang2025ace}.
 Forgetting moves items to the archive when they have been idle for $\tau$ days or when the active store exceeds a token capacity, evicting the lowest
-$\rho\cdot\mathrm{activation}\cdot\mathrm{usefulness}/c$ first. Deletion happens only on an explicit user command.
+$\rho\cdot\mathrm{activation}\cdot\mathrm{usefulness}/c$ first. Both rules are opt-in, because Section~\ref{sec:experiments} finds that they cost recall. Deletion happens only on an explicit user command.
 
 \subsection{Multi-resolution}
-A long item also gets a short \emph{gist} (its highest-coverage sentences up to 40 tokens). Selection may inject the gist with a pointer, and the agent pulls the full item with
-\textsc{Expand}. Coverage makes the two resolutions of an item substitutes in \eqref{eq:objective}, since the second adds little marginal gain.
+An item above a token threshold can be injected as a query-biased excerpt: the sentences that cover the most query terms, up to 40 tokens, marked with the item's id. Its cost in the knapsack is the excerpt's cost, so more items fit, and the agent pulls the full text with \textsc{Expand} only when it needs it. This mode is off by default.
 
 \subsection{Complexity}
 With $N$ active items, $n\le2N_c$ candidates, $f$ facets, embedding dimension $D$, and $|S|=k$ selected: a write costs $O(\log N)$ plus one embedding; candidate generation costs $O(ND)$ by brute force

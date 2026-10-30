@@ -15,7 +15,7 @@ Let there be $k$ facets of equal weight. Facet 1 has $k$ duplicates, each with m
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{prop:recency}]
-Recency selects at most $B/c_{\min}$ of the newest items. A fixed item followed by more than $B/c_{\min}$ later items is never selected. A rule whose score does not depend on age is unchanged by adding later items that score below the target, and these make up all later items when relevance is independent of age and the target is the top hit.
+Recency selects only from the $\lfloor B/c_{\min}\rfloor$ newest items, which exclude the item in question. A relevance rule does not depend on the items' order in time.
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{prop:stale}]

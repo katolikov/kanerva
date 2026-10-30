@@ -57,7 +57,7 @@ def _consolidation_job(args: tuple) -> dict:
 
 def consolidation() -> None:
     results: dict = {}
-    grid = [(None, 0.0)] + [(t, r) for t in (0.5, 0.6, 0.7, 0.8) for r in (0.3, 0.5)]
+    grid = [(None, 0.0)] + [(t, r) for t in (0.6, 0.7, 0.8, 0.9) for r in (0.3, 0.5)]
     for dataset in ("locomo", "lme"):
         streams = [s for s in load(dataset) if s.split == "test"]
         if dataset == "lme":

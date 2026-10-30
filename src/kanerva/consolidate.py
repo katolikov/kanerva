@@ -27,22 +27,18 @@ class ConsolidationReport:
     distortion: float = 0.0  # token-weighted mean of 1 - coverage over merged clusters
 
 
-def _components(sim: np.ndarray, threshold: float) -> list[list[int]]:
-    parent = list(range(sim.shape[0]))
-
-    def find(i: int) -> int:
-        while parent[i] != i:
-            parent[i] = parent[parent[i]]
-            i = parent[i]
-        return i
-
-    rows, cols = np.nonzero(np.triu(sim >= threshold, k=1))
-    for a, b in zip(rows.tolist(), cols.tolist()):
-        parent[find(a)] = find(b)
-    groups: dict[int, list[int]] = {}
-    for i in range(sim.shape[0]):
-        groups.setdefault(find(i), []).append(i)
-    return [g for g in groups.values() if len(g) > 1]
+def _star_clusters(sim: np.ndarray, threshold: float) -> list[list[int]]:
+    """Leader clustering: every member is within ``threshold`` of its leader, so clusters cannot chain."""
+    free = np.ones(sim.shape[0], dtype=bool)
+    groups: list[list[int]] = []
+    for leader in range(sim.shape[0]):
+        if not free[leader]:
+            continue
+        members = np.flatnonzero(free & (sim[leader] >= threshold))
+        free[members] = False
+        if members.size > 1:
+            groups.append(members.tolist())
+    return groups
 
 
 def extract_summary(
@@ -78,7 +74,7 @@ def extract_summary(
 def consolidate(
     mem: Memory,
     scope: str | None = None,
-    threshold: float = 0.8,
+    threshold: float = 0.9,
     rate: float = 0.5,
     now: float | None = None,
     max_items: int = 4000,
@@ -101,7 +97,7 @@ def consolidate(
     else:
         vectors = embedder.encode([r["text"] for r in rows])
     distortion_mass = 0.0
-    for group in _components(vectors @ vectors.T, threshold):
+    for group in _star_clusters(vectors @ vectors.T, threshold):
         members = [rows[i] for i in group]
         if len({m["scope"] for m in members}) > 1:
             continue

@@ -72,8 +72,8 @@ TOOLS: dict[str, dict] = {
         },
     },
     "memory_maintain": {
-        "description": "Consolidate similar episodic items and archive idle ones in this project.",
-        "inputSchema": {"type": "object", "properties": {"idle_days": {"type": "number", "default": 180}}},
+        "description": "Consolidate near-duplicate episodic items. With `idle_days`, also archive items idle that long.",
+        "inputSchema": {"type": "object", "properties": {"idle_days": {"type": "number"}}},
     },
     "memory_stats": {
         "description": "Show store size and supersession counts.",
@@ -117,7 +117,8 @@ class Server:
             import time
 
             report = consolidate(self.mem, scope=self.scope)
-            archived = forget(self.mem, time.time(), idle_days=float(args.get("idle_days", 180)), scope=self.scope)
+            idle = args.get("idle_days")
+            archived = forget(self.mem, time.time(), idle_days=None if idle is None else float(idle), scope=self.scope)
             return {"clusters": report.clusters, "sources": report.sources, "archived": archived}
         if name == "memory_stats":
             return self.mem.stats()

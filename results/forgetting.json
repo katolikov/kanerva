@@ -1,0 +1,628 @@
+{
+ "results": {
+  "keep-all": {
+   "recall": 0.8993441443164876,
+   "final_active": 948.3333333333334,
+   "final_tokens": 21207.5,
+   "max_tokens": 21207.5,
+   "trace": [
+    {
+     "writes": 432,
+     "active": 352,
+     "tokens": 6596
+    },
+    {
+     "writes": 482,
+     "active": 371,
+     "tokens": 7001
+    },
+    {
+     "writes": 512,
+     "active": 383,
+     "tokens": 7257
+    },
+    {
+     "writes": 542,
+     "active": 389,
+     "tokens": 7428
+    },
+    {
+     "writes": 604,
+     "active": 409,
+     "tokens": 7897
+    },
+    {
+     "writes": 646,
+     "active": 431,
+     "tokens": 8437
+    },
+    {
+     "writes": 690,
+     "active": 452,
+     "tokens": 8779
+    },
+    {
+     "writes": 691,
+     "active": 453,
+     "tokens": 8810
+    },
+    {
+     "writes": 691,
+     "active": 453,
+     "tokens": 8810
+    },
+    {
+     "writes": 722,
+     "active": 464,
+     "tokens": 9022
+    },
+    {
+     "writes": 723,
+     "active": 465,
+     "tokens": 9054
+    },
+    {
+     "writes": 723,
+     "active": 465,
+     "tokens": 9054
+    },
+    {
+     "writes": 757,
+     "active": 488,
+     "tokens": 9625
+    },
+    {
+     "writes": 758,
+     "active": 489,
+     "tokens": 9654
+    },
+    {
+     "writes": 758,
+     "active": 489,
+     "tokens": 9654
+    },
+    {
+     "writes": 810,
+     "active": 519,
+     "tokens": 10342
+    },
+    {
+     "writes": 923,
+     "active": 575,
+     "tokens": 11454
+    },
+    {
+     "writes": 924,
+     "active": 576,
+     "tokens": 11475
+    },
+    {
+     "writes": 925,
+     "active": 577,
+     "tokens": 11510
+    }
+   ]
+  },
+  "idle-730d": {
+   "recall": 0.8523266171608238,
+   "final_active": 609.5,
+   "final_tokens": 13159.166666666666,
+   "max_tokens": 16905.333333333332,
+   "trace": [
+    {
+     "writes": 432,
+     "active": 352,
+     "tokens": 6596
+    },
+    {
+     "writes": 482,
+     "active": 371,
+     "tokens": 7001
+    },
+    {
+     "writes": 512,
+     "active": 383,
+     "tokens": 7257
+    },
+    {
+     "writes": 542,
+     "active": 389,
+     "tokens": 7428
+    },
+    {
+     "writes": 604,
+     "active": 409,
+     "tokens": 7897
+    },
+    {
+     "writes": 646,
+     "active": 398,
+     "tokens": 7745
+    },
+    {
+     "writes": 690,
+     "active": 420,
+     "tokens": 8097
+    },
+    {
+     "writes": 691,
+     "active": 421,
+     "tokens": 8128
+    },
+    {
+     "writes": 691,
+     "active": 420,
+     "tokens": 8118
+    },
+    {
+     "writes": 722,
+     "active": 425,
+     "tokens": 8204
+    },
+    {
+     "writes": 723,
+     "active": 426,
+     "tokens": 8236
+    },
+    {
+     "writes": 723,
+     "active": 426,
+     "tokens": 8236
+    },
+    {
+     "writes": 757,
+     "active": 445,
+     "tokens": 8738
+    },
+    {
+     "writes": 758,
+     "active": 446,
+     "tokens": 8767
+    },
+    {
+     "writes": 758,
+     "active": 446,
+     "tokens": 8767
+    },
+    {
+     "writes": 810,
+     "active": 474,
+     "tokens": 9407
+    },
+    {
+     "writes": 923,
+     "active": 467,
+     "tokens": 9187
+    },
+    {
+     "writes": 924,
+     "active": 468,
+     "tokens": 9208
+    },
+    {
+     "writes": 925,
+     "active": 469,
+     "tokens": 9243
+    }
+   ]
+  },
+  "idle-365d": {
+   "recall": 0.7131377717438333,
+   "final_active": 283.6666666666667,
+   "final_tokens": 6121.833333333333,
+   "max_tokens": 13023.0,
+   "trace": [
+    {
+     "writes": 432,
+     "active": 352,
+     "tokens": 6596
+    },
+    {
+     "writes": 482,
+     "active": 283,
+     "tokens": 5302
+    },
+    {
+     "writes": 512,
+     "active": 293,
+     "tokens": 5498
+    },
+    {
+     "writes": 542,
+     "active": 300,
+     "tokens": 5663
+    },
+    {
+     "writes": 604,
+     "active": 317,
+     "tokens": 6050
+    },
+    {
+     "writes": 646,
+     "active": 336,
+     "tokens": 6524
+    },
+    {
+     "writes": 690,
+     "active": 364,
+     "tokens": 6989
+    },
+    {
+     "writes": 691,
+     "active": 365,
+     "tokens": 7020
+    },
+    {
+     "writes": 691,
+     "active": 365,
+     "tokens": 7020
+    },
+    {
+     "writes": 722,
+     "active": 355,
+     "tokens": 6844
+    },
+    {
+     "writes": 723,
+     "active": 356,
+     "tokens": 6876
+    },
+    {
+     "writes": 723,
+     "active": 356,
+     "tokens": 6876
+    },
+    {
+     "writes": 757,
+     "active": 357,
+     "tokens": 6956
+    },
+    {
+     "writes": 758,
+     "active": 358,
+     "tokens": 6985
+    },
+    {
+     "writes": 758,
+     "active": 352,
+     "tokens": 6799
+    },
+    {
+     "writes": 810,
+     "active": 350,
+     "tokens": 6868
+    },
+    {
+     "writes": 923,
+     "active": 110,
+     "tokens": 1936
+    },
+    {
+     "writes": 924,
+     "active": 111,
+     "tokens": 1957
+    },
+    {
+     "writes": 925,
+     "active": 112,
+     "tokens": 1992
+    }
+   ]
+  },
+  "idle-180d": {
+   "recall": 0.5351558430329629,
+   "final_active": 151.66666666666666,
+   "final_tokens": 3314.0555555555557,
+   "max_tokens": 9712.666666666666,
+   "trace": [
+    {
+     "writes": 432,
+     "active": 106,
+     "tokens": 2013
+    },
+    {
+     "writes": 482,
+     "active": 128,
+     "tokens": 2466
+    },
+    {
+     "writes": 512,
+     "active": 144,
+     "tokens": 2756
+    },
+    {
+     "writes": 542,
+     "active": 157,
+     "tokens": 3002
+    },
+    {
+     "writes": 604,
+     "active": 200,
+     "tokens": 3919
+    },
+    {
+     "writes": 646,
+     "active": 211,
+     "tokens": 4175
+    },
+    {
+     "writes": 690,
+     "active": 243,
+     "tokens": 4712
+    },
+    {
+     "writes": 691,
+     "active": 244,
+     "tokens": 4743
+    },
+    {
+     "writes": 691,
+     "active": 243,
+     "tokens": 4703
+    },
+    {
+     "writes": 722,
+     "active": 236,
+     "tokens": 4485
+    },
+    {
+     "writes": 723,
+     "active": 237,
+     "tokens": 4517
+    },
+    {
+     "writes": 723,
+     "active": 237,
+     "tokens": 4517
+    },
+    {
+     "writes": 757,
+     "active": 27,
+     "tokens": 537
+    },
+    {
+     "writes": 758,
+     "active": 28,
+     "tokens": 566
+    },
+    {
+     "writes": 758,
+     "active": 28,
+     "tokens": 566
+    },
+    {
+     "writes": 810,
+     "active": 77,
+     "tokens": 1561
+    },
+    {
+     "writes": 923,
+     "active": 109,
+     "tokens": 1885
+    },
+    {
+     "writes": 924,
+     "active": 110,
+     "tokens": 1906
+    },
+    {
+     "writes": 925,
+     "active": 111,
+     "tokens": 1941
+    }
+   ]
+  },
+  "cap-8k": {
+   "recall": 0.713780665381413,
+   "final_active": 471.1111111111111,
+   "final_tokens": 7985.611111111111,
+   "max_tokens": 7998.777777777777,
+   "trace": [
+    {
+     "writes": 432,
+     "active": 352,
+     "tokens": 6596
+    },
+    {
+     "writes": 482,
+     "active": 371,
+     "tokens": 7001
+    },
+    {
+     "writes": 512,
+     "active": 383,
+     "tokens": 7257
+    },
+    {
+     "writes": 542,
+     "active": 389,
+     "tokens": 7428
+    },
+    {
+     "writes": 604,
+     "active": 409,
+     "tokens": 7897
+    },
+    {
+     "writes": 646,
+     "active": 417,
+     "tokens": 7999
+    },
+    {
+     "writes": 690,
+     "active": 422,
+     "tokens": 7999
+    },
+    {
+     "writes": 691,
+     "active": 421,
+     "tokens": 7990
+    },
+    {
+     "writes": 691,
+     "active": 421,
+     "tokens": 7990
+    },
+    {
+     "writes": 722,
+     "active": 420,
+     "tokens": 7961
+    },
+    {
+     "writes": 723,
+     "active": 421,
+     "tokens": 7993
+    },
+    {
+     "writes": 723,
+     "active": 421,
+     "tokens": 7993
+    },
+    {
+     "writes": 757,
+     "active": 417,
+     "tokens": 7988
+    },
+    {
+     "writes": 758,
+     "active": 417,
+     "tokens": 7967
+    },
+    {
+     "writes": 758,
+     "active": 417,
+     "tokens": 7967
+    },
+    {
+     "writes": 810,
+     "active": 424,
+     "tokens": 7985
+    },
+    {
+     "writes": 923,
+     "active": 431,
+     "tokens": 7993
+    },
+    {
+     "writes": 924,
+     "active": 431,
+     "tokens": 7954
+    },
+    {
+     "writes": 925,
+     "active": 432,
+     "tokens": 7989
+    }
+   ]
+  },
+  "cap-4k": {
+   "recall": 0.5298866877677008,
+   "final_active": 282.8888888888889,
+   "final_tokens": 3988.0,
+   "max_tokens": 3999.0555555555557,
+   "trace": [
+    {
+     "writes": 432,
+     "active": 246,
+     "tokens": 3990
+    },
+    {
+     "writes": 482,
+     "active": 241,
+     "tokens": 3955
+    },
+    {
+     "writes": 512,
+     "active": 243,
+     "tokens": 4000
+    },
+    {
+     "writes": 542,
+     "active": 240,
+     "tokens": 3999
+    },
+    {
+     "writes": 604,
+     "active": 242,
+     "tokens": 3997
+    },
+    {
+     "writes": 646,
+     "active": 244,
+     "tokens": 3988
+    },
+    {
+     "writes": 690,
+     "active": 251,
+     "tokens": 3981
+    },
+    {
+     "writes": 691,
+     "active": 251,
+     "tokens": 3981
+    },
+    {
+     "writes": 691,
+     "active": 251,
+     "tokens": 3981
+    },
+    {
+     "writes": 722,
+     "active": 253,
+     "tokens": 3982
+    },
+    {
+     "writes": 723,
+     "active": 253,
+     "tokens": 3982
+    },
+    {
+     "writes": 723,
+     "active": 253,
+     "tokens": 3982
+    },
+    {
+     "writes": 757,
+     "active": 252,
+     "tokens": 3982
+    },
+    {
+     "writes": 758,
+     "active": 252,
+     "tokens": 3982
+    },
+    {
+     "writes": 758,
+     "active": 252,
+     "tokens": 3982
+    },
+    {
+     "writes": 810,
+     "active": 253,
+     "tokens": 3987
+    },
+    {
+     "writes": 923,
+     "active": 257,
+     "tokens": 3997
+    },
+    {
+     "writes": 924,
+     "active": 257,
+     "tokens": 3990
+    },
+    {
+     "writes": 925,
+     "active": 257,
+     "tokens": 3990
+    }
+   ]
+  }
+ },
+ "meta": {
+  "budget": 1024,
+  "streams": 18,
+  "experiment": "forgetting",
+  "commit": "0efc38887f8b3c521a851be8f55e66693b08a85d"
+ }
+}

@@ -225,6 +225,11 @@ def main() -> None:
         define(lines, "v-mem0add", f"{systems['meta']['add_ms_per_turn']:.0f}")
         define(lines, "v-mem0search", f"{systems['meta']['search_ms']:.0f}")
 
+    full = load("full_history")
+    if full:
+        for name, value in full["tokens"].items():
+            define(lines, f"v-full-{name}", f"{value:,.0f}".replace(",", "{,}"))
+
     online = load("online")
     online_rows = ""
     if online:

@@ -140,6 +140,18 @@ def compare() -> dict:
     return out
 
 
+def full_history() -> dict:
+    from experiments.embed_cache import TextCache
+    from experiments.registry import load
+
+    out = {}
+    for name in ("lme", "locomo"):
+        cache = TextCache(name)
+        out[name] = float(np.mean([sum(cache.count(t.text) + 8 for t in s.writes) for s in load(name) if s.split == "test"]))
+    (RESULTS / "full_history.json").write_text(json.dumps({"meta": {"commit": "derived from data"}, "tokens": out}, indent=1))
+    return out
+
+
 def setup() -> None:
     plt.rcParams.update({
         "font.size": 8, "axes.edgecolor": MUTED, "axes.labelcolor": INK, "xtick.color": MUTED, "ytick.color": MUTED,
@@ -212,6 +224,7 @@ def main() -> None:
     FIGS.mkdir(parents=True, exist_ok=True)
     setup()
     data = compare()
+    full_history()
     if data:
         pareto_figure(data)
     online_figure()

@@ -82,8 +82,7 @@ Any modular rule has worst-case ratio at most $1/k$ on coverage objectives with 
 \end{proposition}
 
 \begin{proposition}[Recency as proxy]\label{prop:recency}
-If relevance is independent of age, the recall of recency-only selection of a fixed relevant item tends to $0$ as the number of later items exceeds
-$B/c_{\min}$, whereas a relevance-based rule is unaffected.
+A relevant item followed by more than $B/c_{\min}$ later items is never injected by recency-only selection, however relevant it is, whereas a rule that scores by relevance injects it whenever it outranks those items.
 \end{proposition}
 
 \begin{proposition}[Time-invariant scoring]\label{prop:stale}
