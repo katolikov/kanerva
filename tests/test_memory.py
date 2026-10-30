@@ -201,10 +201,24 @@ def _validity(mem, query, now):
 
 
 def test_soft_supersession_discounts_older_unkeyed_near_duplicates(mem):
-    old = mem.write("The cache lives in redis on port 6379 for the billing service", at=T0)
-    new = mem.write("The cache lives in redis on port 6380 for the billing service", at=T0 + DAY)
+    old = mem.write("The cache lives in redis on port 6379 for the billing service", at=T0, kind="semantic")
+    new = mem.write("The cache lives in redis on port 6380 for the billing service", at=T0 + DAY, kind="semantic")
     validity = _validity(mem, "which port does the billing cache use?", T0 + 2 * DAY)
     assert validity[old] < 0.8 * validity[new]
+
+
+def test_similar_events_do_not_replace_each_other(mem):
+    old = mem.write("commit 1a2b3c: fix the retry loop in the client (files: src/client.py)", at=T0)
+    new = mem.write("commit 4d5e6f: fix the retry loop in the client (files: src/client.py, tests)", at=T0 + DAY)
+    validity = _validity(mem, "retry loop in the client", T0 + 2 * DAY)
+    assert validity[old] == pytest.approx(validity[new], rel=0.05)
+
+
+def test_an_event_does_not_replace_a_fact(mem):
+    fact = mem.write("The cache lives in redis on port 6379 for the billing service", at=T0, kind="semantic")
+    event = mem.write("The cache lives in redis on port 6379 for the billing service today", at=T0 + DAY)
+    validity = _validity(mem, "which port does the billing cache use?", T0 + 2 * DAY)
+    assert validity[fact] == pytest.approx(validity[event], rel=0.05)
 
 
 def test_soft_supersession_leaves_keyed_items_alone(mem):

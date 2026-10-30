@@ -504,12 +504,16 @@ class Memory:
     def _soft_supersession(self, cand: Candidates, rows, vectors: np.ndarray, cfg: RetrievalConfig) -> np.ndarray:
         """Discount older near-duplicates of newer items, and return the mask of items to keep.
 
-        This is a heuristic for text without keys. Keyed items have exact version chains and are exempt.
+        This is a heuristic for facts without keys. Keyed items have exact version chains and are exempt, and
+        episodic items are exempt because two similar events are still two events.
         """
         sim = vectors @ vectors.T
         np.fill_diagonal(sim, 0.0)
         confirmed = np.array([rows[i]["confirmed_at"] for i in cand.ids])
         newer = confirmed[None, :] > confirmed[:, None]
+        if not cfg.supersede_events:
+            facts = np.array([rows[i]["kind"] != "episodic" for i in cand.ids], dtype=bool)
+            newer = newer & facts[:, None] & facts[None, :]
         tau = cfg.supersession_threshold
         gate = np.clip((sim - tau) / (1.0 - tau), 0.0, 1.0) * newer
         unkeyed = np.array([rows[i]["key"] is None for i in cand.ids], dtype=bool)

@@ -244,4 +244,6 @@ def variants(base: RetrievalConfig) -> dict[str, RetrievalConfig]:
         "kanerva-r1": base.with_(**FIRST_VERSION),
         "-neighbours": base.with_(candidates=100, neighbour_top=0),
         "kanerva-x128": base.with_(excerpt_threshold=160, excerpt_tokens=128),
+        "kanerva-events": base.with_(supersede_events=True),
+        "kanerva-lex-events": base.with_(use_dense=False, gamma=0.0, neighbour_top=0, theta0=LEXICAL_THETA, supersede_events=True),
     }
