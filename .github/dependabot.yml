@@ -4,7 +4,17 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
   - package-ecosystem: npm
     directory: /plugins/opencode
     schedule:
       interval: monthly
+    groups:
+      dev:
+        patterns: ["*"]
+    ignore:
+      # Types follow the Node version the tests run on.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]

@@ -51,7 +51,7 @@ curl -fsSL https://raw.githubusercontent.com/katolikov/kanerva/main/install.sh |
 Tested on OpenCode 1.19 and 2.2. Restart OpenCode and the eight `memory_*` tools are there, with no MCP setup. On V2 you can also install it as a package:
 
 ```bash
-opencode plugin add "github:katolikov/kanerva::path:plugins/opencode"
+opencode plugin add 'github:katolikov/kanerva#main::path:plugins/opencode'
 ```
 
 See the [plugin README](plugins/opencode/README.md) for details.

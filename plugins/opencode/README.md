@@ -15,7 +15,7 @@ The script clones Kanerva to `~/.kanerva/src` and adds a small loader to `~/.con
 On V2 you can also install it as a package:
 
 ```bash
-opencode plugin add "github:katolikov/kanerva::path:plugins/opencode"
+opencode plugin add 'github:katolikov/kanerva#main::path:plugins/opencode'
 ```
 
 Or point your config at a checkout:
