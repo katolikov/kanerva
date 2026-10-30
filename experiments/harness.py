@@ -8,7 +8,6 @@ import os
 import subprocess
 import time
 from concurrent.futures import ProcessPoolExecutor
-from dataclasses import asdict
 from pathlib import Path
 
 import numpy as np
@@ -65,7 +64,7 @@ def apply_write(mem: Memory, cache: TextCache, turn, id_of: dict[str, int], keye
 
 def run_stream(args: tuple) -> list[dict]:
     """Stateless evaluation: all methods see the same store at each query."""
-    stream, cache_name, base, keyed, budgets, selected = args
+    stream, cache_name, base, keyed, budgets, selected, fixed_k = args
     cache = TextCache(cache_name)
     mem = new_memory(cache, base)
     id_of: dict[str, int] = {}
@@ -75,18 +74,19 @@ def run_stream(args: tuple) -> list[dict]:
         methods[name] = kanerva_variant(cfg.with_(use_bandit=False))
     if selected:
         methods = {k: v for k, v in methods.items() if k in selected}
+    fixed = {f"hybrid-k{k}": k for k in fixed_k}
     records: list[dict] = []
     cursor = 0
     for query in stream.queries:
         while cursor < query.pos:
             apply_write(mem, cache, stream.writes[cursor], id_of, keyed)
             cursor += 1
-        records.extend(evaluate_query(mem, cache, query, id_of, methods, budgets, stream.name))
+        records.extend(evaluate_query(mem, cache, query, id_of, methods, budgets, stream.name, fixed))
     mem.close()
     return records
 
 
-def evaluate_query(mem, cache, query: Query, id_of, methods, budgets, stream_name) -> list[dict]:
+def evaluate_query(mem, cache, query: Query, id_of, methods, budgets, stream_name, fixed=()) -> list[dict]:
     gold = {id_of[t] for t in query.gold if t in id_of}
     stale = {id_of[t] for t in query.stale if t in id_of} - gold
     if not gold:
@@ -102,13 +102,18 @@ def evaluate_query(mem, cache, query: Query, id_of, methods, budgets, stream_nam
             row = {"method": name, "budget": budget, "qid": query.qid, "category": query.category, "stream": stream_name}
             row.update(score(ids, gold, stale, costs, ms))
             rows.append(row)
+    for name, k in dict(fixed).items():
+        ids = ctx.hybrid()[:k]
+        row = {"method": name, "budget": k, "qid": query.qid, "category": query.category, "stream": stream_name}
+        row.update(score(ids, gold, stale, ctx.cost(ids) if ids else {}, 0.0))
+        rows.append(row)
     return rows
 
 
 def run_dataset(streams: list[Stream], cache_name: str, cfg: RetrievalConfig, keyed: bool = False,
-                budgets=BUDGETS, selected=None, workers: int | None = None) -> list[dict]:
+                budgets=BUDGETS, selected=None, workers: int | None = None, fixed_k=()) -> list[dict]:
     workers = workers or max(1, (os.cpu_count() or 2) - 2)
-    jobs = [(s, cache_name, cfg, keyed, budgets, selected) for s in streams]
+    jobs = [(s, cache_name, cfg, keyed, budgets, selected, fixed_k) for s in streams]
     records: list[dict] = []
     with ProcessPoolExecutor(workers) as pool:
         for chunk in pool.map(run_stream, jobs, chunksize=max(1, len(jobs) // (workers * 4))):

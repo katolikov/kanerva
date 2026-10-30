@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "memory": {
+      "command": "${CLAUDE_PLUGIN_ROOT}/scripts/run.sh",
+      "args": ["mcp"]
+    }
+  }
+}

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import sys
 
 import numpy as np
 
@@ -40,8 +39,7 @@ def collect(dataset: str, cfg: RetrievalConfig, keyed: bool) -> tuple[np.ndarray
     return np.vstack(xs), np.concatenate(ys), np.concatenate(ws)
 
 
-def fit(ridge: float = 1e-3) -> np.ndarray:
-    cfg = RetrievalConfig(use_validity=False, use_bandit=False)
+def fit(cfg: RetrievalConfig, ridge: float = 1e-3) -> np.ndarray:
     parts = [collect(name, cfg, name == "repomem") for name in ("lme", "locomo", "repomem")]
     xtx, xty = 0.0, 0.0
     for x, y, w in parts:
@@ -53,8 +51,11 @@ def fit(ridge: float = 1e-3) -> np.ndarray:
 
 
 if __name__ == "__main__":
-    theta = fit()
-    print(json.dumps(dict(zip(FEATURES, np.round(theta, 4).tolist())), indent=1))
+    theta = fit(RetrievalConfig(use_validity=False, use_bandit=False))
+    lexical = fit(RetrievalConfig(use_validity=False, use_bandit=False, use_dense=False, gamma=0.0))
     print("DEFAULT_THETA =", tuple(np.round(theta, 4).tolist()))
+    print("LEXICAL_THETA =", tuple(np.round(lexical, 4).tolist()))
     RESULTS.mkdir(exist_ok=True)
-    (RESULTS / "fitted_prior.json").write_text(json.dumps({"features": list(FEATURES), "theta": theta.tolist()}, indent=1))
+    (RESULTS / "fitted_prior.json").write_text(
+        json.dumps({"features": list(FEATURES), "theta": theta.tolist(), "lexical": lexical.tolist()}, indent=1)
+    )

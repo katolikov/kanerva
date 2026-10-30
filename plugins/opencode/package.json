@@ -1,0 +1,12 @@
+{
+  "name": "opencode-kanerva",
+  "version": "0.1.0",
+  "description": "Local token-budgeted memory for OpenCode",
+  "type": "module",
+  "license": "Apache-2.0",
+  "exports": { ".": "./src/index.ts" },
+  "files": ["src"],
+  "scripts": { "test": "node --experimental-strip-types --test src/*.test.ts" },
+  "peerDependencies": { "@opencode/plugin": ">=2.2.0" },
+  "peerDependenciesMeta": { "@opencode/plugin": { "optional": true } }
+}

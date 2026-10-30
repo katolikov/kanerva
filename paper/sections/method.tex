@@ -1,0 +1,79 @@
+\section{Method}\label{sec:method}
+
+\kanerva{} is the combination of the components below, implemented with SQLite, FTS5 and NumPy. No component calls an LLM. When a host agent is present it
+can supply structured writes through tools, which is how semantic extraction happens at no added API cost.
+
+\subsection{Write path}
+A write redacts secrets, deduplicates against live items (an identical write only refreshes the confirmation time $\tau^{\mathrm{v}}$), and stores the
+item with its FTS5 entry and embedding. A write with a key closes the version interval of the live item with that key: the old item keeps its text and gets
+$\tau^{\mathrm{end}}$ and a pointer to its successor. Nothing is rewritten, so history stays queryable.
+
+\subsection{Read path}
+Algorithm~\ref{alg:retrieve} shows retrieval. Candidates are the union of the top-100 lexical and dense hits. Features combine rank and score signals,
+query-term coverage, ACT-R base-level activation \cite{anderson2004integrated}, and an item's feedback posterior, in $x(m,q)\in\mathbb{R}^{12}$. Facets are the query's content terms with
+\emph{idf} weights plus one facet for the query as a whole.
+
+\begin{algorithm}[t]
+\caption{\textsc{Retrieve}$(q,B,t)$}\label{alg:retrieve}
+\begin{algorithmic}[1]
+\State $C\gets$ top-$N$ of FTS5 $\cup$ top-$N$ of dense search
+\For{$m\in C$}
+  \State $x_m\gets$ features of $(m,q)$;\quad $\mu_m\gets\mathrm{clip}_{[0,1]}\big(x_m^\top\hat\theta+\beta\|x_m\|_{V^{-1}}\big)$
+  \State $\rho_m\gets\rho_{\mathrm{stale}}$ if $m$ is superseded and $q$ has no historical intent, else Lomax survival \eqref{eq:lomax} at $t-\tau^{\mathrm{v}}(m)$
+  \State $\rho_m\gets\rho_m\prod_{m'\text{ newer}}\big(1-\pi\,g(s(m,m'))\big)$ \Comment{soft supersession}
+  \State $w_m\gets\rho_m\mu_m$
+\EndFor
+\State $\mathcal{S}\gets\{\textsc{Greedy}(F,B,\varrho):\varrho\in\{1,\tfrac12,0\}\}\cup\{\arg\max_{c(m)\le B}F(\{m\})\}$
+\State \Return $\arg\max_{S\in\mathcal{S}}F(S)$ with certificate \eqref{eq:certificate}
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[t]
+\caption{\textsc{Greedy}$(F,B,\varrho)$}\label{alg:greedy}
+\begin{algorithmic}[1]
+\State $S\gets\emptyset$;\ $A\gets\{m: c(m)\le B\}$
+\While{$A\neq\emptyset$}
+  \State $m\gets\arg\max_{m\in A}\ [F(S\cup\{m\})-F(S)]\,/\,c(m)^{\varrho}$;\ remove $m$ from $A$
+  \If{the gain is $0$} \textbf{break} \EndIf
+  \If{$c(S)+c(m)\le B$} $S\gets S\cup\{m\}$ \EndIf
+\EndWhile
+\State \Return $S$
+\end{algorithmic}
+\end{algorithm}
+
+Only the density variant $\varrho=1$ and the singleton carry the guarantee; the other runs can only raise $F$, because the maximum is taken over all runs.
+
+\subsection{Validity}
+For a class $k$ of facts (for example, function signatures), the unknown change rate has a $\mathrm{Gamma}(\alpha,\beta)$ prior. After $n_k$ observed changes over $E_k$ item-days of
+exposure, the posterior predictive probability that an item confirmed $a$ days ago still holds is
+\begin{equation}\label{eq:lomax}
+  \hat\rho_k(a)=\Big(1+\frac{a}{\beta+E_k}\Big)^{-(\alpha+n_k)} .
+\end{equation}
+The class hazards are estimated from the store's own version history, so stable classes stop decaying without any tuning.
+\eqref{eq:lomax} is a Lomax tail, a power law in $a$ for large ages. So the same mixture argument that gives this estimator reproduces the power-law decay observed
+in human memory and in the environment by Anderson and Schooler \cite{anderson1991reflections}; see Proposition~\ref{prop:lomax}.
+When keys are missing, for example with raw conversation, a newer item with similarity above $0.8$ discounts an older one (the product in Algorithm~\ref{alg:retrieve}).
+A query with historical intent (``previously'', ``used to'') disables supersession so that old versions stay reachable.
+
+\subsection{Learning}
+The policy keeps a ridge estimate with prior mean $\theta_0$ fitted on development data:
+$\hat\theta_t=\theta_0+V_t^{-1}\sum_{(x,y)}(y-x^\top\theta_0)x$ with $V_t=\lambda I+\sum xx^\top$. Feedback $y\in[0,1]$ says whether an injected item was used. Items known to be invalid at feedback
+time are skipped: they say nothing about $\mu$. The update is $O(d^2)$ by Sherman--Morrison per item and works offline. The reward signal in the plugin is execution-first: an injected item
+counts as used when its identifiers or paths appear in later tool calls or edits, and task success is taken from test commands, following the evidence that
+self-reports inflate reward \cite{asadolahi2026rewardinflation}.
+
+\subsection{Consolidation and forgetting}
+Consolidation is reversible. Items whose similarity graph forms a cluster are summarized extractively: density greedy on a sentence-level facility location with rate $R$, which yields the rate--distortion
+guarantee of Theorem~\ref{thm:rd}. The summary is a new semantic item with parent links, the sources move to an archive tier, and \textsc{Expand} restores them on demand.
+This follows the evidence that repeated irreversible rewriting erodes detail \cite{colaco2026ratedistortion,zhang2025ace}.
+Forgetting moves items to the archive when they have been idle for $\tau$ days or when the active store exceeds a token capacity, evicting the lowest
+$\rho\cdot\mathrm{activation}\cdot\mathrm{usefulness}/c$ first. Deletion happens only on an explicit user command.
+
+\subsection{Multi-resolution}
+A long item also gets a short \emph{gist} (its highest-coverage sentences up to 40 tokens). Selection may inject the gist with a pointer, and the agent pulls the full item with
+\textsc{Expand}. Coverage makes the two resolutions of an item substitutes in \eqref{eq:objective}, since the second adds little marginal gain.
+
+\subsection{Complexity}
+With $N$ active items, $n\le2N_c$ candidates, $f$ facets, embedding dimension $D$, and $|S|=k$ selected: a write costs $O(\log N)$ plus one embedding; candidate generation costs $O(ND)$ by brute force
+(or sub-linear with an ANN index) plus the FTS5 query; greedy costs $O(k\,n\,(f+n))$ per run with vectorized marginal gains, and lazy evaluation \cite{minoux1978accelerated,leskovec2007cost} can reduce this further; building the similarity matrix costs $O(n^2D)$.
+A bandit update costs $O(kd^2)$. Space is $O(N(D+\bar c))$. The memory layer itself uses no LLM tokens; the only token cost is the injected $c(S)\le B$.

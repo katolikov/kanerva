@@ -1,0 +1,101 @@
+\section{A unified framework}\label{sec:framework}
+
+\paragraph{Memory.} At time $t$ the store is a finite set $M_t$. An item is a tuple
+$m=(\mathrm{text},e,\tau^{\mathrm{c}},\tau^{\mathrm{v}},\pi,c,k,P)$: content, unit embedding, creation time, last time the item
+was confirmed, provenance, token cost $c(m)\in\mathbb{N}_{>0}$, an optional \emph{slot key} $k$ that identifies the fact the
+item states, and parent links $P$ to the items it was consolidated from. Items sharing a key form a version chain.
+
+\paragraph{Validity and usefulness.} Fix a step context (query) $q$. Let $\rho_t(m)=\Pr[m \text{ still holds at } t]$ and
+$\mu_q(m)=\Pr[m\text{ helps with }q\mid m\text{ holds}]$. The \emph{effective weight} of an item is
+$w_q(m)=\rho_t(m)\,\mu_q(m)$. Separating the two matters: $\rho$ moves with time and changes in the world, $\mu$ with the
+query. Section~\ref{sec:theory} shows that a learner which conflates them has linear regret.
+
+\paragraph{Selection.} Injecting $S\subseteq M_t$ has utility $U(S\mid q)$, and the context budget is a hard constraint:
+\begin{equation}\label{eq:budgeted}
+  \max_{S\subseteq M_t}\ \mathbb{E}\,[U(S\mid q_t)]\quad\text{s.t.}\quad c(S):=\sum_{m\in S}c(m)\le B .
+\end{equation}
+We study the family
+\begin{equation}\label{eq:objective}
+  F(S)=(1-\gamma)\Big[\sum_{f\in\mathcal{F}_q}\omega_f\Big(1-\prod_{m\in S}\big(1-w(m)\,a_{mf}\big)\Big)+\eta\sum_{m\in S}w(m)\Big]
+  +\gamma\sum_{c\in C}\frac{p_c}{\sum_{c'}p_{c'}}\max_{m\in S}s(c,m).
+\end{equation}
+Here $\mathcal{F}_q$ is a set of facets of the query with weights $\omega_f\ge0$, $\sum_f\omega_f=1$, and $a_{mf}\in[0,1]$ is the
+chance that item $m$ answers facet $f$ given that it is valid and useful. The first term is the expected fraction of the need that gets
+covered when items succeed independently, the second the expected number of useful items injected, and the third a facility-location
+coverage of the candidate pool $C$ with similarity $s\in[0,1]$ and fixed importance $p_c$, which removes near-duplicates.
+
+\begin{lemma}\label{lem:submodular}
+For fixed $w\in[0,1]^{M}$, $F$ is non-negative, monotone and submodular, with $F(\emptyset)=0$. It is coordinate-wise non-decreasing in
+$w$ and $|F(S;w)-F(S;w')|\le L\sum_{m\in S}|w(m)-w'(m)|$ with $L=(1-\gamma)(1+\eta)$.
+\end{lemma}
+
+\paragraph{The online problem.} A memory policy $\Pi=(\mathsf{W},\mathsf{R},\mathsf{C},\mathsf{F})$ decides what to write, what to read,
+what to consolidate and what to forget. For a sequence of steps it earns
+\begin{equation}\label{eq:online}
+  J(\Pi)=\mathbb{E}\sum_{t=1}^{T}\Big[U(S_t\mid q_t)-\kappa_{\mathrm{r}}\,c(S_t)\Big]-\kappa_{\mathrm{w}}\,\mathrm{WriteCost}(\Pi)-\kappa_{\mathrm{s}}\sum_t c(M_t),
+  \quad c(S_t)\le B\ \ \forall t.
+\end{equation}
+Reading costs tokens on every step, writing costs LLM calls or latency, and the store costs retrieval time and noise. Learning, in this
+paper, is updating $\Pi$ and $M_t$; model weights never change.
+
+\subsection{Existing methods as special cases}\label{sec:special}
+Table~\ref{tab:special} places the surveyed systems in \eqref{eq:budgeted}--\eqref{eq:online}. Nearly all read policies reduce to the modular
+case $\eta=1$, $\gamma=0$, $\mathcal{F}_q=\emptyset$ with a cardinality constraint and a method-specific score. The systems differ
+mostly in what they store, which is the $\mathsf{W}$ component.
+
+\begin{table*}[t]\centering\small
+\caption{Surveyed methods as instances of the framework. ``Score'' is the $w$ used by the read policy; $k$ denotes a cardinality limit.}\label{tab:special}
+\begin{tabular}{@{}llllll@{}}\toprule
+Method & Write $\mathsf{W}$ & Score $w$ & Constraint & Validity $\rho$ & Learns \\\midrule
+Top-$k$ RAG, hybrid, rerank \cite{robertson1994okapi,cormack2009rrf} & chunks & BM25/cosine/RRF/CE & $k$ & none & no \\
+MMR \cite{carbonell1998mmr} & chunks & greedy rule, $\lambda$ trade-off & $k$ & none & no \\
+PACMS, AdaGReS \cite{pacms2026,adagres2025} & chunks & facility location; relevance$-$redundancy & $c(S)\le B$ & none & no \\
+MemGPT/Letta \cite{packer2023memgpt} & agent tool calls & LLM decides paging & block sizes & none & no \\
+Mem0 \cite{chhikara2025mem0} & LLM add/update/delete & similarity & $k$ & LLM rewrite & no \\
+Zep/Graphiti \cite{rasmussen2025zep} & LLM graph extraction & hybrid + rerank & $k$ & $\rho\in\{0,1\}$ by edge invalidation & no \\
+A-MEM \cite{xu2025amem} & LLM notes and links & similarity + links & $k$ & LLM note evolution & no \\
+HippoRAG 2 \cite{gutierrez2025hipporag2} & OpenIE triples & personalized PageRank & $k$ & none & no \\
+RAPTOR \cite{sarthi2024raptor} & recursive summaries & similarity on all levels & $k$ or tokens & none & no \\
+Generative Agents \cite{park2023generative} & observations, reflections & recency+importance+relevance & $k$ & recency proxy & no \\
+ACE, ReasoningBank \cite{zhang2025ace,ouyang2025reasoningbank} & LLM-curated lessons & similarity or whole playbook & $k$ & none & via text \\
+Claude Code files \cite{claudecode_memory} & model-decided notes & constant (query-independent) & 200 lines/25\,KB & none & no \\
+Full history & everything & constant & window size & none & no \\
+LLMLingua family \cite{jiang2023llmlingua,pan2024llmlingua2} & --- & --- & compresses $c(m)$ & none & no \\
+\bottomrule\end{tabular}
+\end{table*}
+
+Parametric methods (test-time training \cite{sun2020ttt,sun2024ttt}, memory layers \cite{berges2024memorylayers}, Titans \cite{behrouz2024titans},
+gist tokens and KV-cache eviction \cite{petrov2025gist,zhang2023h2o,li2024snapkv}) keep memory in weights or attention state. They fall outside
+the framework by construction, and they require write access to weights or to the cache, which a closed API does not expose.
+
+\subsection{Where the special cases are suboptimal}
+The following statements are worst-case and elementary; the point is that each identifies a design defect that a better method must
+remove. Proofs are in Appendix~\ref{app:proofs}. Write $\mathrm{OPT}$ for the optimum of \eqref{eq:budgeted}.
+
+\begin{proposition}[Cost blindness]\label{prop:cost}
+Any rule that fills the budget in the order of a score independent of $c$ (top-$k$ fill, MMR, reciprocal rank fusion, reranking) has
+worst-case ratio at most $c_{\min}/B$ against $\mathrm{OPT}$, even for additive $U$.
+\end{proposition}
+
+\begin{proposition}[Redundancy blindness]\label{prop:redundancy}
+Any modular rule has worst-case ratio at most $1/k$ on coverage objectives with $k$ facets when one facet has at least $k$ near-duplicate items.
+\end{proposition}
+
+\begin{proposition}[Recency as proxy]\label{prop:recency}
+If relevance is independent of age, the recall of recency-only selection of a fixed relevant item tends to $0$ as the number of later items exceeds
+$B/c_{\min}$, whereas a relevance-based rule is unaffected.
+\end{proposition}
+
+\begin{proposition}[Time-invariant scoring]\label{prop:stale}
+Any selector whose score is invariant under permuting the timestamps of items with equal content features injects an outdated version ahead of the current one
+with probability at least $1/2$ on version pairs of equal text similarity to the query.
+\end{proposition}
+
+\begin{proposition}[Fixed policies]\label{prop:fixed}
+For any fixed linear scoring vector $\theta$ there is a $\theta^\star$ for which the fixed policy earns regret $\Omega(T)$, while the learner of Theorem~\ref{thm:regret}
+has regret $\tilde O(\sqrt{T})$ on the same instance.
+\end{proposition}
+
+Table~\ref{tab:special} shows which propositions apply: every $k$-limited row is cost-blind, every modular row is redundancy-blind, every row with no
+validity model or a recency proxy falls under Propositions~\ref{prop:recency}--\ref{prop:stale}, and every non-learning row under Proposition~\ref{prop:fixed}. The systems with
+invalidation (Zep/Graphiti) avoid Proposition~\ref{prop:stale} only for facts where the extractor produced the invalidating edge.

@@ -22,6 +22,7 @@ FEATURES = (
 )
 
 DEFAULT_THETA = (0.0045, -0.0863, -0.0309, 0.0345, -0.0048, -0.0215, 0.0032, 0.0, 0.1559, 0.0934, 0.2436, 0.1367)
+LEXICAL_THETA = (-0.0204, -0.0302, 0.0, 0.0371, 0.0, 0.0264, 0.0207, 0.0, 0.0, 0.0782, 0.3399, 0.0)
 
 
 @dataclass(frozen=True)
@@ -30,12 +31,17 @@ class RetrievalConfig:
     rank_kappa: float = 10.0
     item_overhead: int = 8
 
-    modular: float = 0.5  # eta: weight of the additive relevance term
+    use_dense: bool = True
+
+    modular: float = 0.0  # eta: weight of the additive relevance term
     query_facet: float = 0.5  # omega_0: facet weight of the whole query
-    gamma: float = 0.2  # weight of the facility-location term
-    cost_exponents: tuple[float, ...] = (1.0, 0.5, 0.0)
+    gamma: float = 0.05  # weight of the facility-location term
+    cost_exponents: tuple[float, ...] = (1.0, 0.5)
     min_weight: float = 0.0
-    floor: float = 0.0  # weight floor proportional to rank signals; lets the tail fill spare budget
+    floor: float = 0.002  # weight floor proportional to rank signals; lets the tail fill spare budget
+
+    snippet_threshold: int = 0  # items above this many tokens are injected as query-biased snippets
+    snippet_tokens: int = 40
 
     use_validity: bool = True
     use_supersession: bool = True
@@ -88,4 +94,4 @@ def feature_matrix(c: Candidates, cfg: RetrievalConfig) -> np.ndarray:
             1.0 / (1.0 + c.dense_rank),
         ]
     )
-    return x * c.validity[:, None]
+    return x

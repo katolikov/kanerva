@@ -96,3 +96,27 @@ def light_stem(token: str) -> str:
         if token.endswith("s") and not token.endswith("ss"):
             return token[:-1]
     return token
+
+
+def query_snippet(text: str, stems: list[str], limit: int, count: Callable[[str], int]) -> str:
+    """The sentences of ``text`` that cover the most query stems, in original order, within ``limit`` tokens."""
+    sentences = split_sentences(text)
+    wanted = set(stems)
+    scored = []
+    for index, sentence in enumerate(sentences):
+        have = {light_stem(t) for t in tokenize(sentence)}
+        scored.append((len(have & wanted), -index, index))
+    chosen: list[int] = []
+    used = 0
+    covered: set[str] = set()
+    for _, _, index in sorted(scored, reverse=True):
+        cost = count(sentences[index])
+        if used + cost > limit:
+            continue
+        chosen.append(index)
+        used += cost
+        covered |= {light_stem(t) for t in tokenize(sentences[index])} & wanted
+    if not chosen:
+        words = text.split()
+        return " ".join(words[: max(limit // 2, 1)]) + " ..."
+    return " ... ".join(sentences[i] for i in sorted(chosen))

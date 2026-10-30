@@ -16,10 +16,10 @@ import numpy as np
 
 from .bandit import LinearBandit
 from .embed import Embedder
-from .policy import Candidates, RetrievalConfig, feature_matrix
+from .policy import LEXICAL_THETA, Candidates, RetrievalConfig, feature_matrix
 from .secrets_filter import redact
 from .select import SelectionProblem, budgeted_select, optimality_certificate, value
-from .text import approx_tokens, content_terms, fts_query, light_stem, search_text, tokenize
+from .text import approx_tokens, content_terms, fts_query, light_stem, query_snippet, search_text, tokenize
 from .validity import HazardPosterior, activation_score
 
 DAY = 86400.0
@@ -80,10 +80,12 @@ class Item:
     key: str | None = None
     superseded: bool = False
     weight: float = 0.0
+    truncated: bool = False
 
     def render(self) -> str:
         date = time.strftime("%Y-%m-%d", time.gmtime(self.created_at))
         mark = " superseded" if self.superseded else ""
+        mark += " excerpt" if self.truncated else ""
         return f"[#{self.id} {date}{mark}] {self.text}"
 
 
@@ -110,6 +112,7 @@ class Prepared:
     rows: dict
     problem: SelectionProblem | None
     features: np.ndarray | None
+    snippets: dict[int, str]
 
 
 class Memory:
@@ -123,7 +126,9 @@ class Memory:
         config: RetrievalConfig | None = None,
         hazard_prior: tuple[float, float] = (1.0, 365.0),
     ):
-        self.config = config or RetrievalConfig()
+        if config is None:
+            config = RetrievalConfig() if embedder else RetrievalConfig(use_dense=False, gamma=0.0, theta0=LEXICAL_THETA)
+        self.config = config
         self.embedder = embedder
         self.count_tokens = count_tokens
         if path != ":memory:":
@@ -319,7 +324,7 @@ class Memory:
         query_vector: np.ndarray | None = None,
     ) -> tuple[Candidates, dict[int, sqlite3.Row], np.ndarray | None, list[str], np.ndarray, dict]:
         lexical = self.lexical_search(query, cfg.candidates, scope)
-        dense = self.dense_search(query, cfg.candidates, scope, query_vector)
+        dense = self.dense_search(query, cfg.candidates, scope, query_vector) if cfg.use_dense else []
         lex = {i: (rank, s) for rank, (i, s) in enumerate(lexical)}
         den = {i: (rank, s) for rank, (i, s) in enumerate(dense)}
         ids = list(dict.fromkeys([i for i, _ in lexical] + [i for i, _ in dense]))
@@ -342,9 +347,9 @@ class Memory:
             activation[idx] = activation_score(ages[i])
             usefulness[idx] = row["used"] / (row["used"] + row["unused"])
             if cfg.use_validity:
-                if row["valid_to"] is not None and not historical:
-                    validity[idx] = cfg.stale_factor
-                elif row["valid_to"] is None:
+                if row["valid_to"] is not None:
+                    validity[idx] = 1.0 if historical else cfg.stale_factor
+                else:
                     age = (now - row["confirmed_at"]) / DAY
                     validity[idx] = self._hazard_for(row["key"], row["kind"]).survival(age)
         cand = Candidates(
@@ -384,23 +389,28 @@ class Memory:
         stems,
         cfg: RetrievalConfig,
         bandit: LinearBandit | None,
-        count_cost: Callable[[sqlite3.Row], int] | None = None,
-    ) -> tuple[SelectionProblem, np.ndarray, np.ndarray]:
-        """Weights from the policy and the structures F needs. Returns problem, x, prior weights."""
+    ) -> tuple[SelectionProblem, np.ndarray, dict[int, str]]:
+        """Effective weights w = rho * mu and the structures F needs. Returns problem, x and snippets."""
         x = feature_matrix(cand, cfg)
         prior = np.clip(x @ np.asarray(cfg.theta0), 0.0, 1.0)
-        weights = bandit.score(x) if bandit is not None else prior
+        mu = bandit.score(x) if bandit is not None else prior
         if cfg.min_weight > 0:
-            weights = np.where(weights >= cfg.min_weight, weights, 0.0)
+            mu = np.where(mu >= cfg.min_weight, mu, 0.0)
         if cfg.floor > 0:
             rank_signal = 0.5 * (x[:, 1] + x[:, 2])
-            weights = np.maximum(weights, cfg.floor * rank_signal)
+            mu = np.maximum(mu, cfg.floor * rank_signal)
             prior = np.maximum(prior, cfg.floor * rank_signal)
-        costs = np.array(
-            [(count_cost(rows[i]) if count_cost else rows[i]["tokens"]) + cfg.item_overhead for i in cand.ids],
-            dtype=float,
-        )
+        weights = cand.validity * mu
+        prior = cand.validity * prior
         n = len(cand.ids)
+        costs = np.zeros(n)
+        snippets: dict[int, str] = {}
+        for idx, i in enumerate(cand.ids):
+            tokens = rows[i]["tokens"]
+            if cfg.snippet_threshold and tokens > cfg.snippet_threshold:
+                snippets[idx] = query_snippet(rows[i]["text"], terms, cfg.snippet_tokens, self.count_tokens)
+                tokens = self.count_tokens(snippets[idx])
+            costs[idx] = tokens + cfg.item_overhead
         f = len(terms)
         affinity = np.zeros((n, f + 1))
         affinity[:, 0] = 1.0
@@ -410,7 +420,7 @@ class Memory:
                     affinity[idx, t_idx + 1] = 1.0
         facet_weights = np.concatenate([[cfg.query_facet if f else 1.0], (1.0 - cfg.query_facet) * term_weights])
         similarity = None
-        if vectors is not None and cfg.gamma > 0:
+        if vectors is not None and cfg.gamma > 0 and cfg.use_dense:
             similarity = np.clip(vectors @ vectors.T, 0.0, 1.0)
         problem = SelectionProblem(
             weights=weights,
@@ -422,7 +432,7 @@ class Memory:
             gamma=cfg.gamma if similarity is not None else 0.0,
             modular=cfg.modular,
         )
-        return problem, x, prior
+        return problem, x, snippets
 
     def retrieve(
         self,
@@ -455,10 +465,10 @@ class Memory:
             self.refresh_hazards(now)
         cand, rows, vectors, terms, term_weights, stems = self.candidates(query, now, scope, cfg, query_vector)
         bandit = self.bandit if cfg.use_bandit else None
-        problem, x = None, None
+        problem, x, snippets = None, None, {}
         if cand.ids:
-            problem, x, _ = self.build_problem(cand, rows, vectors, terms, term_weights, stems, cfg, bandit)
-        return Prepared(query, now, cfg, cand, rows, problem, x)
+            problem, x, snippets = self.build_problem(cand, rows, vectors, terms, term_weights, stems, cfg, bandit)
+        return Prepared(query, now, cfg, cand, rows, problem, x, snippets)
 
     def select(self, prepared: Prepared, budget: int, record: bool = True, certificate: bool = False) -> RetrievalResult:
         problem = prepared.problem
@@ -467,7 +477,7 @@ class Memory:
         cand, rows = prepared.candidates, prepared.rows
         chosen = budgeted_select(problem, budget, prepared.config.cost_exponents)
         chosen.sort(key=lambda i: -problem.weights[i])
-        items = [self._item(rows[cand.ids[i]], float(problem.weights[i])) for i in chosen]
+        items = [self._item(rows[cand.ids[i]], float(problem.weights[i]), prepared.snippets.get(i)) for i in chosen]
         result = RetrievalResult(
             items=items,
             tokens=int(sum(problem.costs[i] for i in chosen)),
@@ -481,10 +491,10 @@ class Memory:
             result.retrieval_id = self._record(prepared.query, prepared.now, ids, prepared.features[chosen])
         return result
 
-    def _item(self, row: sqlite3.Row, weight: float = 0.0) -> Item:
+    def _item(self, row: sqlite3.Row, weight: float = 0.0, snippet: str | None = None) -> Item:
         return Item(
             id=int(row["id"]),
-            text=row["text"],
+            text=row["text"] if snippet is None else snippet,
             kind=row["kind"],
             scope=row["scope"],
             tokens=int(row["tokens"]),
@@ -492,6 +502,7 @@ class Memory:
             key=row["key"],
             superseded=row["valid_to"] is not None,
             weight=weight,
+            truncated=snippet is not None,
         )
 
     def _record(self, query: str, now: float, ids: list[int], x: np.ndarray) -> int:
@@ -505,14 +516,18 @@ class Memory:
     # feedback ------------------------------------------------------------------------------
 
     def feedback(self, retrieval_id: int, rewards: dict[int, float]) -> int:
-        """Apply per-item rewards in [0, 1] for a logged retrieval. Items not named count as 0."""
+        """Apply per-item rewards in [0, 1] for a logged retrieval. Items not named count as 0.
+
+        An item superseded by now says nothing about usefulness given validity, so the policy skips it.
+        """
         row = self.db.execute("SELECT * FROM retrievals WHERE id=?", (retrieval_id,)).fetchone()
         if row is None or row["resolved"]:
             return 0
         ids = json.loads(row["item_ids"])
         x = np.frombuffer(row["features"], dtype=np.float64).reshape(len(ids), -1)
         y = np.array([float(rewards.get(i, 0.0)) for i in ids])
-        self.bandit.update(x, y)
+        live = np.array([self._live(i) for i in ids], dtype=bool)
+        self.bandit.update(x[live], y[live])
         for item_id, reward in zip(ids, y):
             self.db.execute(
                 "UPDATE items SET used = used + ?, unused = unused + ? WHERE id=?",
@@ -521,6 +536,10 @@ class Memory:
         self.db.execute("UPDATE retrievals SET resolved=1 WHERE id=?", (retrieval_id,))
         self._save_state()
         return len(ids)
+
+    def _live(self, item_id: int) -> bool:
+        row = self.db.execute("SELECT valid_to FROM items WHERE id=?", (item_id,)).fetchone()
+        return row is not None and row["valid_to"] is None
 
     def _load_bandit(self) -> LinearBandit:
         row = self.db.execute("SELECT value FROM meta WHERE key='bandit'").fetchone()

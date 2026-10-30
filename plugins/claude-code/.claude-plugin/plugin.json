@@ -1,0 +1,8 @@
+{
+  "name": "kanerva",
+  "displayName": "Kanerva memory",
+  "version": "0.1.0",
+  "description": "Local, persistent memory that injects only what the current step needs, under a hard token budget.",
+  "license": "Apache-2.0",
+  "keywords": ["memory", "context", "local"]
+}

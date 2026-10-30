@@ -1,0 +1,66 @@
+\section{Theory}\label{sec:theory}
+
+All proofs are in Appendix~\ref{app:proofs}. Throughout, $F$ is any set function with the properties of Lemma~\ref{lem:submodular}.
+
+\subsection{Selection}
+\begin{theorem}[Selection guarantee]\label{thm:selection}
+Let $F$ be non-negative monotone submodular with $F(\emptyset)=0$ and let $c(m)\le B$ for all candidates. The set returned by Algorithm~\ref{alg:retrieve} satisfies $F(S)\ge\frac12(1-\frac1e)\,\mathrm{OPT}$.
+\end{theorem}
+This is the classical cost-benefit argument \cite{krause2005note,leskovec2007cost}, restated with a full proof because the constant in related analyses has needed correction \cite{tang2021revisiting}. Better constants exist for this algorithm family, $0.405$ \cite{tang2021revisiting}, and $1-1/e$ with partial enumeration at higher cost \cite{sviridenko2004note,feldman2023practical}. The worst case is pessimistic for a practical reason: at each query the following bound can be computed.
+
+\begin{proposition}[Per-query certificate]\label{prop:certificate}
+For any feasible $S$, with $\Delta(m\mid S)=F(S\cup\{m\})-F(S)$,
+\begin{equation}\label{eq:certificate}
+\mathrm{OPT}\le F(S)+\max_{\substack{y\in[0,1]^{M}\\ \sum_m y_m c(m)\le B}}\ \sum_{m\notin S}y_m\,\Delta(m\mid S),
+\end{equation}
+and the right-hand side is computed by sorting on $\Delta/c$ in $O(n\log n)$.
+\end{proposition}
+
+\subsection{Learning with expiring items}
+The closest results \cite{yue2011linear,yu2016linear,takemori2020submodular} assume that an item's expected value is a stationary linear function of its features. Memory violates this: a fact's value collapses when the fact stops holding, while its text, and so its features, stay the same. We therefore model the two factors separately.
+
+\paragraph{Setting.} In round $t=1,\dots,T$ the learner sees candidates $C_t$ with features $\|x_{t,m}\|_2\le1$, costs, and a function $F_t(S;w)$ satisfying Lemma~\ref{lem:submodular} with constant $L$. There is an unknown $\theta^\star$ with $\|\theta^\star-\theta_0\|_2\le\Sigma$ and $\mu_{t,m}=x_{t,m}^\top\theta^\star\in[0,1]$. Each item is valid with probability $\rho_{t,m}\in[0,1]$, which may vary arbitrarily with $t$, and the true weight is $w^\star_{t,m}=\rho_{t,m}\mu_{t,m}$. For each injected item the learner observes $Z_{t,m}\sim\mathrm{Bernoulli}(\rho_{t,m})$ and, if $Z_{t,m}=1$, a reward $y_{t,m}=\mu_{t,m}+\xi_{t,m}$, where $\xi_{t,m}$ is conditionally $R$-sub-Gaussian. At most $K$ items are injected per round. A validity estimate satisfies $|\hat\rho_{t,m}-\rho_{t,m}|\le\varepsilon_{t,m}$ for all $t,m$ with probability at least $1-\delta/2$.
+
+\paragraph{Algorithm.} Use $\bar w_{t,m}=\min(1,\hat\rho_{t,m}+\varepsilon_{t,m})\cdot\mathrm{clip}_{[0,1]}(x_{t,m}^\top\hat\theta_t+\beta_t\|x_{t,m}\|_{V_t^{-1}})$, with $\hat\theta_t,V_t$ the prior-centred ridge estimates over the rounds where $Z=1$, and pick $S_t$ with an $\alpha$-approximate oracle for $F_t(\cdot\,;\bar w_t)$ under the budget.
+
+\begin{theorem}[Validity-aware regret]\label{thm:regret}
+Let $\lambda\ge K$ and $\beta_t=\beta_T:=R\sqrt{d\log\big(4(1+KT/\lambda)/\delta\big)}+\sqrt{\lambda}\,\Sigma$. With probability at least $1-\delta$,
+\[
+\sum_{t=1}^{T}\Big[\alpha\max_{c(S)\le B}F_t(S;w_t^\star)-F_t(S_t;w_t^\star)\Big]
+\le L\bigg[2\beta_T\sqrt{2dKT\log\Big(1+\frac{KT}{d\lambda}\Big)}+\sqrt{2KT\log\frac4\delta}+2\sum_{t=1}^{T}\sum_{m\in S_t}\varepsilon_{t,m}\bigg].
+\]
+\end{theorem}
+The comparator is the per-round optimum under the time-varying $w^\star_t$, so the bound is dynamic; the $\rho_{t,m}$ can change arbitrarily without any variation budget, as long as they are estimated. The cost of non-stationarity is exactly the accumulated validity error. Warm starting helps through $\Sigma$. With $\alpha=\frac12(1-\frac1e)$ from Theorem~\ref{thm:selection} and $L=(1-\gamma)(1+\eta)$, the theorem applies to Algorithm~\ref{alg:retrieve}.
+
+\begin{proposition}[Validity error of the hazard estimate]\label{prop:hazard}
+Suppose lifetimes of class $k$ are i.i.d.\ $\mathrm{Exp}(\lambda_k)$ and let $\hat\lambda_k=n/\sum_{i\le n}L_i$ be the rate estimate from $n$ completed lifetimes. If $n\ge 24\log(2/\delta)$ then with probability at least $1-\delta$, for all ages $a\ge0$ simultaneously,
+\[|e^{-\hat\lambda_k a}-e^{-\lambda_k a}|\le \frac3e\sqrt{\frac{6\log(2/\delta)}{n}} .\]
+\end{proposition}
+The bound does not depend on age or on $\lambda_k$: the error is governed by the number of observed changes. So if every class that is selected keeps producing changes at rate $n_k(t)\ge\nu t$, then $\varepsilon_{t,m}=\tilde O(1/\sqrt{\nu t})$ and $\sum_t\sum_{m\in S_t}\varepsilon_{t,m}=\tilde O(K\sqrt{T/\nu})$, which gives total regret $\tilde O((d\sqrt K+K/\sqrt\nu)\sqrt T)$.
+The proposition covers the plain estimator from completed lifetimes. The implementation uses the posterior \eqref{eq:lomax}, which also counts censored exposure; that variant is not analyzed here.
+
+\begin{proposition}[Validity-blind learners]\label{prop:blind}
+Let $m\ge2$. There is an instance in which $m$ items per round have identical features, exactly one is valid, and $B$ fits one item. Any learner that does not observe age or version information has $\mathbb{E}[\sum_t\alpha\,\mathrm{OPT}_t-F_t(S_t)]\ge(\alpha-\frac1m)T$ for every $\alpha>1/m$. So it has linear regret, for all horizons, whereas Theorem~\ref{thm:regret} applies with $\varepsilon\equiv0$ if the version chain is known.
+\end{proposition}
+
+\subsection{Validity and activation}
+\begin{proposition}[Power-law survival from a hazard mixture]\label{prop:lomax}
+If hazards in a class are $\mathrm{Gamma}(\alpha,\beta)$ distributed, the population survival is $S(a)=(1+a/\beta)^{-\alpha}$. As $a\to\infty$, $\log S(a)=-\alpha\log a+O(1)$, the form of ACT-R single-trace base-level activation with decay $d=\alpha$.
+\end{proposition}
+
+\subsection{Consolidation}
+Let $X$ be a cluster of sentences with weights $p$ ($\sum_x p_x=1$), costs $c$, cosine similarities $s\in[0,1]$ with $s(x,x)=1$, and let $\Phi(Z)=\sum_xp_x\max_{z\in Z}s(x,z)$, $D(Z)=1-\Phi(Z)$ be the distortion of a summary $Z\subseteq X$.
+
+\begin{theorem}[Rate--distortion for extractive consolidation]\label{thm:rd}
+Let $Z_\ell$ be the first $\ell$ picks of density greedy on $\Phi$, with rate $R_\ell=c(Z_\ell)$. For every summary $Z^\star$ of rate $R^\star$,
+\[D(Z_\ell)\le e^{-R_\ell/R^\star}+\big(1-e^{-R_\ell/R^\star}\big)D(Z^\star).\]
+Moreover, for every query vector $e_q$ and every $\ell_{\mathrm{u}}$-Lipschitz item score $u_q(x)=\phi(\langle e_q,e_x\rangle)$,
+\[\mathbb{E}_{x\sim p}\big[u_q(x)-u_q(z(x))\big]\le \ell_{\mathrm{u}}\sqrt{2\,D(Z_\ell)},\qquad z(x)=\arg\max_{z\in Z_\ell}s(x,z).\]
+\end{theorem}
+The token saving is $c(X)-R_\ell$, so distortion decays exponentially in rate against any reference summary. The bound averages over $p$ and says nothing about a rare needle in the cluster. That is why consolidation here keeps the sources: if the summary is retrieved, \textsc{Expand} recovers any source at the cost of its tokens.
+
+\subsection{Store size}
+\begin{theorem}[Store stability]\label{thm:store}
+Let items arrive as a Poisson process of rate $a$, and let each be accessed by an independent Poisson process of rate $r$, drawn i.i.d.\ from a distribution with $\mathbb{E}[(e^{r\tau}-1)/r]<\infty$. An item is archived after an idle gap of $\tau$. Then an item's active lifetime has mean $(e^{r\tau}-1)/r$ given $r$, and the number of active items converges in distribution to $\mathrm{Poisson}\big(a\,\mathbb{E}[(e^{r\tau}-1)/r]\big)$.
+\end{theorem}
+Without forgetting, the store grows linearly in $t$. With an idle rule, the active store is bounded in distribution, and the retained set is biased exponentially toward frequently used items. The result assumes independent access processes; real access patterns are bursty, so Section~\ref{sec:experiments} measures store size directly.

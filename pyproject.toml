@@ -14,12 +14,11 @@ dependencies = ["numpy>=1.26"]
 [project.optional-dependencies]
 embeddings = ["model2vec>=0.6"]
 transformers = ["sentence-transformers>=3"]
-mcp = ["mcp>=1.2"]
 dev = ["pytest>=8", "ruff>=0.6"]
 experiments = ["scipy", "matplotlib", "tiktoken", "sentence-transformers>=3", "huggingface_hub"]
 
 [project.scripts]
-kanerva = "kanerva.cli:main"
+kanerva = "kanerva.__main__:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/kanerva"]
@@ -30,3 +29,7 @@ pythonpath = ["src", "."]
 
 [tool.ruff]
 line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501", "E731", "E741"]

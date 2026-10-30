@@ -1,0 +1,88 @@
+\section{Proofs}\label{app:proofs}
+
+\begin{proof}[Proof of Lemma~\ref{lem:submodular}]
+For a facet $f$, $g_f(S)=1-\prod_{m\in S}(1-u_m)$ with $u_m=w(m)a_{mf}\in[0,1]$. Adding $m$ to $S$ gains $u_m\prod_{n\in S}(1-u_n)$, which is non-negative and non-increasing in $S$. So $g_f$ is monotone submodular. The additive term is modular with non-negative coefficients. Each term $S\mapsto\max_{m\in S}s(c,m)$ (with $\max\emptyset=0$) is the facility-location function, which is monotone submodular. Non-negative combinations preserve both properties, and $F(\emptyset)=0$.
+
+Coordinate monotonicity follows because $\prod(1-w(m)a_{mf})$ decreases in each $w(m)$ and the third term does not depend on $w$. For the Lipschitz bound, $|\prod_i(1-u_i)-\prod_i(1-v_i)|\le\sum_i|u_i-v_i|$ for $u,v\in[0,1]$ by telescoping. So each $g_f$ moves by at most $\sum_{m\in S}|w(m)-w'(m)|$ as $a_{mf}\le1$, and $\sum_f\omega_f=1$. The additive term moves by at most $\eta$ times the same sum, and the factor $(1-\gamma)$ gives $L$.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:cost}]
+Take additive $U$. One item $a$ has score $1+\epsilon$ and cost $B$. There are $\lfloor B/c_{\min}\rfloor$ items of score $1$ and cost $c_{\min}$. The rule fills with $a$ first and then has no budget, so it earns $1+\epsilon$ against $\mathrm{OPT}\ge\lfloor B/c_{\min}\rfloor$. Let $\epsilon\to0$.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:redundancy}]
+Let there be $k$ facets of equal weight. Facet 1 has $k$ duplicates, each with modular score $1+\epsilon$. Each other facet has one item with score $1$. All costs equal $1$, and $B=k$. A modular rule takes the $k$ duplicates and covers one facet; the optimum takes one item per facet and covers all $k$.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:recency}]
+Recency selects at most $B/c_{\min}$ of the newest items. A fixed item followed by more than $B/c_{\min}$ later items is never selected. A rule whose score does not depend on age is unchanged by adding later items that score below the target, and these make up all later items when relevance is independent of age and the target is the top hit.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:stale}]
+Take two versions with equal text similarity to the query, and let the assignment of the two timestamps be uniform. An invariant score cannot depend on the assignment, so the ranking between the two is independent of which one is current. The outdated version ranks first with probability $1/2$, or at least $1/2$ under ties broken independently of time.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:fixed}]
+Let each round have two items with features $e_1$, $e_2$, costs $1$, $B=1$, $\rho\equiv1$ and additive $F$. For a fixed $\theta$, assume without loss of generality that $\theta_1\ge\theta_2$; the fixed policy injects $e_1$ on every round. Take $\theta^\star=(0,1)$, which is valid since $\mu\in[0,1]$. The policy earns $0$ per round against $1$, so its $\alpha$-regret is $\alpha T$ for each $\alpha>0$. Theorem~\ref{thm:regret} with $\varepsilon\equiv0$ gives $\tilde O(\sqrt T)$ on this instance.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:selection}]
+Let $O$ be an optimal set and consider the density run ($\varrho=1$) as a sequence of considered items. Let $g_1,g_2,\dots$ be the items accepted, in order, and write $G_i=\{g_1,\dots,g_i\}$. If no element of $O$ is rejected, then every element of $O$ is either accepted or left with zero marginal gain at termination, so $F(G)\ge F(G\cup O)\ge F(O)$ and we are done. Otherwise let $e^\star$ be the first element of $O$ rejected, and let $\ell$ be the number of accepted items before it, so $c(G_\ell)+c(e^\star)>B$.
+
+For $i\le\ell$, when $g_i$ was chosen, every element of $O\setminus G_{i-1}$ was still available, since none had been rejected. By monotonicity and submodularity,
+\[F(O)\le F(O\cup G_{i-1})\le F(G_{i-1})+\sum_{o\in O\setminus G_{i-1}}\Delta(o\mid G_{i-1})\le F(G_{i-1})+B\,\frac{\Delta(g_i\mid G_{i-1})}{c(g_i)}.\]
+The same inequality holds with $e^\star$ in the role of $g_{\ell+1}$ and $G_{\ell+1}:=G_\ell\cup\{e^\star\}$, $c(g_{\ell+1}):=c(e^\star)$, since $e^\star$ had maximum density when chosen. Set $\delta_i=F(O)-F(G_i)$. The inequality reads $\delta_i\le(1-c(g_i)/B)\,\delta_{i-1}$. If some $\delta_i\le0$ with $i\le\ell$ then $F(G)\ge F(O)$ and we are done. Otherwise, using $0\le1-x\le e^{-x}$ on $x=c(g_i)/B\in(0,1]$,
+\[\delta_{\ell+1}\le F(O)\prod_{i=1}^{\ell+1}\Big(1-\frac{c(g_i)}{B}\Big)\le F(O)\exp\Big(-\frac{\sum_{i\le\ell+1}c(g_i)}{B}\Big)\le\frac{F(O)}{e},\]
+because $\sum_{i\le\ell+1}c(g_i)=c(G_\ell)+c(e^\star)>B$. So $F(G_\ell\cup\{e^\star\})\ge(1-1/e)F(O)$. By subadditivity $F(G_\ell)+F(\{e^\star\})\ge(1-1/e)F(O)$, so one of the two terms is at least $\frac12(1-1/e)F(O)$. Now $F(G)\ge F(G_\ell)$ by monotonicity, and $F(\{e^\star\})$ is at most the value of the best singleton, which fits since $c(e^\star)\le B$. The algorithm returns the maximum over a set of runs that includes both.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:certificate}]
+For any feasible $O$, monotonicity and submodularity give $F(O)\le F(S)+\sum_{m\in O\setminus S}\Delta(m\mid S)$. The indicator of $O\setminus S$ is feasible for the linear program, whose optimum is reached by the fractional-knapsack rule.
+\end{proof}
+
+\begin{lemma}[Batched elliptical potential]\label{lem:potential}
+Let $\lambda\ge K$, $V_1=\lambda I$, $V_{t+1}=V_t+\sum_{i\in A_t}x_ix_i^\top$ with $|A_t|\le K$ and $\|x_i\|\le1$. Then $\sum_{t\le T}\sum_{i\in A_t}\|x_i\|^2_{V_t^{-1}}\le2d\log(1+KT/(d\lambda))$.
+\end{lemma}
+\begin{proof}
+Let $B_t=V_t^{-1/2}(\sum_{i\in A_t}x_ix_i^\top)V_t^{-1/2}$, positive semidefinite with $\mathrm{tr}\,B_t=\sum_{i\in A_t}\|x_i\|^2_{V_t^{-1}}\le K/\lambda\le1$. So its eigenvalues $b_j$ lie in $[0,1]$, and $\log\det(I+B_t)=\sum_j\log(1+b_j)\ge\sum_jb_j\log2\ge\frac12\mathrm{tr}\,B_t$. Since $\det V_{t+1}=\det V_t\det(I+B_t)$, summing gives $\sum_t\mathrm{tr}\,B_t\le2\log(\det V_{T+1}/\det V_1)$. Finally, $\mathrm{tr}\,V_{T+1}\le d\lambda+KT$ and AM--GM give $\det V_{T+1}\le(\lambda+KT/d)^d$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:regret}]
+\emph{Good event.} Order items within a round arbitrarily. Features in a round are fixed before its rewards, so the sequence is predictable, and the self-normalized bound \cite[Theorem~2]{abbasi2011improved}, applied to $\theta^\star-\theta_0$ with targets $y-x^\top\theta_0$, gives with probability at least $1-\delta/4$ for all $t$: $\|\hat\theta_t-\theta^\star\|_{V_t}\le\beta_T$. The sequence has at most $KT$ terms. So $|x^\top\hat\theta_t-x^\top\theta^\star|\le\beta_T\|x\|_{V_t^{-1}}$ for every $x$ by Cauchy--Schwarz. Combined with the validity event (probability at least $1-\delta/2$), and writing $\bar\rho_{t,m}=\min(1,\hat\rho_{t,m}+\varepsilon_{t,m})$ and $\bar\mu_{t,m}$ for the clipped upper confidence bound,
+\[\rho_{t,m}\le\bar\rho_{t,m}\le\rho_{t,m}+2\varepsilon_{t,m},\qquad\mu_{t,m}\le\bar\mu_{t,m}\le\mu_{t,m}+b_{t,m},\quad b_{t,m}:=\min(1,2\beta_T\|x_{t,m}\|_{V_t^{-1}}).\]
+Clipping preserves the lower bound as $\mu_{t,m}\in[0,1]$. In particular $w^\star_t\le\bar w_t$ coordinate-wise.
+
+\emph{Per-round regret.} Let $S^\star_t$ be optimal for $w^\star_t$. By coordinate monotonicity, the oracle property, and the Lipschitz property,
+\[\alpha F_t(S^\star_t;w^\star_t)\le\alpha F_t(S_t^\star;\bar w_t)\le F_t(S_t;\bar w_t)\le F_t(S_t;w^\star_t)+L\sum_{m\in S_t}(\bar w_{t,m}-w^\star_{t,m}).\]
+Moreover, $\bar w-w^\star=\bar\rho\bar\mu-\rho\mu=\rho(\bar\mu-\mu)+(\bar\rho-\rho)\bar\mu\le\rho\,b+2\varepsilon$.
+
+\emph{Summation.} $b_{t,m}$ is determined by the history before round $t$, while $\mathbb{E}[Z_{t,m}\mid\text{history}]=\rho_{t,m}$. So $(\rho_{t,m}-Z_{t,m})b_{t,m}$ is a martingale difference sequence bounded by $1$ in absolute value, with at most $KT$ terms, and Azuma--Hoeffding gives, with probability at least $1-\delta/4$, $\sum\rho b\le\sum Zb+\sqrt{2KT\log(4/\delta)}$. The items with $Z=1$ are exactly the ones entering $V$. By Cauchy--Schwarz and Lemma~\ref{lem:potential},
+\[\sum_{t}\sum_{m\in S_t}Z_{t,m}b_{t,m}\le2\beta_T\sqrt{KT\sum_t\sum_{m:Z=1}\|x_{t,m}\|^2_{V_t^{-1}}}\le2\beta_T\sqrt{2dKT\log(1+KT/(d\lambda))}.\]
+A union bound over the three events finishes the proof.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:hazard}]
+$G=\lambda\sum_iL_i\sim\mathrm{Gamma}(n,1)$ and $\lambda/\hat\lambda=G/n$. Chernoff bounds for the Gamma distribution give $\Pr[G/n\ge1+\eta]\le\exp(-n(\eta-\log(1+\eta)))$ and $\Pr[G/n\le1-\eta]\le\exp(-n(-\eta-\log(1-\eta)))$. For $\eta\in(0,1]$, $\eta-\log(1+\eta)\ge\eta^2/6$ and $-\eta-\log(1-\eta)\ge\eta^2/2$. So $\Pr[|G/n-1|\ge\eta]\le2\exp(-n\eta^2/6)$. Set $\eta=\sqrt{6\log(2/\delta)/n}$, which is at most $\frac12$ by the assumption on $n$.
+
+On the complement write $g=G/n\in[\frac12,\frac32]$ so $\hat\lambda=\lambda/g$. By the mean value theorem, for some $\sigma$ between $1$ and $1/g$, so $\sigma\ge2/3$, we have $|e^{-\lambda a/g}-e^{-\lambda a}|=|1/g-1|\,\lambda a\,e^{-\sigma\lambda a}$. Since $\sup_{u\ge0}ue^{-\sigma u}=1/(e\sigma)\le3/(2e)$ and $|1/g-1|=|1-g|/g\le2\eta$, the difference is at most $3\eta/e$, for all $a$ at once.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:blind}]
+Let each round have $m$ items with equal features, $\mu=1$, $c=1$, $B=1$ and $F(S;w)=\sum_{i\in S}w_i$, with the index of the valid item uniform and independent across rounds. The information a blind learner gets from past rounds is independent of the current valid index, so whichever item it picks is valid with probability $1/m$ and $\mathbb{E}F_t(S_t)=1/m$, while $\mathrm{OPT}_t=1$.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:lomax}]
+$\int_0^\infty e^{-\lambda a}\,\frac{\beta^\alpha\lambda^{\alpha-1}e^{-\beta\lambda}}{\Gamma(\alpha)}\,d\lambda=(\beta/(\beta+a))^\alpha$. The logarithm is $-\alpha\log(1+a/\beta)=-\alpha\log a+\alpha\log\beta+o(1)$. A single access at age $a$ has ACT-R activation $B=\log a^{-d}=-d\log a$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:rd}]
+$\Phi$ is monotone submodular (facility location), $\Phi(\emptyset)=0$ and $\Phi(X)=1$. For the greedy sequence with density-maximal $g_i$, as in the proof of Theorem~\ref{thm:selection}, $\Phi(Z^\star)-\Phi(Z_{i-1})\le R^\star\Delta_i/c(g_i)$, so $d_i:=\Phi(Z^\star)-\Phi(Z_i)\le(1-c(g_i)/R^\star)d_{i-1}\le e^{-c(g_i)/R^\star}d_{i-1}$ whenever $d_{i-1}>0$, using $1-x\le e^{-x}$ for all real $x$. If $d_{i-1}\le0$ for some $i$, then $\Phi(Z_\ell)\ge\Phi(Z^\star)$ by monotonicity. In every case $\Phi(Z_\ell)\ge(1-e^{-R_\ell/R^\star})\Phi(Z^\star)$. Substituting $\Phi=1-D$ gives the first claim.
+
+For the second, unit vectors satisfy $\|e_x-e_z\|^2=2(1-\langle e_x,e_z\rangle)$. So $|\langle e_q,e_x-e_z\rangle|\le\sqrt{2(1-s(x,z))}$, which bounds the score change by $\ell_{\mathrm{u}}\sqrt{2(1-s(x,z(x)))}$. Average over $p$ and apply Jensen's inequality to the square root, noting that $\mathbb{E}_p[1-s(x,z(x))]=D(Z_\ell)$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:store}]
+Condition on $r$ and let $T$ be the time until the first gap of length $\tau$ in a Poisson process of rate $r$ started at the arrival. Let $A\sim\mathrm{Exp}(r)$ be the first access. If $A>\tau$ then $T=\tau$, otherwise $T=A+T'$ with $T'$ an independent copy of $T$ by the memoryless property. So $\mathbb{E}T=\mathbb{E}\min(A,\tau)+(1-e^{-r\tau})\mathbb{E}T$. With $\mathbb{E}\min(A,\tau)=(1-e^{-r\tau})/r$, this gives $\mathbb{E}T=(e^{r\tau}-1)/r$.
+
+The pairs (arrival time, lifetime) form a marked Poisson process with i.i.d.\ marks. By the marking theorem, the number of items alive at $t$ is Poisson with mean $a\int_0^t\Pr[L>u]\,du$, which converges to $a\,\mathbb{E}L$ under the finiteness assumption.
+\end{proof}

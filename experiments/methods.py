@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 import numpy as np
 
 from kanerva import Memory, RetrievalConfig
+from kanerva.policy import LEXICAL_THETA
 from kanerva.select import SelectionProblem, budgeted_select
 
 
@@ -195,4 +196,5 @@ def variants(base: RetrievalConfig) -> dict[str, RetrievalConfig]:
         "-validity": base.with_(use_validity=False),
         "-supersession": base.with_(use_supersession=False),
         "-activation": base.with_(theta0=tuple(0.0 if i == 6 else t for i, t in enumerate(base.theta0))),
+        "kanerva-lex": base.with_(use_dense=False, gamma=0.0, theta0=LEXICAL_THETA),
     }
