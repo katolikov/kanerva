@@ -9,8 +9,8 @@ import time
 from pathlib import Path
 
 from .consolidate import consolidate, expand, forget
-from .memory import Memory
-from .paths import db_path, project_scope
+from .memory import Memory, open_store
+from .paths import project_scope
 
 
 def _scope(args) -> str | None:
@@ -66,7 +66,7 @@ def main(argv: list[str] | None = None) -> int:
         serve()
         return 0
 
-    mem = Memory(db_path())
+    mem = open_store()
     try:
         scope = _scope(args)
         if args.command == "stats":

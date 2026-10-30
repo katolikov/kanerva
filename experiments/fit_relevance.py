@@ -17,6 +17,7 @@ from experiments.tree_export import export
 from kanerva.relevance import MODEL_PATH, RERANK_FEATURES
 
 DEV = ("lme", "locomo", "repomem", "beam-dev")
+STATIC = tuple(f"{name}-m2v" for name in DEV)  # dumps with the static model2vec embedder
 LEXICAL = tuple(f for f in BASE if f not in DENSE)
 SPECS = {"dense": (BASE, "all"), "lexical": (LEXICAL, "lexical"), "rerank": (BASE + RERANK_FEATURES, "all")}
 
@@ -32,14 +33,15 @@ def fit(data: list[Data], use: tuple[str, ...], pool: str):
 
 
 def main(names: tuple[str, ...]) -> None:
-    data = [Data(n) for n in names]
+    sets = {"main": [Data(n) for n in names], "static": [Data(n) for n in STATIC]}
     out = {}
-    for name, (use, pool) in SPECS.items():
+    for name, (use, pool) in (SPECS | {"static": (BASE, "all")}).items():
+        data = sets["static" if name == "static" else "main"]
         model = fit(data, use, pool)
         tree = export(model, use)
         check = data[0].x2[:2000]
         assert np.allclose(tree.predict(check), model.predict_proba(check[:, columns(use)])[:, 1], atol=1e-9)
-        out[name] = tree.to_json() | {"trained_on": list(names), "suffix": os.environ.get("R2_SUFFIX", ""),
+        out[name] = tree.to_json() | {"trained_on": [d.name for d in data], "suffix": os.environ.get("R2_SUFFIX", ""),
                                       "trees": int(tree.feature.shape[0])}
         print(name, "trees", tree.feature.shape[0], "depth", tree.depth, flush=True)
     MODEL_PATH.write_text(json.dumps(out, separators=(",", ":")))

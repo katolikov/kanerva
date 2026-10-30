@@ -188,6 +188,18 @@ def facility_location(ctx: Context, budget: int) -> list[int]:
     return [ids[i] for i in picked]
 
 
+def rerank(ctx: Context, budget: int, pool: int = 50) -> list[int]:
+    """Hybrid order with its top ``pool`` items re-sorted by the cross-encoder."""
+    if "rerank" not in ctx.cache:
+        ids = ctx.hybrid()
+        top = ids[:pool]
+        rows = ctx.mem._fetch(top)
+        logits = np.asarray(ctx.mem.reranker(ctx.question, [rows[i]["text"] for i in top]), dtype=float)
+        order = np.argsort(-np.nan_to_num(logits, nan=-1e9), kind="stable")
+        ctx.cache["rerank"] = [top[i] for i in order] + ids[pool:]
+    return fill(ctx.cache["rerank"], ctx, budget)
+
+
 def kanerva_variant(cfg: RetrievalConfig):
     def run(ctx: Context, budget: int) -> list[int]:
         key = ("kanerva", id(cfg))
@@ -213,6 +225,7 @@ BASELINES = {
     "mmr": mmr,
     "gen-agents": generative_agents,
     "facility": facility_location,
+    "rerank": rerank,
 }
 
 
@@ -228,9 +241,9 @@ def variants(base: RetrievalConfig) -> dict[str, RetrievalConfig]:
         "-activation": base.with_(theta0=tuple(0.0 if i == 6 else t for i, t in enumerate(base.theta0))),
         "kanerva-first": base.with_(soft_supersede_keyed=True),
         "kanerva-ce": base.with_(use_reranker=True, theta0=RERANK_THETA),
-        "kanerva-lex": base.with_(use_dense=False, gamma=0.0, theta0=LEXICAL_THETA),
-        "kanerva-r1": base.with_(relevance="linear"),
-        "kanerva-x64": base.with_(excerpt_threshold=160, excerpt_tokens=64),
+        "kanerva-lex": base.with_(use_dense=False, gamma=0.0, neighbour_top=0, theta0=LEXICAL_THETA),
+        "kanerva-g0": base.with_(gamma=0.0),
+        "kanerva-r1": base.with_(relevance="linear", candidates=100, neighbour_top=0, gamma=0.05, newest_first=False),
+        "-neighbours": base.with_(candidates=100, neighbour_top=0),
         "kanerva-x128": base.with_(excerpt_threshold=160, excerpt_tokens=128),
-        "kanerva-x256": base.with_(excerpt_threshold=320, excerpt_tokens=256),
     }

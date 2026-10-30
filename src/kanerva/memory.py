@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 import re
 import sqlite3
 import time
@@ -149,7 +150,7 @@ class Memory:
         reranker: Callable[[str, list[str]], Sequence[float]] | None = None,
     ):
         if config is None:
-            config = RetrievalConfig() if embedder else RetrievalConfig(use_dense=False, gamma=0.0, theta0=LEXICAL_THETA)
+            config = RetrievalConfig() if embedder else RetrievalConfig(use_dense=False, gamma=0.0, neighbour_top=0, theta0=LEXICAL_THETA)
             if reranker is not None:
                 config = config.with_(use_reranker=True, theta0=RERANK_THETA)
         self.reranker = reranker
@@ -539,7 +540,12 @@ class Memory:
         else:
             x = feature_matrix(cand, cfg)
             prior = np.clip(x @ np.asarray(cfg.theta0), 0.0, 1.0)
-        mu = bandit.score(x) if bandit is not None else prior
+        if bandit is None:
+            mu = prior
+        elif trees:
+            mu = bandit.score(np.column_stack([np.zeros(len(prior)), x[:, 1:]]))
+        else:
+            mu = bandit.score(x)
         if cfg.min_weight > 0:
             mu = np.where(mu >= cfg.min_weight, mu, 0.0)
         if cfg.floor > 0 and not trees:
@@ -656,6 +662,8 @@ class Memory:
         cfg = config or self.config
         if self._writes_since_refresh >= 64 or not self.hazards:
             self.refresh_hazards(now)
+        if query_vector is None and cfg.use_dense and self.embedder is not None:
+            query_vector = self.embedder.encode([query])[0]
         cand, rows, vectors, terms, term_weights, stems = self.candidates(query, now, scope, cfg, query_vector)
         bandit = self.bandit if cfg.use_bandit else None
         problem, x, snippets = None, None, {}
@@ -675,6 +683,9 @@ class Memory:
         chosen.sort(key=lambda i: -problem.weights[i])
         origin = (lambda i: int(problem.groups[i])) if problem.groups is not None else (lambda i: i)
         items = [self._item(rows[cand.ids[origin(i)]], float(problem.weights[i]), prepared.snippets.get(i)) for i in chosen]
+        if prepared.config.newest_first:
+            order = sorted(range(len(items)), key=lambda k: -items[k].created_at)
+            items, chosen = [items[k] for k in order], [chosen[k] for k in order]
         result = RetrievalResult(
             items=items,
             tokens=int(sum(problem.costs[i] for i in chosen)),
@@ -744,7 +755,11 @@ class Memory:
         return row is not None and row["valid_to"] is None
 
     def _relevance_model(self, cfg: RetrievalConfig):
-        name = "rerank" if cfg.use_reranker and self.reranker is not None else ("dense" if cfg.use_dense else "lexical")
+        name = cfg.model
+        if not name:
+            static = type(self.embedder).__name__ == "Model2VecEmbedder"
+            name = "rerank" if cfg.use_reranker and self.reranker is not None else (
+                ("static" if static else "dense") if cfg.use_dense else "lexical")
         model = load_model(name)
         if model is None:
             raise RuntimeError(f"relevance model {name!r} is missing from kanerva/relevance_model.json")
@@ -827,3 +842,18 @@ class Memory:
 
     def commit(self) -> None:
         self.db.commit()
+
+
+def open_store(path: str | Path | None = None) -> Memory:
+    """The user's store. ``KANERVA_EMBEDDER=static`` adds the model2vec embedder, falling back to lexical search."""
+    from .paths import db_path
+
+    embedder = None
+    if os.environ.get("KANERVA_EMBEDDER") == "static":
+        try:
+            from .embed import Model2VecEmbedder
+
+            embedder = Model2VecEmbedder()
+        except Exception:  # missing package or no network on first use: lexical search still works
+            embedder = None
+    return Memory(path or db_path(), embedder=embedder)

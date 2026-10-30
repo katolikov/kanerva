@@ -14,8 +14,8 @@ import sys
 import time
 
 from .consolidate import consolidate
-from .memory import Memory
-from .paths import db_path, project_scope
+from .memory import Memory, open_store
+from .paths import project_scope
 from .text import content_terms
 
 SESSION_BUDGET = int(os.environ.get("KANERVA_SESSION_BUDGET", "400"))
@@ -37,7 +37,7 @@ _DISTINCTIVE = re.compile(r"[A-Za-z_][\w./-]*[_./-][\w./-]+|[a-z]+[A-Z]\w+|[A-Z]
 
 
 def _open(cwd: str | None) -> tuple[Memory, str]:
-    mem = Memory(db_path())
+    mem = open_store()
     mem.config = mem.config.with_(learn=LEARN)
     mem.db.executescript(_SESSION_SCHEMA)
     return mem, project_scope(cwd)

@@ -33,6 +33,7 @@ DATASETS = {
     "repomem": ("repomem", "repomem", True, ("dev", "test")),
     "repomem-holdout": ("repomem-holdout", "repomem-holdout", True, ("holdout",)),
     "beam-dev": ("beam-dev", "beam", False, ("dev",)),
+    "lme-updates": ("lme-updates", "lme", False, ("dev", "test")),
     # The static model2vec embedder that the plugin can use; no cross-encoder features.
     "lme-m2v": ("lme", "lme-m2v", False, ("dev", "test")),
     "locomo-m2v": ("locomo", "locomo-m2v", False, ("dev", "test")),

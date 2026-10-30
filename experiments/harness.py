@@ -80,18 +80,19 @@ def run_stream(args: tuple) -> list[dict]:
     stream, cache_name, base, keyed, budgets, selected, fixed_k = args
     cache = TextCache(cache_name)
     reranker = None
-    if selected and "kanerva-ce" in selected:
+    if selected and {"kanerva-ce", "rerank"} & set(selected):
         from experiments.run_rerank import CachedScores
 
-        reranker = CachedScores(cache_name)
+        reranker = CachedScores(os.environ.get("KANERVA_CE_CACHE", cache_name))
     mem = new_memory(cache, base, reranker)
     id_of: dict[str, int] = {}
     methods = dict(BASELINES)
     configs = variants(base)
     for name, cfg in configs.items():
         methods[name] = kanerva_variant(cfg.with_(use_bandit=False))
-    if not (selected and "kanerva-ce" in selected):
+    if reranker is None:
         methods.pop("kanerva-ce")
+        methods.pop("rerank")
     if selected:
         methods = {k: v for k, v in methods.items() if k in selected}
     fixed = {f"hybrid-k{k}": k for k in fixed_k}

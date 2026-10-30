@@ -183,9 +183,9 @@ def scale() -> None:
         mem = Memory(":memory:", count_tokens=cache.count)
         start = time.perf_counter()
         for i, text in enumerate(texts[:n]):
-            mem.write(text, at=1.6e9 + i * 60, embedding=cache.vector(text))
+            mem.write(text, at=1.6e9 + i * 60, embedding=cache.vector(text), session=str(i // 40))
         write_ms = (time.perf_counter() - start) * 1000 / n
-        for mode, cfg in (("hybrid", RetrievalConfig()), ("lexical", RetrievalConfig(use_dense=False, gamma=0.0))):
+        for mode, cfg in (("hybrid", RetrievalConfig()), ("lexical", RetrievalConfig(use_dense=False, gamma=0.0, neighbour_top=0))):
             latencies = []
             for query in questions:
                 vector = cache.vector(query.question)

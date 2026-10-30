@@ -9,8 +9,8 @@ from typing import Any, Callable
 
 from . import __version__
 from .consolidate import consolidate, expand, forget
-from .memory import Memory
-from .paths import db_path, project_scope
+from .memory import Memory, open_store
+from .paths import project_scope
 
 PROTOCOL_VERSION = "2025-06-18"
 
@@ -84,7 +84,7 @@ TOOLS: dict[str, dict] = {
 
 class Server:
     def __init__(self, mem: Memory | None = None, scope: str | None = None):
-        self.mem = mem or Memory(db_path())
+        self.mem = mem or open_store()
         self.scope = scope or project_scope(os.environ.get("KANERVA_PROJECT_DIR"))
 
     def call(self, name: str, args: dict) -> Any:

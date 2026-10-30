@@ -29,6 +29,7 @@ class SelectionProblem:
     prior_weights: np.ndarray | None = None  # shape (n,): fixed importance for C
     gamma: float = 0.0
     modular: float = 0.0  # weight of the additive term eta * sum(w_i)
+    groups: np.ndarray | None = None  # shape (n,): versions of one item share a group, and at most one is chosen
 
 
 def _objective_state(p: SelectionProblem) -> tuple[np.ndarray, np.ndarray | None]:
@@ -75,6 +76,8 @@ def _greedy(p: SelectionProblem, budget: float, cost_exponent: float) -> list[in
         alive[i] = False
         if spent + p.costs[i] > budget:
             continue
+        if p.groups is not None:
+            alive &= p.groups != p.groups[i]
         chosen.append(i)
         spent += float(p.costs[i])
         miss = miss * (1.0 - p.weights[i] * p.affinity[i])

@@ -109,6 +109,40 @@ def cross_fit(data: list[Data], use: tuple[str, ...], kind: str = "logistic", c:
     return preds
 
 
+def stage_rank(d: Data, p: np.ndarray) -> np.ndarray:
+    """Rank of each row by score within its query (0 is best)."""
+    out = np.zeros(len(p), dtype=int)
+    for q in range(d.n):
+        rows = d.rows(q)
+        out[rows] = np.argsort(np.argsort(-p[rows], kind="stable"), kind="stable")
+    return out
+
+
+def cross_fit_cascade(data: list[Data], use: tuple[str, ...], top: int = 30) -> list[np.ndarray]:
+    """Stage 2 re-scores the top rows of stage 1, trained only on such rows, with the stage-1 score as a feature.
+
+    Rows below ``top`` keep their stage-1 score, scaled so that they never outrank stage-2 rows.
+    """
+    first = cross_fit(data, use, "gbdt")
+    ranks = [stage_rank(d, p) for d, p in zip(data, first)]
+    cols = columns(use)
+    preds = [p.copy() for p in first]
+    for fold in range(FOLDS):
+        weights = training_weights(data, [d.fold != fold for d in data])
+        keep = [(w > 0) & (r < top) for w, r in zip(weights, ranks)]
+        x = np.vstack([np.column_stack([d.x2[k][:, cols], p1[k], r[k]]) for d, k, p1, r in zip(data, keep, first, ranks)])
+        y = np.concatenate([d.gold[k] for d, k in zip(data, keep)])
+        w = np.concatenate([wt[k] for wt, k in zip(weights, keep)])
+        model = fit_gbdt(x, y, w)[0]
+        for d, p, p1, r in zip(data, preds, first, ranks):
+            test = (d.fold == fold)[d.row_query] & (r < top)
+            if test.any():
+                p[test] = model(np.column_stack([d.x2[test][:, cols], p1[test], r[test]]))
+    for d, p, r in zip(data, preds, ranks):
+        p[r >= top] *= 1e-3
+    return preds
+
+
 def knapsack(p: np.ndarray, cost: np.ndarray, budget: int, top: int = 60) -> np.ndarray:
     """Indices maximising sum(p) subject to sum(cost) <= budget, by dynamic programming over capacity.
 
@@ -249,6 +283,10 @@ def main(names: list[str]) -> None:
     rules = tuple(os.environ.get("R2_RULES", "rank,density").split(","))
     report: dict = {}
     scores = {name: cross_fit(data, use, kind, pool=pool) for name, (kind, use, pool) in candidates.items()}
+    if os.environ.get("R2_CASCADE"):
+        scores["cascade"] = cross_fit_cascade(data, BASE)
+        scores["cascade-ce"] = cross_fit_cascade(data, BASE + RERANK_FEATURES)
+        candidates = dict(candidates) | {"cascade": None, "cascade-ce": None}
     for d_idx, d in enumerate(data):
         rows = {}
         old = d.old[eval_queries(d)]
