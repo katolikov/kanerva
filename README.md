@@ -85,6 +85,26 @@ Everything is in `~/.kanerva/memory.sqlite`, or `$KANERVA_HOME`. Each project ha
 ![Recall against tokens](paper/figs/pareto.png)
 
 <!-- results:start -->
+Evidence recall on test splits, with no LLM in the evaluation. Larger is better.
+
+| Dataset | Budget | Kanerva | Hybrid RRF | Hybrid + reranker | BM25 |
+|---|---:|---:|---:|---:|---:|
+| LongMemEval-S | 256 | 0.655 | 0.607 | 0.729 | 0.604 |
+| LongMemEval-S | 1024 | 0.860 | 0.761 | 0.870 | 0.769 |
+| LongMemEval-S | 4096 | 0.934 | 0.906 | 0.933 | 0.850 |
+| LoCoMo | 256 | 0.566 | 0.475 | 0.632 | 0.559 |
+| LoCoMo | 1024 | 0.722 | 0.682 | 0.731 | 0.702 |
+| LoCoMo | 4096 | 0.842 | 0.873 | 0.773 | 0.798 |
+| RepoMem, no keys | 256 | 0.835 | 0.842 | n/a | 0.795 |
+| RepoMem, no keys | 1024 | 0.890 | 0.908 | n/a | 0.886 |
+| RepoMem, no keys | 4096 | 0.950 | 0.949 | n/a | 0.915 |
+| RepoMem holdout, keys | 256 | 0.740 | 0.730 | n/a | 0.685 |
+| RepoMem holdout, keys | 1024 | 0.834 | 0.828 | n/a | 0.794 |
+| RepoMem holdout, keys | 4096 | 0.905 | 0.908 | n/a | 0.884 |
+
+Staleness error at 1024 tokens over all RepoMem queries. RepoMem, no keys: 0.016 for Kanerva, 0.369 for hybrid. RepoMem, keys: 0.003 for Kanerva, 0.375 for hybrid.
+
+Kanerva loses to hybrid retrieval at large budgets on LoCoMo and on recall on RepoMem without keys. It trades that for far fewer stale injections. The paper reports every such case, with confidence intervals.
 <!-- results:end -->
 
 ## Compared to alternatives

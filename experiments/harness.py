@@ -50,8 +50,8 @@ def score(ids: list[int], gold: set[int], stale: set[int], costs: dict[int, int]
     }
 
 
-def new_memory(cache: TextCache, cfg: RetrievalConfig) -> Memory:
-    return Memory(":memory:", count_tokens=cache.count, config=cfg)
+def new_memory(cache: TextCache, cfg: RetrievalConfig, reranker=None) -> Memory:
+    return Memory(":memory:", count_tokens=cache.count, config=cfg, reranker=reranker)
 
 
 def apply_write(mem: Memory, cache: TextCache, turn, id_of: dict[str, int], keyed: bool) -> None:
@@ -66,7 +66,12 @@ def run_stream(args: tuple) -> list[dict]:
     """Stateless evaluation: all methods see the same store at each query."""
     stream, cache_name, base, keyed, budgets, selected, fixed_k = args
     cache = TextCache(cache_name)
-    mem = new_memory(cache, base)
+    reranker = None
+    if selected and "kanerva-ce" in selected:
+        from experiments.run_rerank import CachedScores
+
+        reranker = CachedScores(cache_name)
+    mem = new_memory(cache, base, reranker)
     id_of: dict[str, int] = {}
     methods = dict(BASELINES)
     configs = variants(base)

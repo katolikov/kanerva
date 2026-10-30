@@ -15,11 +15,16 @@ from kanerva.policy import FEATURES
 
 def collect(dataset: str, cfg: RetrievalConfig, keyed: bool) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     cache = TextCache(dataset)
+    reranker = None
+    if cfg.use_reranker:
+        from experiments.run_rerank import CachedScores
+
+        reranker = CachedScores(dataset)
     xs, ys, ws = [], [], []
     for stream in load(dataset):
         if stream.split != "dev":
             continue
-        mem = new_memory(cache, cfg)
+        mem = new_memory(cache, cfg, reranker)
         id_of: dict[str, int] = {}
         cursor = 0
         for query in stream.queries:
@@ -53,9 +58,11 @@ def fit(cfg: RetrievalConfig, ridge: float = 1e-3) -> np.ndarray:
 if __name__ == "__main__":
     theta = fit(RetrievalConfig(use_validity=False, use_bandit=False))
     lexical = fit(RetrievalConfig(use_validity=False, use_bandit=False, use_dense=False, gamma=0.0))
+    rerank = fit(RetrievalConfig(use_validity=False, use_bandit=False, use_reranker=True))
     print("DEFAULT_THETA =", tuple(np.round(theta, 4).tolist()))
+    print("RERANK_THETA =", tuple(np.round(rerank, 4).tolist()))
     print("LEXICAL_THETA =", tuple(np.round(lexical, 4).tolist()))
     RESULTS.mkdir(exist_ok=True)
     (RESULTS / "fitted_prior.json").write_text(
-        json.dumps({"features": list(FEATURES), "theta": theta.tolist(), "lexical": lexical.tolist()}, indent=1)
+        json.dumps({"features": list(FEATURES), "theta": theta.tolist(), "lexical": lexical.tolist(), "rerank": rerank.tolist()}, indent=1)
     )

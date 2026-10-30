@@ -1,13 +1,19 @@
-"""E2: hybrid retrieval followed by a cross-encoder reranker, the strongest non-LLM reading baseline."""
+"""E2: hybrid retrieval followed by a cross-encoder reranker, a strong non-LLM reading baseline.
+
+Also stores the cross-encoder logits for all splits in experiments/cache/ce_<dataset>.json, keyed by query and
+text, which fit_prior and the kanerva-ce variant read back through ``CachedScores``.
+"""
 
 from __future__ import annotations
 
+import json
 import sys
 import time
 
 import numpy as np
 
-from experiments.embed_cache import TextCache
+from experiments.datasets import digest
+from experiments.embed_cache import CACHE, TextCache
 from experiments.harness import BUDGETS, apply_write, new_memory, save, score
 from experiments.methods import Context, fill
 from experiments.registry import load
@@ -17,6 +23,20 @@ MODEL = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 POOL = 50
 
 
+def pair_key(question: str, text: str) -> str:
+    return digest(question + "\x1f" + text)
+
+
+class CachedScores:
+    """Stands in for a cross-encoder with the logits computed by this script."""
+
+    def __init__(self, dataset: str):
+        self.scores: dict[str, float] = json.loads((CACHE / f"ce_{dataset}.json").read_text())
+
+    def __call__(self, query: str, texts: list[str]) -> list[float]:
+        return [self.scores.get(pair_key(query, t), float("nan")) for t in texts]
+
+
 def run(name: str, dataset: str, keyed: bool) -> None:
     from sentence_transformers import CrossEncoder
 
@@ -24,7 +44,8 @@ def run(name: str, dataset: str, keyed: bool) -> None:
     cache = TextCache(dataset)
     records = []
     start = time.time()
-    streams = [s for s in load(dataset) if s.split == "test"]
+    streams = load(dataset)
+    logits: dict[str, float] = {}
     for stream in streams:
         mem = new_memory(cache, RetrievalConfig())
         id_of: dict[str, int] = {}
@@ -43,6 +64,10 @@ def run(name: str, dataset: str, keyed: bool) -> None:
             t0 = time.perf_counter()
             scores = model.predict([(query.question, rows[i]["text"][:1500]) for i in pool], batch_size=64, show_progress_bar=False)
             ms = (time.perf_counter() - t0) * 1000
+            for i, value in zip(pool, scores):
+                logits[pair_key(query.question, rows[i]["text"])] = round(float(value), 4)
+            if stream.split == "dev":
+                continue
             order = [pool[i] for i in np.argsort(-np.asarray(scores))]
             for budget in BUDGETS:
                 ids = fill(order, ctx, budget)
@@ -50,12 +75,14 @@ def run(name: str, dataset: str, keyed: bool) -> None:
                 row.update(score(ids, gold, stale, ctx.cost(ids) if ids else {}, ms))
                 records.append(row)
         mem.close()
+    (CACHE / f"ce_{dataset}.json").write_text(json.dumps(logits))
     save(f"rerank_{name}", records, {"experiment": "rerank", "model": MODEL, "pool": POOL, "dataset": name,
                                      "wall_seconds": round(time.time() - start, 1)})
     print(name, len(records), f"{time.time() - start:.0f}s", flush=True)
 
 
 if __name__ == "__main__":
-    runs = {"lme": ("lme", False), "locomo": ("locomo", False), "repomem-keyed": ("repomem", True)}
+    runs = {"lme": ("lme", False), "locomo": ("locomo", False), "repomem-keyed": ("repomem", True),
+            "repomem-holdout": ("repomem-holdout", True)}
     for name in sys.argv[1:] or runs:
         run(name, *runs[name])

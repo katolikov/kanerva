@@ -20,30 +20,31 @@ BUDGETS = (128, 256, 512, 1024, 2048, 4096)
 DATASETS = {"lme": "LongMemEval-S", "locomo": "LoCoMo", "repomem-keyed": "RepoMem (keys)", "repomem-plain": "RepoMem (no keys)",
             "repomem-holdout": "RepoMem holdout (keys)"}
 BASELINES = ("hybrid", "bm25", "dense", "mmr", "facility", "gen-agents", "recency", "rerank", "hybrid-live")
-ABLATIONS = ("-density", "-coverage", "-redundancy", "-validity", "-supersession", "-activation", "kanerva-first")
+ABLATIONS = ("-density", "-coverage", "-redundancy", "-validity", "-supersession", "-activation", "kanerva-first", "kanerva-ce")
 BOOT = 2000
 
 INK = "#0b0b0b"
 MUTED = "#52514e"
 GRID = "#e6e5e0"
 STYLE = {
-    "kanerva": ("#2a78d6", "o", 2.4),
+    "kanerva-ce": ("#2a78d6", "o", 2.4),
+    "kanerva": ("#1baf7a", "D", 2.0),
     "hybrid": ("#eb6834", "s", 1.8),
-    "rerank": ("#1baf7a", "D", 1.8),
+    "rerank": ("#e87ba4", "v", 1.8),
     "bm25": ("#eda100", "^", 1.8),
-    "dense": ("#e87ba4", "v", 1.8),
     "mmr": ("#008300", "P", 1.8),
     "facility": ("#6250d6", "X", 1.8),
 }
-LABEL = {"kanerva": "Kanerva", "hybrid": "Hybrid RRF", "rerank": "Hybrid + reranker", "bm25": "BM25", "dense": "Dense",
+LABEL = {"kanerva": "Kanerva", "kanerva-ce": "Kanerva + reranker", "hybrid": "Hybrid RRF", "rerank": "Hybrid + reranker", "bm25": "BM25", "dense": "Dense",
          "mmr": "MMR", "facility": "Facility location"}
 
 
 def load_raw(name: str) -> list[dict]:
     records = json.load(gzip.open(RESULTS / "raw" / f"retrieval_{name}.json.gz", "rt"))
-    extra = RESULTS / "raw" / f"rerank_{name}.json.gz"
-    if extra.exists():
-        records += json.load(gzip.open(extra, "rt"))
+    for prefix in ("rerank", "ce"):
+        extra = RESULTS / "raw" / f"{prefix}_{name}.json.gz"
+        if extra.exists():
+            records += json.load(gzip.open(extra, "rt"))
     return records
 
 
@@ -113,21 +114,14 @@ def compare() -> dict:
             holm(tests)
             entry[key] = tests
         for other in BASELINES:
-            wins = losses = 0
-            for b in BUDGETS:
-                if (other, b) not in recall:
-                    continue
-                r_a, r_b = entry["means"][f"kanerva@{b}"], entry["means"][f"{other}@{b}"]
-                t_a, t_b = entry["tokens"][f"kanerva@{b}"], entry["tokens"][f"{other}@{b}"]
-                if r_a >= r_b and t_a <= t_b and (r_a > r_b or t_a < t_b):
-                    wins += 1
-                elif r_b >= r_a and t_b <= t_a and (r_b > r_a or t_b < t_a):
-                    losses += 1
-            entry["pareto"][other] = {"kanerva_dominates": wins, "kanerva_dominated": losses}
+            tests = [t for t in entry["comparisons"] if t["other"] == other]
+            wins = sum(t["diff"] > 0 and t["p_holm"] < 0.05 for t in tests)
+            losses = sum(t["diff"] < 0 and t["p_holm"] < 0.05 for t in tests)
+            entry["pareto"][other] = {"wins": wins, "losses": losses, "ties": len(tests) - wins - losses}
         categories = sorted({r["category"] for r in records})
         by_category: dict = {}
         for c in categories:
-            for m in ("kanerva", "hybrid", "rerank", "bm25"):
+            for m in ("kanerva", "kanerva-ce", "hybrid", "rerank", "bm25"):
                 rows = [r["recall"] for r in records if r["category"] == c and r["method"] == m and r["budget"] == 1024]
                 if rows:
                     by_category.setdefault(c, {})[m] = float(np.mean(rows))
@@ -171,7 +165,7 @@ def pareto_figure(data: dict) -> None:
                 continue
             xs, ys = zip(*points)
             ax.plot(xs, ys, color=color, marker=marker, markersize=3.5, linewidth=width, label=LABEL[method],
-                    markeredgecolor="white", markeredgewidth=0.4, zorder=3 if method == "kanerva" else 2)
+                    markeredgecolor="white", markeredgewidth=0.4, zorder=3 if method.startswith("kanerva") else 2)
         topk = [(tokens[f"hybrid-k{k}@{k}"], means[f"hybrid-k{k}@{k}"]) for k in (3, 5, 10, 20) if f"hybrid-k{k}@{k}" in means]
         if topk:
             ax.scatter(*zip(*topk), s=14, facecolors="none", edgecolors=MUTED, linewidths=0.8, label="Hybrid top-$k$ (3, 5, 10, 20)", zorder=2)

@@ -18,6 +18,17 @@ RUNS = {
 }
 
 
+def run_cross_encoder() -> None:
+    """The extension with reranker features. Needs the logits written by run_rerank."""
+    for name in ("lme", "locomo", "repomem-keyed", "repomem-holdout"):
+        spec = RUNS[name]
+        dataset = spec.get("dataset", name)
+        streams = [s for s in load(dataset) if s.split == spec.get("split", "test")]
+        records = run_dataset(streams, dataset, RetrievalConfig(), keyed=spec["keyed"], selected={"kanerva-ce"})
+        save(f"ce_{name}", records, {"experiment": "cross-encoder features", "dataset": name})
+        print(name, "\n" + table(records), flush=True)
+
+
 def run_small_embedder() -> None:
     """The method and its rivals with the static model2vec embedder that the plugin can use."""
     for name, dataset, keyed in (("lme", "lme", False), ("locomo", "locomo", False), ("repomem-plain", "repomem", False)):
@@ -41,5 +52,5 @@ def run(name: str) -> None:
 
 
 if __name__ == "__main__":
-    for name in sys.argv[1:] or [*RUNS, "m2v"]:
-        run_small_embedder() if name == "m2v" else run(name)
+    for name in sys.argv[1:] or [*RUNS, "m2v", "ce"]:
+        {"m2v": run_small_embedder, "ce": run_cross_encoder}.get(name, lambda: run(name))()

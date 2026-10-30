@@ -15,7 +15,7 @@ BUDGETS = (128, 256, 512, 1024, 2048, 4096)
 DATASETS = {"lme": "LongMemEval-S", "locomo": "LoCoMo", "repomem-keyed": "RepoMem, keys", "repomem-plain": "RepoMem, no keys",
             "repomem-holdout": "RepoMem holdout, keys"}
 METHODS = {
-    "kanerva": "\\kanerva", "kanerva-first": "\\kanerva, first run", "kanerva-lex": "\\kanerva, lexical", "rerank": "Hybrid + reranker", "hybrid": "Hybrid RRF",
+    "kanerva": "\\kanerva", "kanerva-ce": "\\kanerva + reranker", "kanerva-first": "\\kanerva, first run", "kanerva-lex": "\\kanerva, lexical", "rerank": "Hybrid + reranker", "hybrid": "Hybrid RRF",
     "hybrid-live": "Hybrid, live only", "bm25": "BM25", "dense": "Dense", "mmr": "MMR",
     "facility": "Facility location", "gen-agents": "Generative Agents", "recency": "Recency",
 }
@@ -72,7 +72,6 @@ def diff_table(comparison: dict) -> str:
         if name not in comparison:
             continue
         tests = comparison[name]["comparisons"]
-        means = comparison[name]["means"]
         rivals = {}
         for b in (256, 1024, 4096):
             candidates = [t for t in tests if t["budget"] == b]
@@ -106,8 +105,8 @@ def ablation_table(comparison: dict) -> str:
 
 
 def staleness_table(comparison: dict) -> str:
-    methods = ("kanerva", "-validity", "hybrid-live", "hybrid", "dense", "bm25", "rerank")
-    labels = {**METHODS, "-validity": "\\kanerva, no validity"}
+    methods = ("kanerva", "-supersession", "-validity", "hybrid-live", "hybrid", "dense", "bm25", "rerank")
+    labels = {**METHODS, "-validity": "\\kanerva, no validity", "-supersession": "\\kanerva, no soft supersession"}
     names = [n for n in ("repomem-keyed", "repomem-plain") if n in comparison]
     rows = ["\\begin{tabular}{@{}l" + "rrr" * len(names) + "@{}}\\toprule"]
     rows.append("Method & " + " & ".join(f"\\multicolumn{{3}}{{c}}{{{DATASETS[n]}}}" for n in names) + " \\\\")
@@ -124,12 +123,12 @@ def staleness_table(comparison: dict) -> str:
 
 
 def category_table(comparison: dict) -> str:
-    rows = ["\\begin{tabular}{@{}lrrrrr@{}}\\toprule", "Category & $n$ & \\kanerva & Hybrid & Rerank & BM25 \\\\\\midrule"]
+    rows = ["\\begin{tabular}{@{}lrrrrrr@{}}\\toprule", "Category & $n$ & \\kanerva & + reranker & Hybrid & Rerank & BM25 \\\\\\midrule"]
     for name in ("lme", "repomem-keyed"):
         if name not in comparison:
             continue
         for category, entry in comparison[name]["by_category_1024"].items():
-            cells = [fmt(entry[m]) if m in entry else "---" for m in ("kanerva", "hybrid", "rerank", "bm25")]
+            cells = [fmt(entry[m]) if m in entry else "---" for m in ("kanerva", "kanerva-ce", "hybrid", "rerank", "bm25")]
             rows.append(f"{category.replace('-', ' ')} & {entry['n']} & " + " & ".join(cells) + " \\\\")
         rows.append("\\addlinespace")
     rows[-1] = "\\bottomrule\\end{tabular}"
@@ -193,15 +192,15 @@ def main() -> None:
         define(lines, f"v-n-{name}", entry["comparisons"][0]["n"])
         define(lines, f"v-latp50-{name}", f"{entry['latency_ms']['p50']:.1f}")
         for other, p in entry["pareto"].items():
-            define(lines, f"v-pwin-{name}-{other}", p["kanerva_dominates"])
-            define(lines, f"v-ploss-{name}-{other}", p["kanerva_dominated"])
+            define(lines, f"v-pwin-{name}-{other}", p["wins"])
+            define(lines, f"v-ploss-{name}-{other}", p["losses"])
 
     raw_keyed = RESULTS / "raw" / "retrieval_repomem-plain.json.gz"
     if raw_keyed.exists():
         import gzip
 
         records = [r for r in json.load(gzip.open(raw_keyed, "rt")) if r["budget"] == 1024 and "changed" in r["category"]]
-        for method in ("kanerva", "hybrid", "dense", "bm25"):
+        for method in ("kanerva", "hybrid", "dense", "bm25", "-supersession"):
             define(lines, f"v-stalechanged-{method}", fmt(float(np.mean([r["stale_error"] for r in records if r["method"] == method]))))
     if comparison:
         gains = [-t["diff"] for t in comparison["locomo"]["ablations"] if t["other"] == "-density"]
@@ -239,6 +238,9 @@ def main() -> None:
         for d, settings in online["summary"].items():
             cells = []
             for s in columns:
+                if s not in settings:
+                    cells.append("---")
+                    continue
                 v = float(np.mean(settings[s]["second_half"]))
                 sd = float(np.std(settings[s]["second_half"]))
                 cells.append(f"{fmt(v)} $\\pm$ {fmt(sd)}")

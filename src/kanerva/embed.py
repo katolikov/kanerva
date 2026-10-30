@@ -61,3 +61,16 @@ class Model2VecEmbedder:
         out = np.asarray(self._model.encode(list(texts)), dtype=np.float32)
         norm = np.linalg.norm(out, axis=1, keepdims=True)
         return out / np.where(norm == 0, 1.0, norm)
+
+
+class CrossEncoderReranker:
+    """Optional local reranker: a callable mapping (query, texts) to relevance logits."""
+
+    def __init__(self, model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2", device: str | None = None):
+        from sentence_transformers import CrossEncoder
+
+        self._model = CrossEncoder(model, device=device)
+
+    def __call__(self, query: str, texts: Sequence[str]) -> np.ndarray:
+        pairs = [(query, text[:1500]) for text in texts]
+        return np.asarray(self._model.predict(pairs, batch_size=64, show_progress_bar=False), dtype=float)

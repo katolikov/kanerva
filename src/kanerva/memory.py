@@ -16,7 +16,7 @@ import numpy as np
 
 from .bandit import LinearBandit
 from .embed import Embedder
-from .policy import LEXICAL_THETA, Candidates, RetrievalConfig, feature_matrix
+from .policy import LEXICAL_THETA, RERANK_THETA, Candidates, RetrievalConfig, feature_matrix
 from .secrets_filter import redact
 from .select import SelectionProblem, budgeted_select, optimality_certificate, value
 from .text import approx_tokens, content_terms, fts_query, light_stem, query_snippet, search_text, tokenize
@@ -125,9 +125,13 @@ class Memory:
         count_tokens: Callable[[str], int] = approx_tokens,
         config: RetrievalConfig | None = None,
         hazard_prior: tuple[float, float] = (1.0, 365.0),
+        reranker: Callable[[str, list[str]], Sequence[float]] | None = None,
     ):
         if config is None:
             config = RetrievalConfig() if embedder else RetrievalConfig(use_dense=False, gamma=0.0, theta0=LEXICAL_THETA)
+            if reranker is not None:
+                config = config.with_(use_reranker=True, theta0=RERANK_THETA)
+        self.reranker = reranker
         self.config = config
         self.embedder = embedder
         self.count_tokens = count_tokens
@@ -363,6 +367,8 @@ class Memory:
             usefulness=usefulness,
             validity=validity,
         )
+        if cfg.use_reranker and self.reranker is not None and n:
+            self._rerank(query, cand, rows, cfg)
         embedded = [rows[i]["embedding"] for i in ids]
         vectors = None
         if n and all(e is not None for e in embedded):
@@ -370,6 +376,19 @@ class Memory:
         if cfg.use_validity and cfg.use_supersession and vectors is not None and n > 1 and not historical:
             self._soft_supersession(cand, rows, vectors, cfg)
         return cand, rows, vectors, terms, term_weights, stems
+
+    def _rerank(self, query: str, cand: Candidates, rows, cfg: RetrievalConfig) -> None:
+        """Cross-encoder signals for the top of the fused ranking; other candidates stay unscored."""
+        fused = 1.0 / (60.0 + cand.lex_rank + 1.0) + 1.0 / (60.0 + cand.dense_rank + 1.0)
+        pool = np.argsort(-fused, kind="stable")[: cfg.rerank_pool]
+        logits = np.asarray(self.reranker(query, [rows[cand.ids[i]]["text"] for i in pool]), dtype=float)
+        known = np.isfinite(logits)
+        order = pool[known][np.argsort(-logits[known], kind="stable")]
+        n = len(cand.ids)
+        cand.rerank_rank = np.full(n, np.inf)
+        cand.rerank_score = np.zeros(n)
+        cand.rerank_rank[order] = np.arange(order.size)
+        cand.rerank_score[pool[known]] = 1.0 / (1.0 + np.exp(-logits[known]))
 
     def _soft_supersession(self, cand: Candidates, rows, vectors: np.ndarray, cfg: RetrievalConfig) -> None:
         sim = vectors @ vectors.T

@@ -13,8 +13,8 @@ SYSTEMS_PYTHON = ROOT / ".venv-systems" / "bin" / "python"
 STEPS = [
     ("synthetic", sys.executable, ["experiments.run_synthetic"], 1800),
     ("store", sys.executable, ["experiments.run_store"], 3600),
-    ("retrieval", sys.executable, ["experiments.run_retrieval"], 3600),
     ("rerank", sys.executable, ["experiments.run_rerank"], 3600),
+    ("retrieval", sys.executable, ["experiments.run_retrieval"], 3600),
     ("online", sys.executable, ["experiments.run_online"], 3600),
     ("baseline-systems", str(SYSTEMS_PYTHON), ["experiments.run_systems"], 1800),
     ("analysis", sys.executable, ["experiments.analysis"], 600),

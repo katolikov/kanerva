@@ -1,0 +1,22 @@
+\begin{tabular}{@{}lllrrrr@{}}\toprule
+Dataset & Rival & $B$ & $\Delta$ recall & 95\% CI & Cluster CI & $p_{\text{Holm}}$ \\\midrule
+LongMemEval-S & Hybrid + reranker & 256 & -0.073 & [-0.105, -0.044] & --- & 0.004 \\
+LongMemEval-S & Hybrid + reranker & 1024 & -0.010 & [-0.035, +0.015] & --- & 1.000 \\
+LongMemEval-S & Hybrid + reranker & 4096 & +0.001 & [-0.013, +0.014] & --- & 1.000 \\
+\addlinespace
+LoCoMo & Hybrid + reranker & 256 & -0.066 & [-0.085, -0.048] & --- & $<$0.001 \\
+LoCoMo & Hybrid + reranker & 1024 & -0.009 & [-0.022, +0.004] & --- & 0.809 \\
+LoCoMo & Hybrid RRF & 4096 & -0.031 & [-0.043, -0.021] & --- & 0.047 \\
+\addlinespace
+RepoMem, keys & Dense & 256 & +0.000 & [-0.006, +0.006] & [-0.011, +0.015] & 1.000 \\
+RepoMem, keys & Hybrid + reranker & 1024 & -0.011 & [-0.014, -0.007] & [-0.016, -0.006] & 0.044 \\
+RepoMem, keys & MMR & 4096 & -0.000 & [-0.001, +0.001] & [-0.001, +0.001] & 1.000 \\
+\addlinespace
+RepoMem, no keys & Dense & 256 & -0.018 & [-0.025, -0.011] & [-0.039, +0.006] & 0.257 \\
+RepoMem, no keys & Hybrid RRF & 1024 & -0.018 & [-0.023, -0.014] & [-0.031, -0.006] & $<$0.001 \\
+RepoMem, no keys & MMR & 4096 & -0.000 & [-0.002, +0.001] & [-0.001, +0.001] & 1.000 \\
+\addlinespace
+RepoMem holdout, keys & Dense & 256 & +0.004 & [-0.004, +0.012] & [-0.002, +0.011] & 1.000 \\
+RepoMem holdout, keys & Hybrid RRF & 1024 & +0.005 & [+0.000, +0.011] & [-0.020, +0.034] & 1.000 \\
+RepoMem holdout, keys & Hybrid RRF & 4096 & -0.003 & [-0.006, +0.001] & [-0.008, +0.002] & 0.049 \\
+\bottomrule\end{tabular}

@@ -213,3 +213,28 @@ def test_soft_supersession_leaves_keyed_items_alone(mem):
     b = mem.write(text.format(31), key="sig:get_admin", at=T0 + DAY)
     validity = _validity(mem, "get_user signature", T0 + 2 * DAY)
     assert validity[a] == pytest.approx(validity[b], rel=0.05)
+
+
+def test_reranker_signals_reach_the_features():
+    calls = []
+
+    def reranker(query, texts):
+        calls.append(len(texts))
+        return [10.0 if "uv" in t else -10.0 for t in texts]
+
+    mem = Memory(embedder=HashingEmbedder(), reranker=reranker)
+    good = mem.write("Install dependencies with uv sync", at=T0)
+    mem.write("Install dependencies with pip install", at=T0)
+    prepared = mem.prepare("how to install dependencies", T0 + 1)
+    assert calls == [2]
+    index = prepared.candidates.ids.index(good)
+    assert prepared.candidates.rerank_rank[index] == 0
+    assert prepared.candidates.rerank_score[index] > 0.99
+    mem.close()
+
+
+def test_reranker_with_unknown_scores_is_tolerated():
+    mem = Memory(embedder=HashingEmbedder(), reranker=lambda q, texts: [float("nan")] * len(texts))
+    mem.write("Anything about deployment", at=T0)
+    assert mem.retrieve("deployment", 100, now=T0 + 1).items
+    mem.close()

@@ -19,10 +19,14 @@ FEATURES = (
     "full_cover",
     "lex_top",
     "dense_top",
+    "rerank_top",
+    "rerank_rank",
+    "rerank_score",
 )
 
-DEFAULT_THETA = (0.0045, -0.0863, -0.0309, 0.0345, -0.0048, -0.0215, 0.0032, 0.0, 0.1559, 0.0934, 0.2436, 0.1367)
-LEXICAL_THETA = (-0.0204, -0.0302, 0.0, 0.0371, 0.0, 0.0264, 0.0207, 0.0, 0.0, 0.0782, 0.3399, 0.0)
+DEFAULT_THETA = (0.0045, -0.0863, -0.0309, 0.0345, -0.0048, -0.0215, 0.0032, 0.0, 0.1559, 0.0934, 0.2436, 0.1367, 0.0, 0.0, 0.0)
+LEXICAL_THETA = (-0.0204, -0.0302, 0.0, 0.0371, 0.0, 0.0264, 0.0207, 0.0, 0.0, 0.0782, 0.3399, 0.0, 0.0, 0.0, 0.0)
+RERANK_THETA = (0.0013, -0.0346, 0.0025, 0.0272, -0.0065, -0.0153, 0.0033, 0.0, 0.0121, 0.0318, 0.1045, 0.0576, 0.4723, -0.0845, 0.0276)
 
 
 @dataclass(frozen=True)
@@ -32,6 +36,8 @@ class RetrievalConfig:
     item_overhead: int = 8
 
     use_dense: bool = True
+    use_reranker: bool = False
+    rerank_pool: int = 50
 
     modular: float = 0.0  # eta: weight of the additive relevance term
     query_facet: float = 0.5  # omega_0: facet weight of the whole query
@@ -72,6 +78,8 @@ class Candidates:
     activation: np.ndarray | None = None
     usefulness: np.ndarray | None = None
     validity: np.ndarray | None = None
+    rerank_rank: np.ndarray | None = None
+    rerank_score: np.ndarray | None = None
 
 
 def feature_matrix(c: Candidates, cfg: RetrievalConfig) -> np.ndarray:
@@ -79,6 +87,8 @@ def feature_matrix(c: Candidates, cfg: RetrievalConfig) -> np.ndarray:
     lex = c.lex_score / (c.lex_score.max() or 1.0) if n else c.lex_score
     lex_rank = 1.0 / (1.0 + c.lex_rank / cfg.rank_kappa)
     dense_rank = 1.0 / (1.0 + c.dense_rank / cfg.rank_kappa)
+    rerank_rank = np.full(n, np.inf) if c.rerank_rank is None else c.rerank_rank
+    rerank_score = np.zeros(n) if c.rerank_score is None else c.rerank_score
     x = np.column_stack(
         [
             np.ones(n),
@@ -93,6 +103,9 @@ def feature_matrix(c: Candidates, cfg: RetrievalConfig) -> np.ndarray:
             c.term_cover**2,
             1.0 / (1.0 + c.lex_rank),
             1.0 / (1.0 + c.dense_rank),
+            1.0 / (1.0 + rerank_rank),
+            1.0 / (1.0 + rerank_rank / cfg.rank_kappa),
+            rerank_score,
         ]
     )
     return x
