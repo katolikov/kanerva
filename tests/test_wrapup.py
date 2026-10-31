@@ -176,6 +176,12 @@ def test_claude_code_gets_feedback_rather_than_an_error(store):
     assert run_hook(store, "Stop", {"CLAUDECODE": "1"}).stdout == ""
 
 
+def test_codex_started_from_claude_code_still_gets_a_block_decision(store):
+    work_through_hooks(store)
+    out = run_hook(store, "Stop", {"CLAUDECODE": "1"}, turn_id="t1")
+    assert json.loads(out.stdout) == {"decision": "block", "reason": hooks.WRAPUP_PROMPT}
+
+
 def test_hosts_on_the_same_hook_format_get_a_block_decision(store):
     work_through_hooks(store)
     assert json.loads(run_hook(store, "Stop").stdout) == {"decision": "block", "reason": hooks.WRAPUP_PROMPT}
@@ -227,8 +233,9 @@ def test_hosts_without_a_route_stay_quiet(store, host):
     assert hooks.WRAPUP_PROMPT not in answer
 
 
-def test_the_shipped_hook_can_answer_stop():
-    hook_file = json.loads((ROOT / "plugins" / "claude-code" / "hooks" / "hooks.json").read_text())
+@pytest.mark.parametrize("plugin", ["claude-code", "codex"])
+def test_the_shipped_hook_can_answer_stop(plugin):
+    hook_file = json.loads((ROOT / "plugins" / plugin / "hooks" / "hooks.json").read_text())
     stop = hook_file["hooks"]["Stop"][0]["hooks"][0]
     assert "async" not in stop  # a background hook cannot keep the agent going
     assert "memory_remember" in hook_file["hooks"]["PostToolUse"][0]["matcher"]

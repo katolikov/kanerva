@@ -18,7 +18,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import add_to_config  # noqa: E402
 
 MANIFESTS = [
-    "claude-code/.claude-plugin/plugin.json", "claude-code/.codex-plugin/plugin.json", "copilot/plugin.json",
+    "claude-code/.claude-plugin/plugin.json", "codex/.codex-plugin/plugin.json", "copilot/plugin.json",
     "gemini/gemini-extension.json", "qwen/qwen-extension.json", "openclaw/package.json", "pi/package.json",
     "cline/package.json", "amp/package.json", "opencode/package.json",
 ]
@@ -33,7 +33,7 @@ def test_manifests_carry_the_package_version(path):
     assert json.loads((PLUGINS / path).read_text())["version"] == __version__
 
 
-@pytest.mark.parametrize("name", ["claude-code", "copilot", "gemini", "qwen", "hermes"])
+@pytest.mark.parametrize("name", ["claude-code", "codex", "copilot", "gemini", "qwen", "hermes"])
 def test_launchers_are_executable(name):
     assert (PLUGINS / name / "scripts" / "run.sh").stat().st_mode & stat.S_IXUSR
 
@@ -44,6 +44,26 @@ def test_hook_files_name_events_the_host_table_knows(path, host):
     assert set(hook_file["hooks"]) == set(hosts.EVENTS[host])
     for event, entries in hook_file["hooks"].items():
         assert f"hook-host {host} {event}" in json.dumps(entries)
+
+
+def test_each_agent_has_a_marketplace_for_its_own_plugin():
+    claude = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text())
+    codex = json.loads((ROOT / ".agents" / "plugins" / "marketplace.json").read_text())
+    assert claude["plugins"][0]["source"] == "./plugins/claude-code"
+    assert codex["plugins"][0]["source"] == {"source": "local", "path": "./plugins/codex"}
+    assert claude["name"] == codex["name"] == "kanerva"
+
+
+def test_codex_files_use_only_what_codex_provides():
+    codex = PLUGINS / "codex"
+    hook_file = json.loads((codex / "hooks" / "hooks.json").read_text())
+    claude = json.loads((PLUGINS / "claude-code" / "hooks" / "hooks.json").read_text())
+    assert set(hook_file["hooks"]) == set(claude["hooks"])
+    assert "${PLUGIN_ROOT}/scripts/run.sh" in json.dumps(hook_file)
+    for path in [*codex.glob("skills/*/SKILL.md"), codex / "hooks" / "hooks.json", codex / ".mcp.json"]:
+        text = path.read_text()
+        assert "CLAUDE_PLUGIN_ROOT" not in text and "$ARGUMENTS" not in text
+    assert {path.parent.name for path in codex.glob("skills/*/SKILL.md")} == {"memory", "remember", "forget"}
 
 
 def test_kiro_triggers_are_known():

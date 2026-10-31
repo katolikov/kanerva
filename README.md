@@ -165,7 +165,7 @@ Only your agent knows what it tried and why, so Kanerva asks it. When a session 
 
 The note goes through the same secret filter and ranking as any other. A session is asked once, and again only after 20 more edits. A note the agent writes by itself restarts the count.
 
-This has been run on Claude Code, OpenCode and Gemini CLI. Codex, Copilot CLI, Qwen Code, Devin and Cursor follow their hook docs and have not been run. The other agents are not asked yet. `opencode run` exits before the extra turn starts, so on OpenCode it needs the TUI or a server. Agents with the plugin's `Stop` hook now wait for it at the end of each turn, which takes about 0.2 s.
+This has been run on Claude Code, Codex, OpenCode and Gemini CLI. Copilot CLI, Qwen Code, Devin and Cursor follow their hook docs and have not been run. The other agents are not asked yet. `opencode run` exits before the extra turn starts, so on OpenCode it needs the TUI or a server. Agents with the plugin's `Stop` hook now wait for it at the end of each turn, which takes about 0.2 s.
 
 ## Use it as a library
 

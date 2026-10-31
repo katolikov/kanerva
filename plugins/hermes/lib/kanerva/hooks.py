@@ -258,9 +258,12 @@ EVENT_NAMES = {
 }
 
 
-def stop_output(text: str) -> dict:
-    """Keeps the agent going for one more turn. Claude Code labels this feedback, and ``decision`` an error."""
-    if os.environ.get("CLAUDECODE"):
+def stop_output(text: str, payload: dict) -> dict:
+    """Keeps the agent going for one more turn. Claude Code labels this feedback, and ``decision`` an error.
+
+    Codex rejects that form, and started from a Claude Code session it inherits ``CLAUDECODE``, so its ``turn_id`` decides.
+    """
+    if os.environ.get("CLAUDECODE") and "turn_id" not in payload:
         return {"hookSpecificOutput": {"hookEventName": "Stop", "additionalContext": text}}
     return {"decision": "block", "reason": text}
 
@@ -275,7 +278,7 @@ def main(argv: list[str] | None = None) -> int:
         if context and name in ("SessionStart", "UserPromptSubmit"):
             print(json.dumps({"hookSpecificOutput": {"hookEventName": name, "additionalContext": context}}))
         elif context and event == "stop":
-            print(json.dumps(stop_output(context)))
+            print(json.dumps(stop_output(context, payload)))
     except Exception as exc:  # a memory failure must never block the agent
         print(f"kanerva hook: {exc}", file=sys.stderr)
     return 0
