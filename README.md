@@ -16,44 +16,62 @@ Coding agents start every session from zero. You explain the test command again,
 - **Facts stay current.** Give a fact a key, or write a near-identical note, and the new version replaces the old one. Old versions stay in history, and every note shows its date, newest first.
 - **Private by default.** One SQLite file in your home folder. No account, no cloud, no API key. Known key and token formats are redacted before anything is stored.
 - **No extra model calls.** No LLM on write or read, so memory costs you only the tokens it injects.
-- **Fits your tools.** Plugins for Claude Code and OpenCode, plus an MCP server for everything else.
+- **Fits your tools.** Plugins for Claude Code, Codex, OpenCode, Copilot CLI and more, plus an MCP server for everything else. The [table](#install) says which ones have been run.
 
 ## Install
 
-You need [uv](https://docs.astral.sh/uv/) (recommended) or `python3` with NumPy.
-
-### Claude Code
-
-Inside Claude Code:
-
-```text
-/plugin install kanerva --marketplace katolikov/kanerva
-```
-
-Or from your shell:
+You need [uv](https://docs.astral.sh/uv/) (recommended) or `python3` with NumPy. Then run this with the name of your agent, or with no name to set up every supported agent it finds:
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/katolikov/kanerva/main/install.sh | sh -s -- codex
+```
+
+The script runs each agent's own install commands. Agents that need local files use a clone in `~/.kanerva/src`, and run it again to update.
+
+| Agent | Name for the script | Notes injected | `memory_*` tools | How it was checked |
+|---|---|---|---:|---|
+| Claude Code | `claude` | every prompt | yes | run on 2.1.314 |
+| OpenCode | `opencode` | every prompt | yes | run on 1.19 and 2.2 |
+| Codex | `codex` | every prompt, once you trust the hooks | yes | run on 0.166 |
+| OpenClaw | `openclaw` | every prompt | yes | run on 2026.10.9 |
+| Copilot CLI | `copilot` | every prompt | yes | run on 1.0.105 |
+| Cursor | `cursor` | session start, then at the first tool result of a prompt | yes | docs only |
+| Hermes | `hermes` | every prompt | yes, see its README | run on 0.19.0 |
+| Pi | `pi` | every prompt | yes | run on 1.4.0 |
+| Qwen Code | `qwen` | every prompt | yes | run on 0.26.4 |
+| Devin | `devin` | every prompt | yes | docs only |
+| Gemini CLI | `gemini` | every prompt | yes | run on 0.66.0 |
+| Antigravity | `antigravity` | session start only | yes | docs only |
+| Amp | `amp` | every prompt | no | docs, plugin load only |
+| Kiro CLI | `kiro` | every prompt | yes | docs only |
+| Cline CLI | `cline` | start of each run | yes | run on 3.0.74 |
+| Goose, Zed | [MCP setup](plugins/mcp/README.md) | no, the agent has to ask | yes | docs only |
+
+"Run" means a real agent session against a local stub model, with a seeded note showing up in the model's request. "Docs only" means the setup follows the agent's documentation but has not been run, so expect rough edges and please report them. The agent's README under [`plugins/`](plugins) has its details and limits.
+
+If you would rather use the agent's own commands:
+
+```bash
+# Claude Code
 claude plugin marketplace add katolikov/kanerva
 claude plugin install kanerva@kanerva
-```
 
-Restart Claude Code. Memory now loads on session start and on each prompt, edits and test commands are captured as you work, and you get `/kanerva:memory`, `/kanerva:remember` and `/kanerva:forget`.
+# Codex: start Codex afterwards and run /hooks, because hooks stay off until you trust them
+codex plugin marketplace add katolikov/kanerva
+codex plugin add kanerva@kanerva
 
-### OpenCode
+# Copilot CLI
+copilot plugin marketplace add katolikov/kanerva
+copilot plugin install kanerva@kanerva
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/katolikov/kanerva/main/install.sh | sh -s -- opencode
-```
+# Hermes
+hermes plugins install katolikov/kanerva/plugins/hermes --enable
 
-Tested on OpenCode 1.19 and 2.2. Restart OpenCode and the eight `memory_*` tools are there, with no MCP setup. On V2 you can also install it as a package:
-
-```bash
+# OpenCode 2.x
 opencode plugin add 'github:katolikov/kanerva#main::path:plugins/opencode'
 ```
 
-See the [plugin README](plugins/opencode/README.md) for details.
-
-### Any MCP client
+For any other MCP client:
 
 ```bash
 uv tool install git+https://github.com/katolikov/kanerva
