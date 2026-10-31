@@ -67,8 +67,8 @@ SHELL_TOOLS = {
 }
 
 
-def _open(cwd: str | None) -> tuple[Memory, str]:
-    mem = open_store()
+def _open(cwd: str | None, embed: bool = True) -> tuple[Memory, str]:
+    mem = open_store(embed=embed)
     mem.config = mem.config.with_(learn=LEARN)
     mem.db.executescript(_SESSION_SCHEMA)
     return mem, project_scope(cwd)
@@ -210,7 +210,8 @@ def on_tool(mem: Memory, session: str, scope: str, tool: str, tool_input: dict, 
 
 def handle(event: str, payload: dict) -> str:
     session = str(payload.get("session_id", "default"))
-    mem, scope = _open(payload.get("cwd"))
+    needs_vectors = event not in ("stop", "compact") or CONSOLIDATE_ON_COMPACT
+    mem, scope = _open(payload.get("cwd"), embed=needs_vectors)
     try:
         if event == "session_start":
             source = payload.get("source", "startup")

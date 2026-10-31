@@ -81,8 +81,8 @@ def measure(mode: str, size: int, texts: list[str], questions: list[str], model:
         env["KANERVA_EMBEDDER"] = name
     out: dict = {}
     if size == SIZES[0]:
-        uv_cache = folder / "uv"
-        out["first_call_ms"] = hook(env | {"UV_CACHE_DIR": str(uv_cache)}, payload("prompt", 0, project, questions), project)[0]
+        out["first_call_ms"], answer = hook(env | {"UV_CACHE_DIR": str(folder / "uv")}, payload("prompt", 0, project, questions), project)
+        out["first_call_answered"] = '"additionalContext"' in answer
     hook(env, payload("prompt", 0, project, questions), project)  # uv's environment for this mode now exists
     for event in EVENTS:
         out[event] = summary([hook(env, payload(event, i, project, questions), project)[0] for i in range(RUNS)])

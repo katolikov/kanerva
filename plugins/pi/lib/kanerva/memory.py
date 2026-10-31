@@ -891,8 +891,11 @@ def _user_embedder() -> Embedder | None:
     return None
 
 
-def open_store(path: str | Path | None = None) -> Memory:
-    """The user's store, with the embedder ``KANERVA_EMBEDDER`` asks for, or lexical search."""
+def open_store(path: str | Path | None = None, embed: bool = True) -> Memory:
+    """The user's store, with the embedder ``KANERVA_EMBEDDER`` asks for, or lexical search.
+
+    ``embed=False`` is for work that reads no vectors and writes no notes, and skips the cost of loading a model.
+    """
     from .paths import db_path
 
-    return Memory(path or db_path(), embedder=_user_embedder())
+    return Memory(path or db_path(), embedder=_user_embedder() if embed else None)

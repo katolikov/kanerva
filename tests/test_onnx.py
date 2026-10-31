@@ -52,6 +52,19 @@ def test_the_setting_is_off_by_default(store, monkeypatch):
     mem.close()
 
 
+def test_hook_events_that_use_no_vectors_load_no_model(store, monkeypatch):
+    from kanerva import hooks
+
+    loaded = []
+    monkeypatch.setenv("KANERVA_EMBEDDER", "minilm")
+    monkeypatch.setattr(memory, "_user_embedder", lambda: loaded.append(1))
+    hooks.handle("stop", {"session_id": "s", "cwd": "/tmp/x"})
+    hooks.handle("compact", {"session_id": "s", "cwd": "/tmp/x"})
+    assert loaded == []
+    hooks.handle("prompt", {"session_id": "s", "cwd": "/tmp/x", "prompt": "how do the tests run?"})
+    assert loaded == [1]
+
+
 def test_a_missing_model_means_lexical_search_and_one_download(store, monkeypatch):
     monkeypatch.setenv("KANERVA_EMBEDDER", "minilm")
     spawned = Spawned(monkeypatch)
