@@ -35,7 +35,7 @@ Or point your config at a checkout:
 
 | Variable | Default | What it does |
 |---|---|---|
-| `KANERVA_EMBEDDER` | off | Set to `static` for vector search with model2vec. |
+| `KANERVA_EMBEDDER` | off | Set to `minilm` for vector search with MiniLM on ONNX, or to `static` for model2vec. See the [main README](../../README.md#minilm-in-the-plugins). |
 | `KANERVA_PROMPT_BUDGET` | `600` | Tokens injected per prompt. |
 | `KANERVA_SESSION_BUDGET` | `400` | Tokens injected at session start. |
 | `KANERVA_HOME` | `~/.kanerva` | Where the database lives. |

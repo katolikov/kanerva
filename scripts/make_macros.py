@@ -156,9 +156,10 @@ def update_readme(data: dict, tests: dict, new_tests: dict, latency: dict) -> No
     stale = unkeyed["stale_on_changed_facts"]
     lift = tests["beam"]["kanerva vs rerank"]["mean"]
     tasks = load("new_tracks")["results"]["repomem-new-plain"]
+    hooks = load("hook_latency")["results"]
     text = f"""<img src="docs/assets/recall.png" alt="Evidence recovered at each token budget on held-out data" width="100%">
 
-Share of the needed evidence that made it into the context, on held-out data: {data['beam']['meta']['queries']:,} questions over 55 BEAM conversations and {data['repomem-new']['meta']['queries']:,} queries over eight Python repositories, none of which were used for fitting. These are retrieval metrics, with no LLM in the loop, and code history is shown without keys. "Kanerva, full" uses the MiniLM sentence-embedding model through the library. The plugins run the two lighter setups.
+Share of the needed evidence that made it into the context, on held-out data: {data['beam']['meta']['queries']:,} questions over 55 BEAM conversations and {data['repomem-new']['meta']['queries']:,} queries over eight Python repositories, none of which were used for fitting. These are retrieval metrics, with no LLM in the loop, and code history is shown without keys. "Kanerva, full" uses the MiniLM sentence-embedding model, which the plugins offer as a [setting](#minilm-in-the-plugins). They run the lexical default out of the box.
 
 {chr(10).join(rows)}
 
@@ -167,7 +168,7 @@ Share of the needed evidence that made it into the context, on held-out data: {d
 - **Stale facts mostly stop, when they can be detected.** At 1024 tokens on facts that changed, hybrid search injects an outdated version {100 * stale['hybrid']['stale_any']:.1f}% of the time. Kanerva does so {100 * stale['kanerva']['stale_any']:.1f}% of the time without keys, and on none of the test queries with keys. A one-line keep-the-newest rule gets {100 * stale['hybrid-dedup']['stale_any']:.1f}%, so most of this comes from a simple idea. Free-text updates are not detected: both versions get injected, newest first.
 - **Where it loses.** The near-twin rule still costs a little on exact code facts without keys ({fmt(tasks['fact/kanerva@4096'])} against {fmt(tasks['fact/hybrid@4096'])} at 4096 tokens). The plugin default is level with BM25 on code and slightly behind it at 1024 tokens and above ({fmt(plain['kanerva-lex@1024']['recall'])} against {fmt(plain['bm25@1024']['recall'])}). The static embedder helps on conversations, hurts on code ({fmt(data['repomem-new-static']['summary']['kanerva@1024']['recall'])} against {fmt(plain['kanerva-lex@1024']['recall'])} at 1024 tokens) and lets through more stale facts ({100 * new_tests['repomem-new-static']['stale_on_changed_facts']['kanerva']['stale_any']:.1f}%). All repositories are Python.
 
-A query over 10,000 notes takes about {latency['lexical@10000']['p50_ms']:.0f} ms on an M1 Pro, or {latency['hybrid@10000']['p50_ms']:.0f} ms with embeddings. A hook call adds Python start-up on top, for 0.2 to 0.4 s in total."""
+A query over 10,000 notes takes about {latency['lexical@10000']['p50_ms']:.0f} ms on an M1 Pro, or {latency['hybrid@10000']['p50_ms']:.0f} ms with embeddings. A hook starts a new process each time, so a prompt with 10,000 notes takes {hooks['lexical@10000']['prompt']['p50_ms'] / 1000:.2f} s in all on the default setup, {hooks['minilm@10000']['prompt']['p50_ms'] / 1000:.2f} s with MiniLM and {hooks['static@10000']['prompt']['p50_ms'] / 1000:.2f} s with the static embedder."""
     path = ROOT / "README.md"
     readme = path.read_text()
     start, end = "<!-- results:start -->", "<!-- results:end -->"

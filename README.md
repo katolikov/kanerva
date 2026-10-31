@@ -110,7 +110,7 @@ The name comes from Pentti Kanerva, whose sparse distributed memory showed how a
 <!-- results:start -->
 <img src="docs/assets/recall.png" alt="Evidence recovered at each token budget on held-out data" width="100%">
 
-Share of the needed evidence that made it into the context, on held-out data: 984 questions over 55 BEAM conversations and 2,014 queries over eight Python repositories, none of which were used for fitting. These are retrieval metrics, with no LLM in the loop, and code history is shown without keys. "Kanerva, full" uses the MiniLM sentence-embedding model through the library. The plugins run the two lighter setups.
+Share of the needed evidence that made it into the context, on held-out data: 984 questions over 55 BEAM conversations and 2,014 queries over eight Python repositories, none of which were used for fitting. These are retrieval metrics, with no LLM in the loop, and code history is shown without keys. "Kanerva, full" uses the MiniLM sentence-embedding model, which the plugins offer as a [setting](#minilm-in-the-plugins). They run the lexical default out of the box.
 
 | Dataset | Budget | Kanerva, full | Plugin default | Plugin, static embedder | Hybrid + reranker | Hybrid | BM25 |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -126,7 +126,7 @@ Share of the needed evidence that made it into the context, on held-out data: 98
 - **Stale facts mostly stop, when they can be detected.** At 1024 tokens on facts that changed, hybrid search injects an outdated version 99.1% of the time. Kanerva does so 24.3% of the time without keys, and on none of the test queries with keys. A one-line keep-the-newest rule gets 31.9%, so most of this comes from a simple idea. Free-text updates are not detected: both versions get injected, newest first.
 - **Where it loses.** The near-twin rule still costs a little on exact code facts without keys (0.975 against 0.997 at 4096 tokens). The plugin default is level with BM25 on code and slightly behind it at 1024 tokens and above (0.858 against 0.871). The static embedder helps on conversations, hurts on code (0.831 against 0.858 at 1024 tokens) and lets through more stale facts (37.4%). All repositories are Python.
 
-A query over 10,000 notes takes about 150 ms on an M1 Pro, or 287 ms with embeddings. A hook call adds Python start-up on top, for 0.2 to 0.4 s in total.
+A query over 10,000 notes takes about 150 ms on an M1 Pro, or 287 ms with embeddings. A hook starts a new process each time, so a prompt with 10,000 notes takes 0.45 s in all on the default setup, 0.67 s with MiniLM and 0.92 s with the static embedder.
 <!-- results:end -->
 
 The full method, proofs and all results are in the [paper](paper/paper.pdf).
@@ -137,7 +137,7 @@ Everything is optional.
 
 | Variable | Default | What it does |
 |---|---|---|
-| `KANERVA_EMBEDDER` | off | Set to `static` to add vector search with [model2vec](https://github.com/MinishLab/model2vec). Good for long conversational notes, worse for exact code facts (see [Benchmarks](#benchmarks)). Downloads a small model on first use. |
+| `KANERVA_EMBEDDER` | off | Set to `minilm` to add vector search with the [MiniLM model](#minilm-in-the-plugins), or to `static` for [model2vec](https://github.com/MinishLab/model2vec), which is good for long conversational notes and worse for exact code facts (see [Benchmarks](#benchmarks)). Either one downloads a model on first use. |
 | `KANERVA_PROMPT_BUDGET` | `600` | Tokens injected per prompt. |
 | `KANERVA_SESSION_BUDGET` | `400` | Tokens injected at session start. |
 | `KANERVA_MIN_WEIGHT` | `0.02` | Skip notes below this estimated probability of being needed. |
@@ -145,6 +145,18 @@ Everything is optional.
 | `KANERVA_CONSOLIDATE` | off | Set to `1` to merge near-duplicate notes on compaction. Merges can be undone. |
 | `KANERVA_LEARN` | off | Set to `1` to learn from which notes were used. |
 | `KANERVA_WRAPUP` | on | Set to `0` to stop asking your agent for a note at the end of a session. |
+
+### MiniLM in the plugins
+
+`KANERVA_EMBEDDER=minilm` runs [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) on ONNX Runtime, with no torch. Its vectors match the ones behind the "Kanerva, full" column, at a cosine above 0.9999 on samples of the benchmark texts, so the same relevance model applies.
+
+With uv the packages install themselves. With plain `python3`, run `pip install onnxruntime tokenizers` first. The 90 MB model comes from the official Hugging Face repository at a pinned revision, in the background, and search stays lexical until it arrives.
+
+Notes written before that have no vectors, and notes from the static embedder have the wrong kind. Search still finds them by their words. To give them vectors, run this once with the setting on:
+
+```bash
+KANERVA_EMBEDDER=minilm uvx --from 'kanerva[onnx] @ git+https://github.com/katolikov/kanerva' kanerva reembed
+```
 
 ### Session wrap-up
 
