@@ -1,7 +1,8 @@
 """Wall time of real hook calls: the plugin launcher, a new process per call, and a store of real notes.
 
-Each mode also gets one first call with an empty uv cache, which is what a new user meets: uv downloads the packages
-during that call. Writes results/hook_latency.json.
+The plugin is copied out of this repository first, as an install would be. Inside it, uv would find the repository's
+.venv and skip the environment it builds for a real user. Each mode also gets one first call with an empty uv cache,
+which is what a new user meets: uv downloads the packages during that call. Writes results/hook_latency.json.
 
 Usage: python -m experiments.hook_latency <folder with the MiniLM model>
 """
@@ -27,7 +28,7 @@ from kanerva import Memory
 from kanerva.paths import project_scope
 
 ROOT = Path(__file__).resolve().parent.parent
-LAUNCHER = ROOT / "plugins" / "claude-code" / "scripts" / "run.sh"
+PLUGIN = ROOT / "plugins" / "claude-code"
 SIZES = (1000, 10000)
 RUNS = 15
 MODES = {"lexical": (None, None), "static": ("static", "lme-m2v"), "minilm": ("minilm", "lme")}
@@ -35,8 +36,9 @@ EVENTS = ("prompt", "tool", "stop")
 
 
 def hook(env: dict, payload: dict, cwd: Path) -> tuple[float, str]:
+    launcher = Path(env["KANERVA_LAUNCHER"])
     start = time.perf_counter()
-    done = subprocess.run(["sh", str(LAUNCHER), "hook"], input=json.dumps(payload), capture_output=True, text=True, env=env, cwd=cwd)
+    done = subprocess.run(["sh", str(launcher), "hook"], input=json.dumps(payload), capture_output=True, text=True, env=env, cwd=cwd)
     return (time.perf_counter() - start) * 1000, done.stdout
 
 
@@ -68,15 +70,18 @@ def payload(event: str, i: int, project: Path, questions: list[str]) -> dict:
 def measure(mode: str, size: int, texts: list[str], questions: list[str], model: Path) -> dict:
     name, cache_name = MODES[mode]
     folder = Path(tempfile.mkdtemp(prefix="kanerva-latency-"))
-    store, project = folder / "store", folder / "project"
+    store, project, plugin = folder / "store", folder / "project", folder / "plugin"
     project.mkdir()
     store.mkdir()
+    for part in ("scripts", "lib"):
+        shutil.copytree(PLUGIN / part, plugin / part)
     subprocess.run(["git", "init", "-q", str(project)], check=True)
     fill(store, project, texts[:size], cache_name)
     if mode == "minilm":
         shutil.copytree(model, store / "models" / "all-MiniLM-L6-v2")
-    env = {k: v for k, v in os.environ.items() if not k.startswith(("KANERVA", "CLAUDE"))}
-    env |= {"KANERVA_HOME": str(store), "KANERVA_PROJECT_DIR": str(project), "HF_HUB_OFFLINE": "1"}
+    env = {k: v for k, v in os.environ.items() if not k.startswith(("KANERVA", "CLAUDE", "VIRTUAL_ENV", "UV_"))}
+    env |= {"KANERVA_HOME": str(store), "KANERVA_PROJECT_DIR": str(project), "HF_HUB_OFFLINE": "1",
+            "KANERVA_LAUNCHER": str(plugin / "scripts" / "run.sh")}
     if name:
         env["KANERVA_EMBEDDER"] = name
     out: dict = {}
