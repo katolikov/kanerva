@@ -84,6 +84,8 @@ With keys, the method now beats every rival: \V{nd-repomem-new-kanerva_vs_hybrid
 
 The lighter configurations remain behind on code. The lexical model without keys is level with BM25 on average (\V{nd-repomem-new-plain-kanerva-lex_vs_bm25-mean}, interval \V{nci-repomem-new-plain-kanerva-lex_vs_bm25-mean}), and below it at 1024 tokens, on \V{npos-repomem-new-plain-kanerva-lex_vs_bm25-1024} repositories in its favour. The static embedder injects a stale version \V{nst-repomem-new-static-kanerva} of the time.
 
+We tried to narrow that gap by comparing twins with hashed words, as the lexical model does, instead of the static embedder's vectors. Every RepoMem repository has been seen by now, so these are development numbers. A setting had to lower stale injection and keep mean recall on all four groups of repositories, and none of the \V{tw-settings} we tried did. The closest raised mean recall on each group, by \V{twh-repomem-new-diff} on the second test's repositories (interval \V{twh-repomem-new-ci}), but stale injection there rose from \V{tw-repomem-new-stale} to \V{twh-repomem-new-stale}. Stricter thresholds lowered it and lost recall. We kept the embedder's vectors.
+
 \begin{table}[!htb]\centering\scriptsize
 \caption{Evidence recall on the second held-out test.}\label{tab:new}
 \resizebox{\columnwidth}{!}{\input{generated/table_new.tex}}

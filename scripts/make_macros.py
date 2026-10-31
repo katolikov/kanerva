@@ -157,6 +157,7 @@ def update_readme(data: dict, tests: dict, new_tests: dict, latency: dict) -> No
     lift = tests["beam"]["kanerva vs rerank"]["mean"]
     tasks = load("new_tracks")["results"]["repomem-new-plain"]
     hooks = load("hook_latency")["results"]
+    twins = load("dev_static_twins")["table"]["hashing-0.7-0.9"]
     text = f"""<img src="docs/assets/recall.png" alt="Evidence recovered at each token budget on held-out data" width="100%">
 
 Share of the needed evidence that made it into the context, on held-out data: {data['beam']['meta']['queries']:,} questions over 55 BEAM conversations and {data['repomem-new']['meta']['queries']:,} queries over eight Python repositories, none of which were used for fitting. These are retrieval metrics, with no LLM in the loop, and code history is shown without keys. "Kanerva, full" uses the MiniLM sentence-embedding model, which the plugins offer as a [setting](#minilm-in-the-plugins). They run the lexical default out of the box.
@@ -166,7 +167,7 @@ Share of the needed evidence that made it into the context, on held-out data: {d
 - **Long conversations are where it shines.** From 1024 tokens up, Kanerva pulls well ahead of everything else, with {fmt(beam['kanerva@1024']['recall'])} against {fmt(beam['rerank@1024']['recall'])} for hybrid search with a cross-encoder reranker at 1024 tokens. Below that it is level with the reranker, without needing one. Over all budgets it recovers {100 * lift['diff']:.0f} points more.
 - **On code, keys make the difference.** With keys, Kanerva beats hybrid search on all eight repositories, by {100 * keyed['kanerva vs hybrid']['mean']['diff']:.1f} points over all budgets. Without keys it is level with hybrid search and the reranker: ahead at 128 tokens, a little behind in the middle, and the intervals include zero.
 - **Stale facts mostly stop, when they can be detected.** At 1024 tokens on facts that changed, hybrid search injects an outdated version {100 * stale['hybrid']['stale_any']:.1f}% of the time. Kanerva does so {100 * stale['kanerva']['stale_any']:.1f}% of the time without keys, and on none of the test queries with keys. A one-line keep-the-newest rule gets {100 * stale['hybrid-dedup']['stale_any']:.1f}%, so most of this comes from a simple idea. Free-text updates are not detected: both versions get injected, newest first.
-- **Where it loses.** The near-twin rule still costs a little on exact code facts without keys ({fmt(tasks['fact/kanerva@4096'])} against {fmt(tasks['fact/hybrid@4096'])} at 4096 tokens). The plugin default is level with BM25 on code and slightly behind it at 1024 tokens and above ({fmt(plain['kanerva-lex@1024']['recall'])} against {fmt(plain['bm25@1024']['recall'])}). The static embedder helps on conversations, hurts on code ({fmt(data['repomem-new-static']['summary']['kanerva@1024']['recall'])} against {fmt(plain['kanerva-lex@1024']['recall'])} at 1024 tokens) and lets through more stale facts ({100 * new_tests['repomem-new-static']['stale_on_changed_facts']['kanerva']['stale_any']:.1f}%). All repositories are Python.
+- **Where it loses.** The near-twin rule still costs a little on exact code facts without keys ({fmt(tasks['fact/kanerva@4096'])} against {fmt(tasks['fact/hybrid@4096'])} at 4096 tokens). The plugin default is level with BM25 on code and slightly behind it at 1024 tokens and above ({fmt(plain['kanerva-lex@1024']['recall'])} against {fmt(plain['bm25@1024']['recall'])}). The static embedder helps on conversations, hurts on code ({fmt(data['repomem-new-static']['summary']['kanerva@1024']['recall'])} against {fmt(plain['kanerva-lex@1024']['recall'])} at 1024 tokens) and lets through more stale facts ({100 * new_tests['repomem-new-static']['stale_on_changed_facts']['kanerva']['stale_any']:.1f}%). Comparing near-twins by hashed words instead raises recall but does not reliably lower that ({100 * twins['repomem-new']['stale_any']:.1f}% on these repositories at the closest setting), so it is not shipped. All repositories are Python.
 
 A query over 10,000 notes takes about {latency['lexical@10000']['p50_ms']:.0f} ms on an M1 Pro, or {latency['hybrid@10000']['p50_ms']:.0f} ms with embeddings. A hook starts a new process each time, so a prompt with 10,000 notes takes {hooks['lexical@10000']['prompt']['p50_ms'] / 1000:.2f} s in all on the default setup, {hooks['minilm@10000']['prompt']['p50_ms'] / 1000:.2f} s with MiniLM and {hooks['static@10000']['prompt']['p50_ms'] / 1000:.2f} s with the static embedder."""
     path = ROOT / "README.md"
@@ -339,6 +340,17 @@ def main() -> None:
     define(lines, "v-gapdays", f"{forgetting['meta']['session_days']:.0f}")
     rows.append("\\bottomrule\\end{tabular}")
     (OUT / "table_forgetting.tex").write_text("\n".join(rows))
+
+    twins = load("dev_static_twins")["table"]
+    define(lines, "v-tw-settings", len(twins) - 1)
+    for group, row in twins["vectors"].items():
+        define(lines, f"v-tw-{group}-recall", fmt(row["recall"]))
+        define(lines, f"v-tw-{group}-stale", fmt(row["stale_any"]))
+    for group, row in twins["hashing-0.7-0.9"].items():
+        define(lines, f"v-twh-{group}-recall", fmt(row["recall"]))
+        define(lines, f"v-twh-{group}-stale", fmt(row["stale_any"]))
+        define(lines, f"v-twh-{group}-diff", signed(row["test"]["diff"]))
+        define(lines, f"v-twh-{group}-ci", f"[{signed(row['test']['cluster_ci'][0])}, {signed(row['test']['cluster_ci'][1])}]")
 
     latency = load("scale")
     for key, entry in latency["results"].items():
