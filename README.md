@@ -92,20 +92,21 @@ The name comes from Pentti Kanerva, whose sparse distributed memory showed how a
 <!-- results:start -->
 <img src="docs/assets/recall.png" alt="Evidence recovered at each token budget on held-out data" width="100%">
 
-Share of the needed evidence that made it into the context, on held-out data: 984 questions over 55 BEAM conversations and 1,248 queries over five Python repositories, none of which were used for fitting. These are retrieval metrics, with no LLM in the loop, and code history is shown without keys. "Kanerva, full" uses the MiniLM sentence-embedding model through the library. The plugins run the two lighter setups.
+Share of the needed evidence that made it into the context, on held-out data: 984 questions over 55 BEAM conversations and 2,014 queries over eight Python repositories, none of which were used for fitting. These are retrieval metrics, with no LLM in the loop, and code history is shown without keys. "Kanerva, full" uses the MiniLM sentence-embedding model through the library. The plugins run the two lighter setups.
 
 | Dataset | Budget | Kanerva, full | Plugin default | Plugin, static embedder | Hybrid + reranker | Hybrid | BM25 |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | Long conversations | 256 | **0.449** | 0.388 | 0.438 | 0.439 | 0.428 | 0.371 |
 | Long conversations | 1024 | **0.635** | 0.546 | 0.592 | 0.488 | 0.430 | 0.368 |
 | Long conversations | 4096 | **0.754** | 0.641 | 0.705 | 0.576 | 0.529 | 0.431 |
-| Code history | 256 | 0.786 | 0.758 | 0.715 | 0.796 | **0.799** | 0.763 |
-| Code history | 1024 | 0.855 | 0.833 | 0.804 | **0.871** | 0.869 | 0.850 |
-| Code history | 4096 | 0.917 | 0.895 | 0.890 | **0.951** | **0.951** | 0.939 |
+| Code history | 256 | 0.800 | 0.778 | 0.751 | 0.813 | **0.815** | 0.783 |
+| Code history | 1024 | 0.872 | 0.858 | 0.831 | 0.883 | **0.887** | 0.871 |
+| Code history | 4096 | **0.935** | 0.908 | 0.903 | **0.935** | **0.935** | 0.917 |
 
 - **Long conversations are where it shines.** From 1024 tokens up, Kanerva pulls well ahead of everything else, with 0.635 against 0.488 for hybrid search with a cross-encoder reranker at 1024 tokens. Below that it is level with the reranker, without needing one. Over all budgets it recovers 9 points more.
-- **Stale facts mostly stop, when they can be detected.** At 1024 tokens on facts that changed, hybrid search injects an outdated version 99.7% of the time. Kanerva does so 19.4% of the time without keys, and on none of the test queries with keys. A one-line keep-the-newest rule gets 22.7%, so most of this comes from a simple idea. Free-text updates are not detected: both versions get injected, newest first.
-- **Where it loses.** On code history, the rule that removes near-identical notes also drops useful look-alike commits, so large budgets favour plain search: 0.917 against 0.951 at 4096 tokens. The plugin default is about level with BM25 there, and behind it at large budgets (0.895 against 0.939). The static embedder helps on conversations but hurts on code (0.804 against 0.833 at 1024 tokens) and lets through more stale facts (37.1%). With five repositories the intervals are wide, so read differences of a few points on code as ties.
+- **On code, keys make the difference.** With keys, Kanerva beats hybrid search on all eight repositories, by 2.1 points over all budgets. Without keys it is level with hybrid search and the reranker: ahead at 128 tokens, a little behind in the middle, and the intervals include zero.
+- **Stale facts mostly stop, when they can be detected.** At 1024 tokens on facts that changed, hybrid search injects an outdated version 99.1% of the time. Kanerva does so 24.3% of the time without keys, and on none of the test queries with keys. A one-line keep-the-newest rule gets 31.9%, so most of this comes from a simple idea. Free-text updates are not detected: both versions get injected, newest first.
+- **Where it loses.** The near-twin rule still costs a little on exact code facts without keys (0.975 against 0.997 at 4096 tokens). The plugin default is level with BM25 on code and slightly behind it at 1024 tokens and above (0.858 against 0.871). The static embedder helps on conversations, hurts on code (0.831 against 0.858 at 1024 tokens) and lets through more stale facts (37.4%). All repositories are Python.
 
 A query over 10,000 notes takes about 150 ms on an M1 Pro, or 287 ms with embeddings. A hook call adds Python start-up on top, for 0.2 to 0.4 s in total.
 <!-- results:end -->

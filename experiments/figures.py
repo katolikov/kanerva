@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "results"
 BUDGETS = (128, 256, 512, 1024, 2048, 4096)
-PANELS = {"fresh_beam": "Long conversations (BEAM, 984 questions)", "fresh_repomem-fresh-plain": "Code history (RepoMem, 1,248 questions)"}
+PANELS = {"fresh_beam": "Long conversations (BEAM, 984 questions)", "fresh_repomem-new-plain": "Code history (RepoMem, 2,014 questions)"}
 SERIES = (
     ("kanerva", "Kanerva, full", 0),
     ("kanerva-lex", "Kanerva, plugin default", 1),

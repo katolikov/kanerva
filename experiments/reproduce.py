@@ -19,6 +19,7 @@ STEPS = [
     ("ablation", sys.executable, ["experiments.feature_ablation"], 7200),
     ("fit", sys.executable, ["experiments.fit_relevance"], 3600),
     ("fresh-test", sys.executable, ["experiments.final_test"], 7200),
+    ("second-test", sys.executable, ["experiments.new_repos_test"], 7200),
     ("updates", sys.executable, ["experiments.dev_eval", "lme-updates"], 1800),
     ("store", sys.executable, ["experiments.run_store"], 3600),
     ("online", sys.executable, ["experiments.run_online"], 3600),
