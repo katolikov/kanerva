@@ -45,6 +45,8 @@ The comparator is the per-round optimum under the time-varying $w^\star_t$, so t
 
 \paragraph{What this does and does not say.} The theorem describes how regret scales, and it is not a practical guarantee. Since $F\le1$ in the original objective, regret is trivially at most $T$, and with $K=40$, $R=\frac12$, $\Sigma=1$, $\delta=0.05$ and $L=1$, the bound falls below $T$ near \V{horizon-12} rounds at $d=12$. Letting the online layer see only three features, with the frozen model's probability as one of them, moves that point to \V{horizon-3} rounds, which is better and still far from a session count. The shipped defaults use $\beta=0$ and no margin, and they use a heuristic rule on top of \eqref{eq:lomax}, so the code is not the analyzed algorithm. The recall tables in Section~\ref{sec:experiments} use the static model and do not rest on online learning at all.
 
+\paragraph{What it covers.} The theorem analyses the ridge bandit of Section~\ref{sec:method}, which the library keeps. The opt-in learning path of the plugins is the item lift of that section, a different rule. This analysis does not cover it.
+
 \begin{proposition}[Validity error of the hazard estimate]\label{prop:hazard}
 Let items of class $k$ have lifetimes that are $\mathrm{Exp}(\lambda_k)$, with right-censoring that depends only on the past. Let $N$ be the number of observed changes, $E$ the total exposure up to a stopping time, and $\hat\lambda_k=N/E$. If $E\ge E_0$ almost surely and $\eta:=2\sqrt{\log(2/\delta)/(\lambda_kE_0)}\le\frac12$, then with probability at least $1-\delta$, for all ages $a\ge0$ simultaneously,
 \[|e^{-\hat\lambda_k a}-e^{-\lambda_k a}|\le \frac{2}{e}\,\eta .\]

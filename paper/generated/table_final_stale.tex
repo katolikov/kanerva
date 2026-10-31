@@ -1,0 +1,13 @@
+\begin{tabular}{@{}lrrrr@{}}\toprule
+Method & \multicolumn{2}{c}{Keys} & \multicolumn{2}{c}{No keys} \\
+ & inject & error & inject & error \\\midrule
+\kanerva & 0.000 & 0.000 & 0.349 & 0.003 \\
+\kanerva, lexical & 0.000 & 0.000 & 0.266 & 0.005 \\
+\kanerva 0.4.1 & 0.000 & 0.000 & 0.352 & 0.003 \\
+\kanerva 0.4.1, lexical & 0.000 & 0.000 & 0.955 & 0.007 \\
+Hybrid, newest of twins & 0.365 & 0.000 & 0.365 & 0.003 \\
+Hybrid, live only & 0.000 & 0.000 & 0.999 & 0.722 \\
+Hybrid RRF & 0.999 & 0.723 & 0.999 & 0.722 \\
+Hybrid + reranker & 0.999 & 0.596 & 0.999 & 0.596 \\
+BM25 & 0.990 & 0.834 & 0.990 & 0.834 \\
+\bottomrule\end{tabular}

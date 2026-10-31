@@ -1,0 +1,11 @@
+\begin{tabular}{@{}lrrrrrrr@{}}\toprule
+Method & 128 & 256 & 512 & 1024 & 2048 & 4096 & mean \\\midrule
+\kanerva & 0.795 & 0.832 & 0.863 & \textbf{0.891} & 0.916 & \textbf{0.940} & 0.873 \\
+\kanerva + reranker & 0.794 & \textbf{0.836} & \textbf{0.865} & \textbf{0.891} & \textbf{0.917} & \textbf{0.940} & \textbf{0.874} \\
+\kanerva, lexical & 0.768 & 0.803 & 0.834 & 0.863 & 0.890 & 0.904 & 0.844 \\
+\kanerva 0.4.1 & 0.782 & 0.820 & 0.848 & 0.877 & 0.905 & 0.930 & 0.860 \\
+Hybrid + reranker & \textbf{0.798} & 0.831 & 0.858 & 0.883 & 0.903 & 0.926 & 0.866 \\
+Hybrid RRF & 0.770 & 0.820 & 0.853 & 0.882 & 0.903 & 0.926 & 0.859 \\
+Hybrid, newest of twins & 0.777 & 0.810 & 0.840 & 0.868 & 0.889 & 0.911 & 0.849 \\
+BM25 & 0.741 & 0.804 & 0.840 & 0.870 & 0.893 & 0.908 & 0.843 \\
+\bottomrule\end{tabular}

@@ -1,0 +1,84 @@
+\begin{tabular}{@{}lllrrrr@{}}\toprule
+Dataset & Comparison & $B$ & $\Delta$ recall & Unit CI & Units $+$ & $p$ \\\midrule
+RepoMem, keys & \kanerva vs hybrid & 128 & +0.051 & [+0.023, +0.082] & 12/15 & 0.008 \\
+RepoMem, keys & \kanerva vs hybrid & 512 & +0.013 & [+0.006, +0.020] & 14/15 & 0.002 \\
+RepoMem, keys & \kanerva vs hybrid & 1024 & +0.018 & [+0.011, +0.025] & 12/15 & 0.008 \\
+RepoMem, keys & \kanerva vs hybrid & 4096 & +0.027 & [+0.019, +0.038] & 14/15 & 0.001 \\
+RepoMem, keys & \kanerva vs hybrid & mean & +0.025 & [+0.016, +0.034] & 15/15 & $<$0.001 \\
+RepoMem, keys & \kanerva vs reranker & 128 & +0.039 & [+0.024, +0.059] & 14/15 & $<$0.001 \\
+RepoMem, keys & \kanerva vs reranker & 512 & +0.022 & [+0.014, +0.035] & 14/15 & $<$0.001 \\
+RepoMem, keys & \kanerva vs reranker & 1024 & +0.026 & [+0.019, +0.037] & 15/15 & $<$0.001 \\
+RepoMem, keys & \kanerva vs reranker & 4096 & +0.027 & [+0.019, +0.037] & 14/15 & $<$0.001 \\
+RepoMem, keys & \kanerva vs reranker & mean & +0.028 & [+0.021, +0.038] & 15/15 & $<$0.001 \\
+RepoMem, keys & \kanerva vs hybrid, live & 128 & +0.014 & [+0.005, +0.024] & 11/15 & 0.025 \\
+RepoMem, keys & \kanerva vs hybrid, live & 512 & +0.011 & [+0.006, +0.018] & 13/15 & 0.002 \\
+RepoMem, keys & \kanerva vs hybrid, live & 1024 & +0.017 & [+0.010, +0.024] & 12/15 & 0.012 \\
+RepoMem, keys & \kanerva vs hybrid, live & 4096 & +0.025 & [+0.018, +0.035] & 14/15 & 0.001 \\
+RepoMem, keys & \kanerva vs hybrid, live & mean & +0.017 & [+0.010, +0.023] & 15/15 & $<$0.001 \\
+RepoMem, keys & \kanerva vs 0.4.1 & 128 & +0.009 & [+0.004, +0.017] & 12/15 & 0.006 \\
+RepoMem, keys & \kanerva vs 0.4.1 & 512 & +0.011 & [+0.006, +0.020] & 12/15 & 0.006 \\
+RepoMem, keys & \kanerva vs 0.4.1 & 1024 & +0.012 & [+0.007, +0.021] & 14/15 & 0.001 \\
+RepoMem, keys & \kanerva vs 0.4.1 & 4096 & +0.007 & [+0.003, +0.014] & 12/15 & 0.006 \\
+RepoMem, keys & \kanerva vs 0.4.1 & mean & +0.010 & [+0.006, +0.015] & 14/15 & $<$0.001 \\
+RepoMem, keys & \kanerva vs any twin & 128 & +0.000 & [+0.000, +0.000] & 0/15 & 1.000 \\
+RepoMem, keys & \kanerva vs any twin & 512 & +0.000 & [+0.000, +0.000] & 0/15 & 1.000 \\
+RepoMem, keys & \kanerva vs any twin & 1024 & +0.000 & [+0.000, +0.000] & 0/15 & 1.000 \\
+RepoMem, keys & \kanerva vs any twin & 4096 & +0.000 & [+0.000, +0.000] & 0/15 & 1.000 \\
+RepoMem, keys & \kanerva vs any twin & mean & +0.000 & [+0.000, +0.000] & 0/15 & 1.000 \\
+RepoMem, keys & Lexical vs BM25 & 128 & +0.052 & [+0.019, +0.089] & 11/15 & 0.063 \\
+RepoMem, keys & Lexical vs BM25 & 512 & +0.008 & [-0.003, +0.022] & 10/15 & 0.606 \\
+RepoMem, keys & Lexical vs BM25 & 1024 & +0.006 & [+0.000, +0.011] & 11/15 & 0.453 \\
+RepoMem, keys & Lexical vs BM25 & 4096 & +0.007 & [+0.002, +0.012] & 11/15 & 0.606 \\
+RepoMem, keys & Lexical vs BM25 & mean & +0.017 & [+0.006, +0.027] & 9/15 & 0.013 \\
+RepoMem, keys & Lexical vs 0.4.1 & 128 & +0.009 & [+0.002, +0.017] & 12/15 & 0.036 \\
+RepoMem, keys & Lexical vs 0.4.1 & 512 & +0.003 & [-0.003, +0.007] & 10/15 & 1.000 \\
+RepoMem, keys & Lexical vs 0.4.1 & 1024 & -0.002 & [-0.005, +0.000] & 5/15 & 0.752 \\
+RepoMem, keys & Lexical vs 0.4.1 & 4096 & +0.002 & [+0.000, +0.005] & 11/15 & 0.052 \\
+RepoMem, keys & Lexical vs 0.4.1 & mean & +0.002 & [-0.000, +0.005] & 11/15 & 0.492 \\
+RepoMem, keys & Lexical vs any twin & 128 & +0.000 & [+0.000, +0.000] & 0/15 & 1.000 \\
+RepoMem, keys & Lexical vs any twin & 512 & +0.000 & [+0.000, +0.000] & 0/15 & 1.000 \\
+RepoMem, keys & Lexical vs any twin & 1024 & +0.000 & [+0.000, +0.000] & 0/15 & 1.000 \\
+RepoMem, keys & Lexical vs any twin & 4096 & +0.000 & [+0.000, +0.000] & 0/15 & 1.000 \\
+RepoMem, keys & Lexical vs any twin & mean & +0.000 & [+0.000, +0.000] & 0/15 & 1.000 \\
+\addlinespace
+RepoMem, no keys & \kanerva vs hybrid & 128 & +0.051 & [+0.022, +0.082] & 12/15 & 0.009 \\
+RepoMem, no keys & \kanerva vs hybrid & 512 & +0.010 & [+0.003, +0.018] & 11/15 & 0.015 \\
+RepoMem, no keys & \kanerva vs hybrid & 1024 & +0.016 & [+0.009, +0.023] & 12/15 & 0.015 \\
+RepoMem, no keys & \kanerva vs hybrid & 4096 & +0.027 & [+0.018, +0.038] & 14/15 & 0.001 \\
+RepoMem, no keys & \kanerva vs hybrid & mean & +0.024 & [+0.014, +0.033] & 15/15 & $<$0.001 \\
+RepoMem, no keys & \kanerva vs reranker & 128 & +0.039 & [+0.023, +0.060] & 14/15 & $<$0.001 \\
+RepoMem, no keys & \kanerva vs reranker & 512 & +0.020 & [+0.011, +0.035] & 13/15 & 0.001 \\
+RepoMem, no keys & \kanerva vs reranker & 1024 & +0.024 & [+0.016, +0.035] & 15/15 & $<$0.001 \\
+RepoMem, no keys & \kanerva vs reranker & 4096 & +0.027 & [+0.018, +0.038] & 14/15 & $<$0.001 \\
+RepoMem, no keys & \kanerva vs reranker & mean & +0.026 & [+0.018, +0.037] & 15/15 & $<$0.001 \\
+RepoMem, no keys & \kanerva vs hybrid, live & 128 & +0.051 & [+0.022, +0.081] & 12/15 & 0.009 \\
+RepoMem, no keys & \kanerva vs hybrid, live & 512 & +0.010 & [+0.003, +0.019] & 11/15 & 0.015 \\
+RepoMem, no keys & \kanerva vs hybrid, live & 1024 & +0.016 & [+0.009, +0.024] & 12/15 & 0.015 \\
+RepoMem, no keys & \kanerva vs hybrid, live & 4096 & +0.027 & [+0.018, +0.038] & 14/15 & 0.001 \\
+RepoMem, no keys & \kanerva vs hybrid, live & mean & +0.024 & [+0.015, +0.033] & 15/15 & $<$0.001 \\
+RepoMem, no keys & \kanerva vs 0.4.1 & 128 & +0.029 & [+0.019, +0.038] & 14/15 & $<$0.001 \\
+RepoMem, no keys & \kanerva vs 0.4.1 & 512 & +0.023 & [+0.016, +0.030] & 13/15 & $<$0.001 \\
+RepoMem, no keys & \kanerva vs 0.4.1 & 1024 & +0.023 & [+0.017, +0.030] & 15/15 & $<$0.001 \\
+RepoMem, no keys & \kanerva vs 0.4.1 & 4096 & +0.016 & [+0.012, +0.021] & 14/15 & $<$0.001 \\
+RepoMem, no keys & \kanerva vs 0.4.1 & mean & +0.022 & [+0.017, +0.026] & 15/15 & $<$0.001 \\
+RepoMem, no keys & \kanerva vs any twin & 128 & +0.022 & [+0.011, +0.030] & 6/15 & 0.188 \\
+RepoMem, no keys & \kanerva vs any twin & 512 & +0.012 & [+0.005, +0.018] & 6/15 & 0.188 \\
+RepoMem, no keys & \kanerva vs any twin & 1024 & +0.011 & [+0.004, +0.015] & 6/15 & 0.188 \\
+RepoMem, no keys & \kanerva vs any twin & 4096 & +0.008 & [+0.003, +0.012] & 6/15 & 0.188 \\
+RepoMem, no keys & \kanerva vs any twin & mean & +0.013 & [+0.006, +0.018] & 6/15 & 0.031 \\
+RepoMem, no keys & Lexical vs BM25 & 128 & +0.045 & [+0.013, +0.080] & 10/15 & 0.100 \\
+RepoMem, no keys & Lexical vs BM25 & 512 & +0.003 & [-0.009, +0.019] & 9/15 & 1.000 \\
+RepoMem, no keys & Lexical vs BM25 & 1024 & +0.002 & [-0.005, +0.009] & 10/15 & 1.000 \\
+RepoMem, no keys & Lexical vs BM25 & 4096 & +0.003 & [-0.002, +0.009] & 9/15 & 1.000 \\
+RepoMem, no keys & Lexical vs BM25 & mean & +0.013 & [+0.002, +0.022] & 9/15 & 0.032 \\
+RepoMem, no keys & Lexical vs 0.4.1 & 128 & +0.020 & [+0.007, +0.033] & 13/15 & 0.008 \\
+RepoMem, no keys & Lexical vs 0.4.1 & 512 & -0.000 & [-0.005, +0.005] & 9/15 & 1.000 \\
+RepoMem, no keys & Lexical vs 0.4.1 & 1024 & -0.005 & [-0.007, -0.003] & 3/15 & 0.125 \\
+RepoMem, no keys & Lexical vs 0.4.1 & 4096 & -0.002 & [-0.004, +0.002] & 9/15 & 1.000 \\
+RepoMem, no keys & Lexical vs 0.4.1 & mean & +0.003 & [-0.000, +0.005] & 10/15 & 0.444 \\
+RepoMem, no keys & Lexical vs any twin & 128 & +0.031 & [+0.014, +0.044] & 6/15 & 0.188 \\
+RepoMem, no keys & Lexical vs any twin & 512 & +0.033 & [+0.014, +0.047] & 6/15 & 0.188 \\
+RepoMem, no keys & Lexical vs any twin & 1024 & +0.033 & [+0.015, +0.047] & 6/15 & 0.188 \\
+RepoMem, no keys & Lexical vs any twin & 4096 & +0.033 & [+0.014, +0.048] & 6/15 & 0.188 \\
+RepoMem, no keys & Lexical vs any twin & mean & +0.032 & [+0.015, +0.047] & 6/15 & 0.031 \\
+\bottomrule\end{tabular}
