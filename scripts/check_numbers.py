@@ -24,7 +24,7 @@ RESULT_SECTIONS = ["abstract.tex", "experiments.tex", "conclusion.tex", "limitat
 ALLOWED = {
     "0.316",  # the proved worst-case constant, (1 - 1/e) / 2
     "0.05",  # significance level
-    "0.4", "0.5", "0.7", "0.8", "0.85", "0.9", "0.95", "0.97",  # thresholds and rates, which are inputs
+    "0.3", "0.5", "0.7", "0.8", "0.85", "0.9", "0.95", "0.97",  # thresholds and rates, which are inputs
     "0.4.1", "0.5.0",  # release numbers
 }
 ALLOWED_PERCENT = {"20\\%"}  # the reward noise, an input

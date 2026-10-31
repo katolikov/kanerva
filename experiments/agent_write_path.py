@@ -20,6 +20,7 @@ from __future__ import annotations
 import json
 import os
 import random
+import re
 import shutil
 import sqlite3
 import subprocess
@@ -53,12 +54,18 @@ SESSION_VARIABLES = ("CLAUDECODE", "CLAUDE_CODE_SESSION_ID", "CLAUDE_CODE_CHILD_
                      "CLAUDE_CODE_MESSAGING_SOCKET", "CLAUDE_CODE_MESSAGING_TOKEN", "CLAUDE_PROJECT_DIR", "CLAUDE_PLUGIN_ROOT")
 
 
+# On these LongMemEval questions the older fact is the answer, so its turn is not out of date.
+ASKS_THE_PAST = re.compile(r"\b(earlier|previous|previously|before|first|initial|originally)\b", re.I)
+
+
 def candidates(job: tuple) -> list[dict]:
     """The notes of one stream that a list could change: changed notes with the older version listed, others with any list.
 
     Own notes need no list yet, since the agent has not written them: each comes with the earlier turn its first session writes.
     """
     stream, dataset, cache_name, mode = job
+    if dataset == "lme-updates" and ASKS_THE_PAST.search(stream.queries[0].question):
+        return []
     cache = TextCache(cache_name)
     mem = new_memory(cache, config(True))
     id_of: dict[str, int] = {}
@@ -126,7 +133,7 @@ def agent(prompt: str, project: Path, home: Path, model: str) -> dict:
     command = ["claude", "-p", prompt, "--plugin-dir", str(PLUGIN), "--model", model, "--setting-sources", "project", "--no-session-persistence",
                "--allowedTools", TOOLS, "--max-budget-usd", MAX_USD, "--output-format", "stream-json", "--verbose"]
     out = subprocess.run(command, cwd=project, env=env, capture_output=True, text=True, stdin=subprocess.DEVNULL, timeout=240).stdout
-    calls, listed, cost, reply = [], [], 0.0, ""
+    calls, listed, cost, reply, replies = [], [], 0.0, "", []
     for line in out.splitlines():
         try:
             event = json.loads(line)
@@ -136,9 +143,11 @@ def agent(prompt: str, project: Path, home: Path, model: str) -> dict:
             calls += [c["name"].split("__")[-1] for c in event["message"].get("content", []) if c.get("type") == "tool_use"]
         elif event.get("type") == "user":
             listed += similar_ids(event)
+            replies += [str(block.get("content"))[:400] for block in event.get("message", {}).get("content", [])
+                        if isinstance(block, dict) and block.get("type") == "tool_result"]
         elif event.get("type") == "result":
             cost, reply = event.get("total_cost_usd", 0.0), event.get("result", "")
-    return {"calls": calls, "listed": listed, "cost": cost, "reply": reply}
+    return {"calls": calls, "listed": listed, "cost": cost, "reply": reply, "replies": replies}
 
 
 def session(trial: dict, folder: Path, models: Path, model: str) -> dict:
@@ -160,12 +169,12 @@ def session(trial: dict, folder: Path, models: Path, model: str) -> dict:
     before, closed_before = texts(home), closed(home)
     run = agent(prompt.format(note=trial["note"]), project, home, model)
     after = texts(home)
-    retired = sorted(closed(home) - closed_before)
+    retired = sorted((closed(home) - closed_before) & set(before))  # an edit's archived copy is a new row
     edited = sorted(i for i, text in before.items() if after.get(i, text) != text)
     written = [after[i] for i in sorted(set(after) - set(before))]
     return {k: trial[k] for k in ("set", "dataset", "stream", "cursor", "changed")} | {"mode_own": "first" in trial} | {
         "old": old, "remembered": "memory_remember" in run["calls"], "listed": run["listed"], "retired": retired, "retired_text": [before[i] for i in retired if i in before],
-        "edited": edited, "calls": run["calls"], "cost": cost + run["cost"], "reply": run["reply"],
+        "edited": edited, "calls": run["calls"], "cost": cost + run["cost"], "reply": run["reply"], "tool_replies": run["replies"],
         "changes": [{"id": i, "before": before[i], "after": after[i]} for i in edited], "older_text": [before[i] for i in old if i in before], "written": written,
     }
 
@@ -241,7 +250,7 @@ def cosines(rows: list[dict]) -> dict:
 
 
 def main(per_kind: int | None = None, names: tuple[str, ...] = tuple(SETS)) -> None:
-    rng = random.Random("agent-write-path-5")  # earlier samples set the hint and the cosine threshold, so this one is new
+    rng = random.Random("agent-write-path-7")  # earlier samples shaped the hint, the instructions and the list, so this one is new
     version = subprocess.run(["claude", "--version"], capture_output=True, text=True).stdout.strip()
     folder = Path(tempfile.mkdtemp(prefix="kanerva-agent-"))
     os.environ["KANERVA_HOME"] = str(folder / "models-home")

@@ -210,7 +210,7 @@ def replay(job: tuple) -> dict:
         notes.append({
             "changed": bool(old), "shown": bool(found), "top1": bool(found) and found[0] in old,
             "top3": any(i in old for i in found),
-            "tokens": approx_tokens(json.dumps([{"id": i.id, "text": short_note(i.text)} for i in listed])) if listed else 0,
+            "tokens": approx_tokens(json.dumps([{"id": i.id, "text": short_note(i.text, turn.text)} for i in listed])) if listed else 0,
         })
     for query in pending:
         stale.extend(evaluate_query(mem, cache, query, id_of, methods, (BUDGET,), stream.name))

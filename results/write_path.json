@@ -1,7 +1,7 @@
 {
  "meta": {
   "experiment": "write path without keys",
-  "commit": "63e6b2568525-dirty",
+  "commit": "c89ad36e29fe-dirty",
   "simulated": [
    "oracle"
   ],
@@ -21,10 +21,10 @@
    "spread": 2.0,
    "overlap": 0.5,
    "shared": 3.5,
-   "cosine": 0.4
+   "cosine": 0.3
   },
   "other_notes": "facts first seen after the first snapshot; user turns after the first session",
-  "wall_seconds": 850.5
+  "wall_seconds": 856.0
  },
  "selection": {
   "lexical": {
@@ -61,7 +61,7 @@
   },
   "cosine": {
    "cosine": 0.95,
-   "score": 0.26398678444167273,
+   "score": 0.24928905842947086,
    "rates": {
     "repomem": [
      0.9844559585492227,
@@ -69,14 +69,14 @@
     ],
     "lme-updates": [
      0.7391304347826086,
-     0.5366980957663154
+     0.5660935477907192
     ]
    }
   },
   "cosines": [
    {
     "cosine": 0.4,
-    "score": -0.021307044833244637,
+    "score": -0.027315549177855503,
     "rates": {
      "repomem": [
       0.9844559585492227,
@@ -84,13 +84,13 @@
      ],
      "lme-updates": [
       0.782608695652174,
-      0.8154926973562581
+      0.8275097060454798
      ]
     }
    },
    {
     "cosine": 0.5,
-    "score": 0.033084967618010164,
+    "score": 0.02153015157068161,
     "rates": {
      "repomem": [
       0.9844559585492227,
@@ -98,13 +98,13 @@
      ],
      "lme-updates": [
       0.782608695652174,
-      0.7163985949343686
+      0.7395082270290257
      ]
     }
    },
    {
     "cosine": 0.6,
-    "score": 0.08667351727899719,
+    "score": 0.07280773802220297,
     "rates": {
      "repomem": [
       0.9844559585492227,
@@ -112,13 +112,13 @@
      ],
      "lme-updates": [
       0.782608695652174,
-      0.640229247550379
+      0.6679608060639675
      ]
     }
    },
    {
     "cosine": 0.7,
-    "score": 0.12153397760184093,
+    "score": 0.10683625158963905,
     "rates": {
      "repomem": [
       0.9689119170984456,
@@ -126,13 +126,13 @@
      ],
      "lme-updates": [
       0.7391304347826086,
-      0.5812534664448142
+      0.610648918469218
      ]
     }
    },
    {
     "cosine": 0.8,
-    "score": 0.18501530714656467,
+    "score": 0.1703175811343628,
     "rates": {
      "repomem": [
       0.9740932642487047,
@@ -140,13 +140,13 @@
      ],
      "lme-updates": [
       0.7391304347826086,
-      0.5466814568312073
+      0.576076908855611
      ]
     }
    },
    {
     "cosine": 0.9,
-    "score": 0.25789551536816474,
+    "score": 0.24319778935596287,
     "rates": {
      "repomem": [
       0.9844559585492227,
@@ -154,13 +154,13 @@
      ],
      "lme-updates": [
       0.7391304347826086,
-      0.5372527269365872
+      0.566648178960991
      ]
     }
    },
    {
     "cosine": 0.95,
-    "score": 0.26398678444167273,
+    "score": 0.24928905842947086,
     "rates": {
      "repomem": [
       0.9844559585492227,
@@ -168,7 +168,7 @@
      ],
      "lme-updates": [
       0.7391304347826086,
-      0.5366980957663154
+      0.5660935477907192
      ]
     }
    }
@@ -186,8 +186,8 @@
     "notes_with_a_list": 4164,
     "top_hit_not_older": 0.9942363112391931,
     "top_hit_not_older_on_changed": 0.38461538461538464,
-    "list_tokens_when_shown": 85.15129682997119,
-    "ms_per_call": 15.939778476986302
+    "list_tokens_when_shown": 102.27521613832853,
+    "ms_per_call": 15.812004010997622
    },
    "stale_on_changed_facts": {
     "current_rule": {
@@ -215,8 +215,8 @@
     "notes_with_a_list": 10212,
     "top_hit_not_older": 0.5190951821386603,
     "top_hit_not_older_on_changed": 0.061891117478510026,
-    "list_tokens_when_shown": 89.61584410497454,
-    "ms_per_call": 3.624953468829322
+    "list_tokens_when_shown": 91.65383862122992,
+    "ms_per_call": 3.6738553004832246
    },
    "stale_on_changed_facts": {
     "current_rule": {
@@ -244,8 +244,8 @@
     "notes_with_a_list": 1207,
     "top_hit_not_older": 0.376139188069594,
     "top_hit_not_older_on_changed": 0.09167671893848009,
-    "list_tokens_when_shown": 94.1665285832643,
-    "ms_per_call": 1.9787861726407965
+    "list_tokens_when_shown": 97.006628003314,
+    "ms_per_call": 2.215824393143591
    },
    "stale_on_changed_facts": {
     "current_rule": {
@@ -273,8 +273,8 @@
     "notes_with_a_list": 5666,
     "top_hit_not_older": 0.6981997882103776,
     "top_hit_not_older_on_changed": 0.07166123778501629,
-    "list_tokens_when_shown": 79.98641016590187,
-    "ms_per_call": 3.11717336685087
+    "list_tokens_when_shown": 83.23649841157783,
+    "ms_per_call": 3.13104273422439
    },
    "stale_on_changed_facts": {
     "current_rule": {
@@ -298,14 +298,14 @@
     "streams": 47,
     "changed_notes": 47,
     "top1": 0.5106382978723404,
-    "top3": 0.7872340425531915,
+    "top3": 0.8085106382978723,
     "other_notes": 11060,
-    "shown_on_other_notes": 0.826130198915009,
-    "notes_with_a_list": 9183,
-    "top_hit_not_older": 0.9973864750081672,
-    "top_hit_not_older_on_changed": 0.4782608695652174,
-    "list_tokens_when_shown": 143.17771969944462,
-    "ms_per_call": 43.01810589035238
+    "shown_on_other_notes": 0.926130198915009,
+    "notes_with_a_list": 10290,
+    "top_hit_not_older": 0.997667638483965,
+    "top_hit_not_older_on_changed": 0.48936170212765956,
+    "list_tokens_when_shown": 200.26326530612246,
+    "ms_per_call": 43.819903881924745
    },
    "stale_on_changed_facts": {
     "current_rule": {
@@ -316,7 +316,7 @@
     },
     "oracle_simulated": {
      "queries": 47,
-     "stale_any": 0.3404255319148936,
+     "stale_any": 0.3191489361702128,
      "stale_error": 0.0,
      "recall": 1.0
     }
@@ -329,12 +329,12 @@
     "top1": 0.9391930289827619,
     "top3": 0.9979162720212161,
     "other_notes": 8128,
-    "shown_on_other_notes": 0.9984005905511811,
-    "notes_with_a_list": 13394,
-    "top_hit_not_older": 0.6298342541436464,
+    "shown_on_other_notes": 0.999753937007874,
+    "notes_with_a_list": 13405,
+    "top_hit_not_older": 0.6301380082058933,
     "top_hit_not_older_on_changed": 0.060806971017238115,
-    "list_tokens_when_shown": 150.1908317156936,
-    "ms_per_call": 14.741670521639024
+    "list_tokens_when_shown": 152.13524804177547,
+    "ms_per_call": 14.240899878817876
    },
    "stale_on_changed_facts": {
     "current_rule": {
@@ -358,12 +358,12 @@
     "top1": 0.9096313912009513,
     "top3": 0.9928656361474435,
     "other_notes": 784,
-    "shown_on_other_notes": 0.9910714285714286,
-    "notes_with_a_list": 1618,
-    "top_hit_not_older": 0.5271940667490729,
+    "shown_on_other_notes": 0.9987244897959183,
+    "notes_with_a_list": 1624,
+    "top_hit_not_older": 0.5289408866995073,
     "top_hit_not_older_on_changed": 0.09036860879904875,
-    "list_tokens_when_shown": 134.64771322620518,
-    "ms_per_call": 6.071935767755629
+    "list_tokens_when_shown": 137.4408866995074,
+    "ms_per_call": 6.030569100304722
    },
    "stale_on_changed_facts": {
     "current_rule": {
@@ -387,12 +387,12 @@
     "top1": 0.930672268907563,
     "top3": 0.9942226890756303,
     "other_notes": 7214,
-    "shown_on_other_notes": 0.9995841419462157,
-    "notes_with_a_list": 9115,
-    "top_hit_not_older": 0.8055951727921009,
+    "shown_on_other_notes": 1.0,
+    "notes_with_a_list": 9118,
+    "top_hit_not_older": 0.8056591357753894,
     "top_hit_not_older_on_changed": 0.06932773109243698,
-    "list_tokens_when_shown": 150.28875479978058,
-    "ms_per_call": 12.029732667490634
+    "list_tokens_when_shown": 153.63127878920815,
+    "ms_per_call": 11.93187431828346
    },
    "stale_on_changed_facts": {
     "current_rule": {

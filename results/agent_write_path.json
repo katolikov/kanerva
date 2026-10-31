@@ -1,7 +1,7 @@
 {
  "meta": {
   "experiment": "real agent on the write path",
-  "commit": "63e6b2568525-dirty",
+  "commit": "c89ad36e29fe-dirty",
   "agent": "2.1.314 (Claude Code)",
   "model": "claude-sonnet-5-5",
   "prompts": {
@@ -9,8 +9,8 @@
    "own": "Save what matters in this message with memory_remember, as one short note in your own words:\n\n{note}"
   },
   "trials": 80,
-  "cost_usd": 7.72,
-  "seconds": 432
+  "cost_usd": 7.81,
+  "seconds": 371
  },
  "sets": {
   "repomem-final": {
@@ -22,7 +22,7 @@
     "edited": 0,
     "kept": 0,
     "not_listed": 0,
-    "extra": 1,
+    "extra": 2,
     "right": 1.0,
     "interval": [
      0.806,
@@ -35,11 +35,11 @@
     "edited": 0,
     "kept": 16,
     "not_listed": 0,
-    "extra": 4,
-    "right": 0.75,
+    "extra": 1,
+    "right": 0.9375,
     "interval": [
-     0.505,
-     0.898
+     0.717,
+     0.989
     ]
    }
   },
@@ -49,14 +49,14 @@
    "changed": {
     "n": 12,
     "replaced": 0,
-    "edited": 8,
-    "kept": 4,
+    "edited": 10,
+    "kept": 2,
     "not_listed": 0,
-    "extra": 3,
-    "right": 0.6666666666666666,
+    "extra": 2,
+    "right": 0.8333333333333334,
     "interval": [
-     0.391,
-     0.862
+     0.552,
+     0.953
     ]
    },
    "other": {
@@ -65,11 +65,11 @@
     "edited": 0,
     "kept": 12,
     "not_listed": 0,
-    "extra": 1,
-    "right": 0.9166666666666666,
+    "extra": 0,
+    "right": 1.0,
     "interval": [
-     0.646,
-     0.985
+     0.757,
+     1.0
     ]
    }
   },
@@ -79,27 +79,27 @@
    "changed": {
     "n": 12,
     "replaced": 1,
-    "edited": 8,
-    "kept": 0,
-    "not_listed": 3,
-    "extra": 0,
-    "right": 0.75,
-    "interval": [
-     0.468,
-     0.911
-    ]
-   },
-   "other": {
-    "n": 12,
-    "replaced": 1,
-    "edited": 0,
-    "kept": 0,
-    "not_listed": 11,
-    "extra": 2,
+    "edited": 9,
+    "kept": 1,
+    "not_listed": 1,
+    "extra": 1,
     "right": 0.8333333333333334,
     "interval": [
      0.552,
      0.953
+    ]
+   },
+   "other": {
+    "n": 12,
+    "replaced": 0,
+    "edited": 0,
+    "kept": 0,
+    "not_listed": 12,
+    "extra": 1,
+    "right": 0.9166666666666666,
+    "interval": [
+     0.646,
+     0.985
     ]
    }
   }
@@ -107,15 +107,15 @@
  "own_note_cosines": {
   "changed": {
    "n": 12,
-   "min": 0.378,
-   "median": 0.593,
-   "max": 0.84
+   "min": 0.314,
+   "median": 0.6094999999999999,
+   "max": 0.835
   },
   "other": {
    "n": 12,
-   "min": -0.022,
-   "median": 0.0325,
-   "max": 0.523
+   "min": -0.014,
+   "median": 0.065,
+   "max": 0.197
   }
  }
 }
