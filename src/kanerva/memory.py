@@ -622,7 +622,11 @@ class Memory:
         if cfg.use_validity and cfg.use_supersession and n > 1 and not historical:
             hashed = vectors is None or cfg.hash_twins
             twins = HashingEmbedder().encode([rows[i]["text"] for i in cand.ids]) if hashed else vectors
-            keep = self._soft_supersession(cand, rows, twins, cfg, cfg.hashed_drop if hashed else cfg.supersession_drop)
+            whole = self._whole_words(query, cand, rows) if cfg.twin_exact else None
+            keep = self._soft_supersession(cand, rows, twins, cfg, cfg.hashed_drop if hashed else cfg.supersession_drop, whole)
+            if cfg.word_twins and not hashed:
+                words = HashingEmbedder().encode([rows[i]["text"] for i in cand.ids])
+                keep = keep & self._soft_supersession(cand, rows, words, cfg, cfg.hashed_drop, whole)
             if not keep.all():
                 cand = subset(cand, keep)
                 vectors = None if vectors is None else vectors[keep]
@@ -661,7 +665,19 @@ class Memory:
         cand.rerank_rank[order] = np.arange(order.size)
         cand.rerank_score[pool[known]] = 1.0 / (1.0 + np.exp(-logits[known]))
 
-    def _soft_supersession(self, cand: Candidates, rows, vectors: np.ndarray, cfg: RetrievalConfig, drop: float) -> np.ndarray:
+    @staticmethod
+    def _note_words(row) -> set[str]:
+        return {word.lower() for word in _WORD.findall(row["text"])}
+
+    @staticmethod
+    def _whole_words(query: str, cand: Candidates, rows) -> np.ndarray:
+        """How many of the query's words each candidate holds whole, with case and identifiers as written."""
+        wanted = {word.lower() for word in _WORD.findall(query)}
+        return np.array([len(wanted & {word.lower() for word in _WORD.findall(rows[i]["text"])}) for i in cand.ids], dtype=float)
+
+    def _soft_supersession(
+        self, cand: Candidates, rows, vectors: np.ndarray, cfg: RetrievalConfig, drop: float, whole: np.ndarray | None = None
+    ) -> np.ndarray:
         """Discount older near-duplicates of newer items, and return the mask of items to keep.
 
         This is a heuristic for facts without keys. Keyed items have exact version chains and are exempt, and
@@ -675,6 +691,8 @@ class Memory:
         newer = confirmed[None, :] > confirmed[:, None]
         if cfg.twin_needs_query:
             newer = newer & (cand.term_cover[None, :] >= cand.term_cover[:, None] - 1e-9)
+            if whole is not None:
+                newer = newer & (whole[None, :] >= whole[:, None])
         if not cfg.supersede_events:
             facts = np.array([rows[i]["kind"] != "episodic" for i in cand.ids], dtype=bool)
             newer = newer & facts[:, None] & facts[None, :]
@@ -684,7 +702,13 @@ class Memory:
         if not cfg.soft_supersede_keyed:
             gate = gate * unkeyed[:, None]
         cand.validity = cand.validity * np.prod(1.0 - cfg.supersession_strength * gate, axis=1)
-        return ~(((sim >= drop) & newer).any(axis=1) & unkeyed)
+        replaces = (sim >= drop) & newer
+        if whole is not None:
+            for old, new in zip(*np.nonzero(replaces & unkeyed[:, None])):
+                before, after = self._note_words(rows[cand.ids[old]]), self._note_words(rows[cand.ids[new]])
+                if after < before and len(before - after) > 1:  # it only says less, though one dropped word can be a change
+                    replaces[old, new] = False
+        return ~(replaces.any(axis=1) & unkeyed)
 
     def build_problem(
         self,

@@ -177,3 +177,38 @@ def test_a_cpp_file_finds_its_notes(store):
     remember("Status::OK in src/db/impl.cc must be checked before Client::connect retries.")
     assert "Client::connect" in touch("src/db/impl.cc")
     assert touch("src/db/other.cc") == ""
+
+
+def shell(command, stdout="ok"):
+    hooks.handle("tool", {"session_id": "s1", "cwd": CWD, "tool_name": "Bash", "tool_input": {"command": command}, "tool_response": {"stdout": stdout, "stderr": ""}})
+
+
+def stored():
+    memory = Memory(db_path())
+    texts = [r[0] for r in memory.db.execute("SELECT text FROM items WHERE valid_to IS NULL")]
+    memory.close()
+    return texts
+
+
+def test_a_build_that_worked_is_kept_and_the_latest_wins(store):
+    shell("cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug")
+    assert stored() == ["Build command: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug"]
+    shell("cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G Ninja")
+    assert stored() == ["Build command: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G Ninja"]
+
+
+def test_a_build_that_failed_is_not_kept(store):
+    shell("make -j8", "src/cache.cpp:12:3: error: use of undeclared identifier 'x'")
+    shell("clang++ -c a.cpp", "(eval):1: command not found: clang++")
+    assert stored() == []
+
+
+def test_a_word_that_only_looks_like_a_build_tool_is_ignored(store):
+    shell("echo make it so")
+    shell("git commit -m 'makefile'")
+    assert stored() == []
+
+
+def test_a_build_after_other_commands_counts(store):
+    shell("cd build && CC=clang make -j8")
+    assert stored() == ["Build command: cd build && CC=clang make -j8"]

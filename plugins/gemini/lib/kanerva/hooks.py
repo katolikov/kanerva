@@ -71,6 +71,8 @@ _TEST_COMMAND = re.compile(
 _DISTINCTIVE = re.compile(r"[A-Za-z_][\w./-]*[_./-][\w./-]+|\w+(?:::|->)\w+|[a-z]+[A-Z]\w+|[A-Z][a-z]+[A-Z]\w+|\b\d{3,}\b")
 _PATCH_FILE = re.compile(r"^\*\*\* (?:Add|Update) File: (.+)$", re.M)
 _NOT_RUN = re.compile(r"command not found|No module named")
+_BUILD_COMMAND = re.compile(r"(?:^|[;&|(]\s*)(?:\w+=\S+\s+)*(cmake|ninja|make|meson|bazel|xcodebuild|msbuild|gcc|g\+\+|clang\+\+|clang)(?=\s|$)")
+_BUILD_FAILED = re.compile(r"\berror:|\bError \d+|\bFAILED\b|CMake Error")
 
 EDIT_TOOLS = {
     "Write", "Edit", "MultiEdit", "NotebookEdit", "StrReplace", "write", "edit", "patch", "write_file", "replace",
@@ -277,7 +279,8 @@ def on_tool(mem: Memory, session: str, scope: str, tool: str, tool_input: dict, 
     elif tool in SHELL_TOOLS:
         command = str(tool_input.get("command") or tool_input.get("CommandLine") or "")
         _note(mem, session, "command", command)
-        is_test = bool(_TEST_COMMAND.search(command)) and not _NOT_RUN.search(str(response))
+        output = str(response)
+        is_test = bool(_TEST_COMMAND.search(command)) and not _NOT_RUN.search(output)
         _count_work(mem, session, commands=1, tests=int(is_test))
         if is_test:
             failed = isinstance(response, dict) and (response.get("interrupted") or response.get("exit_code") not in (0, None))
@@ -288,6 +291,8 @@ def on_tool(mem: Memory, session: str, scope: str, tool: str, tool_input: dict, 
                 f"Test command: {command}", scope=scope, kind="semantic",
                 key=f"cmd:test:{command.split()[0]}", source={"session": session},
             )
+        elif (build := _BUILD_COMMAND.search(command)) and not _NOT_RUN.search(output) and not _BUILD_FAILED.search(output):
+            mem.write(f"Build command: {command}", scope=scope, kind="semantic", key=f"cmd:build:{build.group(1)}", source={"session": session})
     elif tool.endswith("memory_remember"):
         _restart_work(mem, session)  # the agent has just written a note of its own
     else:
@@ -302,7 +307,8 @@ def _needs_vectors(event: str, payload: dict) -> bool:
         return True
     tool, tool_input = str(payload.get("tool_name", "")), payload.get("tool_input") or {}
     command = str(tool_input.get("command") or tool_input.get("CommandLine") or "")
-    return tool in EDIT_TOOLS or tool == "apply_patch" or (tool in SHELL_TOOLS and bool(_TEST_COMMAND.search(command)))
+    commands = _TEST_COMMAND.search(command) or _BUILD_COMMAND.search(command)
+    return tool in EDIT_TOOLS or tool == "apply_patch" or (tool in SHELL_TOOLS and bool(commands))
 
 
 def handle(event: str, payload: dict) -> str:

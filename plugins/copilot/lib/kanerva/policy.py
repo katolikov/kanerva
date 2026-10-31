@@ -64,6 +64,8 @@ class RetrievalConfig:
     hashed_drop: float = 0.85  # the same for hashed words, which rate two versions of one fact lower than a sentence model
     soft_supersede_keyed: bool = False  # keyed items have exact version chains, so similarity is not evidence
     hash_twins: bool = False  # compare twins by hashed words even when items have vectors
+    word_twins: bool = True  # compare them both ways, since a sentence model hears little difference between FOO = 3 and FOO = 4
+    twin_exact: bool = True  # a twin must also hold the query's words whole: dictAddRaw says nothing about dictAdd
     supersede_events: bool = False  # two similar events are two events; only facts can replace each other
     twin_needs_query: bool = True  # a newer twin replaces an older item only if it covers the query at least as well
     stale_factor: float = 0.05

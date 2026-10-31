@@ -200,11 +200,32 @@ def _validity(mem, query, now):
     return dict(zip(prepared.candidates.ids, prepared.candidates.validity))
 
 
-def test_soft_supersession_discounts_older_unkeyed_near_duplicates(mem):
+def test_soft_supersession_drops_older_unkeyed_near_duplicates(mem):
     old = mem.write("The cache lives in redis on port 6379 for the billing service", at=T0, kind="semantic")
     new = mem.write("The cache lives in redis on port 6380 for the billing service", at=T0 + DAY, kind="semantic")
     validity = _validity(mem, "which port does the billing cache use?", T0 + 2 * DAY)
-    assert validity[old] < 0.8 * validity[new]
+    assert old not in validity and new in validity
+
+
+def test_a_twin_must_hold_the_name_the_query_asks_about(mem):
+    asked = mem.write("dictAdd(dict *d, void *key) is the signature, defined in src/dict.c", at=T0, kind="semantic")
+    other = mem.write("dictAddRaw(dict *d, void *key) is the signature, defined in src/dict.c", at=T0 + DAY, kind="semantic")
+    validity = _validity(mem, "What parameters does dictAdd take?", T0 + 2 * DAY)
+    assert asked in validity and other in validity
+
+
+def test_a_note_that_only_says_less_is_not_a_newer_version(mem):
+    longer = mem.write("skip_whitespace() is the signature, defined in src/lexer.hpp", at=T0, kind="semantic")
+    shorter = mem.write("skip_whitespace is defined in src/lexer.hpp", at=T0 + DAY, kind="semantic")
+    validity = _validity(mem, "What is the signature of skip_whitespace?", T0 + 2 * DAY)
+    assert longer in validity and shorter in validity
+
+
+def test_one_dropped_word_can_be_a_new_version(mem):
+    old = mem.write("connect(host, port, timeout) is the signature, defined in src/client.c", at=T0, kind="semantic")
+    new = mem.write("connect(host, port) is the signature, defined in src/client.c", at=T0 + DAY, kind="semantic")
+    validity = _validity(mem, "What is the signature of connect?", T0 + 2 * DAY)
+    assert old not in validity and new in validity
 
 
 def test_similar_events_do_not_replace_each_other(mem):
