@@ -1,5 +1,5 @@
 import assert from "node:assert/strict"
-import { chmodSync, mkdtempSync, writeFileSync } from "node:fs"
+import { chmodSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { dirname, join } from "node:path"
 import { test } from "node:test"
@@ -62,6 +62,15 @@ test("writes run in order and do not block the caller", async () => {
   release()
   await bridge.flush()
   assert.deepEqual(order, ["tool", "stop", "compact", "compact_summary"])
+})
+
+test("notes about a file reach the next request and leave with the next prompt", async () => {
+  const bridge = new Bridge(async (event) => (event === "tool" ? "Notes that mention client.py" : ""), "/repo")
+  bridge.toolAfter("s1", "read", { filePath: "client.py" }, {})
+  await bridge.flush()
+  assert.match(bridge.system("s1"), /Notes that mention client\.py/)
+  await bridge.prompt("s1", "next task")
+  assert.equal(bridge.system("s1"), "")
 })
 
 test("a failing write does not stop later writes", async () => {
@@ -146,6 +155,12 @@ test("launch prefers the override, then the CLI, then uv, then python3", () => {
   assert.ok(resolveLaunch({ PATH: binDir("uv"), KANERVA_EMBEDDER: "static" }, lib).command.includes("model2vec>=0.6"))
   const minilm = resolveLaunch({ PATH: binDir("uv"), KANERVA_EMBEDDER: "minilm" }, lib).command
   assert.ok(minilm.includes("onnxruntime>=1.18") && minilm.includes("tokenizers>=0.19") && !minilm.includes("model2vec>=0.6"))
+  const home = mkdtempSync(join(tmpdir(), "kanerva-home-"))
+  assert.ok(!resolveLaunch({ PATH: binDir("uv"), KANERVA_HOME: home }, lib).command.includes("onnxruntime>=1.18"))
+  mkdirSync(join(home, "models", "all-MiniLM-L6-v2", "onnx"), { recursive: true })
+  writeFileSync(join(home, "models", "all-MiniLM-L6-v2", "onnx", "model.onnx"), "")
+  assert.ok(resolveLaunch({ PATH: binDir("uv"), KANERVA_HOME: home }, lib).command.includes("onnxruntime>=1.18"))
+  assert.ok(!resolveLaunch({ PATH: binDir("uv"), KANERVA_HOME: home, KANERVA_EMBEDDER: "off" }, lib).command.includes("onnxruntime>=1.18"))
   assert.deepEqual(resolveLaunch({ PATH: none, PYTHONPATH: "/x" }, lib), {
     command: ["python3", "-m", "kanerva"],
     environment: { PYTHONPATH: `${lib}:/x` },

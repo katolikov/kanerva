@@ -34,6 +34,9 @@ def fetch_model() -> int:
 
     print(fetch_minilm())
     fetch_marker().unlink(missing_ok=True)
+    memory = open_store()
+    memory.reembed()  # notes written while the model was on its way have no vectors
+    memory.close()
     return 0
 
 

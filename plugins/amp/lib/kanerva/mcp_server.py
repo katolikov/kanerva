@@ -13,6 +13,7 @@ from .memory import Memory, open_store
 from .paths import project_scope
 
 PROTOCOL_VERSION = "2025-06-18"
+SHORT_NOTE_CHARS = 120  # of a similar note, which the agent pays for on each write
 
 TOOLS: dict[str, dict] = {
     "memory_search": {
@@ -64,10 +65,17 @@ TOOLS: dict[str, dict] = {
         },
     },
     "memory_forget": {
-        "description": "Archive a memory id, or delete it permanently with `hard`.",
+        "description": (
+            "Archive a memory id, or delete it permanently with `hard`. With `replaced_by`, the id of a newer note, "
+            "it is kept as history instead, and `hard` is ignored."
+        ),
         "inputSchema": {
             "type": "object",
-            "properties": {"id": {"type": "integer"}, "hard": {"type": "boolean", "default": False}},
+            "properties": {
+                "id": {"type": "integer"},
+                "hard": {"type": "boolean", "default": False},
+                "replaced_by": {"type": "integer"},
+            },
             "required": ["id"],
         },
     },
@@ -80,6 +88,20 @@ TOOLS: dict[str, dict] = {
         "inputSchema": {"type": "object", "properties": {}},
     },
 }
+
+
+def short_note(text: str) -> str:
+    text = " ".join(text.split())
+    return text if len(text) <= SHORT_NOTE_CHARS else text[:SHORT_NOTE_CHARS].rstrip() + "..."
+
+
+INSTRUCTIONS = (
+    "Long-term memory for this project, kept across sessions. When the user asks you to remember something, or a decision "
+    "or lesson should outlast this session, save it with memory_remember and not in a file: later sessions get it ranked "
+    "under a token budget, and a newer note can replace it. Keeping memory current is part of saving, and installing this "
+    "server asks for it: when memory_remember lists a note that yours makes out of date, retire or correct that note in the "
+    "same turn, as the result says."
+)
 
 
 class Server:
@@ -107,7 +129,17 @@ class Server:
             item = self.mem.write(
                 args["text"], scope=scope, kind="semantic", key=args.get("key"), pinned=bool(args.get("pinned"))
             )
-            return {"id": item}
+            reply: dict = {"id": item}
+            similar = [] if item is None else self.mem.similar(args["text"], scope, exclude=(item,))
+            if similar:
+                reply["similar"] = [{"id": note.id, "text": short_note(note.text)} for note in similar]
+                reply["hint"] = (
+                    "A listed note with an older value of the same fact is now out of date. Fixing it is part of saving "
+                    f"this note, so do it now without asking. If that fact is all it says, call memory_forget with its id and "
+                    f"replaced_by={item}. If it says other things too, call memory_edit with its id and its text without the "
+                    "outdated part. Leave notes about anything else alone."
+                )
+            return reply
         if name == "memory_expand":
             return expand(self.mem, int(args["id"]))
         if name == "memory_feedback":
@@ -117,6 +149,8 @@ class Server:
             return {"edited": self.mem.edit(int(args["id"]), args["text"])}
         if name == "memory_forget":
             item = int(args["id"])
+            if args.get("replaced_by") is not None:
+                return {"replaced": self.mem.supersede(item, int(args["replaced_by"]))}
             removed = self.mem.delete([item]) if args.get("hard") else self.mem.archive([item])
             return {"removed": removed}
         if name == "memory_maintain":
@@ -140,6 +174,7 @@ class Server:
                 "protocolVersion": PROTOCOL_VERSION,
                 "capabilities": {"tools": {}},
                 "serverInfo": {"name": "kanerva", "version": __version__},
+                "instructions": INSTRUCTIONS,
             }
         elif method == "ping":
             result = {}

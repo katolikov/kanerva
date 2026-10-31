@@ -19,18 +19,41 @@ from .text import STOPWORDS, content_terms, light_stem, tokenize
 
 _ENTITY = re.compile(r"\b[A-Z][A-Za-z0-9_\-]+")
 _NUMBER = re.compile(r"\d+(?:[.,:/]\d+)*")
+_RU_MONTH = (
+    r"(январ[ьяе]|феврал[ьяе]|март[ае]?|апрел[ьяе]|ма[йяе]|июн[ьяе]|июл[ьяе]|август[ае]?|"
+    r"сентябр[ьяе]|октябр[ьяе]|ноябр[ьяе]|декабр[ьяе])"
+)
 _DATE = re.compile(
     r"\b(19|20)\d\d\b|\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s+\d|"
-    r"\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|yesterday|today|tomorrow|week|weekend)\b",
+    r"\b(monday|tuesday|wednesday|thursday|friday|saturday|sunday|yesterday|today|tomorrow|week|weekend)\b|"
+    rf"\b(19|20)\d\dг|\b\d{{1,2}}\s+{_RU_MONTH}\b|\b{_RU_MONTH}\s+\d|"
+    r"\b(понедельник\w*|вторник\w*|сред[ау]|четверг\w*|пятниц\w*|суббот\w*|воскресень\w*|вчера|сегодня|завтра|"
+    r"недел(я|и|е|ю|ь|ям|ях|ями)|на выходных|в выходные)\b",
     re.I,
 )
 _TEMPORAL = re.compile(
     r"\b(when|date|day|days|week|weeks|month|months|year|years|ago|last|first|recent|recently|latest|"
-    r"before|after|since|until|how long|earlier|later|currently|now)\b",
+    r"before|after|since|until|how long|earlier|later|currently|now)\b|"
+    r"\b(когда|дат[аыеу]|день|дня|дню|дни|дней|днях|недел(я|и|е|ю|ь|ям|ях|ями)|месяц(а|у|е|ы|ев|ах)?|год(а|у|ы|ов|ах)?|"
+    r"лет|назад|последн\w+|перв(ый|ая|ое|ые|ого|ой|ую|ым|ых|ом)|недавн\w+|новейш\w+|раньше|ранее|позже|позднее|после|"
+    r"с тех пор|как долго|сейчас|теперь)\b",
     re.I,
 )
-_HOW_MANY = re.compile(r"\bhow (many|much|long|often|old|far)\b|\bwhat (number|time|percentage)\b", re.I)
-_FIRST_PERSON = re.compile(r"\b(I|my|me|mine|myself)\b|\bI'(m|ve|d|ll)\b")
+_HOW_MANY = re.compile(
+    r"\bhow (many|much|long|often|old|far)\b|\bwhat (number|time|percentage)\b|"
+    r"\bсколько\b|\bкак (долго|часто|давно|далеко)\b|\bкакой (номер|процент)\b|\bкакое (число|количество|время)\b",
+    re.I,
+)
+_WHEN = re.compile(
+    r"\bwhen\b|\bwhat (date|day|year|month|time)\b|"
+    r"\bкогда\b|\bв как(ом|ой|ую) (году|месяце|день|дату)\b|\bв котором (году|часу)\b|"
+    r"\bкак(ой|ая|ое|ого) (год|года|дата|день|месяц|число|числа)\b",
+    re.I,
+)
+_FIRST_PERSON = re.compile(
+    r"\b(I|my|me|mine|myself)\b|\bI'(m|ve|d|ll)\b|"
+    r"\b(?i:я|меня|мне|мной|мною|мой|моя|моё|мое|мои|моего|моей|моему|моим|моём|моем|моих|моими|мою)\b"
+)
 _SPEAKER = re.compile(r"^\s*([A-Za-z][\w .'-]{0,30}?):\s")
 
 FEATURES = (
@@ -122,7 +145,7 @@ def feature_matrix(
     q_numbers = _numbers(query)
     q_first = bool(_FIRST_PERSON.search(query))
     q_temporal = bool(_TEMPORAL.search(query))
-    q_when = bool(re.search(r"\bwhen\b|\bwhat (date|day|year|month|time)\b", query, re.I))
+    q_when = bool(_WHEN.search(query))
     q_count = bool(_HOW_MANY.search(query))
     q_lower = query.lower()
     created = np.array([it.created_at for it in items])
@@ -251,10 +274,15 @@ MODEL_PATH = Path(__file__).with_name("relevance_model.json")
 
 @lru_cache(maxsize=4)
 def load_model(name: str) -> RelevanceModel | TreeModel | None:
-    """The shipped model ``name`` (for example ``dense``, ``lexical`` or ``rerank``), or ``None`` if absent."""
-    if not MODEL_PATH.exists():
+    """The shipped model ``name`` (for example ``dense``, ``lexical`` or ``rerank``), or ``None`` if absent.
+
+    ``file.json#name`` reads another model file, which is how an experiment compares against earlier models.
+    """
+    path, _, name = name.rpartition("#")
+    source = Path(path) if path else MODEL_PATH
+    if not source.exists():
         return None
-    models = json.loads(MODEL_PATH.read_text())
+    models = json.loads(source.read_text())
     if name not in models:
         return None
     data = models[name]

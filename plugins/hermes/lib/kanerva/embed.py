@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
+import os
+import shutil
 import subprocess
 import sys
 import time
@@ -21,6 +24,14 @@ MINILM_FILES = {
     "tokenizer.json": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037",
 }
 MINILM_MAX_TOKENS = 256  # the model's max_seq_length; tokenizer.json itself says 128
+MULTILINGUAL_REPO = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+MULTILINGUAL_REVISION = "e8f8c211226b894fcb81acc59f3b34ba3efd5f42"
+MULTILINGUAL_MODEL = "onnx/model_qint8_arm64.onnx"  # the same bytes as the repository's avx512 files
+MULTILINGUAL_FILES = {
+    MULTILINGUAL_MODEL: "783fea82d71a58179b830a4dbd2d58447e640609e98eedf9ffa12622d375a672",
+    "tokenizer.json": "2c3387be76557bd40970cec13153b3bbf80407865484b209e655e5e4729076b8",
+}
+MULTILINGUAL_MAX_TOKENS = 128  # the model's max_seq_length
 FETCH_STALE_SECONDS = 3600
 
 
@@ -77,13 +88,21 @@ def minilm_ready(folder: Path | None = None) -> bool:
     return all((folder / name).is_file() for name in MINILM_FILES)
 
 
-def fetch_minilm(folder: Path | None = None) -> Path:
-    """Download the model from the official repository at a pinned revision, and check its hashes."""
+def multilingual_folder() -> Path:
+    return home() / "models" / "paraphrase-multilingual-MiniLM-L12-v2"
+
+
+def multilingual_ready(folder: Path | None = None) -> bool:
+    folder = folder or multilingual_folder()
+    return all((folder / name).is_file() for name in MULTILINGUAL_FILES)
+
+
+def _download(repo: str, revision: str, files: dict[str, str], folder: Path) -> Path:
+    """Download ``files`` from the official repository at a pinned revision, and check their hashes."""
     from huggingface_hub import hf_hub_download
 
-    folder = folder or minilm_folder()
-    for name, expected in MINILM_FILES.items():
-        path = Path(hf_hub_download(MINILM_REPO, name, revision=MINILM_REVISION, local_dir=folder))
+    for name, expected in files.items():
+        path = Path(hf_hub_download(repo, name, revision=revision, local_dir=folder))
         digest = hashlib.sha256()
         with path.open("rb") as handle:
             for block in iter(lambda: handle.read(1 << 20), b""):
@@ -94,8 +113,34 @@ def fetch_minilm(folder: Path | None = None) -> Path:
     return folder
 
 
+def fetch_multilingual(folder: Path | None = None) -> Path:
+    return _download(MULTILINGUAL_REPO, MULTILINGUAL_REVISION, MULTILINGUAL_FILES, folder or multilingual_folder())
+
+
+def fetch_minilm(folder: Path | None = None) -> Path:
+    """What ``kanerva fetch-model`` runs: this model, or the multilingual one if ``KANERVA_EMBEDDER`` names it."""
+    if folder is None and os.environ.get("KANERVA_EMBEDDER") == "multilingual":
+        return fetch_multilingual()
+    return _download(MINILM_REPO, MINILM_REVISION, MINILM_FILES, folder or minilm_folder())
+
+
+def _fetch_command() -> list[str] | None:
+    """How to run the download. A plugin starts without ONNX Runtime until the model is here, so uv brings it along.
+
+    An installed package without the ``onnx`` extra has no such way, and stays lexical.
+    """
+    fetch = ["-m", "kanerva", "fetch-model"]
+    if importlib.util.find_spec("onnxruntime") is not None:
+        return [sys.executable, *fetch]
+    uv = shutil.which("uv")
+    if uv and Path(__file__).resolve().parents[1].name == "lib":
+        return [uv, "run", "--quiet", "--no-project", "--with", "numpy>=1.26", "--with", "onnxruntime>=1.18",
+                "--with", "tokenizers>=0.19", "python", *fetch]
+    return None
+
+
 def fetch_in_background() -> None:
-    """Start one download that outlives this process, since a hook has seconds to live and the model is 90 MB.
+    """Start one download that outlives this process, since a hook has seconds to live and a model is 90 MB or more.
 
     The marker stays behind a failed download, so that an offline machine tries once an hour, not on every prompt.
     """
@@ -103,11 +148,11 @@ def fetch_in_background() -> None:
     marker.parent.mkdir(parents=True, exist_ok=True)
     if marker.exists() and time.time() - marker.stat().st_mtime < FETCH_STALE_SECONDS:
         return
+    command = _fetch_command()
+    if command is None:
+        return
     marker.touch()
-    subprocess.Popen(
-        [sys.executable, "-m", "kanerva", "fetch-model"], start_new_session=True, stdin=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-    )
+    subprocess.Popen(command, start_new_session=True, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 def mean_pool(hidden: np.ndarray, mask: np.ndarray) -> np.ndarray:
@@ -121,19 +166,26 @@ class OnnxEmbedder:
     """all-MiniLM-L6-v2 on onnxruntime: the vectors of ``SentenceTransformerEmbedder`` without torch."""
 
     dim = 384
+    model_file = "onnx/model.onnx"
+    max_tokens = MINILM_MAX_TOKENS
+    padding: dict = {}
 
     def __init__(self, folder: Path | None = None, batch_size: int = 32):
         import onnxruntime
         from tokenizers import Tokenizer
 
+        folder = self._local(folder)
+        self.batch_size = batch_size
+        self._tokenizer = Tokenizer.from_file(str(folder / "tokenizer.json"))
+        self._tokenizer.enable_truncation(max_length=self.max_tokens)
+        self._tokenizer.enable_padding(**self.padding)
+        self._session = onnxruntime.InferenceSession(str(folder / self.model_file), providers=["CPUExecutionProvider"])
+
+    def _local(self, folder: Path | None) -> Path:
         folder = folder or minilm_folder()
         if not minilm_ready(folder):
             fetch_minilm(folder)
-        self.batch_size = batch_size
-        self._tokenizer = Tokenizer.from_file(str(folder / "tokenizer.json"))
-        self._tokenizer.enable_truncation(max_length=MINILM_MAX_TOKENS)
-        self._tokenizer.enable_padding()
-        self._session = onnxruntime.InferenceSession(str(folder / "onnx" / "model.onnx"), providers=["CPUExecutionProvider"])
+        return folder
 
     def _batch(self, texts: Sequence[str]) -> np.ndarray:
         encoded = self._tokenizer.encode_batch(list(texts))
@@ -149,6 +201,35 @@ class OnnxEmbedder:
             chunk = order[start:start + self.batch_size]
             out[chunk] = self._batch([texts[i] for i in chunk])
         return out
+
+
+class MultilingualEmbedder(OnnxEmbedder):
+    """paraphrase-multilingual-MiniLM-L12-v2 on onnxruntime, so that a query finds notes in another language.
+
+    The model has 384 dimensions, as all-MiniLM-L6-v2 does, and a store tells embedders apart by the length of their
+    vectors. One zero column makes these 385 long, so the two kinds never mix and ``reembed`` replaces the other kind.
+
+    The quantised model scales each tensor by its own range, so a text's vector would depend on the texts batched and
+    padded with it. Batches of one keep it a function of the text, and need no padding work.
+    """
+
+    dim = 385
+    model_file = MULTILINGUAL_MODEL
+    max_tokens = MULTILINGUAL_MAX_TOKENS
+    padding = {"pad_id": 1, "pad_token": "<pad>"}
+
+    def __init__(self, folder: Path | None = None, batch_size: int = 1):
+        super().__init__(folder, batch_size)
+
+    def _local(self, folder: Path | None) -> Path:
+        folder = folder or multilingual_folder()
+        if not multilingual_ready(folder):
+            fetch_multilingual(folder)
+        return folder
+
+    def _batch(self, texts: Sequence[str]) -> np.ndarray:
+        vectors = super()._batch(texts)
+        return np.hstack([vectors, np.zeros((len(vectors), 1), dtype=np.float32)])
 
 
 class Model2VecEmbedder:

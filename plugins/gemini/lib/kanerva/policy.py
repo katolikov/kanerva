@@ -61,9 +61,11 @@ class RetrievalConfig:
     supersession_threshold: float = 0.8
     supersession_strength: float = 0.8
     supersession_drop: float = 0.97  # an unkeyed item with a newer twin this similar is removed outright
+    hashed_drop: float = 0.85  # the same for hashed words, which rate two versions of one fact lower than a sentence model
     soft_supersede_keyed: bool = False  # keyed items have exact version chains, so similarity is not evidence
     hash_twins: bool = False  # compare twins by hashed words even when items have vectors
     supersede_events: bool = False  # two similar events are two events; only facts can replace each other
+    twin_needs_query: bool = True  # a newer twin replaces an older item only if it covers the query at least as well
     stale_factor: float = 0.05
 
     # "trees": the calibrated relevance model of kanerva.relevance; "linear": a linear prior over FEATURES.
@@ -72,6 +74,8 @@ class RetrievalConfig:
 
     use_bandit: bool = True
     learn: bool = True
+    item_lift: bool = False  # scale each item by how often it helped against how often the model expected it to
+    lift_prior: float = 5.0  # expected uses at which an item's own record weighs as much as the model
     bandit_beta: float = 0.0
     bandit_ridge: float = 16.0
     theta0: tuple[float, ...] = DEFAULT_THETA
@@ -92,6 +96,7 @@ class Candidates:
     term_cover: np.ndarray | None = None
     activation: np.ndarray | None = None
     usefulness: np.ndarray | None = None
+    lift: np.ndarray | None = None
     validity: np.ndarray | None = None
     rerank_rank: np.ndarray | None = None
     rerank_score: np.ndarray | None = None
@@ -112,12 +117,61 @@ def subset(c: Candidates, keep: np.ndarray) -> Candidates:
         term_cover=pick(c.term_cover),
         activation=pick(c.activation),
         usefulness=pick(c.usefulness),
+        lift=pick(c.lift),
         validity=pick(c.validity),
         rerank_rank=pick(c.rerank_rank),
         rerank_score=pick(c.rerank_score),
         relevance=pick(c.relevance),
     )
 
+
+QUERY_SIGNALS = ("cover", "terms", "weight", "lex_spread", "dense", "dense_gap")
+LEXICAL_SIGNALS = QUERY_SIGNALS[:4]
+
+
+def query_signals(c: Candidates, weights: np.ndarray | None, terms: int) -> np.ndarray:
+    """What the result list says about the whole query, in ``QUERY_SIGNALS`` order: is any stored item about this?"""
+    if not c.ids or weights is None:
+        return np.array([0.0, np.log1p(terms), 0.0, 0.0, 0.0, 0.0])
+    scores = np.sort(c.lex_score[c.lex_score > 0])[::-1][:50]
+    spread = float(scores.std() / scores.mean()) if scores.size > 1 else 0.0
+    dense = np.sort(c.dense_score)[::-1][:50]
+    return np.array([
+        float(c.term_cover.max()), np.log1p(terms), float(weights.max()), spread, float(dense[0]), float(dense[0] - dense.mean()),
+    ])
+
+
+@dataclass(frozen=True)
+class QueryGate:
+    """Logistic model over ``query_signals``: below ``threshold`` the store is taken to have nothing on this query."""
+
+    use: tuple[str, ...]
+    mean: tuple[float, ...]
+    scale: tuple[float, ...]
+    weights: tuple[float, ...]
+    intercept: float
+    threshold: float
+
+    def score(self, signals: np.ndarray) -> np.ndarray:
+        return (signals - np.asarray(self.mean)) / np.asarray(self.scale) @ np.asarray(self.weights) + self.intercept
+
+
+QUERY_GATES = {
+    "lexical": QueryGate(
+        LEXICAL_SIGNALS,
+        (0.35406, 1.8615, 0.26058, 0.43963),
+        (0.28348, 0.35278, 0.25658, 0.62576),
+        (1.5323, 0.56487, 1.069, 0.30833),
+        -1.1494, -2.316,
+    ),
+    "full": QueryGate(
+        QUERY_SIGNALS,
+        (0.35425, 1.8615, 0.35096, 0.43377, 0.42102, 0.13968),
+        (0.28332, 0.35278, 0.26691, 0.61765, 0.21383, 0.095266),
+        (0.85609, 0.40221, 0.697, 0.20268, 2.1096, 0.28618),
+        -1.61, -1.6036,
+    ),
+}
 
 BANDIT_FEATURES = ("bias", "prior", "usefulness")
 BANDIT_THETA = (0.0, 1.0, 0.0)

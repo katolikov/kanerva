@@ -42,7 +42,11 @@ export function resolveLaunch(env: NodeJS.ProcessEnv = process.env, bundled: str
   if (onPath("uv", env)) {
     const packages = ["--with", "numpy>=1.26"]
     if (env.KANERVA_EMBEDDER === "static") packages.push("--with", "model2vec>=0.6")
-    if (env.KANERVA_EMBEDDER === "minilm") packages.push("--with", "onnxruntime>=1.18", "--with", "tokenizers>=0.19")
+    // Without a setting, the first hook must not wait for packages: a background download brings them with the model.
+    const model = join(env.KANERVA_HOME ?? join(env.HOME ?? "", ".kanerva"), "models", "all-MiniLM-L6-v2", "onnx", "model.onnx")
+    if (env.KANERVA_EMBEDDER === "minilm" || env.KANERVA_EMBEDDER === "multilingual" || (!env.KANERVA_EMBEDDER && existsSync(model))) {
+      packages.push("--with", "onnxruntime>=1.18", "--with", "tokenizers>=0.19")
+    }
     return { command: ["uv", "run", "--quiet", "--no-project", ...packages, "python", "-m", "kanerva"], environment, cwd: dirname(bundled) }
   }
   return { command: ["python3", "-m", "kanerva"], environment, cwd: dirname(bundled) }
@@ -58,29 +62,42 @@ export const cliRunner =
   (launch: Launch = resolveLaunch(), timeoutMs = Number(process.env.KANERVA_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS)): Runner =>
   (event, payload) =>
     new Promise((resolve) => {
-      const [program, ...args] = launch.command
       let settled = false
+      let child: ReturnType<typeof spawn> | undefined
       const finish = (text: string) => {
         if (settled) return
         settled = true
         clearTimeout(timer)
         resolve(text)
       }
-      const child = spawn(program, [...args, "hook-raw", event], {
-        stdio: ["pipe", "pipe", "ignore"],
-        env: { ...process.env, ...launch.environment },
-        cwd: launch.cwd,
-      })
       const timer = setTimeout(() => {
-        child.kill()
+        child?.kill()
         finish("")
       }, timeoutMs)
-      let out = ""
-      child.stdout.on("data", (chunk) => (out += chunk))
-      child.on("error", () => finish(""))
-      child.on("close", (code) => finish(code === 0 ? out : ""))
-      child.stdin.on("error", () => {})
-      child.stdin.end(JSON.stringify(payload))
+      const attempt = (command: string[], otherwise: () => void) => {
+        const [program, ...args] = command
+        let failed = false
+        const fail = () => {
+          if (failed) return
+          failed = true
+          otherwise()
+        }
+        const process_ = spawn(program, [...args, "hook-raw", event], {
+          stdio: ["pipe", "pipe", "ignore"],
+          env: { ...process.env, ...launch.environment },
+          cwd: launch.cwd,
+        })
+        child = process_
+        let out = ""
+        process_.stdout.on("data", (chunk) => (out += chunk))
+        process_.on("error", fail)
+        process_.on("close", (code) => (code === 0 ? finish(out) : fail()))
+        process_.stdin.on("error", () => {})
+        process_.stdin.end(JSON.stringify(payload))
+      }
+      // Offline first: with the packages cached, memory must not wait on a network that may not answer.
+      if (launch.command[0] === "uv") attempt(["uv", "run", "--offline", ...launch.command.slice(2)], () => attempt(launch.command, () => finish("")))
+      else attempt(launch.command, () => finish(""))
     })
 
 /** Per-session state. The context retrieved for a prompt is re-sent on each model call of that prompt. */
@@ -88,6 +105,7 @@ export class Bridge {
   private started = new Map<string, Promise<void>>()
   private startContext = new Map<string, string>()
   private promptContext = new Map<string, string>()
+  private fileContext = new Map<string, string>()
   private subagents = new Set<string>()
   private queue: Promise<unknown> = Promise.resolve()
   private run: Runner
@@ -129,16 +147,20 @@ export class Bridge {
   async prompt(sessionID: string, prompt: string) {
     const [text] = await Promise.all([this.run("prompt", this.payload(sessionID, { prompt })), this.sessionStart(sessionID)])
     this.promptContext.set(sessionID, text)
+    this.fileContext.delete(sessionID)
   }
 
   /** Text to append to the system prompt of an outgoing model request. */
   system(sessionID: string): string {
-    const parts = [this.startContext.get(sessionID), this.promptContext.get(sessionID)]
+    const parts = [this.startContext.get(sessionID), this.promptContext.get(sessionID), this.fileContext.get(sessionID)]
     return parts.filter(Boolean).join("\n")
   }
 
   toolAfter(sessionID: string, tool: string, input: unknown, output: unknown) {
-    this.later(() => this.run("tool", this.payload(sessionID, { tool_name: tool, tool_input: input ?? {}, tool_response: output ?? {} })))
+    this.later(async () => {
+      const text = await this.run("tool", this.payload(sessionID, { tool_name: tool, tool_input: input ?? {}, tool_response: output ?? {} }))
+      if (text) this.fileContext.set(sessionID, [this.fileContext.get(sessionID), text].filter(Boolean).join("\n"))
+    })
   }
 
   /** A subagent's session ends with its task, so the note is left to the session that started it. */
@@ -166,6 +188,7 @@ export class Bridge {
     this.started.delete(sessionID)
     this.startContext.delete(sessionID)
     this.promptContext.delete(sessionID)
+    this.fileContext.delete(sessionID)
     this.subagents.delete(sessionID)
   }
 }

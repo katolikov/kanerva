@@ -28,6 +28,7 @@ Or point your config at a checkout:
 ## What you get
 
 - **Context on every request.** Notes from earlier sessions are added to the system prompt, for the session and for each prompt.
+- **Notes about files.** When a session first reads or edits a file, notes that name it are held for the next model request. Unit tests cover this, and it has not been run in a live session.
 - **Automatic capture.** Edits, test commands and compaction summaries are stored as you work. Secrets are redacted first.
 - **Eight tools.** `memory_search`, `memory_remember`, `memory_expand`, `memory_edit`, `memory_forget`, `memory_feedback`, `memory_maintain` and `memory_stats` are available to the model with no MCP setup.
 
@@ -35,9 +36,11 @@ Or point your config at a checkout:
 
 | Variable | Default | What it does |
 |---|---|---|
-| `KANERVA_EMBEDDER` | off | Set to `minilm` for vector search with MiniLM on ONNX, or to `static` for model2vec. See the [main README](../../README.md#minilm-in-the-plugins). |
+| `KANERVA_EMBEDDER` | `minilm` | `off` stays lexical and downloads nothing. `multilingual` and `static` use other models. See the [main README](../../README.md#minilm). |
 | `KANERVA_PROMPT_BUDGET` | `600` | Tokens injected per prompt. |
 | `KANERVA_SESSION_BUDGET` | `400` | Tokens injected at session start. |
+| `KANERVA_FILE_BUDGET` | `150` | Tokens of notes when a session first touches a file. `0` turns this off. |
+| `KANERVA_GATE` | on | Set to `0` to inject even when the store looks unable to answer a prompt. |
 | `KANERVA_HOME` | `~/.kanerva` | Where the database lives. |
 | `KANERVA_WRAPUP` | on | Set to `0` to stop asking the model for a note when a session with real work ends. It arrives as one synthetic message. `opencode run` exits before it starts, so this needs the TUI or a server. |
 | `KANERVA_COMMAND` | auto | Command that starts Kanerva, such as `uvx kanerva`. |

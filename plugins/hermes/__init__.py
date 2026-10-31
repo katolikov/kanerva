@@ -14,6 +14,7 @@ TIMEOUT_SECONDS = float(os.environ.get("KANERVA_TIMEOUT_MS", "20000")) / 1000
 
 logger = logging.getLogger(__name__)
 writes = ThreadPoolExecutor(max_workers=1, thread_name_prefix="kanerva")
+file_notes: dict[str, str] = {}  # notes about files, waiting for the next turn
 
 
 def workspace() -> str:
@@ -37,13 +38,19 @@ def call(event: str, session_id: str, **fields) -> str:
 def pre_llm_call(session_id="", user_message="", is_first_turn=False, **_):
     parts = [call("session_start", session_id, source="startup")] if is_first_turn else []
     parts.append(call("prompt", session_id, prompt=user_message or ""))
+    parts.append(file_notes.pop(session_id, ""))
     context = "\n".join(part for part in parts if part)
     return {"context": context} if context else None
 
 
 def post_tool_call(tool_name="", args=None, session_id="", status="", error_message="", **_):
     response = {"exit_code": 1 if status == "error" else 0, "stderr": error_message or ""}
-    writes.submit(call, "tool", session_id, tool_name=tool_name, tool_input=args or {}, tool_response=response)
+    def record() -> None:
+        text = call("tool", session_id, tool_name=tool_name, tool_input=args or {}, tool_response=response)
+        if text:
+            file_notes[session_id] = "\n".join(part for part in (file_notes.get(session_id), text) if part)
+
+    writes.submit(record)
 
 
 def on_session_end(session_id="", **_):

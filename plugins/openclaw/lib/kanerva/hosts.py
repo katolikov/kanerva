@@ -137,7 +137,7 @@ def _render(host: str, name: str, event: str, context: str, raw: dict, session: 
                 _hold(session, context)
             return json.dumps({"continue": True})
         if event == "tool":
-            context = _release(session)
+            context = "\n\n".join(part for part in (_release(session), context) if part)
         return json.dumps({"additional_context": context} if context else {})
     if host == "gemini":
         output = {"hookSpecificOutput": {"hookEventName": name, "additionalContext": context}}

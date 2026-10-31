@@ -9,13 +9,18 @@ cd "$ROOT" || exit 0
 
 run() {
   if command -v uv >/dev/null 2>&1; then
+    onnx="--with onnxruntime>=1.18 --with tokenizers>=0.19"
     case "$KANERVA_EMBEDDER" in
       static) extras="--with model2vec>=0.6" ;;
-      minilm) extras="--with onnxruntime>=1.18 --with tokenizers>=0.19" ;;
-      *) extras="" ;;
+      off) extras="" ;;
+      minilm|multilingual) extras="$onnx" ;;
+      # The first hook must not wait for packages: a background download brings them with the model.
+      *) if [ -f "${KANERVA_HOME:-$HOME/.kanerva}/models/all-MiniLM-L6-v2/onnx/model.onnx" ]; then extras="$onnx"; else extras=""; fi ;;
     esac
+    # Offline first: with the packages cached, memory must not wait on a network that may not answer.
     # shellcheck disable=SC2086
-    uv run --quiet --no-project --with 'numpy>=1.26' $extras python -m kanerva "$@"
+    uv run --quiet --offline --no-project --with 'numpy>=1.26' $extras python -m kanerva "$@" 2>/dev/null ||
+      uv run --quiet --no-project --with 'numpy>=1.26' $extras python -m kanerva "$@"
   else
     python3 -m kanerva "$@"
   fi

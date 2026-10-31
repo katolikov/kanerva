@@ -6,6 +6,8 @@ hermes plugins install katolikov/kanerva/plugins/hermes --enable
 
 This adds notes to each turn and records edits and commands. Tested on Hermes 0.19.0 with a local stub model.
 
+Notes that name a file a session touches are held for the next turn. Unit tests cover this, and it has not been run in a live session.
+
 The eight tools come from Kanerva's MCP server. Hermes needs its `mcp` extra for that:
 
 ```bash

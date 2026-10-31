@@ -8,7 +8,7 @@ Or by hand:
 
 ```bash
 pi install git:github.com/katolikov/kanerva
-uv tool install git+https://github.com/katolikov/kanerva
+uv tool install 'kanerva[onnx] @ git+https://github.com/katolikov/kanerva'
 pi mcp add memory --exposure direct -- kanerva mcp
 ```
 

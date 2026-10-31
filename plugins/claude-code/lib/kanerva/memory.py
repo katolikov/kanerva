@@ -20,11 +20,13 @@ from .embed import Embedder, HashingEmbedder
 from .policy import (
     BANDIT_THETA,
     LEXICAL_THETA,
+    QUERY_GATES,
     RERANK_THETA,
     Candidates,
     RetrievalConfig,
     bandit_features,
     feature_matrix,
+    query_signals,
     subset,
 )
 from .relevance import ItemView, load_model
@@ -62,6 +64,7 @@ CREATE TABLE IF NOT EXISTS items (
     pinned INTEGER NOT NULL DEFAULT 0,
     used REAL NOT NULL DEFAULT 1,
     unused REAL NOT NULL DEFAULT 1,
+    expected REAL NOT NULL DEFAULT 0,
     parents TEXT NOT NULL DEFAULT '[]',
     source TEXT NOT NULL DEFAULT '{}',
     embedding BLOB,
@@ -84,11 +87,29 @@ CREATE TABLE IF NOT EXISTS retrievals (
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 """
 
+_WORD = re.compile(r"\w+")
+COMMON_FILE_NAMES = frozenset(
+    """__init__.py __main__.py main.py setup.py conftest.py index.ts index.tsx index.js types.ts utils.ts mod.rs lib.rs
+    main.rs main.go doc.go go.mod package.json pyproject.toml Cargo.toml README.md Makefile Dockerfile main.c main.cc
+    main.cpp common.h config.h types.h util.h utils.h CMakeLists.txt""".split()
+)
+
 _HISTORICAL = re.compile(
     r"\b(previous(ly)?|used to|formerly|originally|initial(ly)?|earlier|before|old|former|prior|"
-    r"history|changed from|at first|first time)\b",
+    r"history|changed from|at first|first time|"
+    r"прежн\w+|прежде|предыдущ\w+|раньше|ранее|бывш\w+|изначальн\w+|первоначальн\w+|поначалу|"
+    r"стар(ый|ая|ое|ые|ого|ой|ому|ую|ым|ых|ом|ыми)|истори(я|и|ю|ей)|изменил\w* с|поменял\w* с|в первый раз|впервые)\b",
     re.I,
 )
+SCHEMA_VERSION = 2  # 2: items_fts holds the stems of Russian words
+
+SIMILAR_POOL = 50  # candidates taken from lexical search, and four times that from vectors
+SIMILAR_STORE = 1000  # word rarity is judged as if the store held at least this many notes
+SIMILAR_SPREAD = 2.0  # a note with more than this many times the words of another is not a version of it
+SIMILAR_OVERLAP = 0.5  # share of two notes' word weight that they have in common
+SIMILAR_SHARED = 3.5  # weight in common, where a word no other note has weighs 1
+SIMILAR_COSINE = 0.4  # closeness of two notes' vectors: an agent's paraphrases of one fact mostly sit above this, unrelated notes mostly far below
+_PLACEHOLDER = re.compile(r"\[REDACTED:[\w-]+\]")
 
 
 @dataclass
@@ -137,6 +158,12 @@ class Prepared:
     snippets: dict[int, str]
 
 
+def alternate(first: list, second: list) -> list:
+    """The two lists taken in turn, and whatever is left of the longer one."""
+    pairs = [entry for pair in zip(first, second) for entry in pair]
+    return pairs + first[len(second):] + second[len(first):]
+
+
 class Memory:
     """A memory store. ``path`` may be ``":memory:"``; ``embedder`` is optional."""
 
@@ -166,9 +193,9 @@ class Memory:
         self.db.execute("PRAGMA synchronous=NORMAL")
         self.db.execute("PRAGMA secure_delete=ON")
         self.db.executescript(_SCHEMA)
-        columns = {r["name"] for r in self.db.execute("PRAGMA table_info(items)")}
-        if "session" not in columns:
-            self.db.execute("ALTER TABLE items ADD COLUMN session TEXT")
+        self._add_column("session", "session TEXT")
+        self._add_column("expected", "expected REAL NOT NULL DEFAULT 0")
+        self._upgrade_index()
         self.hazard_prior = hazard_prior
         self.hazards: dict[str, HazardPosterior] = {}
         self.bandit = self._load_bandit()
@@ -176,9 +203,35 @@ class Memory:
         self._session_codes: dict[tuple, np.ndarray] = {}
         self._writes_since_refresh = 0
 
+    def _add_column(self, name: str, definition: str) -> None:
+        """Hooks start side by side, so another process can add the column between the check and the change."""
+        if any(r["name"] == name for r in self.db.execute("PRAGMA table_info(items)")):
+            return
+        try:
+            self.db.execute(f"ALTER TABLE items ADD COLUMN {definition}")
+        except sqlite3.OperationalError as error:
+            if "duplicate column" not in str(error):
+                raise
+
     def close(self) -> None:
         self.db.commit()
         self.db.close()
+
+    def _upgrade_index(self) -> None:
+        """Bring ``items_fts`` up to ``SCHEMA_VERSION``, once. Only notes with Cyrillic text index differently."""
+        current = "SELECT value FROM meta WHERE key='schema_version' AND CAST(value AS INTEGER) >= ?"
+        if self.db.execute(current, (SCHEMA_VERSION,)).fetchone() is not None:
+            return
+        try:
+            self.db.execute("BEGIN IMMEDIATE")
+        except sqlite3.OperationalError:  # another process holds the write lock, so the next open tries again
+            return
+        if self.db.execute(current, (SCHEMA_VERSION,)).fetchone() is None:  # a process that was first has done it
+            for row in self.db.execute("SELECT id, text FROM items WHERE text GLOB '*[а-яёА-ЯЁ]*'").fetchall():
+                self.db.execute("DELETE FROM items_fts WHERE rowid=?", (row["id"],))
+                self.db.execute("INSERT INTO items_fts (rowid, body) VALUES (?, ?)", (row["id"], search_text(row["text"])))
+            self.db.execute("INSERT OR REPLACE INTO meta VALUES ('schema_version', ?)", (str(SCHEMA_VERSION),))
+        self.db.commit()
 
     # write ---------------------------------------------------------------------------------
 
@@ -239,6 +292,104 @@ class Memory:
         self._matrix_cache.clear()
         self._writes_since_refresh += 1
         return item_id
+
+    def similar(
+        self,
+        text: str,
+        scope: str,
+        limit: int = 5,
+        *,
+        exclude: Iterable[int] = (),
+        query_vector: np.ndarray | None = None,
+        overlap: float = SIMILAR_OVERLAP,
+        shared: float = SIMILAR_SHARED,
+        cosine: float = SIMILAR_COSINE,
+    ) -> list[Item]:
+        """Live facts of ``scope`` most likely about the same subject as ``text``, closest first.
+
+        A fact qualifies when most of the word weight of the two notes is common to both, when they have enough rare
+        words in common, or when their vectors are close. This only lists candidates: the host agent decides, and
+        ``supersede`` records its answer. Key chains stay within a scope, and so does this list.
+        """
+        near = self._near_facts(text, scope, exclude, query_vector)
+        worded = [(row, common) for row, common, weight, _ in near if common >= overlap or weight >= shared]
+        known = {row["id"] for row, _ in worded}
+        phrased = sorted((entry for entry in near if entry[3] >= cosine and entry[0]["id"] not in known), key=lambda entry: -entry[3])
+        found = alternate(worded, [(row, common) for row, common, _, _ in phrased])  # neither kind may crowd out the other
+        items = [self._item(row, common) for row, common in found[:limit]]
+        for item in items:
+            item.text = redact(item.text)[0]  # a note can predate a pattern of the filter
+        return items
+
+    @staticmethod
+    def _subject_words(text: str) -> dict[str, str]:
+        """Stems of a note, each with a word that has it. What the secret filter left behind says nothing about the subject."""
+        return {light_stem(t): t for t in content_terms(_PLACEHOLDER.sub(" ", text))}
+
+    def _near_facts(
+        self, text: str, scope: str, exclude: Iterable[int] = (), query_vector: np.ndarray | None = None
+    ) -> list[tuple[sqlite3.Row, float, float, float]]:
+        """Live facts found for ``text``, each with its share of word weight, weight and cosine in common with it."""
+        text = redact(text.strip())[0]
+        words = self._subject_words(text)
+        if not words:
+            return []
+        close = dict(self.dense_search(text, 4 * SIMILAR_POOL, scope, query_vector))
+        lexical = self.db.execute(
+            "SELECT items_fts.rowid AS id FROM items_fts JOIN items ON items.id = items_fts.rowid"
+            " WHERE items_fts MATCH ? AND items.scope=? AND items.tier='active' AND items.kind<>'episodic'"
+            " AND items.valid_to IS NULL ORDER BY bm25(items_fts) LIMIT ?",
+            (fts_query(words.values()), scope, SIMILAR_POOL),
+        ).fetchall()
+        rows = self._fetch(list(dict.fromkeys([r["id"] for r in lexical] + list(close))))
+        skip = set(exclude)
+        total = self.db.execute("SELECT count(*) AS n FROM items WHERE tier='active'").fetchone()["n"]
+        total = max(total, SIMILAR_STORE)
+        weights: dict[str, float] = {}
+
+        def weight(term: str) -> float:
+            if term not in weights:
+                df = self.db.execute(
+                    "SELECT count(*) AS n FROM items_fts WHERE items_fts MATCH ?", (fts_query([term]),)
+                ).fetchone()["n"]
+                weights[term] = math.log(1.0 + (total + 1.0) / (df + 1.0)) / math.log(2.0 + total)
+            return weights[term]
+
+        found = []
+        for i, row in rows.items():
+            fact = row["scope"] == scope and row["tier"] == "active" and row["kind"] != "episodic" and row["valid_to"] is None
+            if not fact or i in skip:
+                continue
+            have = self._subject_words(row["text"])
+            closeness = close.get(i, 0.0)
+            if closeness < SIMILAR_COSINE and max(len(have), len(words)) > SIMILAR_SPREAD * min(len(have), len(words)):
+                continue
+            both = sum(weight(words[s]) for s in have.keys() & words.keys())
+            union = sum(weight(have.get(s) or words[s]) for s in have.keys() | words.keys())
+            found.append((row, both / union, both, closeness))
+        found.sort(key=lambda entry: -entry[1])
+        return found
+
+    def supersede(self, old: int, new: int, at: float | None = None) -> bool:
+        """Close ``old`` with ``new`` the way a key chain does, and say whether anything changed.
+
+        ``old`` stays in the store as history and ``new`` takes over its key, so a later write with that key still
+        finds the chain. Both must be live active items of one scope, and ``new`` must not be the older one, which
+        keeps swapped arguments from closing the newer note.
+        """
+        rows = self._fetch([old, new])
+        if old == new or len(rows) < 2:
+            return False
+        before, after = rows[old], rows[new]
+        live = all(r["tier"] == "active" and r["valid_to"] is None for r in (before, after))
+        if not live or before["scope"] != after["scope"] or after["confirmed_at"] < before["created_at"]:
+            return False
+        now = time.time() if at is None else at
+        self.db.execute("UPDATE items SET valid_to=?, superseded_by=? WHERE id=?", (now, new, old))
+        if after["key"] is None and before["key"] is not None:
+            self.db.execute("UPDATE items SET key=? WHERE id=?", (before["key"], new))
+        self.db.commit()
+        return True
 
     def refresh_hazards(self, now: float) -> dict[str, HazardPosterior]:
         """Recompute the per-class Gamma posteriors from the version history in the store."""
@@ -428,10 +579,12 @@ class Memory:
         validity = np.ones(n)
         activation = np.zeros(n)
         usefulness = np.full(n, 0.5)
+        lift = np.ones(n)
         for idx, i in enumerate(ids):
             row = rows[i]
             activation[idx] = activation_score(ages[i])
             usefulness[idx] = row["used"] / (row["used"] + row["unused"])
+            lift[idx] = (row["used"] - 1.0 + cfg.lift_prior) / (row["expected"] + cfg.lift_prior)
             if cfg.use_validity:
                 if row["valid_to"] is not None:
                     validity[idx] = 1.0 if historical else cfg.stale_factor
@@ -447,6 +600,7 @@ class Memory:
             term_cover=cover,
             activation=activation,
             usefulness=usefulness,
+            lift=lift,
             validity=validity,
         )
         if cfg.use_reranker and self.reranker is not None and n:
@@ -467,7 +621,7 @@ class Memory:
         if cfg.use_validity and cfg.use_supersession and n > 1 and not historical:
             hashed = vectors is None or cfg.hash_twins
             twins = HashingEmbedder().encode([rows[i]["text"] for i in cand.ids]) if hashed else vectors
-            keep = self._soft_supersession(cand, rows, twins, cfg)
+            keep = self._soft_supersession(cand, rows, twins, cfg, cfg.hashed_drop if hashed else cfg.supersession_drop)
             if not keep.all():
                 cand = subset(cand, keep)
                 vectors = None if vectors is None else vectors[keep]
@@ -506,16 +660,20 @@ class Memory:
         cand.rerank_rank[order] = np.arange(order.size)
         cand.rerank_score[pool[known]] = 1.0 / (1.0 + np.exp(-logits[known]))
 
-    def _soft_supersession(self, cand: Candidates, rows, vectors: np.ndarray, cfg: RetrievalConfig) -> np.ndarray:
+    def _soft_supersession(self, cand: Candidates, rows, vectors: np.ndarray, cfg: RetrievalConfig, drop: float) -> np.ndarray:
         """Discount older near-duplicates of newer items, and return the mask of items to keep.
 
         This is a heuristic for facts without keys. Keyed items have exact version chains and are exempt, and
-        episodic items are exempt because two similar events are still two events.
+        episodic items are exempt because two similar events are still two events. A newer twin stands in for an older
+        item only if it covers the query at least as well: facts about two neighbouring functions read alike, but a
+        question names one of them.
         """
         sim = vectors @ vectors.T
         np.fill_diagonal(sim, 0.0)
         confirmed = np.array([rows[i]["confirmed_at"] for i in cand.ids])
         newer = confirmed[None, :] > confirmed[:, None]
+        if cfg.twin_needs_query:
+            newer = newer & (cand.term_cover[None, :] >= cand.term_cover[:, None] - 1e-9)
         if not cfg.supersede_events:
             facts = np.array([rows[i]["kind"] != "episodic" for i in cand.ids], dtype=bool)
             newer = newer & facts[:, None] & facts[None, :]
@@ -525,7 +683,7 @@ class Memory:
         if not cfg.soft_supersede_keyed:
             gate = gate * unkeyed[:, None]
         cand.validity = cand.validity * np.prod(1.0 - cfg.supersession_strength * gate, axis=1)
-        return ~(((sim >= cfg.supersession_drop) & newer).any(axis=1) & unkeyed)
+        return ~(((sim >= drop) & newer).any(axis=1) & unkeyed)
 
     def build_problem(
         self,
@@ -556,6 +714,8 @@ class Memory:
             mu = bandit.score(np.column_stack([np.zeros(len(prior)), x[:, 1:]]))
         else:
             mu = bandit.score(x)
+        if trees and cfg.item_lift:
+            mu = np.clip(mu * cand.lift, 0.0, 1.0)
         if cfg.min_weight > 0:
             mu = np.where(mu >= cfg.min_weight, mu, 0.0)
         if cfg.floor > 0 and not trees:
@@ -654,11 +814,12 @@ class Memory:
         record: bool = True,
         certificate: bool = False,
         min_weight: float = 0.0,
+        gated: bool = False,
     ) -> RetrievalResult:
         cfg = config or self.config
         now = time.time() if now is None else now
         prepared = self.prepare(query, now, scope, cfg, query_vector)
-        return self.select(prepared, budget, record=record, certificate=certificate, min_weight=min_weight)
+        return self.select(prepared, budget, record=record, certificate=certificate, min_weight=min_weight, gated=gated)
 
     def prepare(
         self,
@@ -681,11 +842,26 @@ class Memory:
             problem, x, snippets = self.build_problem(cand, rows, vectors, terms, term_weights, stems, cfg, bandit)
         return Prepared(query, now, cfg, cand, rows, problem, x, snippets)
 
+    def has_answer(self, prepared: Prepared) -> bool:
+        """Whether the store looks able to answer this query at all, judging by its result list."""
+        cand = prepared.candidates
+        vectors = prepared.config.use_dense and bool(cand.ids) and float(cand.dense_score.max()) > 0  # notes can lack them
+        gate = QUERY_GATES["full" if vectors else "lexical"]
+        weights = None if prepared.problem is None else prepared.problem.weights
+        signals = query_signals(cand, weights, len(content_terms(prepared.query)))
+        return bool(gate.score(signals[: len(gate.use)]) >= gate.threshold)
+
     def select(
-        self, prepared: Prepared, budget: int, record: bool = True, certificate: bool = False, min_weight: float = 0.0
+        self,
+        prepared: Prepared,
+        budget: int,
+        record: bool = True,
+        certificate: bool = False,
+        min_weight: float = 0.0,
+        gated: bool = False,
     ) -> RetrievalResult:
         problem = prepared.problem
-        if problem is None:
+        if problem is None or (gated and not self.has_answer(prepared)):
             return RetrievalResult([], 0, budget)
         cand, rows = prepared.candidates, prepared.rows
         chosen = budgeted_select(problem, budget, prepared.config.cost_exponents)
@@ -747,10 +923,11 @@ class Memory:
         live = np.array([self._live(i) for i in ids], dtype=bool)
         if self.config.learn:
             self.bandit.update(x[live], y[live])
-        for item_id, reward in zip(ids, y):
+        expected = x[:, 1] if self.config.relevance == "trees" else np.zeros(len(ids))
+        for item_id, reward, chance in zip(ids, y, expected):
             self.db.execute(
-                "UPDATE items SET used = used + ?, unused = unused + ? WHERE id=?",
-                (float(reward), 1.0 - float(reward), item_id),
+                "UPDATE items SET used = used + ?, unused = unused + ?, expected = expected + ? WHERE id=?",
+                (float(reward), 1.0 - float(reward), float(chance), item_id),
             )
             if reward >= 0.5:  # use in a task counts as a fresh confirmation that the fact holds
                 self.db.execute(
@@ -813,13 +990,13 @@ class Memory:
         self._matrix_cache.clear()
         return True
 
-    def reembed(self, batch_size: int = 64) -> int:
-        """Give every item without a vector from the current embedder one, and return how many changed."""
+    def reembed(self, batch_size: int = 64, limit: int = -1) -> int:
+        """Give up to ``limit`` items without a vector from the current embedder one, and return how many changed."""
         if self.embedder is None:
             return 0
         size = 4 * self.embedder.dim
         rows = self.db.execute(
-            "SELECT id, text FROM items WHERE embedding IS NULL OR length(embedding) <> ? ORDER BY id", (size,)
+            "SELECT id, text FROM items WHERE embedding IS NULL OR length(embedding) <> ? ORDER BY id DESC LIMIT ?", (size, limit)
         ).fetchall()
         for start in range(0, len(rows), batch_size):
             chunk = rows[start:start + batch_size]
@@ -831,6 +1008,38 @@ class Memory:
             self.db.commit()
         self._matrix_cache.clear()
         return len(rows)
+
+    def about_file(self, path: str, budget: int, scope: str | None = None, skip: Iterable[int] = ()) -> list[Item]:
+        """Live notes that name this file, newest first, within ``budget`` tokens.
+
+        ``path`` is relative to the project. A name that many projects share counts only together with its folder, and
+        the notes the edit hook writes by itself say nothing about the file.
+        """
+        name = path.rsplit("/", 1)[-1]
+        target = path.rsplit("/", 2)[-2] + "/" + name if name in COMMON_FILE_NAMES and "/" in path else name
+        terms = list(dict.fromkeys(_WORD.findall(target.lower())))
+        if not terms:
+            return []
+        sql = (
+            "SELECT items.* FROM items_fts JOIN items ON items.id = items_fts.rowid"
+            " WHERE items_fts MATCH ? AND items.tier='active' AND items.valid_to IS NULL"
+        )
+        args: list = [" AND ".join('"' + t + '"' for t in terms)]
+        if scope is not None:
+            sql += " AND items.scope IN (?, 'global')"
+            args.append(scope)
+        sql += " ORDER BY items.created_at DESC, items.id DESC LIMIT 200"
+        pattern = re.compile(r"(?<![\w-])" + re.escape(target) + r"(?![\w-])")
+        skip = set(skip)
+        items, spent = [], 0
+        for row in self.db.execute(sql, args):
+            if row["id"] in skip or row["text"].startswith("Edited ") or not pattern.search(row["text"]):
+                continue
+            cost = row["tokens"] + self.config.item_overhead
+            if spent + cost <= budget:
+                items.append(self._item(row))
+                spent += cost
+        return items
 
     def list_items(self, scope: str | None = None, tier: str = "active", limit: int = 100) -> list[Item]:
         sql = "SELECT * FROM items WHERE tier=?"
@@ -874,8 +1083,11 @@ class Memory:
 
 
 def _user_embedder() -> Embedder | None:
-    """The embedder ``KANERVA_EMBEDDER`` names. Lexical search takes over whenever one cannot start."""
-    name = os.environ.get("KANERVA_EMBEDDER")
+    """The embedder ``KANERVA_EMBEDDER`` names, MiniLM by default and none for ``off``.
+
+    Lexical search takes over whenever one cannot start, such as until the model has arrived.
+    """
+    name = os.environ.get("KANERVA_EMBEDDER") or "minilm"
     try:
         if name == "static":
             from .embed import Model2VecEmbedder
@@ -886,6 +1098,12 @@ def _user_embedder() -> Embedder | None:
 
             if minilm_ready():
                 return OnnxEmbedder()
+            fetch_in_background()
+        if name == "multilingual":
+            from .embed import MultilingualEmbedder, fetch_in_background, multilingual_ready
+
+            if multilingual_ready():
+                return MultilingualEmbedder()
             fetch_in_background()
     except Exception:  # a missing package or no network on first use
         return None

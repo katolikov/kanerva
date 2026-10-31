@@ -5,3 +5,5 @@ description: Save a durable fact, decision, convention or bug lesson to memory. 
 Call the `memory_remember` tool with one self-contained sentence in `text`: $ARGUMENTS
 
 Give a stable `key` when the fact may change later, for example `cmd:test`, `config:db-url` or `decision:auth`. A later write with the same key supersedes this one and keeps it as history. Use `scope: "global"` only for preferences that apply to every project. Never store secrets; the store redacts the ones it detects.
+
+The result may list similar notes. If yours makes one of them out of date, fix it in the same turn, without asking: call `memory_forget` with its `id` and `replaced_by` set to the id of your note, or, if it says other things too, `memory_edit` with its text minus the outdated part. A replaced note stays as history.
