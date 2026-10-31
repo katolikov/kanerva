@@ -15,7 +15,7 @@ Coding agents start every session from zero. You explain the test command again,
 - **Small context.** You set the budget in tokens, and Kanerva picks the set of notes worth the most per token. Plugins estimate tokens instead of counting them exactly, so treat the limit as close, not exact.
 - **Facts stay current.** Give a fact a key, or write a near-identical note, and the new version replaces the old one. Old versions stay in history, and every note shows its date, newest first.
 - **Private by default.** One SQLite file in your home folder. No account, no cloud, no API key. Known key and token formats are redacted before anything is stored.
-- **No extra model calls.** No LLM on write or read, so memory costs you the tokens it injects, plus one short agent turn when a session with real work ends. You can [turn that off](#session-wrap-up).
+- **No LLM of its own.** Nothing calls a model on write or read, so memory costs you the tokens it injects, plus one short turn of your own agent when a session with real work ends. You can [turn that off](#session-wrap-up).
 - **Fits your tools.** Plugins for Claude Code, Codex, OpenCode, Copilot CLI and more, plus an MCP server for everything else. The [table](#install) says which ones have been run.
 
 ## Install

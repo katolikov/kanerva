@@ -1,6 +1,6 @@
 {
   "name": "opencode-kanerva",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Persistent local memory for OpenCode. Injects only what the current step needs, under a hard token budget.",
   "keywords": [
     "opencode",
