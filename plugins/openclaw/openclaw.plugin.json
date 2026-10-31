@@ -1,0 +1,8 @@
+{
+  "id": "kanerva",
+  "name": "Kanerva memory",
+  "description": "Long-term memory for coding agents: local, no LLM calls, hard token budget.",
+  "categories": ["developer-tools"],
+  "activation": {"onStartup": true},
+  "configSchema": {"type": "object", "additionalProperties": false}
+}
