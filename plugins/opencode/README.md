@@ -39,6 +39,7 @@ Or point your config at a checkout:
 | `KANERVA_PROMPT_BUDGET` | `600` | Tokens injected per prompt. |
 | `KANERVA_SESSION_BUDGET` | `400` | Tokens injected at session start. |
 | `KANERVA_HOME` | `~/.kanerva` | Where the database lives. |
+| `KANERVA_WRAPUP` | on | Set to `0` to stop asking the model for a note when a session with real work ends. It arrives as one synthetic message. `opencode run` exits before it starts, so this needs the TUI or a server. |
 | `KANERVA_COMMAND` | auto | Command that starts Kanerva, such as `uvx kanerva`. |
 | `KANERVA_TIMEOUT_MS` | `20000` | Give up on a memory call after this long. |
 

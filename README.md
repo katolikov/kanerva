@@ -15,7 +15,7 @@ Coding agents start every session from zero. You explain the test command again,
 - **Small context.** You set the budget in tokens, and Kanerva picks the set of notes worth the most per token. Plugins estimate tokens instead of counting them exactly, so treat the limit as close, not exact.
 - **Facts stay current.** Give a fact a key, or write a near-identical note, and the new version replaces the old one. Old versions stay in history, and every note shows its date, newest first.
 - **Private by default.** One SQLite file in your home folder. No account, no cloud, no API key. Known key and token formats are redacted before anything is stored.
-- **No extra model calls.** No LLM on write or read, so memory costs you only the tokens it injects.
+- **No extra model calls.** No LLM on write or read, so memory costs you the tokens it injects, plus one short agent turn when a session with real work ends. You can [turn that off](#session-wrap-up).
 - **Fits your tools.** Plugins for Claude Code, Codex, OpenCode, Copilot CLI and more, plus an MCP server for everything else. The [table](#install) says which ones have been run.
 
 ## Install
@@ -144,6 +144,15 @@ Everything is optional.
 | `KANERVA_HOME` | `~/.kanerva` | Where the database lives. |
 | `KANERVA_CONSOLIDATE` | off | Set to `1` to merge near-duplicate notes on compaction. Merges can be undone. |
 | `KANERVA_LEARN` | off | Set to `1` to learn from which notes were used. |
+| `KANERVA_WRAPUP` | on | Set to `0` to stop asking your agent for a note at the end of a session. |
+
+### Session wrap-up
+
+Only your agent knows what it tried and why, so Kanerva asks it. When a session has done real work (three file edits, one edit and a test run, or twelve shell commands), the agent gets one more turn to save a short outcome with `memory_remember`: what was tried, what worked and why. Kanerva still calls no model, but your agent's turn costs what any turn costs, and on Claude Code that can be a few model calls, because it has to load the tool first.
+
+The note goes through the same secret filter and ranking as any other. A session is asked once, and again only after 20 more edits. A note the agent writes by itself restarts the count.
+
+This has been run on Claude Code, OpenCode and Gemini CLI. Codex, Copilot CLI, Qwen Code, Devin and Cursor follow their hook docs and have not been run. The other agents are not asked yet. `opencode run` exits before the extra turn starts, so on OpenCode it needs the TUI or a server. Agents with the plugin's `Stop` hook now wait for it at the end of each turn, which takes about 0.2 s.
 
 ## Use it as a library
 

@@ -86,9 +86,39 @@ test("closing a session drops its state", async () => {
   assert.equal(calls.filter((c) => c[0] === "session_start").length, 2)
 })
 
-test("prompt text keeps only text parts", () => {
+test("prompt text keeps only text parts the user wrote", () => {
   assert.equal(promptText([{ type: "text", text: "a" }, { type: "file" }, { type: "text", text: "b" }]), "a\nb")
+  assert.equal(promptText([{ type: "text", text: "a" }, { type: "text", text: "from the plugin", synthetic: true }]), "a")
   assert.equal(promptText(undefined), "")
+})
+
+test("a stop that asks for a note hands it to the model", async () => {
+  const sent: Array<[string, string]> = []
+  const bridge = new Bridge(async (event) => (event === "stop" ? "write a note" : ""), "/repo", async (id, text) => sent.push([id, text]))
+  bridge.idle("s1")
+  await bridge.flush()
+  assert.deepEqual(sent, [["s1", "write a note"]])
+})
+
+test("a quiet stop sends nothing, and a stop without a route for it is dropped", async () => {
+  const sent: string[] = []
+  const quiet = new Bridge(async () => "", "/repo", async (id) => sent.push(id))
+  quiet.idle("s1")
+  await quiet.flush()
+  assert.deepEqual(sent, [])
+  const noRoute = new Bridge(async () => "write a note", "/repo")
+  noRoute.idle("s1")
+  await noRoute.flush()
+})
+
+test("a subagent's session is not asked for a note", async () => {
+  const sent: string[] = []
+  const bridge = new Bridge(async () => "write a note", "/repo", async (id) => sent.push(id))
+  bridge.subagent("child")
+  bridge.idle("child")
+  bridge.idle("parent")
+  await bridge.flush()
+  assert.deepEqual(sent, ["parent"])
 })
 
 test("the summary is the newest message flagged as one", () => {
@@ -213,23 +243,46 @@ test("a V1 session flows through prompt, context, tools, compaction and deletion
   assert.deepEqual(after.system, [])
 })
 
-function v2Context() {
+test("V1 asks for the note on the agent and model of the turn, hidden from the user", async () => {
+  const sent: any[] = []
+  const client = { session: { promptAsync: async (request: any) => sent.push(request) } }
+  const run = async (event: string) => (event === "stop" ? "write a note" : "")
+  const hooks = await serverV1({ client, directory: "/repo" }, run, launch)
+  const model = { providerID: "fake", modelID: "echo" }
+  await hooks.event({ event: { type: "session.created", properties: { info: { id: "s1" } } } })
+  await hooks["chat.message"]({ sessionID: "s1", agent: "plan", model }, { parts: [{ type: "text", text: "fix it please" }] })
+  await hooks.event({ event: { type: "session.created", properties: { info: { id: "s2", parentID: "s1" } } } })
+  await hooks.event({ event: { type: "session.idle", properties: { sessionID: "s2" } } })
+  await hooks.event({ event: { type: "session.idle", properties: { sessionID: "s1" } } })
+  await hooks.dispose()
+  assert.deepEqual(sent, [
+    { path: { id: "s1" }, body: { agent: "plan", model, parts: [{ type: "text", text: "write a note", synthetic: true }] } },
+  ])
+})
+
+function v2Context(events: any[] = [
+  { type: "session.created", data: { sessionID: "s1" } },
+  { type: "session.compaction.ended", data: { sessionID: "s1", summary: "we use tox" } },
+  { type: "session.idle", data: { sessionID: "s1" } },
+]) {
   const hooks: Record<string, (event: any) => any> = {}
   const servers: Record<string, any> = {}
+  const synthetic: any[] = []
   const ctx = {
     location: { directory: "/repo" },
     mcp: { transform: async (fn: any) => fn({ set: (name: string, config: any) => (servers[name] = config) }) },
-    session: { hook: async (name: string, fn: any) => void (hooks[name] = fn) },
+    session: {
+      hook: async (name: string, fn: any) => void (hooks[name] = fn),
+      synthetic: async (input: any) => synthetic.push(input),
+    },
     tool: { hook: async (name: string, fn: any) => void (hooks[`tool.${name}`] = fn) },
     event: {
       subscribe: async function* () {
-        yield { type: "session.created", data: { sessionID: "s1" } }
-        yield { type: "session.compaction.ended", data: { sessionID: "s1", summary: "we use tox" } }
-        yield { type: "session.idle", data: { sessionID: "s1" } }
+        yield* events
       },
     },
   }
-  return { ctx, hooks, servers }
+  return { ctx, hooks, servers, synthetic }
 }
 
 test("V2 registers every hook and the MCP server", async () => {
@@ -243,6 +296,28 @@ test("V2 registers every hook and the MCP server", async () => {
     codemode: false,
   })
   await stop()
+})
+
+test("V2 asks for the note with a synthetic message, and not from a subagent", async () => {
+  const { ctx, synthetic } = v2Context([
+    { type: "session.created", data: { sessionID: "s1" } },
+    { type: "session.created", data: { sessionID: "s2", parentID: "s1" } },
+    { type: "session.idle", data: { sessionID: "s2" } },
+    { type: "session.idle", data: { sessionID: "s1" } },
+  ])
+  const stop = await setupV2(ctx, async (event) => (event === "stop" ? "write a note" : ""), launch)
+  await new Promise((resolve) => setImmediate(resolve))
+  await stop()
+  assert.deepEqual(synthetic, [{ sessionID: "s1", text: "write a note" }])
+})
+
+test("V2 treats a finished run as a stop", async () => {
+  const { ctx } = v2Context([{ type: "session.execution.succeeded", data: { sessionID: "s1" } }])
+  const { run, calls } = fake()
+  const stop = await setupV2(ctx, run, launch)
+  await new Promise((resolve) => setImmediate(resolve))
+  await stop()
+  assert.deepEqual(calls.map((c) => c[0]), ["stop"])
 })
 
 test("a V2 session flows through prompt, context, tools and idle", async () => {

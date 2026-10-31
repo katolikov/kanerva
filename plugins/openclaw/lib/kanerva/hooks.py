@@ -24,13 +24,32 @@ PROMPT_BUDGET = int(os.environ.get("KANERVA_PROMPT_BUDGET", "600"))
 MIN_WEIGHT = float(os.environ.get("KANERVA_MIN_WEIGHT", "0.02"))
 LEARN = os.environ.get("KANERVA_LEARN") == "1"  # policy learning is opt-in: noisy rewards hurt in the experiments
 CONSOLIDATE_ON_COMPACT = os.environ.get("KANERVA_CONSOLIDATE") == "1"
+WRAPUP = os.environ.get("KANERVA_WRAPUP") != "0"
 MAX_CONTEXT_CHARS = 9500  # Claude Code truncates injected strings at 10,000 characters
+
+WRAPUP_EDITS = 3  # below this, with no test run and few commands, a session counts as trivial
+WRAPUP_COMMANDS = 12
+WRAPUP_AGAIN_EDITS = 20  # a long session is asked again only after this many further edits
+WRAPUP_KEEP_DAYS = 30
+WRAPUP_PROMPT = (
+    "This session did real work. Call memory_remember once with one short note for a later session: what was tried, "
+    "what worked and why. Under 60 words, no secrets, no key. If nothing here is worth keeping, skip it. "
+    "Then stop, with no further reply."
+)
 
 _SESSION_SCHEMA = """
 CREATE TABLE IF NOT EXISTS session_retrievals (session TEXT NOT NULL, retrieval_id INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS session_events (session TEXT NOT NULL, at REAL NOT NULL, kind TEXT NOT NULL, text TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS session_events_s ON session_events(session);
 CREATE INDEX IF NOT EXISTS session_retrievals_s ON session_retrievals(session);
+CREATE TABLE IF NOT EXISTS session_work (
+    session TEXT PRIMARY KEY,
+    edits INTEGER NOT NULL DEFAULT 0,
+    commands INTEGER NOT NULL DEFAULT 0,
+    tests INTEGER NOT NULL DEFAULT 0,
+    asked INTEGER NOT NULL DEFAULT 0,
+    at REAL NOT NULL
+);
 """
 
 _TEST_COMMAND = re.compile(r"\b(pytest|npm (run )?test|pnpm test|yarn test|cargo test|go test|make test|tox|vitest|jest)\b")
@@ -72,6 +91,45 @@ def _inject(mem: Memory, session: str, query: str, scope: str, budget: int, head
 
 def _note(mem: Memory, session: str, kind: str, text: str) -> None:
     mem.db.execute("INSERT INTO session_events VALUES (?, ?, ?, ?)", (session, time.time(), kind, redact(text)[0][:4000]))
+
+
+def _count_work(mem: Memory, session: str, edits: int = 0, commands: int = 0, tests: int = 0) -> None:
+    mem.db.execute(
+        "INSERT INTO session_work (session, edits, commands, tests, at) VALUES (?, ?, ?, ?, ?)"
+        " ON CONFLICT(session) DO UPDATE SET edits = edits + excluded.edits, commands = commands + excluded.commands,"
+        " tests = tests + excluded.tests, at = excluded.at",
+        (session, edits, commands, tests, time.time()),
+    )
+
+
+def _restart_work(mem: Memory, session: str, asked: bool = False) -> None:
+    mem.db.execute(
+        "UPDATE session_work SET edits = 0, commands = 0, tests = 0, asked = max(asked, ?) WHERE session = ?",
+        (int(asked), session),
+    )
+
+
+def wrapup_request(mem: Memory, session: str, payload: dict) -> str:
+    """The text that asks the host agent for an outcome note, or "" when this stop should stay quiet.
+
+    Only the agent knows what was tried and why, so the note goes through its own ``memory_remember`` call and meets
+    the same secret filter and ranking as any other note. Asking restarts the count, so one stop cannot ask twice.
+    """
+    mem.db.execute("DELETE FROM session_work WHERE at < ?", (time.time() - WRAPUP_KEEP_DAYS * 86400,))
+    unfinished = payload.get("stop_hook_active") or payload.get("background_tasks")
+    if not WRAPUP or unfinished or payload.get("status", "completed") != "completed":
+        return ""
+    row = mem.db.execute("SELECT * FROM session_work WHERE session = ?", (session,)).fetchone()
+    if row is None:
+        return ""
+    if row["asked"]:
+        due = row["edits"] >= WRAPUP_AGAIN_EDITS
+    else:
+        due = row["edits"] >= WRAPUP_EDITS or (row["edits"] > 0 and row["tests"] > 0) or row["commands"] >= WRAPUP_COMMANDS
+    if not due:
+        return ""
+    _restart_work(mem, session, asked=True)
+    return WRAPUP_PROMPT
 
 
 def distinctive_tokens(text: str) -> set[str]:
@@ -117,7 +175,9 @@ def on_tool(mem: Memory, session: str, scope: str, tool: str, tool_input: dict, 
     if tool == "apply_patch":
         patch = str(tool_input.get("command") or tool_input.get("input") or tool_input.get("patch") or "")
         _note(mem, session, "edit", patch[:4000])
-        for path in _PATCH_FILE.findall(patch):
+        paths = _PATCH_FILE.findall(patch)
+        _count_work(mem, session, edits=max(len(paths), 1))
+        for path in paths:
             mem.write(f"Edited {path.strip()}", scope=scope, kind="episodic", key=None, source={"session": session})
     elif tool in EDIT_TOOLS:
         path = (
@@ -125,12 +185,15 @@ def on_tool(mem: Memory, session: str, scope: str, tool: str, tool_input: dict, 
             or tool_input.get("TargetFile") or ""
         )
         _note(mem, session, "edit", json.dumps(tool_input)[:4000])
+        _count_work(mem, session, edits=1)
         if path:
             mem.write(f"Edited {path}", scope=scope, kind="episodic", key=None, source={"session": session})
     elif tool in SHELL_TOOLS:
         command = str(tool_input.get("command") or tool_input.get("CommandLine") or "")
         _note(mem, session, "command", command)
-        if _TEST_COMMAND.search(command):
+        is_test = bool(_TEST_COMMAND.search(command))
+        _count_work(mem, session, commands=1, tests=int(is_test))
+        if is_test:
             failed = isinstance(response, dict) and (response.get("interrupted") or response.get("exit_code") not in (0, None))
             stderr = str(response.get("stderr", "")) if isinstance(response, dict) else ""
             failed = bool(failed or re.search(r"\b(failed|error)\b", stderr, re.I))
@@ -139,6 +202,8 @@ def on_tool(mem: Memory, session: str, scope: str, tool: str, tool_input: dict, 
                 f"Test command: {command}", scope=scope, kind="semantic",
                 key=f"cmd:test:{command.split()[0]}", source={"session": session},
             )
+    elif tool.endswith("memory_remember"):
+        _restart_work(mem, session)  # the agent has just written a note of its own
     else:
         _note(mem, session, "tool", f"{tool} {json.dumps(tool_input)[:1000]}")
 
@@ -167,7 +232,7 @@ def handle(event: str, payload: dict) -> str:
             if message:
                 _note(mem, session, "reply", message)
             resolve_feedback(mem, session)
-            return ""
+            return wrapup_request(mem, session, payload)
         if event == "compact":
             if CONSOLIDATE_ON_COMPACT:
                 consolidate(mem, scope=scope)
@@ -192,8 +257,15 @@ EVENT_NAMES = {
 }
 
 
+def stop_output(text: str) -> dict:
+    """Keeps the agent going for one more turn. Claude Code labels this feedback, and ``decision`` an error."""
+    if os.environ.get("CLAUDECODE"):
+        return {"hookSpecificOutput": {"hookEventName": "Stop", "additionalContext": text}}
+    return {"decision": "block", "reason": text}
+
+
 def main(argv: list[str] | None = None) -> int:
-    """Claude Code command hook: read the payload on stdin, print additionalContext JSON."""
+    """Claude Code command hook: read the payload on stdin, print the hook's JSON answer."""
     try:
         payload = json.load(sys.stdin)
         name = payload.get("hook_event_name") or (argv or sys.argv[1:] or [""])[0]
@@ -201,6 +273,8 @@ def main(argv: list[str] | None = None) -> int:
         context = handle(event, payload)
         if context and name in ("SessionStart", "UserPromptSubmit"):
             print(json.dumps({"hookSpecificOutput": {"hookEventName": name, "additionalContext": context}}))
+        elif context and event == "stop":
+            print(json.dumps(stop_output(context)))
     except Exception as exc:  # a memory failure must never block the agent
         print(f"kanerva hook: {exc}", file=sys.stderr)
     return 0

@@ -50,7 +50,7 @@ def _copilot(payload: dict) -> dict:
     return {
         "session_id": payload.get("sessionId", "default"), "cwd": payload.get("cwd"), "source": payload.get("source"),
         "prompt": payload.get("prompt"), "tool_name": payload.get("toolName"), "tool_input": arguments,
-        "tool_response": {"exit_code": 1 if failed else 0},
+        "tool_response": {"exit_code": 1 if failed else 0}, "stop_hook_active": payload.get("stop_hook_active"),
     }
 
 
@@ -60,6 +60,7 @@ def _cursor(payload: dict) -> dict:
         "cwd": payload.get("cwd") or _first(payload.get("workspace_roots")), "source": payload.get("source"),
         "prompt": payload.get("prompt"), "tool_name": payload.get("tool_name"),
         "tool_input": payload.get("tool_input"), "tool_response": {},
+        "status": payload.get("status", "completed"), "stop_hook_active": bool(payload.get("loop_count")),
     }
 
 
@@ -108,7 +109,20 @@ def _release(session: str) -> str:
     return text
 
 
+def _stop_output(host: str, text: str) -> str:
+    """Asks the host for one more turn. Hosts not listed here are not asked."""
+    if host == "copilot":
+        return json.dumps({"decision": "block", "reason": text})
+    if host == "cursor":
+        return json.dumps({"followup_message": text})
+    if host == "gemini":  # `deny` keeps the answer the user already has and sends `reason` as the next request
+        return json.dumps({"decision": "deny", "reason": text, "systemMessage": "Kanerva: saving a note from this session"})
+    return ""
+
+
 def _render(host: str, name: str, event: str, context: str, raw: dict, session: str) -> str:
+    if event == "stop" and context:
+        return _stop_output(host, context)
     if host == "kiro":
         return context
     if host == "copilot":

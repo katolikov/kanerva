@@ -11,7 +11,7 @@ function server(launch: Launch) {
 }
 
 export async function setupV2(ctx: any, run: Runner, launch: Launch) {
-  const bridge = new Bridge(run, ctx.location.directory)
+  const bridge = new Bridge(run, ctx.location.directory, (sessionID, text) => ctx.session.synthetic({ sessionID, text }))
   await ctx.mcp.transform((editor: any) => {
     // codemode off: the model calls memory_search directly instead of scripting it inside `execute`.
     editor.set(SERVER, { ...server(launch), codemode: false })
@@ -34,14 +34,18 @@ export async function setupV2(ctx: any, run: Runner, launch: Launch) {
   const controller = new AbortController()
   void (async () => {
     const events = ctx.event.subscribe({
-      types: ["session.created", "session.idle", "session.deleted", "session.compaction.ended"],
+      types: ["session.created", "session.idle", "session.execution.succeeded", "session.deleted", "session.compaction.ended"],
       signal: controller.signal,
     })
     for await (const event of events) {
       const sessionID = event.data?.sessionID
       if (!sessionID) continue
-      if (event.type === "session.created") await bridge.sessionStart(sessionID)
-      if (event.type === "session.idle") bridge.idle(sessionID)
+      if (event.type === "session.created") {
+        if (event.data.parentID) bridge.subagent(sessionID)
+        await bridge.sessionStart(sessionID)
+      }
+      // A plugin on V2 sees a finished run as `session.execution.succeeded`; 2.2.4 does not pass it `session.idle`.
+      if (event.type === "session.idle" || event.type === "session.execution.succeeded") bridge.idle(sessionID)
       if (event.type === "session.deleted") bridge.close(sessionID)
       if (event.type === "session.compaction.ended") bridge.compacted(sessionID, event.data.summary ?? event.data.text ?? "")
     }
@@ -53,7 +57,10 @@ export async function setupV2(ctx: any, run: Runner, launch: Launch) {
 }
 
 export async function serverV1({ client, directory }: any, run: Runner, launch: Launch) {
-  const bridge = new Bridge(run, directory)
+  const turns = new Map<string, { agent?: string; model?: unknown }>()
+  const bridge = new Bridge(run, directory, (id, text) =>
+    client.session.promptAsync({ path: { id }, body: { ...turns.get(id), parts: [{ type: "text", text, synthetic: true }] } }),
+  )
   return {
     config: async (config: any) => {
       config.mcp ??= {}
@@ -63,15 +70,22 @@ export async function serverV1({ client, directory }: any, run: Runner, launch: 
       const properties = event.properties ?? {}
       const sessionID = properties.sessionID ?? properties.info?.id
       if (!sessionID) return
-      if (event.type === "session.created") await bridge.sessionStart(sessionID)
+      if (event.type === "session.created") {
+        if (properties.info?.parentID) bridge.subagent(sessionID)
+        await bridge.sessionStart(sessionID)
+      }
       if (event.type === "session.idle") bridge.idle(sessionID)
-      if (event.type === "session.deleted") bridge.close(sessionID)
+      if (event.type === "session.deleted") {
+        bridge.close(sessionID)
+        turns.delete(sessionID)
+      }
       if (event.type === "session.compacted") {
         const messages = await client?.session?.messages?.({ path: { id: sessionID } }).catch(() => undefined)
         bridge.compacted(sessionID, summaryText(messages?.data))
       }
     },
     "chat.message": async (input: any, output: any) => {
+      turns.set(input.sessionID, { agent: input.agent, model: input.model })
       await bridge.prompt(input.sessionID, promptText(output.parts))
     },
     "experimental.chat.system.transform": async (input: any, output: any) => {

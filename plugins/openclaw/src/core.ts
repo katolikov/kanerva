@@ -6,6 +6,9 @@ import { fileURLToPath } from "node:url"
 
 export type Runner = (event: string, payload: Record<string, unknown>) => Promise<string>
 
+/** Hands a request for an outcome note to the model, as a turn of its own. */
+export type Followup = (sessionID: string, text: string) => Promise<unknown>
+
 export interface Launch {
   command: string[]
   environment: Record<string, string>
@@ -84,13 +87,16 @@ export class Bridge {
   private started = new Map<string, Promise<void>>()
   private startContext = new Map<string, string>()
   private promptContext = new Map<string, string>()
+  private subagents = new Set<string>()
   private queue: Promise<unknown> = Promise.resolve()
   private run: Runner
   private cwd: string
+  private followup?: Followup
 
-  constructor(run: Runner, cwd: string) {
+  constructor(run: Runner, cwd: string, followup?: Followup) {
     this.run = run
     this.cwd = cwd
+    this.followup = followup
   }
 
   private payload(sessionID: string, extra: Record<string, unknown> = {}) {
@@ -134,8 +140,16 @@ export class Bridge {
     this.later(() => this.run("tool", this.payload(sessionID, { tool_name: tool, tool_input: input ?? {}, tool_response: output ?? {} })))
   }
 
+  /** A subagent's session ends with its task, so the note is left to the session that started it. */
+  subagent(sessionID: string) {
+    this.subagents.add(sessionID)
+  }
+
   idle(sessionID: string) {
-    this.later(() => this.run("stop", this.payload(sessionID)))
+    this.later(async () => {
+      const text = await this.run("stop", this.payload(sessionID))
+      if (text && !this.subagents.has(sessionID)) await this.followup?.(sessionID, text)
+    })
   }
 
   compacting(sessionID: string) {
@@ -151,12 +165,13 @@ export class Bridge {
     this.started.delete(sessionID)
     this.startContext.delete(sessionID)
     this.promptContext.delete(sessionID)
+    this.subagents.delete(sessionID)
   }
 }
 
-export function promptText(parts: Array<{ type?: string; text?: string }> = []): string {
+export function promptText(parts: Array<{ type?: string; text?: string; synthetic?: boolean }> = []): string {
   return parts
-    .filter((p) => p.type === "text" && p.text)
+    .filter((p) => p.type === "text" && p.text && !p.synthetic)
     .map((p) => p.text)
     .join("\n")
 }
