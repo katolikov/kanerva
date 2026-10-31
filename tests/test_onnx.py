@@ -30,9 +30,12 @@ def store(tmp_path, monkeypatch):
 
 
 class Spawned:
+    """Records downloads instead of starting them, on a machine where ONNX Runtime looks installed."""
+
     def __init__(self, monkeypatch):
         self.calls = []
         monkeypatch.setattr(embed.subprocess, "Popen", lambda args, **kwargs: self.calls.append(args))
+        monkeypatch.setattr(embed.importlib.util, "find_spec", lambda name: object())
 
 
 def test_pooling_ignores_padding_and_normalises():
@@ -53,17 +56,17 @@ def test_minilm_is_on_by_default_and_arrives_in_the_background(store, monkeypatc
 
 
 def test_an_installed_package_without_onnx_does_not_try_to_download(store, monkeypatch):
-    monkeypatch.setattr(embed.importlib.util, "find_spec", lambda name: None)
     spawned = Spawned(monkeypatch)
+    monkeypatch.setattr(embed.importlib.util, "find_spec", lambda name: None)
     embed.fetch_in_background()
     assert spawned.calls == [] and not embed.fetch_marker().exists()
 
 
 def test_a_plugin_brings_onnx_along_through_uv(store, monkeypatch, tmp_path):
+    spawned = Spawned(monkeypatch)
     monkeypatch.setattr(embed.importlib.util, "find_spec", lambda name: None)
     monkeypatch.setattr(embed.shutil, "which", lambda name: "/bin/uv")
     monkeypatch.setattr(embed, "__file__", str(tmp_path / "lib" / "kanerva" / "embed.py"))
-    spawned = Spawned(monkeypatch)
     embed.fetch_in_background()
     assert spawned.calls[0][:2] == ["/bin/uv", "run"] and "onnxruntime>=1.18" in spawned.calls[0]
 

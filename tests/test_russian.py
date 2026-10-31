@@ -321,6 +321,7 @@ class Spawned:
     def __init__(self, monkeypatch):
         self.calls = []
         monkeypatch.setattr(embed.subprocess, "Popen", lambda args, **kwargs: self.calls.append(args))
+        monkeypatch.setattr(embed.importlib.util, "find_spec", lambda name: object())
 
 
 def fake_hub(monkeypatch, content):
