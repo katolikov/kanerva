@@ -62,6 +62,7 @@ class RetrievalConfig:
     supersession_strength: float = 0.8
     supersession_drop: float = 0.97  # an unkeyed item with a newer twin this similar is removed outright
     soft_supersede_keyed: bool = False  # keyed items have exact version chains, so similarity is not evidence
+    hash_twins: bool = False  # compare twins by hashed words even when items have vectors
     supersede_events: bool = False  # two similar events are two events; only facts can replace each other
     stale_factor: float = 0.05
 

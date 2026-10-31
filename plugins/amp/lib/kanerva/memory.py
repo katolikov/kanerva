@@ -465,7 +465,8 @@ class Memory:
         if len(sizes) == 1 and None not in sizes and (self.embedder is None or sizes == {4 * self.embedder.dim}):
             vectors = np.frombuffer(b"".join(embedded), dtype=np.float32).reshape(n, -1)
         if cfg.use_validity and cfg.use_supersession and n > 1 and not historical:
-            twins = vectors if vectors is not None else HashingEmbedder().encode([rows[i]["text"] for i in ids])
+            hashed = vectors is None or cfg.hash_twins
+            twins = HashingEmbedder().encode([rows[i]["text"] for i in cand.ids]) if hashed else vectors
             keep = self._soft_supersession(cand, rows, twins, cfg)
             if not keep.all():
                 cand = subset(cand, keep)
