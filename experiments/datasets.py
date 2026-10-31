@@ -34,6 +34,8 @@ class Query:
     stale: set[str] = field(default_factory=set)  # item texts with an outdated answer
     historical: bool = False
     answer: str = ""  # reference answer, for answer-term recall; empty when there is none
+    files: tuple[str, ...] = ()  # the files a task touches
+    previous_files: tuple[str, ...] = ()  # the files of the change just before it
 
 
 @dataclass

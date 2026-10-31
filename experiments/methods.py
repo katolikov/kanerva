@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
+from experiments.datasets import ROOT
 from kanerva import Memory, RetrievalConfig
 from kanerva.policy import LEXICAL_THETA, RERANK_THETA
 from kanerva.select import SelectionProblem, budgeted_select
@@ -232,6 +233,13 @@ BASELINES = {
 }
 
 
+# Lexical search as a store without vectors runs it: benchmark stores hold vectors, and this compares twins by hashed words.
+LEXICAL = {"use_dense": False, "gamma": 0.0, "neighbour_top": 0, "theta0": LEXICAL_THETA, "hash_twins": True}
+
+
+PREVIOUS = ROOT / "experiments" / "cache" / "relevance_model_0.4.json"  # git show 63e6b25:src/kanerva/relevance_model.json
+
+
 def variants(base: RetrievalConfig) -> dict[str, RetrievalConfig]:
     """The full static method and its ablations (one component removed at a time)."""
     return {
@@ -240,10 +248,14 @@ def variants(base: RetrievalConfig) -> dict[str, RetrievalConfig]:
         "-validity": base.with_(use_validity=False),
         "-supersession": base.with_(use_supersession=False),
         "kanerva-ce": base.with_(use_reranker=True, theta0=RERANK_THETA),
-        "kanerva-lex": base.with_(use_dense=False, gamma=0.0, neighbour_top=0, theta0=LEXICAL_THETA),
+        "kanerva-lex": base.with_(**LEXICAL),
         "kanerva-r1": base.with_(**FIRST_VERSION),
         "-neighbours": base.with_(candidates=100, neighbour_top=0),
         "kanerva-x128": base.with_(excerpt_threshold=160, excerpt_tokens=128),
         "kanerva-events": base.with_(supersede_events=True),
-        "kanerva-lex-events": base.with_(use_dense=False, gamma=0.0, neighbour_top=0, theta0=LEXICAL_THETA, supersede_events=True),
+        "kanerva-any-twin": base.with_(twin_needs_query=False),
+        "kanerva-lex-any-twin": base.with_(**LEXICAL, twin_needs_query=False),
+        "kanerva-0.4": base.with_(model=f"{PREVIOUS}#dense", twin_needs_query=False),
+        "kanerva-lex-0.4": base.with_(**LEXICAL, model=f"{PREVIOUS}#lexical", twin_needs_query=False, hashed_drop=0.97),
+        "kanerva-lex-events": base.with_(**LEXICAL, supersede_events=True),
     }

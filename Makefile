@@ -18,10 +18,11 @@ plugin:
 data:
 	$(PY) scripts/fetch_data.py
 	$(PY) -m experiments.repomem
-	for name in lme locomo repomem repomem-holdout repomem-fresh repomem-new repomem-other beam; do \
+	for name in lme locomo repomem repomem-holdout repomem-fresh repomem-new repomem-other repomem-final repomem-c-dev repomem-c-test beam; do \
 	  $(PY) -m experiments.embed_cache $$name; \
 	  $(PY) -m experiments.embed_cache $$name minishlab/potion-base-8M; \
 	done
+	git show 63e6b25:src/kanerva/relevance_model.json > experiments/cache/relevance_model_0.4.json
 
 reproduce:
 	$(PY) -m experiments.reproduce

@@ -3,8 +3,9 @@
 Each repository becomes one memory stream. Evenly spaced commits are snapshots; the interval between
 two snapshots is a work session. During a session the simulated agent records notes about the commits
 in the window and about the code facts it observed in the files that changed. Facts are extracted
-deterministically with ``ast`` from the code at each snapshot, so every label comes from the repository
-itself: a fact is stale when the same key held a different value at an earlier snapshot.
+deterministically from the code at each snapshot, with ``ast`` for Python and regular expressions for C and
+C++, so every label comes from the repository itself: a fact is stale when the same key held a different value
+at an earlier snapshot.
 
 Queries are asked at later sessions. Track ``fact`` asks for the current value of a constant, function
 signature, symbol location or dependency, and track ``task`` uses a real later commit subject as the
@@ -64,11 +65,46 @@ REPOS = {
     "BurntSushi/ripgrep": (None, "other"),
     "tokio-rs/axum": (None, "other"),
     "clap-rs/clap": (None, "other"),
+    # The third held-out test, for the method fitted on every repository above.
+    "scrapy/scrapy": ("scrapy", "final"),
+    "celery/celery": ("celery", "final"),
+    "httpie/cli": ("httpie", "final"),
+    "sanic-org/sanic": ("sanic", "final"),
+    "boto/boto3": ("boto3", "final"),
+    "django/channels": ("channels", "final"),
+    "vuejs/core": (None, "final"),
+    "TanStack/query": (None, "final"),
+    "immerjs/immer": (None, "final"),
+    "spf13/cobra": (None, "final"),
+    "labstack/echo": (None, "final"),
+    "charmbracelet/bubbletea": (None, "final"),
+    "sharkdp/bat": (None, "final"),
+    "hyperium/hyper": (None, "final"),
+    "sharkdp/fd": (None, "final"),
+    # C and C++. The first group is for fixing what these languages break, and the second is a test nothing was tuned on.
+    "tmux/tmux": ("", "c-dev"),
+    "libuv/libuv": ("src", "c-dev"),
+    "nlohmann/json": ("include/nlohmann", "c-dev"),
+    "google/googletest": ("googletest", "c-dev"),
+    "redis/redis": ("src", "c-test"),
+    "curl/curl": ("lib", "c-test"),
+    "jqlang/jq": ("src", "c-test"),
+    "fmtlib/fmt": ("include/fmt", "c-test"),
+    "gabime/spdlog": ("include/spdlog", "c-test"),
+    "google/leveldb": ("db", "c-test"),
 }
+C_SPLITS = ("c-dev", "c-test")
 LANGUAGES = {
     "TypeScript": ("vite", "hono", "zod"),
     "Go": ("gin", "caddy", "fzf"),
     "Rust": ("ripgrep", "axum", "clap"),
+}
+C_LANGUAGES = {"C": ("redis", "curl", "jq"), "C++": ("fmt", "spdlog", "leveldb")}
+FINAL_LANGUAGES = {
+    "Python": ("scrapy", "celery", "cli", "sanic", "boto3", "channels"),
+    "TypeScript": ("core", "query", "immer"),
+    "Go": ("cobra", "echo", "bubbletea"),
+    "Rust": ("bat", "hyper", "fd"),
 }
 LEGACY_ROOTS = {"src/click": "click", "src/attr": "src/attr", "src/flask": "flask", "src/requests": "requests",
                 "src/werkzeug": "werkzeug", "src/jinja2": "jinja2", "src/black": "black",
@@ -153,6 +189,69 @@ def extract_facts(path: str, source: str) -> dict[str, tuple[str, str, str]]:
                 ):
                     qual = f"{node.name}.{child.name}"
                     facts[f"sig:{qual}"] = ("signature", qual, _signature(child))
+    return facts
+
+
+C_HEADERS = (".h", ".hh", ".hpp", ".hxx")
+C_SOURCES = (".c", ".cc", ".cpp", ".cxx")
+C_KEYWORDS = frozenset("""if for while switch return sizeof catch defined alignof decltype static_assert operator""".split())
+_C_DEFINE = re.compile(r"^[ \t]*#[ \t]*define[ \t]+([A-Za-z_]\w{2,})[ \t]+(.+?)[ \t]*(?:/[/*].*)?$", re.M)
+_C_CONST = re.compile(r"^[ \t]*(?:static[ \t]+)?(?:inline[ \t]+)?(?:constexpr|const)[ \t]+[\w:<>, ]*?[ \t&*]([A-Za-z_]\w{2,})[ \t]*=[ \t]*([^;{]{1,40});", re.M)
+_C_LITERAL = re.compile(r"""^\(?-?(?:0[xX][0-9a-fA-F]+|\d+(?:\.\d+)?)[uUlLfF]*\)?$|^"[^"\n]{0,40}"$""")
+_C_FUNCTION = re.compile(r"^(?P<lead>[ \t]*)(?P<head>(?:[A-Za-z_][\w:<>,*&~\[\]]*[ \t\n*&]+)+)(?P<name>[A-Za-z_]\w*)[ \t]*\((?P<args>[^;{}()]*)\)"
+                         r"[ \t\n]*(?:const[ \t\n]*)?(?:noexcept[ \t\n]*)?(?:override[ \t\n]*)?(?:=[ \t]*(?:0|default|delete)[ \t\n]*)?(?P<end>[;{])", re.M)
+_C_TYPE = re.compile(r"^[ \t]*(?:typedef[ \t]+)?(?:template[ \t]*<[^;{]*>[ \t\n]*)?(?:struct|class|union|enum(?:[ \t]+class)?)[ \t]+(?:[A-Z_]+_EXPORT[ \t]+)?([A-Za-z_]\w+)[^;{()]*\{", re.M)
+_C_COMMENT = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
+
+
+def extract_c_facts(path: str, source: str) -> dict[str, tuple[str, str, str]]:
+    """Facts in one C or C++ file: literal macros and constants, public functions, and types."""
+    facts: dict[str, tuple[str, str, str]] = {}
+    for pattern in (_C_DEFINE, _C_CONST):
+        for name, value in pattern.findall(source):
+            if _C_LITERAL.match(value.strip()):
+                facts[f"const:{path}:{name}"] = ("constant", name, value.strip())
+    code = _C_COMMENT.sub("", source)
+    found: dict[str, list[str]] = {}
+    for m in _C_FUNCTION.finditer(code):
+        name, head = m["name"], m["head"]
+        if name in C_KEYWORDS or name.startswith("_") or name.isupper() or re.search(r"\b(?:static|return|else|new|delete|typedef|goto|case)\b", head):
+            continue
+        if path.endswith(C_SOURCES) and (m["end"] != "{" or m["lead"]):  # in a source file only a definition at the left margin counts
+            continue
+        found.setdefault(name, []).append(" ".join(m["args"].split()))
+    for name, values in found.items():
+        if len(set(values)) == 1 and len(values[0]) <= 100:  # an overloaded name has no single signature
+            facts[f"sig:{name}"] = ("signature", name, values[0])
+            facts[f"loc:{name}"] = ("location", name, path)
+    for name in _C_TYPE.findall(code):
+        if not name.startswith("_"):
+            facts[f"loc:{name}"] = ("location", name, path)
+    return facts
+
+
+def c_snapshot_facts(repo_dir: Path, sha: str, root: str) -> dict[str, tuple[str, str, str, str]]:
+    """Headers first: a function declared in one and defined in a source file is one fact, and the header holds it."""
+    listing = git(repo_dir, "ls-tree", "-r", "--name-only", sha).splitlines()
+    inside = [f for f in listing if not root or f.startswith(root + "/")]
+    if not root:
+        inside = [f for f in inside if "/" not in f]
+    headers = [f for f in inside if f.endswith(C_HEADERS)]
+    sources = [f for f in inside if f.endswith(C_SOURCES) and "test" not in f.lower()]
+    facts: dict[str, tuple[str, str, str, str]] = {}
+    ambiguous: set[str] = set()
+    for group in (headers, sources):
+        seen: set[str] = set()
+        for path in group:
+            for key, (kind, name, value) in extract_c_facts(path, git(repo_dir, "show", f"{sha}:{path}")).items():
+                if key in facts and group is sources and key not in seen:
+                    continue
+                if key in seen:
+                    ambiguous.add(key)
+                seen.add(key)
+                facts[key] = (kind, name, value, path)
+    for key in ambiguous:
+        del facts[key]
     return facts
 
 
@@ -243,7 +342,8 @@ def build_repo(repo: str) -> dict:
     picks = [span[round(i * step)] for i in range(SNAPSHOTS)]
     snapshots = []
     for sha, at in picks:
-        snapshots.append({"sha": sha, "at": at, "facts": snapshot_facts(repo_dir, sha, root) if root else {}})
+        read = c_snapshot_facts if split in C_SPLITS else snapshot_facts
+        snapshots.append({"sha": sha, "at": at, "facts": read(repo_dir, sha, root) if root is not None else {}})
     windows = []
     for a, b in zip(picks, picks[1:]):
         windows.append([c.__dict__ for c in _window_commits(repo_dir, a[0], b[0])])
@@ -323,6 +423,7 @@ def stream_for(data: dict, seed: int) -> Stream:
             )
         tasks = [c for c in commits if 1 <= len(c["files"]) <= 6 and len(c["subject"]) > 15]
         rng.shuffle(tasks)
+        before_commit = {c["sha"]: commits[i - 1]["files"] if i else [] for i, c in enumerate(commits)}
         emitted = 0
         for commit in tasks:
             files = set(commit["files"])
@@ -331,7 +432,8 @@ def stream_for(data: dict, seed: int) -> Stream:
                 if len(files & set(p["files"])) / len(files | set(p["files"])) >= 0.5 and p["subject"] != commit["subject"]
             }
             if gold:
-                queries.append(Query(len(writes), f"{repo_name}-s{session}-t{emitted}", commit["subject"], commit["at"], "task", gold=gold))
+                queries.append(Query(len(writes), f"{repo_name}-s{session}-t{emitted}", commit["subject"], commit["at"], "task", gold=gold,
+                                     files=tuple(commit["files"]), previous_files=tuple(before_commit[commit["sha"]])))
                 emitted += 1
             if emitted >= TASK_QUERIES_PER_SESSION:
                 break

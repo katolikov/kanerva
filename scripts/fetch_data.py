@@ -10,6 +10,16 @@ from huggingface_hub import hf_hub_download
 DATA = Path(__file__).resolve().parent.parent / "data"
 LOCOMO = "https://raw.githubusercontent.com/snap-research/locomo/main/data/locomo10.json"
 BEAM = "https://huggingface.co/datasets/Mohammadta/BEAM/resolve/refs%2Fconvert%2Fparquet/default"
+# The authors' SQuAD-format files. The copy on the Hugging Face Hub has no article titles.
+XQUAD = "https://raw.githubusercontent.com/google-deepmind/xquad/7d30520c717524000f0d9d2f9c10a069acd9d285"
+
+
+def fetch_xquad() -> None:
+    (DATA / "xquad").mkdir(parents=True, exist_ok=True)
+    for language in ("ru", "en"):
+        target = DATA / "xquad" / f"xquad.{language}.json"
+        if not target.exists():
+            urllib.request.urlretrieve(f"{XQUAD}/xquad.{language}.json", target)
 
 
 def main() -> None:
@@ -24,6 +34,7 @@ def main() -> None:
         target = DATA / "beam" / f"{split}.parquet"
         if not target.exists():
             urllib.request.urlretrieve(f"{BEAM}/{split}/0000.parquet", target)
+    fetch_xquad()
 
 
 if __name__ == "__main__":

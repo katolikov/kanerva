@@ -13,10 +13,10 @@ import matplotlib.pyplot as plt
 ROOT = Path(__file__).resolve().parent.parent
 RESULTS = ROOT / "results"
 BUDGETS = (128, 256, 512, 1024, 2048, 4096)
-PANELS = {"fresh_beam": "Long conversations (BEAM, 984 questions)", "fresh_repomem-new-plain": "Code history (RepoMem, 2,014 questions)"}
+PANELS = {"fresh_beam-check": "Conversations, BEAM check ({:,})", "fresh_repomem-final-plain": "Code, third test ({:,})"}
 SERIES = (
-    ("kanerva", "Kanerva, full", 0),
-    ("kanerva-lex", "Kanerva, plugin default", 1),
+    ("kanerva", "Kanerva", 0),
+    ("kanerva-lex", "Kanerva, lexical", 1),
     ("rerank", "Hybrid + reranker", 2),
     ("hybrid", "Hybrid", 3),
     ("bm25", "BM25", 4),
@@ -30,7 +30,8 @@ def draw(path: Path, theme: dict, width: float = 9.6, height: float = 4.1) -> No
     fig, axes = plt.subplots(1, len(PANELS), figsize=(width, height), sharey=True, facecolor=theme["surface"])
     handles = []
     for ax, (name, title) in zip(axes, PANELS.items()):
-        summary = json.loads((RESULTS / f"{name}.json").read_text())["summary"]
+        result = json.loads((RESULTS / f"{name}.json").read_text())
+        summary = result["summary"]
         ax.set_facecolor(theme["surface"])
         for method, label, slot in SERIES:
             if f"{method}@128" not in summary:
@@ -44,7 +45,7 @@ def draw(path: Path, theme: dict, width: float = 9.6, height: float = 4.1) -> No
         ax.set_xticks(BUDGETS, [str(b) for b in BUDGETS])
         ax.minorticks_off()
         ax.set_ylim(0.2, 1.0)
-        ax.set_title(title, color=theme["ink"], fontsize=13.5, fontweight="bold", loc="left", pad=12)
+        ax.set_title(title.format(result["meta"]["queries"]), color=theme["ink"], fontsize=13.5, fontweight="bold", loc="left", pad=12)
         ax.set_xlabel("Token budget", color=theme["muted"])
         ax.grid(axis="y", color=theme["grid"], linewidth=1)
         ax.tick_params(colors=theme["muted"], length=0)
@@ -52,6 +53,7 @@ def draw(path: Path, theme: dict, width: float = 9.6, height: float = 4.1) -> No
             ax.spines[side].set_visible(False)
         ax.spines["bottom"].set_color(theme["grid"])
     axes[0].set_ylabel("Evidence recovered", color=theme["muted"])
+    handles.sort(key=lambda line: [label for _, label, _ in SERIES].index(line.get_label()))
     legend = fig.legend(handles=handles, loc="lower center", ncol=len(handles), frameon=False, bbox_to_anchor=(0.5, -0.01))
     for text in legend.get_texts():
         text.set_color(theme["ink"])

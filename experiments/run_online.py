@@ -31,6 +31,8 @@ SETTINGS = {
     "online-ucb": {"learn": True, "beta": 0.05, "noise": 0.0},
     "online-noisy": {"learn": True, "beta": 0.0, "noise": 0.2},
     "online-debiased": {"learn": True, "beta": 0.0, "noise": 0.2, "debias": True},
+    "lift": {"learn": True, "beta": 0.0, "noise": 0.0, "lift": True},
+    "lift-noisy": {"learn": True, "beta": 0.0, "noise": 0.2, "lift": True},
 }
 
 
@@ -43,6 +45,8 @@ def replay(args: tuple) -> dict:
         streams = [s for s in streams if s.name.endswith(f"-{seed % 3}")]
     rng.shuffle(streams)
     cfg = RetrievalConfig(bandit_ridge=ridge)
+    if spec.get("lift"):
+        cfg = cfg.with_(use_bandit=False, learn=False, item_lift=True)
     bandit = LinearBandit(np.asarray(BANDIT_THETA, dtype=float), ridge, spec["beta"])
     cache = TextCache(dataset)
     hits: list[float] = []
