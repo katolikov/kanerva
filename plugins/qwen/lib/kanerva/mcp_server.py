@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 from typing import Any, Callable
 
@@ -11,9 +12,11 @@ from . import __version__
 from .consolidate import consolidate, expand, forget
 from .memory import Memory, open_store
 from .paths import project_scope
+from .text import content_terms
 
 PROTOCOL_VERSION = "2025-06-18"
-SHORT_NOTE_CHARS = 120  # of a similar note, which the agent pays for on each write
+SHORT_NOTE_CHARS = 160  # of a similar note, which the agent pays for on each write
+_SENTENCE = re.compile(r"(?<=[.!?])\s+")
 
 TOOLS: dict[str, dict] = {
     "memory_search": {
@@ -57,7 +60,7 @@ TOOLS: dict[str, dict] = {
         },
     },
     "memory_edit": {
-        "description": "Replace the text of a memory id.",
+        "description": "Replace the text of a memory id. The earlier text stays as history, and memory_expand shows it.",
         "inputSchema": {
             "type": "object",
             "properties": {"id": {"type": "integer"}, "text": {"type": "string"}},
@@ -90,9 +93,16 @@ TOOLS: dict[str, dict] = {
 }
 
 
-def short_note(text: str) -> str:
+def short_note(text: str, about: str = "") -> str:
+    """A note for a list. A long note shows the sentence closest to ``about``, since an outdated detail is rarely its opening."""
     text = " ".join(text.split())
-    return text if len(text) <= SHORT_NOTE_CHARS else text[:SHORT_NOTE_CHARS].rstrip() + "..."
+    if len(text) <= SHORT_NOTE_CHARS:
+        return text
+    wanted = set(content_terms(about))
+    best = max(_SENTENCE.split(text), key=lambda sentence: len(wanted & set(content_terms(sentence))))
+    start = text.index(best)
+    piece = text[start:start + SHORT_NOTE_CHARS].rstrip()
+    return ("..." if start else "") + piece + ("..." if start + len(piece) < len(text) else "")
 
 
 INSTRUCTIONS = (
@@ -100,7 +110,8 @@ INSTRUCTIONS = (
     "or lesson should outlast this session, save it with memory_remember and not in a file: later sessions get it ranked "
     "under a token budget, and a newer note can replace it. Keeping memory current is part of saving, and installing this "
     "server asks for it: when memory_remember lists a note that yours makes out of date, retire or correct that note in the "
-    "same turn, as the result says."
+    "same turn, as the result says. Notes say what is true now, so a status, count, amount or plan that a newer note updates "
+    "is out of date even if it was right when written, while an event on a date stays."
 )
 
 
@@ -130,14 +141,15 @@ class Server:
                 args["text"], scope=scope, kind="semantic", key=args.get("key"), pinned=bool(args.get("pinned"))
             )
             reply: dict = {"id": item}
-            similar = [] if item is None else self.mem.similar(args["text"], scope, exclude=(item,))
+            similar = [] if item is None else self.mem.similar(args["text"], self.scope, exclude=(item,))
             if similar:
-                reply["similar"] = [{"id": note.id, "text": short_note(note.text)} for note in similar]
+                reply["similar"] = [{"id": note.id, "text": short_note(note.text, args["text"])} for note in similar]
                 reply["hint"] = (
-                    "A listed note with an older value of the same fact is now out of date. Fixing it is part of saving "
-                    f"this note, so do it now without asking. If that fact is all it says, call memory_forget with its id and "
-                    f"replaced_by={item}. If it says other things too, call memory_edit with its id and its text without the "
-                    "outdated part. Leave notes about anything else alone."
+                    "A listed note with an older value of the same fact is now out of date, even if it was true when written. "
+                    f"Fixing it is part of saving this note, so do it now without asking. If that fact is all it says, call "
+                    f"memory_forget with its id and replaced_by={item}. If it says other things too, call memory_edit with its "
+                    "id and its text without the outdated part: memory_expand shows a whole note, since these are cut short. "
+                    "The old text stays as history either way. A dated event stays as it is, and so do notes about anything else."
                 )
             return reply
         if name == "memory_expand":

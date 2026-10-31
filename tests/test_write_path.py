@@ -8,7 +8,7 @@ import pytest
 
 from kanerva import Memory, hooks, memory
 from kanerva.embed import HashingEmbedder
-from kanerva.mcp_server import SHORT_NOTE_CHARS, Server
+from kanerva.mcp_server import SHORT_NOTE_CHARS, Server, short_note
 from kanerva.memory import DAY
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -55,7 +55,7 @@ def test_unrelated_notes_are_not_shown(mem):
     assert mem.similar("Translations live in the locale folder", SCOPE) == []
 
 
-def test_only_live_facts_of_the_same_scope_are_shown(mem):
+def test_only_live_facts_of_this_project_and_global_are_shown(mem):
     live = fact(mem, "The API timeout is 30 seconds")
     mem.write("The API timeout is 40 seconds", scope=SCOPE, kind="episodic", at=T0)
     mem.write("The API timeout is 50 seconds", scope="global", kind="semantic", at=T0)
@@ -66,7 +66,7 @@ def test_only_live_facts_of_the_same_scope_are_shown(mem):
     assert mem.supersede(closed, fact(mem, "The API timeout is 95 seconds", at=T0 + 1))
     ids = [i.id for i in mem.similar("The API timeout is 60 seconds", SCOPE, limit=10)]
     assert live in ids and closed not in ids and archived not in ids
-    assert all(mem.get(i).kind == "semantic" and mem.get(i).scope == SCOPE for i in ids)
+    assert all(mem.get(i).kind == "semantic" and mem.get(i).scope in (SCOPE, "global") for i in ids)
 
 
 def test_the_limit_and_the_order(mem):
@@ -193,7 +193,7 @@ def test_remember_lists_similar_notes_with_one_instruction(server):
     assert set(reply) == {"id", "similar", "hint"}
     assert reply["similar"] == [{"id": old, "text": "The API timeout is 30 seconds"}]
     assert f"replaced_by={reply['id']}" in reply["hint"] and "memory_forget" in reply["hint"]
-    assert len(json.dumps(reply)) < 500
+    assert len(json.dumps(reply)) < 700
 
 
 def test_the_second_step_is_one_small_call(server):
@@ -240,9 +240,9 @@ def test_a_key_closes_its_chain_before_the_list_is_made(server):
     assert set(reply) == {"id"}
 
 
-def test_a_global_note_only_sees_global_notes(server):
+def test_a_global_note_also_sees_the_notes_of_this_project(server):
     server.call("memory_remember", {"text": "The API timeout is 30 seconds"})
-    assert set(server.call("memory_remember", {"text": "The API timeout is 60 seconds", "scope": "global"})) == {"id"}
+    assert "similar" in server.call("memory_remember", {"text": "The API timeout is 60 seconds", "scope": "global"})
 
 
 def test_an_empty_note_lists_nothing(server):
@@ -332,3 +332,27 @@ def test_neither_kind_of_match_crowds_out_the_other():
     assert memory.alternate([1, 2, 3, 4], [9]) == [1, 9, 2, 3, 4]
     assert memory.alternate([1], [8, 9]) == [1, 8, 9]
     assert memory.alternate([], [8]) == [8]
+
+
+def test_an_edit_keeps_the_earlier_text_as_history(tmp_path):
+    server = Server(Memory(tmp_path / "memory.sqlite"), scope="project:x")
+    item = server.call("memory_remember", {"text": "We have 30 dozen eggs and want an egg salad recipe"})["id"]
+    assert server.call("memory_edit", {"id": item, "text": "We want an egg salad recipe"})["edited"]
+    history = server.call("memory_expand", {"id": item})
+    assert [entry["text"] for entry in history] == ["We want an egg salad recipe", "We have 30 dozen eggs and want an egg salad recipe"]
+    found = server.call("memory_search", {"query": "dozen eggs"})["memories"]
+    assert all("30 dozen" not in note["text"] for note in found)
+
+
+def test_a_long_note_shows_the_sentence_that_matters():
+    long = "I want a new sofa for the living room and need ideas on fabric and color. My to-watch list has 20 titles at the moment. I also like plants."
+    assert "to-watch list has 20" in short_note(long, "My to-watch list has 25 titles now")
+    assert short_note(long).startswith("I want a new sofa")
+
+
+def test_a_personal_note_finds_its_project_version_and_replaces_it(tmp_path):
+    server = Server(Memory(tmp_path / "memory.sqlite"), scope="project:x")
+    old = server.call("memory_remember", {"text": "The user owns 30 dozen eggs in the fridge"})["id"]
+    reply = server.call("memory_remember", {"text": "The user owns 20 dozen eggs in the fridge", "scope": "global"})
+    assert [note["id"] for note in reply["similar"]] == [old]
+    assert server.call("memory_forget", {"id": old, "replaced_by": reply["id"]})["replaced"]

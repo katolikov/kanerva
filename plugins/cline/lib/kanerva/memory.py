@@ -108,7 +108,7 @@ SIMILAR_STORE = 1000  # word rarity is judged as if the store held at least this
 SIMILAR_SPREAD = 2.0  # a note with more than this many times the words of another is not a version of it
 SIMILAR_OVERLAP = 0.5  # share of two notes' word weight that they have in common
 SIMILAR_SHARED = 3.5  # weight in common, where a word no other note has weighs 1
-SIMILAR_COSINE = 0.4  # closeness of two notes' vectors: an agent's paraphrases of one fact mostly sit above this, unrelated notes mostly far below
+SIMILAR_COSINE = 0.3  # closeness of two notes' vectors, set low because the list is short and agents read it with care
 _PLACEHOLDER = re.compile(r"\[REDACTED:[\w-]+\]")
 
 
@@ -309,7 +309,7 @@ class Memory:
 
         A fact qualifies when most of the word weight of the two notes is common to both, when they have enough rare
         words in common, or when their vectors are close. This only lists candidates: the host agent decides, and
-        ``supersede`` records its answer. Key chains stay within a scope, and so does this list.
+        ``supersede`` records its answer. Global notes count too, so a personal fact finds its older version from any project.
         """
         near = self._near_facts(text, scope, exclude, query_vector)
         worded = [(row, common) for row, common, weight, _ in near if common >= overlap or weight >= shared]
@@ -337,7 +337,7 @@ class Memory:
         close = dict(self.dense_search(text, 4 * SIMILAR_POOL, scope, query_vector))
         lexical = self.db.execute(
             "SELECT items_fts.rowid AS id FROM items_fts JOIN items ON items.id = items_fts.rowid"
-            " WHERE items_fts MATCH ? AND items.scope=? AND items.tier='active' AND items.kind<>'episodic'"
+            " WHERE items_fts MATCH ? AND items.scope IN (?, 'global') AND items.tier='active' AND items.kind<>'episodic'"
             " AND items.valid_to IS NULL ORDER BY bm25(items_fts) LIMIT ?",
             (fts_query(words.values()), scope, SIMILAR_POOL),
         ).fetchall()
@@ -357,7 +357,7 @@ class Memory:
 
         found = []
         for i, row in rows.items():
-            fact = row["scope"] == scope and row["tier"] == "active" and row["kind"] != "episodic" and row["valid_to"] is None
+            fact = row["scope"] in (scope, "global") and row["tier"] == "active" and row["kind"] != "episodic" and row["valid_to"] is None
             if not fact or i in skip:
                 continue
             have = self._subject_words(row["text"])
@@ -374,15 +374,16 @@ class Memory:
         """Close ``old`` with ``new`` the way a key chain does, and say whether anything changed.
 
         ``old`` stays in the store as history and ``new`` takes over its key, so a later write with that key still
-        finds the chain. Both must be live active items of one scope, and ``new`` must not be the older one, which
-        keeps swapped arguments from closing the newer note.
+        finds the chain. Both must be live active items of one scope, or ``new`` a global note, and ``new`` must not be
+        the older one, which keeps swapped arguments from closing the newer note.
         """
         rows = self._fetch([old, new])
         if old == new or len(rows) < 2:
             return False
         before, after = rows[old], rows[new]
         live = all(r["tier"] == "active" and r["valid_to"] is None for r in (before, after))
-        if not live or before["scope"] != after["scope"] or after["confirmed_at"] < before["created_at"]:
+        one_scope = before["scope"] == after["scope"] or after["scope"] == "global"
+        if not live or not one_scope or after["confirmed_at"] < before["created_at"]:
             return False
         now = time.time() if at is None else at
         self.db.execute("UPDATE items SET valid_to=?, superseded_by=? WHERE id=?", (now, new, old))
@@ -972,10 +973,16 @@ class Memory:
         return None if row is None else self._item(row)
 
     def edit(self, item_id: int, text: str) -> bool:
+        """Replace an item's text. The earlier text stays as an archived parent, which ``expand`` shows."""
         text, _ = redact(text.strip())
-        row = self.db.execute("SELECT id FROM items WHERE id=?", (item_id,)).fetchone()
+        row = self.db.execute("SELECT * FROM items WHERE id=?", (item_id,)).fetchone()
         if row is None or not text:
             return False
+        columns = ", ".join(c for c in row.keys() if c != "id")
+        earlier = self.db.execute(f"INSERT INTO items ({columns}) SELECT {columns} FROM items WHERE id=?", (item_id,)).lastrowid
+        self.db.execute("UPDATE items SET tier='archive', key=NULL, valid_to=? WHERE id=?", (time.time(), earlier))
+        parents = json.dumps(json.loads(row["parents"]) + [earlier])
+        self.db.execute("UPDATE items SET parents=? WHERE id=?", (parents, item_id))
         blob = None
         if self.embedder is not None:
             blob = self.embedder.encode([text])[0].astype(np.float32).tobytes()
