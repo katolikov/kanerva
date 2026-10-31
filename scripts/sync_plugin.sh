@@ -7,8 +7,8 @@ SRC="$ROOT/src/kanerva"
 RUN="$ROOT/plugins/claude-code/scripts/run.sh"
 CORE="$ROOT/plugins/opencode/src/core.ts"
 
-WITH_LIBRARY="claude-code opencode copilot openclaw pi hermes"
-WITH_LAUNCHER="copilot hermes"
+WITH_LIBRARY="claude-code opencode copilot openclaw pi hermes gemini"
+WITH_LAUNCHER="copilot hermes gemini"
 WITH_CORE="openclaw pi"
 
 for NAME in $WITH_LIBRARY; do

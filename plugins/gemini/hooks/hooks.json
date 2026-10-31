@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {"hooks": [{"type": "command", "name": "kanerva-start", "command": "${extensionPath}/scripts/run.sh hook-host gemini SessionStart", "timeout": 10000}]}
+    ],
+    "BeforeAgent": [
+      {"hooks": [{"type": "command", "name": "kanerva-prompt", "command": "${extensionPath}/scripts/run.sh hook-host gemini BeforeAgent", "timeout": 5000}]}
+    ],
+    "AfterTool": [
+      {"hooks": [{"type": "command", "name": "kanerva-tool", "command": "${extensionPath}/scripts/run.sh hook-host gemini AfterTool", "timeout": 5000}]}
+    ],
+    "AfterAgent": [
+      {"hooks": [{"type": "command", "name": "kanerva-stop", "command": "${extensionPath}/scripts/run.sh hook-host gemini AfterAgent", "timeout": 5000}]}
+    ],
+    "PreCompress": [
+      {"hooks": [{"type": "command", "name": "kanerva-compact", "command": "${extensionPath}/scripts/run.sh hook-host gemini PreCompress", "timeout": 5000}]}
+    ]
+  }
+}
