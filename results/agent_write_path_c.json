@@ -1,0 +1,48 @@
+{
+ "meta": {
+  "experiment": "real agent on the write path",
+  "commit": "f156711e6f20-dirty",
+  "agent": "2.1.314 (Claude Code)",
+  "model": "claude-sonnet-5-5",
+  "prompts": {
+   "verbatim": "Remember this note for later, word for word:\n\n{note}",
+   "own": "Save what matters in this message with memory_remember, as one short note in your own words:\n\n{note}"
+  },
+  "trials": 24,
+  "cost_usd": 1.77,
+  "seconds": 77
+ },
+ "sets": {
+  "repomem-c-final": {
+   "trials": 24,
+   "remembered": 24,
+   "changed": {
+    "n": 12,
+    "replaced": 12,
+    "edited": 0,
+    "kept": 0,
+    "not_listed": 0,
+    "extra": 2,
+    "right": 1.0,
+    "interval": [
+     0.757,
+     1.0
+    ]
+   },
+   "other": {
+    "n": 12,
+    "replaced": 0,
+    "edited": 0,
+    "kept": 12,
+    "not_listed": 0,
+    "extra": 2,
+    "right": 0.8333333333333334,
+    "interval": [
+     0.552,
+     0.953
+    ]
+   }
+  }
+ },
+ "own_note_cosines": {}
+}

@@ -1,7 +1,7 @@
 {
  "meta": {
   "experiment": "write path without keys",
-  "commit": "c89ad36e29fe-dirty",
+  "commit": "f156711e6f20-dirty",
   "simulated": [
    "oracle"
   ],
@@ -24,7 +24,7 @@
    "cosine": 0.3
   },
   "other_notes": "facts first seen after the first snapshot; user turns after the first session",
-  "wall_seconds": 856.0
+  "wall_seconds": 695.3
  },
  "selection": {
   "lexical": {
@@ -187,7 +187,7 @@
     "top_hit_not_older": 0.9942363112391931,
     "top_hit_not_older_on_changed": 0.38461538461538464,
     "list_tokens_when_shown": 102.27521613832853,
-    "ms_per_call": 15.812004010997622
+    "ms_per_call": 15.780503825466747
    },
    "stale_on_changed_facts": {
     "current_rule": {
@@ -216,20 +216,20 @@
     "top_hit_not_older": 0.5190951821386603,
     "top_hit_not_older_on_changed": 0.061891117478510026,
     "list_tokens_when_shown": 91.65383862122992,
-    "ms_per_call": 3.6738553004832246
+    "ms_per_call": 3.596158472670915
    },
    "stale_on_changed_facts": {
     "current_rule": {
      "queries": 2505,
-     "stale_any": 0.24271457085828343,
+     "stale_any": 0.26387225548902193,
      "stale_error": 0.013572854291417165,
-     "recall": 0.9664670658682635
+     "recall": 0.973253493013972
     },
     "oracle_simulated": {
      "queries": 2505,
      "stale_any": 0.030738522954091817,
      "stale_error": 0.0015968063872255488,
-     "recall": 0.9680638722554891
+     "recall": 0.9748502994011976
     }
    }
   },
@@ -245,20 +245,20 @@
     "top_hit_not_older": 0.376139188069594,
     "top_hit_not_older_on_changed": 0.09167671893848009,
     "list_tokens_when_shown": 97.006628003314,
-    "ms_per_call": 2.215824393143591
+    "ms_per_call": 2.007521689403802
    },
    "stale_on_changed_facts": {
     "current_rule": {
      "queries": 1588,
-     "stale_any": 0.22858942065491183,
-     "stale_error": 0.005037783375314861,
-     "recall": 0.9603274559193955
+     "stale_any": 0.2682619647355164,
+     "stale_error": 0.00818639798488665,
+     "recall": 0.9622166246851386
     },
     "oracle_simulated": {
      "queries": 1588,
      "stale_any": 0.027707808564231738,
      "stale_error": 0.0,
-     "recall": 0.9653652392947103
+     "recall": 0.9685138539042821
     }
    }
   },
@@ -274,20 +274,20 @@
     "top_hit_not_older": 0.6981997882103776,
     "top_hit_not_older_on_changed": 0.07166123778501629,
     "list_tokens_when_shown": 83.23649841157783,
-    "ms_per_call": 3.13104273422439
+    "ms_per_call": 3.1501551147209805
    },
    "stale_on_changed_facts": {
     "current_rule": {
      "queries": 1772,
-     "stale_any": 0.26636568848758463,
-     "stale_error": 0.004514672686230248,
-     "recall": 0.989841986455982
+     "stale_any": 0.2895033860045147,
+     "stale_error": 0.0039503386004514675,
+     "recall": 0.9909706546275395
     },
     "oracle_simulated": {
      "queries": 1772,
      "stale_any": 0.034988713318284424,
      "stale_error": 0.0,
-     "recall": 0.989841986455982
+     "recall": 0.9904063205417607
     }
    }
   }
@@ -305,7 +305,7 @@
     "top_hit_not_older": 0.997667638483965,
     "top_hit_not_older_on_changed": 0.48936170212765956,
     "list_tokens_when_shown": 200.26326530612246,
-    "ms_per_call": 43.819903881924745
+    "ms_per_call": 43.755896269474015
    },
    "stale_on_changed_facts": {
     "current_rule": {
@@ -334,20 +334,20 @@
     "top_hit_not_older": 0.6301380082058933,
     "top_hit_not_older_on_changed": 0.060806971017238115,
     "list_tokens_when_shown": 152.13524804177547,
-    "ms_per_call": 14.240899878817876
+    "ms_per_call": 15.97977490803508
    },
    "stale_on_changed_facts": {
     "current_rule": {
      "queries": 2505,
-     "stale_any": 0.26147704590818366,
+     "stale_any": 0.18323353293413175,
      "stale_error": 0.0027944111776447107,
-     "recall": 0.9820359281437125
+     "recall": 0.9756487025948104
     },
     "oracle_simulated": {
      "queries": 2505,
      "stale_any": 0.0031936127744510976,
      "stale_error": 0.0027944111776447107,
-     "recall": 0.9816367265469061
+     "recall": 0.975249500998004
     }
    }
   },
@@ -363,20 +363,20 @@
     "top_hit_not_older": 0.5289408866995073,
     "top_hit_not_older_on_changed": 0.09036860879904875,
     "list_tokens_when_shown": 137.4408866995074,
-    "ms_per_call": 6.030569100304722
+    "ms_per_call": 6.227750720689073
    },
    "stale_on_changed_facts": {
     "current_rule": {
      "queries": 1588,
-     "stale_any": 0.19269521410579346,
-     "stale_error": 0.0,
-     "recall": 0.9949622166246851
+     "stale_any": 0.181360201511335,
+     "stale_error": 0.0031486146095717885,
+     "recall": 0.9924433249370277
     },
     "oracle_simulated": {
      "queries": 1588,
      "stale_any": 0.0069269521410579345,
      "stale_error": 0.0,
-     "recall": 0.9949622166246851
+     "recall": 0.9924433249370277
     }
    }
   },
@@ -392,20 +392,20 @@
     "top_hit_not_older": 0.8056591357753894,
     "top_hit_not_older_on_changed": 0.06932773109243698,
     "list_tokens_when_shown": 153.63127878920815,
-    "ms_per_call": 11.93187431828346
+    "ms_per_call": 12.343984678530562
    },
    "stale_on_changed_facts": {
     "current_rule": {
      "queries": 1772,
-     "stale_any": 0.34875846501128666,
+     "stale_any": 0.21049661399548533,
      "stale_error": 0.003386004514672686,
-     "recall": 0.994920993227991
+     "recall": 0.9943566591422122
     },
     "oracle_simulated": {
      "queries": 1772,
      "stale_any": 0.003386004514672686,
      "stale_error": 0.0,
-     "recall": 0.994920993227991
+     "recall": 0.9943566591422122
     }
    }
   }
