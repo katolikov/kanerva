@@ -15,7 +15,7 @@ import numpy as np
 
 from experiments.final_test import BASELINES, by_track, compare, run, score_pairs
 from experiments.harness import BUDGETS, RESULTS, git_commit
-from experiments.repomem import C_LANGUAGES, FINAL_LANGUAGES
+from experiments.repomem import C_FINAL_LANGUAGES, C_LANGUAGES, FINAL_LANGUAGES
 from kanerva import RetrievalConfig
 
 KEYED = {"dataset": "repomem-final", "cache": "repomem-final", "split": "final", "keyed": True}
@@ -67,23 +67,50 @@ def beam_check() -> None:
     (RESULTS / "beam_check.json").write_text(json.dumps(report, indent=1))
 
 
+def fact_answers(records: list[dict]) -> dict:
+    """Whether the facts' values reached the context at 1024 tokens. Recall asks for one note, and a newer note can hold the same value."""
+    rows = [r for r in records if r["budget"] == 1024 and r["category"] != "task" and np.isfinite(r["answer"])]
+    return {m: float(np.mean([r["answer"] for r in rows if r["method"] == m])) for m in sorted({r["method"] for r in rows})}
+
+
+def twin_rule() -> None:
+    """The near-twin rule of 0.5.1 against that of 0.5.0, on data that has been read, so a check and not a test."""
+    sets = {"third test": {"dataset": "repomem-final", "cache": "repomem-final", "split": "final", "keyed": False}, "c-test": {"dataset": "repomem-c-test", "cache": "repomem-c-test", "split": "c-test", "keyed": False},
+            "beam": BEAM}
+    methods = {"kanerva", "kanerva-0.5", "kanerva-lex", "kanerva-lex-0.5"}
+    rng = np.random.default_rng(0)
+    report: dict = {"meta": {"experiment": "near-twin rule of 0.5.1", "commit": git_commit()}}
+    for label, spec in sets.items():
+        records = run(f"twins-{label.replace(' ', '-')}", spec, methods, RetrievalConfig())
+        name = spec["dataset"] if spec["dataset"].startswith("repomem") else "beam"
+        report[label] = {f"{a} vs {b}": compare(records, name, a, b, rng)["mean"] for a, b in (("kanerva", "kanerva-0.5"), ("kanerva-lex", "kanerva-lex-0.5"))}
+        report[label]["stale"] = {m: float(v["stale_any"]) for m, v in stale(records).items()}
+        report[label]["answers"] = fact_answers(records)
+    (RESULTS / "twin_rule.json").write_text(json.dumps(report, indent=1))
+
+
 def c_family(split: str) -> None:
     """C and C++, with facts read by the regular expressions of experiments/repomem.py. ``c-dev`` is for fixing what these
-    languages break, and ``c-test`` runs once, on repositories that nothing was fitted or tuned on."""
+    languages break. ``c-test`` ran once on version 0.5.0, and ``c-final`` runs once on the near-twin rule that it led to."""
     name = f"repomem-{split}"
     keyed = {"dataset": name, "cache": name, "split": split, "keyed": True}
     plain = {**keyed, "keyed": False}
     methods = {"bm25", "hybrid", "hybrid-dedup", "hybrid-live", "rerank", "kanerva", "kanerva-ce", "kanerva-lex", "kanerva-0.4", "kanerva-lex-0.4"}
+    pairs = PAIRS
+    if split == "c-final":
+        methods |= {"kanerva-0.5", "kanerva-lex-0.5"}
+        pairs = PAIRS + (("kanerva", "kanerva-0.5"), ("kanerva-lex", "kanerva-lex-0.5"))
     score_pairs(name, keyed)
     outputs = {name: run(name, keyed, methods, RetrievalConfig()), f"{name}-plain": run(f"{name}-plain", plain, methods, RetrievalConfig())}
     rng = np.random.default_rng(0)
     report: dict = {"meta": {"experiment": f"C and C++, {split}", "commit": git_commit()}}
     for label, records in outputs.items():
-        report[label] = {f"{a} vs {b}": compare(records, label, a, b, rng) for a, b in PAIRS if {a, b} <= methods}
+        report[label] = {f"{a} vs {b}": compare(records, label, a, b, rng) for a, b in pairs if {a, b} <= methods}
         report[label]["stale_on_changed_facts"] = stale(records)
         report[label]["tracks"] = by_track(label)
-    if split == "c-test":
-        report["languages"] = by_language(outputs[f"{name}-plain"], C_LANGUAGES)
+        report[label]["answers"] = fact_answers(records)
+    if split != "c-dev":
+        report["languages"] = by_language(outputs[f"{name}-plain"], C_FINAL_LANGUAGES if split == "c-final" else C_LANGUAGES)
     (RESULTS / f"{split}_tests.json").write_text(json.dumps(report, indent=1))
 
 
@@ -91,7 +118,9 @@ def main() -> None:
     os.environ.setdefault("HF_HUB_OFFLINE", "1")
     if sys.argv[1:] == ["beam"]:
         return beam_check()
-    if sys.argv[1:] in (["c-dev"], ["c-test"]):
+    if sys.argv[1:] == ["twins"]:
+        return twin_rule()
+    if sys.argv[1:] in (["c-dev"], ["c-test"], ["c-final"]):
         return c_family(sys.argv[1])
     if sys.argv[1:] != ["retest"]:
         score_pairs("repomem-final", KEYED)

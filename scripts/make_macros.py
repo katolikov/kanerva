@@ -281,28 +281,42 @@ def every_test(entry: dict):
                 yield from every_test(value)
 
 
-C_METHODS = {"kanerva": "\\kanerva", "kanerva-ce": "\\kanerva + reranker", "kanerva-lex": "\\kanerva, lexical", "kanerva-0.4": "\\kanerva 0.4.1", "rerank": "Hybrid + reranker",
+C_METHODS = {"kanerva": "\\kanerva", "kanerva-ce": "\\kanerva + reranker", "kanerva-lex": "\\kanerva, lexical", "kanerva-0.5": "\\kanerva 0.5.0", "kanerva-lex-0.5": "\\kanerva 0.5.0, lexical", "kanerva-0.4": "\\kanerva 0.4.1", "rerank": "Hybrid + reranker",
              "hybrid": "Hybrid RRF", "hybrid-dedup": "Hybrid, newest of twins", "bm25": "BM25"}
-C_PAIRS = ("kanerva vs hybrid", "kanerva vs rerank", "kanerva vs kanerva-0.4", "kanerva-lex vs bm25", "kanerva-lex vs kanerva-lex-0.4")
+C_PAIRS = ("kanerva vs hybrid", "kanerva vs rerank", "kanerva vs kanerva-0.4", "kanerva-lex vs bm25", "kanerva-lex vs kanerva-lex-0.4",
+           "kanerva vs kanerva-0.5", "kanerva-lex vs kanerva-lex-0.5")
+
+
+def c_table(summary: dict) -> str:
+    rows = ["\\begin{tabular}{@{}l" + "r" * (len(BUDGETS) + 1) + "@{}}\\toprule", "Method & " + " & ".join(map(str, BUDGETS)) + " & mean \\\\\\midrule"]
+    methods = [m for m in C_METHODS if f"{m}@128" in summary]
+    best = {b: max(summary[f"{m}@{b}"]["recall"] for m in methods) for b in BUDGETS}
+    best_mean = max(mean_over_budgets(summary, m) for m in methods)
+    for m in methods:
+        cells = [f"\\textbf{{{fmt(summary[f'{m}@{b}']['recall'])}}}" if abs(summary[f"{m}@{b}"]["recall"] - best[b]) < 5e-4 else fmt(summary[f"{m}@{b}"]["recall"]) for b in BUDGETS]
+        mean = mean_over_budgets(summary, m)
+        cells.append(f"\\textbf{{{fmt(mean)}}}" if abs(mean - best_mean) < 5e-4 else fmt(mean))
+        rows.append(f"{C_METHODS[m]} & " + " & ".join(cells) + " \\\\")
+    rows.append("\\bottomrule\\end{tabular}")
+    return "\n".join(rows)
 
 
 def c_macros(lines: list[str]) -> None:
-    """C and C++: the held-out test, the dev group it followed, file notes and the gate."""
-    test = load("c-test_tests")
-    dev = load("c-dev_tests")
-    data = {"repomem-c-test": load("fresh_repomem-c-test"), "repomem-c-test-plain": load("fresh_repomem-c-test-plain")}
-    define(lines, "v-c-queries", f"{data['repomem-c-test-plain']['meta']['queries']:,}".replace(",", "{,}"))
+    """C and C++: both tests, the dev group, file notes, the gate, and the check of the near-twin rule on older data."""
+    reports = {"test": load("c-test_tests"), "dev": load("c-dev_tests"), "final": load("c-final_tests")}
+    data = {"test": load("fresh_repomem-c-test-plain"), "final": load("fresh_repomem-c-final-plain")}
     for name, entry in data.items():
+        define(lines, f"v-c-queries-{name}", f"{entry['meta']['queries']:,}".replace(",", "{,}"))
         for key, row in entry["summary"].items():
             method, budget = key.split("@")
             define(lines, f"v-c-r-{name}-{method}-{budget}", fmt(row["recall"]))
         for method in sorted({k.split("@")[0] for k in entry["summary"]}):
             define(lines, f"v-c-r-{name}-{method}-mean", fmt(mean_over_budgets(entry["summary"], method)))
-    for name, report in (("test", test), ("dev", dev)):
-        plain = report[f"repomem-c-{name}-plain"]
-        keyed = report[f"repomem-c-{name}"]
-        for label, entry in (("plain", plain), ("keys", keyed)):
+    for name, report in reports.items():
+        for label, entry in (("plain", report[f"repomem-c-{name}-plain"]), ("keys", report[f"repomem-c-{name}"])):
             for pair in C_PAIRS:
+                if pair not in entry:
+                    continue
                 key = pair.replace(" ", "_")
                 for budget, t in entry[pair].items():
                     define(lines, f"v-cd-{name}-{label}-{key}-{budget}", signed(t["diff"]))
@@ -315,42 +329,57 @@ def c_macros(lines: list[str]) -> None:
                 track, rest = key.split("/")
                 method, budget = rest.split("@")
                 define(lines, f"v-ctrack-{name}-{label}-{track}-{method}-{budget}", fmt(value))
-    for language, entry in test["languages"].items():
-        safe = language.replace("+", "p")
-        for key, values in entry.items():
-            if key == "queries":
-                continue
-            track, method = key.split("/")
-            define(lines, f"v-clang-{safe}-{track}-{method}", fmt(values[-1]))
-    files = load("file_recall_c")["repomem-c-test"]
-    for session in ("one", "previous"):
+            for method, value in entry.get("answers", {}).items():
+                define(lines, f"v-cans-{name}-{label}-{method}", fmt(value, 4))
+        for language, entry in report.get("languages", {}).items():
+            safe = language.replace("+", "p")
+            for key, values in entry.items():
+                if key != "queries":
+                    track, method = key.split("/")
+                    define(lines, f"v-clang-{name}-{safe}-{track}-{method}", fmt(values[-1]))
+    recall_files = load("file_recall_c")
+    for name in ("test", "final"):
+        files = recall_files[f"repomem-c-{name}"]
+        for session in ("one", "previous"):
+            for config in ("full", "lexical"):
+                row = files[f"{session}/{config}"]
+                prefix = f"v-cf-{name}-{session}-{config}"
+                for field in ("prompt", "wider", "with_files"):
+                    define(lines, f"{prefix}-{field}", fmt(row[field]))
+                move = row["with_files_vs_wider"]
+                define(lines, f"{prefix}-gain", signed(move["mean"]))
+                define(lines, f"{prefix}-up", f"{move['up']}/{move['repositories']}")
+                define(lines, f"{prefix}-down", f"{move['down']}/{move['repositories']}")
+    for name, path in (("test", "abstention_c"), ("final", "abstention_c_final")):
+        gate = load(path)
         for config in ("full", "lexical"):
-            row = files[f"{session}/{config}"]
-            prefix = f"v-cf-{session}-{config}"
-            for field in ("prompt", "wider", "with_files"):
-                define(lines, f"{prefix}-{field}", fmt(row[field]))
-            move = row["with_files_vs_wider"]
-            define(lines, f"{prefix}-gain", signed(move["mean"]))
-            define(lines, f"{prefix}-up", f"{move['up']}/{move['repositories']}")
-            define(lines, f"{prefix}-down", f"{move['down']}/{move['repositories']}")
-    gate = load("abstention_c")
-    for config in ("full", "lexical"):
-        for arm in ("without", "with"):
-            for kind in ("own", "same", "other"):
-                define(lines, f"v-cg-{config}-{arm}-{kind}", fmt(gate[config][arm][kind]["spoke"]))
-            define(lines, f"v-cg-{config}-{arm}-recall", fmt(gate[config][arm]["own"]["recall"]))
-    rows = ["\\begin{tabular}{@{}l" + "r" * (len(BUDGETS) + 1) + "@{}}\\toprule", "Method & " + " & ".join(map(str, BUDGETS)) + " & mean \\\\\\midrule"]
-    summary = data["repomem-c-test-plain"]["summary"]
-    methods = [m for m in C_METHODS if f"{m}@128" in summary]
-    best = {b: max(summary[f"{m}@{b}"]["recall"] for m in methods) for b in BUDGETS}
-    best_mean = max(mean_over_budgets(summary, m) for m in methods)
-    for m in methods:
-        cells = [f"\\textbf{{{fmt(summary[f'{m}@{b}']['recall'])}}}" if abs(summary[f"{m}@{b}"]["recall"] - best[b]) < 5e-4 else fmt(summary[f"{m}@{b}"]["recall"]) for b in BUDGETS]
-        mean = mean_over_budgets(summary, m)
-        cells.append(f"\\textbf{{{fmt(mean)}}}" if abs(mean - best_mean) < 5e-4 else fmt(mean))
-        rows.append(f"{C_METHODS[m]} & " + " & ".join(cells) + " \\\\")
-    rows.append("\\bottomrule\\end{tabular}")
-    (OUT / "table_c.tex").write_text("\n".join(rows))
+            for arm in ("without", "with"):
+                for kind in ("own", "same", "other"):
+                    define(lines, f"v-cg-{name}-{config}-{arm}-{kind}", fmt(gate[config][arm][kind]["spoke"]))
+                define(lines, f"v-cg-{name}-{config}-{arm}-recall", fmt(gate[config][arm]["own"]["recall"]))
+    refit = load("refit_c")
+    for kind in ("dense", "lexical"):
+        old, new = refit[kind]["recipes"]["all-families"], refit[kind]["recipes"]["with-c"]
+        for name in old:
+            define(lines, f"v-rc-{kind}-{name}", signed((sum(new[name]) - sum(old[name])) / len(old[name])))
+    twins = load("twin_rule")
+    for label, key in (("third test", "third"), ("c-test", "ctest"), ("beam", "beam")):
+        entry = twins[label]
+        define(lines, f"v-tr-{key}-dense", signed(entry["kanerva vs kanerva-0.5"]["diff"]))
+        define(lines, f"v-tr-{key}-lex", signed(entry["kanerva-lex vs kanerva-lex-0.5"]["diff"]))
+        for method, value in entry["stale"].items():
+            define(lines, f"v-tr-{key}-stale-{method}", percent(value))
+        for method, value in entry["answers"].items():
+            define(lines, f"v-tr-{key}-ans-{method}", fmt(value, 4))
+    agent = load("agent_write_path_c")
+    define(lines, "v-awpc-trials", agent["meta"]["trials"])
+    entry = agent["sets"]["repomem-c-final"]
+    define(lines, "v-awpc-fixed", entry["changed"]["replaced"] + entry["changed"]["edited"])
+    define(lines, "v-awpc-n", entry["changed"]["n"])
+    define(lines, "v-awpc-other-n", entry["other"]["n"])
+    define(lines, "v-awpc-other-clean", entry["other"]["n"] - entry["other"]["extra"])
+    (OUT / "table_c.tex").write_text(c_table(data["test"]["summary"]))
+    (OUT / "table_c_final.tex").write_text(c_table(data["final"]["summary"]))
 
 
 def answer_macros(lines: list[str], sets: dict) -> None:
@@ -508,8 +537,11 @@ def update_readme(data: dict, latency: dict) -> None:
     writes = load("write_path")
     notes, changed = writes["vectors"]["repomem-final"]["similar"], writes["vectors"]["repomem-final"]["stale_on_changed_facts"]
     hooks = load("hook_latency")["results"]
-    c_plain = load("c-test_tests")["repomem-c-test-plain"]
-    c_files = load("file_recall_c")["repomem-c-test"]["one/full"]
+    c_plain = load("c-final_tests")["repomem-c-final-plain"]
+    c_stale = c_plain["stale_on_changed_facts"]
+    c_files = load("file_recall_c")["repomem-c-final"]["one/full"]
+    c_agent = load("agent_write_path_c")["sets"]["repomem-c-final"]
+    twins = load("twin_rule")
     agent = load("agent_write_path")
     own, verbatim, code_notes = agent["sets"]["lme-own-notes"], agent["sets"]["lme-updates"], agent["sets"]["repomem-final"]
     first = load("agent_write_path_first_hint")["sets"]
@@ -535,7 +567,8 @@ Share of the needed evidence that made it into the context. These are retrieval 
 
 - **Code history.** Without keys, Kanerva leads hybrid search by {100 * plain['kanerva vs hybrid']['mean']['diff']:.1f} points over all budgets (interval {span(plain['kanerva vs hybrid']['mean'])}), ahead on all 15 repositories, and the reranker by {100 * plain['kanerva vs rerank']['mean']['diff']:.1f} points. With keys the lead over hybrid search is {100 * keyed['kanerva vs hybrid']['mean']['diff']:.1f} points. Against 0.4.1 it gains {100 * plain['kanerva vs kanerva-0.4']['mean']['diff']:.1f} points without keys and {100 * keyed['kanerva vs kanerva-0.4']['mean']['diff']:.1f} with them.
 - **Each language.** Over all budgets, against hybrid search: {versus} Exact code facts are measured on Python only, because that track reads Python source.
-- **C and C++.** A separate test on six repositories that nothing was tuned on, redis, curl, jq, fmt, spdlog and leveldb, with facts read by regular expressions. Without keys Kanerva leads hybrid search by {100 * c_plain['kanerva vs hybrid']['mean']['diff']:.1f} points over all budgets (interval {span(c_plain['kanerva vs hybrid']['mean'])}, all 6 repositories) and the reranker by {100 * c_plain['kanerva vs rerank']['mean']['diff']:.1f}, though it trails the reranker at 128 tokens. On tasks at 1024 tokens it has {fmt(c_plain['tracks']['task/kanerva@1024'])} against {fmt(c_plain['tracks']['task/hybrid@1024'])}. Lexical search only ties BM25, and it is weaker on C++, so let the model arrive there. Stale injection is {percent(c_plain['stale_on_changed_facts']['kanerva']['stale_any'])}% against {percent(c_plain['stale_on_changed_facts']['hybrid']['stale_any'])}% for hybrid search, and 0% with keys. File notes add {100 * c_files['with_files_vs_wider']['mean']:.1f} points at equal tokens. CMake, ctest, `make check` and Ninja runs count as test commands.
+- **C and C++.** The current version has its own test on six repositories that nothing was tuned on, nginx, libgit2, libevent, Catch2, benchmark and imgui, run once, with facts read by regular expressions. Without keys Kanerva leads hybrid search by {100 * c_plain['kanerva vs hybrid']['mean']['diff']:.1f} points over all budgets (interval {span(c_plain['kanerva vs hybrid']['mean'])}, all 6 repositories) and the reranker by {100 * c_plain['kanerva vs rerank']['mean']['diff']:.1f}, also on all 6. On tasks at 1024 tokens it has {fmt(c_plain['tracks']['task/kanerva@1024'])} against {fmt(c_plain['tracks']['task/hybrid@1024'])}. Lexical search leads BM25 by {100 * c_plain['kanerva-lex vs bm25']['mean']['diff']:.1f} points. Stale injection is {percent(c_stale['kanerva']['stale_any'])}% against {percent(c_stale['hybrid']['stale_any'])}% for hybrid search and {percent(c_stale['kanerva-0.5']['stale_any'])}% for 0.5.0, and 0% with keys. Strict fact recall is a little behind hybrid search ({fmt(c_plain['tracks']['fact/kanerva@1024'])} against {fmt(c_plain['tracks']['fact/hybrid@1024'])}), though the value itself reaches the context as often. File notes add {100 * c_files['with_files_vs_wider']['mean']:.1f} points at equal tokens, but lose on {c_files['with_files_vs_wider']['down']} of 6 repositories. A real agent fixed {c_agent['changed']['replaced'] + c_agent['changed']['edited']} of {c_agent['changed']['n']} changed facts. CMake, ctest, `make check` and Ninja runs count as test commands, and builds that worked are kept as build commands.
+- **Version 0.5.1.** Apart from the changed-notes figures, the others on this page come from 0.5.0. Version 0.5.1 changes one rule, how near-twins are compared. On the third test's data recall moves by {points(twins['third test']['kanerva vs kanerva-0.5']['diff'])} points and stale injection from {percent(twins['third test']['stale']['kanerva-0.5'])}% to {percent(twins['third test']['stale']['kanerva'])}%, or from {percent(twins['third test']['stale']['kanerva-lex-0.5'])}% to {percent(twins['third test']['stale']['kanerva-lex'])}% lexically, so lexical stores get a little worse there.
 - **Long conversations.** {fmt(sum(beam['summary'][f'kanerva@{b}']['recall'] for b in BUDGETS) / len(BUDGETS))} against {fmt(sum(beam['summary'][f'hybrid@{b}']['recall'] for b in BUDGETS) / len(BUDGETS))} for hybrid search over all budgets, and {fmt(beam['summary']['kanerva@1024']['recall'])} against {fmt(beam['summary']['hybrid@1024']['recall'])} at 1024 tokens. The refit changed little here ({points(check['kanerva vs kanerva-0.4']['mean']['diff'])} points against 0.4.1). On LoCoMo, scored out of fold, it lost a little: {fmt(locomo[0])} to {fmt(locomo[1])}.
 - **Stale facts.** At 1024 tokens on facts that changed, no outdated version got in with keys. Without keys, hybrid search injects one {percent(stale['hybrid']['stale_any'])}% of the time, Kanerva {percent(stale['kanerva']['stale_any'])}% and lexical {percent(stale['kanerva-lex']['stale_any'])}%. A one-line keep-the-newest rule gets {percent(stale['hybrid-dedup']['stale_any'])}%, so most of this comes from a simple idea. The store alone does not detect free-text updates, so both versions get injected, newest first, until your agent fixes the older one.
 - **A correction.** This page used to give {percent(load('new_tests')['repomem-new-plain']['stale_on_changed_facts']['kanerva']['stale_any'])}% stale next to the lexical plugin default. That figure held only with MiniLM vectors. Benchmark stores held vectors even in "lexical" runs, so those rows compared near-twins by vectors, which a real lexical store does not have. The real lexical figure for 0.4.1 was {percent(stale['kanerva-lex-0.4']['stale_any'])}% on the third test. Lexical runs now compare near-twins by hashed words, as a real store does.

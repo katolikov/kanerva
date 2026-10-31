@@ -237,6 +237,7 @@ BASELINES = {
 LEXICAL = {"use_dense": False, "gamma": 0.0, "neighbour_top": 0, "theta0": LEXICAL_THETA, "hash_twins": True}
 
 
+VECTOR_TWINS = {"word_twins": False, "twin_exact": False}  # the near-twin rule of versions up to 0.5.0
 PREVIOUS = ROOT / "experiments" / "cache" / "relevance_model_0.4.json"  # git show 63e6b25:src/kanerva/relevance_model.json
 
 
@@ -253,9 +254,11 @@ def variants(base: RetrievalConfig) -> dict[str, RetrievalConfig]:
         "-neighbours": base.with_(candidates=100, neighbour_top=0),
         "kanerva-x128": base.with_(excerpt_threshold=160, excerpt_tokens=128),
         "kanerva-events": base.with_(supersede_events=True),
-        "kanerva-any-twin": base.with_(twin_needs_query=False),
-        "kanerva-lex-any-twin": base.with_(**LEXICAL, twin_needs_query=False),
-        "kanerva-0.4": base.with_(model=f"{PREVIOUS}#dense", twin_needs_query=False),
-        "kanerva-lex-0.4": base.with_(**LEXICAL, model=f"{PREVIOUS}#lexical", twin_needs_query=False, hashed_drop=0.97),
+        "kanerva-any-twin": base.with_(twin_needs_query=False, **VECTOR_TWINS),
+        "kanerva-0.5": base.with_(**VECTOR_TWINS),
+        "kanerva-lex-0.5": base.with_(**LEXICAL, **VECTOR_TWINS),
+        "kanerva-lex-any-twin": base.with_(**LEXICAL, twin_needs_query=False, **VECTOR_TWINS),
+        "kanerva-0.4": base.with_(model=f"{PREVIOUS}#dense", twin_needs_query=False, **VECTOR_TWINS),
+        "kanerva-lex-0.4": base.with_(**LEXICAL, model=f"{PREVIOUS}#lexical", twin_needs_query=False, hashed_drop=0.97, **VECTOR_TWINS),
         "kanerva-lex-events": base.with_(**LEXICAL, supersede_events=True),
     }

@@ -35,6 +35,10 @@ DATASETS = {
     "repomem-new": ("repomem-new", "repomem-new", True, ("new",)),
     "repomem-new-plain": ("repomem-new", "repomem-new", False, ("new",)),
     "repomem-other": ("repomem-other", "repomem-other", False, ("other",)),
+    "repomem-c-dev": ("repomem-c-dev", "repomem-c-dev", True, ("c-dev",)),
+    "repomem-c-dev-plain": ("repomem-c-dev", "repomem-c-dev", False, ("c-dev",)),
+    "repomem-c-test": ("repomem-c-test", "repomem-c-test", True, ("c-test",)),
+    "repomem-c-test-plain": ("repomem-c-test", "repomem-c-test", False, ("c-test",)),
     "beam-dev": ("beam-dev", "beam", False, ("dev",)),
     "lme-updates": ("lme-updates", "lme", False, ("dev", "test")),
     # The static model2vec embedder that the plugin can use; no cross-encoder features.

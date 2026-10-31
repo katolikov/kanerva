@@ -44,7 +44,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PLUGIN = ROOT / "plugins" / "claude-code"
 RAW = RESULTS / "raw" / "agent_write_path.json"
 MODEL = "claude-sonnet-5-5"
-SETS = {"repomem-final": ("verbatim", 16), "lme-updates": ("verbatim", 12), "lme-own-notes": ("own", 12)}  # trials of each kind
+SETS = {"repomem-final": ("verbatim", 16), "lme-updates": ("verbatim", 12), "lme-own-notes": ("own", 12), "repomem-c-final": ("verbatim", 12)}  # trials of each kind
 WORKERS = 4
 MAX_USD = "0.4"
 PROMPTS = {"verbatim": "Remember this note for later, word for word:\n\n{note}",
@@ -249,7 +249,7 @@ def cosines(rows: list[dict]) -> dict:
     return {kind: {"n": len(values), "min": min(values), "median": float(np.median(values)), "max": max(values)} for kind, values in out.items() if values}
 
 
-def main(per_kind: int | None = None, names: tuple[str, ...] = tuple(SETS)) -> None:
+def main(per_kind: int | None = None, names: tuple[str, ...] = tuple(s for s in SETS if s != "repomem-c-final")) -> None:
     rng = random.Random("agent-write-path-7")  # earlier samples shaped the hint, the instructions and the list, so this one is new
     version = subprocess.run(["claude", "--version"], capture_output=True, text=True).stdout.strip()
     folder = Path(tempfile.mkdtemp(prefix="kanerva-agent-"))
@@ -261,7 +261,7 @@ def main(per_kind: int | None = None, names: tuple[str, ...] = tuple(SETS)) -> N
         for label in names:
             mode, n = SETS[label]
             dataset = "lme-updates" if label == "lme-own-notes" else label
-            cache_name, split = REPORT_ON[dataset]
+            cache_name, split = (REPORT_ON | {"repomem-c-final": ("repomem-c-final", "c-final")})[dataset]
             streams = streams_for(dataset, split)
             rows = [r | {"set": label, "dataset": dataset, "mode": mode} for part in pool.map(candidates, [(s, dataset, cache_name, mode) for s in streams]) for r in part]
             picked = pick([r for r in rows if r["changed"]], per_kind or n, rng) + pick([r for r in rows if not r["changed"]], per_kind or n, rng)
@@ -281,15 +281,16 @@ def main(per_kind: int | None = None, names: tuple[str, ...] = tuple(SETS)) -> N
     shutil.rmtree(folder, ignore_errors=True)
     for path in (Path.home() / ".claude" / "projects").glob(f"*{folder.name.replace('_', '-')}*"):  # the host's folders for these sessions
         shutil.rmtree(path, ignore_errors=True)
-    RAW.write_text(json.dumps(rows))
+    only_c = names == ("repomem-c-final",)
+    (RAW.with_name("agent_write_path_c.json") if only_c else RAW).write_text(json.dumps(rows))
     report = {
         "meta": {"experiment": "real agent on the write path", "commit": git_commit(), "agent": version, "model": MODEL, "prompts": PROMPTS,
                  "trials": len(rows), "cost_usd": round(sum(r["cost"] for r in rows), 2), "seconds": round(time.time() - start)},
         "sets": {name: summary([r for r in rows if r["set"] == name]) for name in names}, "own_note_cosines": own,
     }
-    (RESULTS / "agent_write_path.json").write_text(json.dumps(report, indent=1))
+    (RESULTS / ("agent_write_path_c.json" if only_c else "agent_write_path.json")).write_text(json.dumps(report, indent=1))
     print(json.dumps(report, indent=1))
 
 
 if __name__ == "__main__":
-    sys.exit(main(int(sys.argv[1]) if len(sys.argv) > 1 else None, tuple(sys.argv[2:]) or tuple(SETS)))
+    sys.exit(main(int(sys.argv[1]) if len(sys.argv) > 1 else None, *((tuple(sys.argv[2:]),) if sys.argv[2:] else ())))

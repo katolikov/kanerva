@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 SYSTEMS_PYTHON = ROOT / ".venv-systems" / "bin" / "python"
-ON_REQUEST = {"fresh-test", "second-test", "static-twins", "languages", "updates", "answers", "c-dev", "c-test", "agent-write-path", "real-sessions"}
+ON_REQUEST = {"fresh-test", "second-test", "static-twins", "languages", "updates", "answers", "c-dev", "c-test", "agent-write-path", "agent-write-path-c", "real-sessions"}
 STEPS = [
     ("dataset-stats", sys.executable, ["experiments.dataset_stats"], 600),
     ("pool", sys.executable, ["experiments.pool_recall", "beam-dev", "locomo"], 3600),
@@ -41,12 +41,18 @@ STEPS = [
     ("russian", sys.executable, ["experiments.russian_test"], 7200),
     ("c-dev", sys.executable, ["experiments.third_test", "c-dev"], 7200),
     ("c-test", sys.executable, ["experiments.third_test", "c-test"], 7200),
-    ("file-recall-c", sys.executable, ["experiments.file_recall", "repomem-c-dev", "repomem-c-test"], 3600),
+    ("c-final", sys.executable, ["experiments.third_test", "c-final"], 7200),
+    ("twin-rule", sys.executable, ["experiments.third_test", "twins"], 3600),
+    ("refit-c", sys.executable, ["experiments.refit", "dense", "all-families", "with-c"], 7200),
+    ("refit-c-lexical", sys.executable, ["experiments.refit", "lexical", "all-families", "with-c"], 7200),
+    ("file-recall-c", sys.executable, ["experiments.file_recall", "repomem-c-dev", "repomem-c-test", "repomem-c-final"], 3600),
     ("abstain-c", sys.executable, ["experiments.abstain", "c-test"], 3600),
+    ("abstain-c-final", sys.executable, ["experiments.abstain", "c-final"], 3600),
     ("abstain-static", sys.executable, ["experiments.abstain", "static"], 3600),
     ("data-flaws", sys.executable, ["experiments.data_flaws"], 600),
     ("answers", sys.executable, ["experiments.answer_test", "run", "--tag", "full"], 14400),
     ("agent-write-path", sys.executable, ["experiments.agent_write_path"], 3600),
+    ("agent-write-path-c", sys.executable, ["experiments.agent_write_path", "12", "repomem-c-final"], 3600),
     ("real-sessions", sys.executable, ["experiments.real_sessions"], 3600),
     ("hook-latency", sys.executable, ["experiments.hook_latency"], 1800),
     ("updates", sys.executable, ["experiments.dev_eval", "lme-updates"], 1800),

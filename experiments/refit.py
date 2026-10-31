@@ -19,7 +19,8 @@ from experiments.harness import BUDGETS, RESULTS, git_commit
 CHATS = ("lme", "locomo", "beam-dev")
 KEYED = ("repomem", "repomem-holdout", "repomem-fresh", "repomem-new")
 PLAIN = ("repomem-plain", "repomem-holdout-plain", "repomem-fresh-plain", "repomem-new-plain", "repomem-other")
-SCORED = CHATS + PLAIN + KEYED
+C_FAMILY = ("repomem-c-dev-plain", "repomem-c-test-plain", "repomem-c-dev", "repomem-c-test")
+SCORED = CHATS + PLAIN + KEYED + C_FAMILY
 KEEP_NEGATIVES = 0.2
 
 
@@ -39,6 +40,7 @@ RECIPES = {
     "add-plain": Recipe(CHATS + ("repomem", "repomem-plain")),
     "all": Recipe(CHATS + PLAIN + KEYED),
     "all-families": Recipe(CHATS + PLAIN + KEYED, families=True),
+    "with-c": Recipe(CHATS + PLAIN + KEYED + C_FAMILY, families=True),
     "all-small": Recipe(CHATS + PLAIN + KEYED, leaves=15, min_leaf=100, families=True),
     "all-smaller": Recipe(CHATS + PLAIN + KEYED, leaves=7, min_leaf=200, l2=5.0, families=True),
 }
@@ -96,7 +98,7 @@ def recall(d: Data, scores: np.ndarray | None, baseline: str | None = None) -> l
 def main(names: list[str], kind: str) -> None:
     use, pool = (BASE, "all") if kind == "dense" else (LEXICAL, "lexical")
     data = {name: Data(name) for name in SCORED}
-    path = RESULTS / "refit.json"
+    path = RESULTS / ("refit_c.json" if "with-c" in names else "refit.json")
     report = json.loads(path.read_text()) if path.exists() else {}
     report["meta"] = {"experiment": "refit", "commit": git_commit(), "budgets": list(BUDGETS)}
     section = report.setdefault(kind, {"baseline": {}, "recipes": {}})
@@ -113,4 +115,4 @@ def main(names: list[str], kind: str) -> None:
 
 if __name__ == "__main__":
     kind = sys.argv[1] if len(sys.argv) > 1 else "dense"
-    sys.exit(main(sys.argv[2:] or list(RECIPES), kind))
+    sys.exit(main(sys.argv[2:] or [name for name in RECIPES if name != "with-c"], kind))

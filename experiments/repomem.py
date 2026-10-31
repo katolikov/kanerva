@@ -92,14 +92,22 @@ REPOS = {
     "fmtlib/fmt": ("include/fmt", "c-test"),
     "gabime/spdlog": ("include/spdlog", "c-test"),
     "google/leveldb": ("db", "c-test"),
+    # After the test above, its six repositories joined the fit, so a change for these languages needs repositories of its own.
+    "nginx/nginx": ("src", "c-final"),
+    "libgit2/libgit2": ("src", "c-final"),
+    "libevent/libevent": ("", "c-final"),
+    "catchorg/Catch2": ("src/catch2", "c-final"),
+    "google/benchmark": ("src", "c-final"),
+    "ocornut/imgui": ("", "c-final"),
 }
-C_SPLITS = ("c-dev", "c-test")
+C_SPLITS = ("c-dev", "c-test", "c-final")
 LANGUAGES = {
     "TypeScript": ("vite", "hono", "zod"),
     "Go": ("gin", "caddy", "fzf"),
     "Rust": ("ripgrep", "axum", "clap"),
 }
 C_LANGUAGES = {"C": ("redis", "curl", "jq"), "C++": ("fmt", "spdlog", "leveldb")}
+C_FINAL_LANGUAGES = {"C": ("nginx", "libgit2", "libevent"), "C++": ("Catch2", "benchmark", "imgui")}
 FINAL_LANGUAGES = {
     "Python": ("scrapy", "celery", "cli", "sanic", "boto3", "channels"),
     "TypeScript": ("core", "query", "immer"),

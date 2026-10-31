@@ -27,7 +27,7 @@ FILE_BUDGET = 150
 MAX_FILES = 3
 SETS = ("repomem", "repomem-holdout", "repomem-fresh", "repomem-new", "repomem-other")
 HELD_OUT = ("repomem-final",)
-C_FAMILY = ("repomem-c-dev", "repomem-c-test")
+C_FAMILY = ("repomem-c-dev", "repomem-c-test", "repomem-c-final")
 
 
 def configs() -> dict[str, RetrievalConfig]:
