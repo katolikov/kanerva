@@ -59,14 +59,14 @@ def test_session_start_uses_project_memory(store):
 
 
 def test_tool_hook_records_edits_and_test_commands(store):
-    hooks.handle("tool", payload("PostToolUse", tool_name="Edit", tool_input={"file_path": "/repo/src/app.py"}, tool_response={}))
+    hooks.handle("tool", payload("PostToolUse", tool_name="Edit", tool_input={"file_path": "/tmp/project-x/src/app.py"}, tool_response={}))
     hooks.handle("tool", payload("PostToolUse", tool_name="Bash", tool_input={"command": "pytest -x tests"}, tool_response={"stdout": "ok", "stderr": ""}))
     from kanerva.paths import db_path
 
     mem = Memory(db_path())
     texts = [r["text"] for r in mem.db.execute("SELECT text FROM items")]
     mem.close()
-    assert "Edited /repo/src/app.py" in texts
+    assert "Edited src/app.py" in texts
     assert "Test command: pytest -x tests" in texts
 
 

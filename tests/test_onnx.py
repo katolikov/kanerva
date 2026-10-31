@@ -44,8 +44,32 @@ def test_pooling_keeps_a_row_of_zeros_finite():
     assert np.isfinite(mean_pool(np.zeros((1, 2, 4), dtype=np.float32), np.ones((1, 2), dtype=np.int64))).all()
 
 
-def test_the_setting_is_off_by_default(store, monkeypatch):
+def test_minilm_is_on_by_default_and_arrives_in_the_background(store, monkeypatch):
     monkeypatch.delenv("KANERVA_EMBEDDER", raising=False)
+    spawned = Spawned(monkeypatch)
+    mem = open_store()
+    assert mem.embedder is None and len(spawned.calls) == 1
+    mem.close()
+
+
+def test_an_installed_package_without_onnx_does_not_try_to_download(store, monkeypatch):
+    monkeypatch.setattr(embed.importlib.util, "find_spec", lambda name: None)
+    spawned = Spawned(monkeypatch)
+    embed.fetch_in_background()
+    assert spawned.calls == [] and not embed.fetch_marker().exists()
+
+
+def test_a_plugin_brings_onnx_along_through_uv(store, monkeypatch, tmp_path):
+    monkeypatch.setattr(embed.importlib.util, "find_spec", lambda name: None)
+    monkeypatch.setattr(embed.shutil, "which", lambda name: "/bin/uv")
+    monkeypatch.setattr(embed, "__file__", str(tmp_path / "lib" / "kanerva" / "embed.py"))
+    spawned = Spawned(monkeypatch)
+    embed.fetch_in_background()
+    assert spawned.calls[0][:2] == ["/bin/uv", "run"] and "onnxruntime>=1.18" in spawned.calls[0]
+
+
+def test_the_setting_turns_it_off(store, monkeypatch):
+    monkeypatch.setenv("KANERVA_EMBEDDER", "off")
     spawned = Spawned(monkeypatch)
     mem = open_store()
     assert mem.embedder is None and spawned.calls == []
@@ -61,8 +85,12 @@ def test_hook_events_that_use_no_vectors_load_no_model(store, monkeypatch):
     hooks.handle("stop", {"session_id": "s", "cwd": "/tmp/x"})
     hooks.handle("compact", {"session_id": "s", "cwd": "/tmp/x"})
     assert loaded == []
+    hooks.handle("tool", {"session_id": "s", "cwd": "/tmp/x", "tool_name": "Read", "tool_input": {"file_path": "a.py"}})
+    hooks.handle("tool", {"session_id": "s", "cwd": "/tmp/x", "tool_name": "Bash", "tool_input": {"command": "ls"}})
+    assert loaded == []
+    hooks.handle("tool", {"session_id": "s", "cwd": "/tmp/x", "tool_name": "Edit", "tool_input": {"file_path": "a.py"}})
     hooks.handle("prompt", {"session_id": "s", "cwd": "/tmp/x", "prompt": "how do the tests run?"})
-    assert loaded == [1]
+    assert loaded == [1, 1]
 
 
 def test_a_missing_model_means_lexical_search_and_one_download(store, monkeypatch):
@@ -73,7 +101,7 @@ def test_a_missing_model_means_lexical_search_and_one_download(store, monkeypatc
         assert mem.embedder is None and mem.config.use_dense is False
         mem.close()
     assert len(spawned.calls) == 1
-    assert spawned.calls[0][1:] == ["-m", "kanerva", "fetch-model"]
+    assert spawned.calls[0][-3:] == ["-m", "kanerva", "fetch-model"]
 
 
 def test_a_failed_download_is_tried_again_after_a_while(store, monkeypatch):

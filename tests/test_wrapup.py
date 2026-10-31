@@ -243,3 +243,13 @@ def test_the_shipped_hook_can_answer_stop(plugin):
 
 def test_a_session_with_no_recorded_work_stays_quiet(store):
     assert event("stop", "never-seen") == ""
+
+
+def test_print_mode_keeps_the_last_message(store, monkeypatch):
+    monkeypatch.setenv("CLAUDE_CODE_ENTRYPOINT", "sdk-cli")
+    assert hooks.headless()
+    monkeypatch.setenv("KANERVA_WRAPUP", "1")
+    assert not hooks.headless()
+    monkeypatch.setenv("CLAUDE_CODE_ENTRYPOINT", "cli")
+    monkeypatch.delenv("KANERVA_WRAPUP")
+    assert not hooks.headless()
