@@ -20,7 +20,7 @@ from experiments.new_repos_test import stale
 from kanerva import RetrievalConfig
 
 CURRENT = RetrievalConfig(model="static")
-GRID = ((0.8, 0.97), (0.8, 0.9), (0.7, 0.97), (0.7, 0.9), (0.6, 0.9), (0.6, 0.8))
+GRID = ((0.8, 0.97), (0.7, 0.9), (0.6, 0.9), (0.6, 0.8), (0.5, 0.8), (0.5, 0.7), (0.4, 0.7))  # versions of a fact sit near 0.8
 TUNE = {"dataset": "repomem", "cache": "repomem-m2v", "split": None, "keyed": False}
 DATASETS = {
     "repomem-holdout": {"dataset": "repomem-holdout", "cache": "repomem-holdout-m2v", "split": "holdout", "keyed": False},
@@ -49,7 +49,9 @@ def per_budget(rows: list[dict]) -> dict:
 
 
 def row(rows: list[dict], method: str) -> dict:
-    return {"recall": mean_recall(rows), "budgets": per_budget(rows), **stale(rows).get(method, {})}
+    changed = stale(rows).get(method, {})
+    return {"recall": mean_recall(rows), "budgets": per_budget(rows), "stale_any": changed.get("stale_any"),
+            "stale_error": changed.get("stale_error"), "changed_recall": changed.get("recall")}
 
 
 def main() -> None:
