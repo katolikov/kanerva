@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["src", "../openclaw/src", "../pi/src"]
+  "include": ["src", "../openclaw/src", "../pi/src", "../cline/src", "../amp/src"]
 }

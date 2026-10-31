@@ -34,7 +34,7 @@
     "README.md"
   ],
   "scripts": {
-    "test": "node --experimental-strip-types --no-warnings --test src/*.test.ts ../openclaw/src/*.test.ts ../pi/src/*.test.ts",
+    "test": "node --experimental-strip-types --no-warnings --test src/*.test.ts ../openclaw/src/*.test.ts ../pi/src/*.test.ts ../cline/src/*.test.ts ../amp/src/*.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {

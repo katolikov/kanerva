@@ -39,7 +39,7 @@ _PATCH_FILE = re.compile(r"^\*\*\* (?:Add|Update) File: (.+)$", re.M)
 
 EDIT_TOOLS = {
     "Write", "Edit", "MultiEdit", "NotebookEdit", "StrReplace", "write", "edit", "patch", "write_file", "replace",
-    "edit_file", "create", "str_replace", "write_to_file", "replace_file_content", "multi_replace_file_content",
+    "edit_file", "editor", "create", "str_replace", "write_to_file", "replace_file_content", "multi_replace_file_content",
     "fs_write",
 }
 SHELL_TOOLS = {
