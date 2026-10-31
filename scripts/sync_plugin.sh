@@ -7,9 +7,9 @@ SRC="$ROOT/src/kanerva"
 RUN="$ROOT/plugins/claude-code/scripts/run.sh"
 CORE="$ROOT/plugins/opencode/src/core.ts"
 
-WITH_LIBRARY="claude-code opencode copilot openclaw"
+WITH_LIBRARY="claude-code opencode copilot openclaw pi"
 WITH_LAUNCHER="copilot"
-WITH_CORE="openclaw"
+WITH_CORE="openclaw pi"
 
 for NAME in $WITH_LIBRARY; do
   DST="$ROOT/plugins/$NAME/lib/kanerva"
