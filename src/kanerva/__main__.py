@@ -23,6 +23,11 @@ def main() -> int:
         except Exception as exc:
             print(f"kanerva hook: {exc}", file=sys.stderr)
         return 0
+    if argv[:1] == ["hook-host"]:
+        # Hook formats of other agents: `hook-host <host> <event>`.
+        from .hosts import main as host_main
+
+        return host_main(argv[1:])
     from .cli import main as cli_main
 
     return cli_main(argv)

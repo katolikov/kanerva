@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "memory": {
+      "command": "${PLUGIN_ROOT}/scripts/run.sh",
+      "args": ["mcp"],
+      "env": {"KANERVA_PROJECT_DIR": "${PWD}"}
+    }
+  }
+}

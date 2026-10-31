@@ -2,7 +2,7 @@
 # Runs the bundled kanerva package. uv supplies NumPy when it is available.
 ROOT="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 export PYTHONPATH="$ROOT/lib${PYTHONPATH:+:$PYTHONPATH}"
-export KANERVA_PROJECT_DIR="${KANERVA_PROJECT_DIR:-$PWD}"
+export KANERVA_PROJECT_DIR="${KANERVA_PROJECT_DIR:-${CLAUDE_PROJECT_DIR:-${DEVIN_PROJECT_DIR:-$PWD}}}"
 
 # Run from the plugin folder, so that a project's own modules and .python-version stay out of the way.
 cd "$ROOT" || exit 0
@@ -19,9 +19,11 @@ run() {
   fi
 }
 
-if [ "$1" = "hook" ]; then
-  # A memory failure must never block the agent.
-  run "$@" 2>/dev/null || true
-  exit 0
-fi
+case "$1" in
+  hook|hook-host)
+    # A memory failure must never block the agent.
+    run "$@" 2>/dev/null || true
+    exit 0
+    ;;
+esac
 run "$@"

@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {"type": "command", "bash": "./scripts/run.sh hook-host copilot sessionStart", "timeoutSec": 10}
+    ],
+    "userPromptTransformed": [
+      {"type": "command", "bash": "./scripts/run.sh hook-host copilot userPromptTransformed", "timeoutSec": 5}
+    ],
+    "postToolUse": [
+      {"type": "command", "bash": "./scripts/run.sh hook-host copilot postToolUse", "timeoutSec": 5}
+    ],
+    "agentStop": [
+      {"type": "command", "bash": "./scripts/run.sh hook-host copilot agentStop", "timeoutSec": 5}
+    ],
+    "preCompact": [
+      {"type": "command", "bash": "./scripts/run.sh hook-host copilot preCompact", "timeoutSec": 5}
+    ]
+  }
+}

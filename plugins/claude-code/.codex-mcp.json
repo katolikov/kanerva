@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "memory": {
+      "command": "sh",
+      "args": ["-c", "exec \"$(ls -d \"${CODEX_HOME:-$HOME/.codex}\"/plugins/cache/kanerva/kanerva/*/ | tail -n 1)scripts/run.sh\" mcp"]
+    }
+  }
+}

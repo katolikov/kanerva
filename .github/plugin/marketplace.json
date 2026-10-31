@@ -1,0 +1,12 @@
+{
+  "name": "kanerva",
+  "owner": {"name": "Artem Katolikov"},
+  "metadata": {"description": "Long-term memory for coding agents"},
+  "plugins": [
+    {
+      "name": "kanerva",
+      "source": "./plugins/copilot",
+      "description": "Long-term memory for Copilot CLI: local, no LLM calls, hard token budget."
+    }
+  ]
+}

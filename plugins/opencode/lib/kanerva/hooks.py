@@ -1,8 +1,8 @@
 """Agent-host integration: turn hook payloads into memory operations.
 
-``handle(event, payload)`` is host-neutral and returns text to inject, or an empty string. The Claude Code
-and OpenCode plugins are thin adapters over it. Hooks must never break a session, so callers catch every
-exception and exit cleanly.
+``handle(event, payload)`` is host-neutral and returns text to inject, or an empty string. The plugins are
+thin adapters over it, and ``hosts`` maps the hook formats of other agents onto it. Hooks must never break a
+session, so callers catch every exception and exit cleanly.
 """
 
 from __future__ import annotations
@@ -35,6 +35,17 @@ CREATE INDEX IF NOT EXISTS session_retrievals_s ON session_retrievals(session);
 
 _TEST_COMMAND = re.compile(r"\b(pytest|npm (run )?test|pnpm test|yarn test|cargo test|go test|make test|tox|vitest|jest)\b")
 _DISTINCTIVE = re.compile(r"[A-Za-z_][\w./-]*[_./-][\w./-]+|[a-z]+[A-Z]\w+|[A-Z][a-z]+[A-Z]\w+|\b\d{3,}\b")
+_PATCH_FILE = re.compile(r"^\*\*\* (?:Add|Update) File: (.+)$", re.M)
+
+EDIT_TOOLS = {
+    "Write", "Edit", "MultiEdit", "NotebookEdit", "StrReplace", "write", "edit", "patch", "write_file", "replace",
+    "edit_file", "create", "str_replace", "write_to_file", "replace_file_content", "multi_replace_file_content",
+    "fs_write",
+}
+SHELL_TOOLS = {
+    "Bash", "Shell", "bash", "shell", "exec", "terminal", "run_shell_command", "run_command", "execute_bash",
+    "execute_cmd",
+}
 
 
 def _open(cwd: str | None) -> tuple[Memory, str]:
@@ -103,13 +114,21 @@ def resolve_feedback(mem: Memory, session: str) -> int:
 
 
 def on_tool(mem: Memory, session: str, scope: str, tool: str, tool_input: dict, response) -> None:
-    if tool in {"Write", "Edit", "MultiEdit", "NotebookEdit", "write", "edit", "patch"}:
-        path = tool_input.get("file_path") or tool_input.get("filePath") or tool_input.get("path") or ""
+    if tool == "apply_patch":
+        patch = str(tool_input.get("command") or tool_input.get("input") or tool_input.get("patch") or "")
+        _note(mem, session, "edit", patch[:4000])
+        for path in _PATCH_FILE.findall(patch):
+            mem.write(f"Edited {path.strip()}", scope=scope, kind="episodic", key=None, source={"session": session})
+    elif tool in EDIT_TOOLS:
+        path = (
+            tool_input.get("file_path") or tool_input.get("filePath") or tool_input.get("path")
+            or tool_input.get("TargetFile") or ""
+        )
         _note(mem, session, "edit", json.dumps(tool_input)[:4000])
         if path:
             mem.write(f"Edited {path}", scope=scope, kind="episodic", key=None, source={"session": session})
-    elif tool in {"Bash", "bash", "shell"}:
-        command = str(tool_input.get("command", ""))
+    elif tool in SHELL_TOOLS:
+        command = str(tool_input.get("command") or tool_input.get("CommandLine") or "")
         _note(mem, session, "command", command)
         if _TEST_COMMAND.search(command):
             failed = isinstance(response, dict) and (response.get("interrupted") or response.get("exit_code") not in (0, None))
