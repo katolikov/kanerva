@@ -54,6 +54,21 @@ REPOS = {
     "benoitc/gunicorn": ("gunicorn", "new"),
     "sqlalchemy/alembic": ("alembic", "new"),
     "python-jsonschema/jsonschema": ("jsonschema", "new"),
+    # A check beyond Python. The task track needs only git log, so these have no source root and no facts.
+    "vitejs/vite": (None, "other"),
+    "honojs/hono": (None, "other"),
+    "colinhacks/zod": (None, "other"),
+    "gin-gonic/gin": (None, "other"),
+    "caddyserver/caddy": (None, "other"),
+    "junegunn/fzf": (None, "other"),
+    "BurntSushi/ripgrep": (None, "other"),
+    "tokio-rs/axum": (None, "other"),
+    "clap-rs/clap": (None, "other"),
+}
+LANGUAGES = {
+    "TypeScript": ("vite", "hono", "zod"),
+    "Go": ("gin", "caddy", "fzf"),
+    "Rust": ("ripgrep", "axum", "clap"),
 }
 LEGACY_ROOTS = {"src/click": "click", "src/attr": "src/attr", "src/flask": "flask", "src/requests": "requests",
                 "src/werkzeug": "werkzeug", "src/jinja2": "jinja2", "src/black": "black",
@@ -228,7 +243,7 @@ def build_repo(repo: str) -> dict:
     picks = [span[round(i * step)] for i in range(SNAPSHOTS)]
     snapshots = []
     for sha, at in picks:
-        snapshots.append({"sha": sha, "at": at, "facts": snapshot_facts(repo_dir, sha, root)})
+        snapshots.append({"sha": sha, "at": at, "facts": snapshot_facts(repo_dir, sha, root) if root else {}})
     windows = []
     for a, b in zip(picks, picks[1:]):
         windows.append([c.__dict__ for c in _window_commits(repo_dir, a[0], b[0])])

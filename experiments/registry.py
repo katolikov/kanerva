@@ -24,6 +24,10 @@ def load(name: str) -> list[Stream]:
         from experiments.repomem import load_repomem
 
         return load_repomem(split="new")
+    if name == "repomem-other":
+        from experiments.repomem import load_repomem
+
+        return load_repomem(split="other")
     if name == "repomem-fresh":
         from experiments.repomem import load_repomem
 
