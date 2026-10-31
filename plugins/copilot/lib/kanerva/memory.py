@@ -288,6 +288,9 @@ class Memory:
             return cached
         sql = "SELECT id, embedding, session FROM items WHERE tier='active' AND embedding IS NOT NULL"
         args: list = []
+        if self.embedder is not None:  # a store can hold vectors from an embedder used earlier
+            sql += " AND length(embedding) = ?"
+            args.append(4 * self.embedder.dim)
         if scope is not None:
             sql += " AND scope IN (?, 'global')"
             args.append(scope)
@@ -458,7 +461,8 @@ class Memory:
             )
         embedded = [rows[i]["embedding"] for i in ids]
         vectors = None
-        if n and all(e is not None for e in embedded):
+        sizes = {None if e is None else len(e) for e in embedded}
+        if len(sizes) == 1 and None not in sizes and (self.embedder is None or sizes == {4 * self.embedder.dim}):
             vectors = np.frombuffer(b"".join(embedded), dtype=np.float32).reshape(n, -1)
         if cfg.use_validity and cfg.use_supersession and n > 1 and not historical:
             twins = vectors if vectors is not None else HashingEmbedder().encode([rows[i]["text"] for i in ids])
@@ -808,6 +812,25 @@ class Memory:
         self._matrix_cache.clear()
         return True
 
+    def reembed(self, batch_size: int = 64) -> int:
+        """Give every item without a vector from the current embedder one, and return how many changed."""
+        if self.embedder is None:
+            return 0
+        size = 4 * self.embedder.dim
+        rows = self.db.execute(
+            "SELECT id, text FROM items WHERE embedding IS NULL OR length(embedding) <> ? ORDER BY id", (size,)
+        ).fetchall()
+        for start in range(0, len(rows), batch_size):
+            chunk = rows[start:start + batch_size]
+            vectors = self.embedder.encode([row["text"] for row in chunk])
+            self.db.executemany(
+                "UPDATE items SET embedding = ? WHERE id = ?",
+                [(vector.astype(np.float32).tobytes(), row["id"]) for vector, row in zip(vectors, chunk)],
+            )
+            self.db.commit()
+        self._matrix_cache.clear()
+        return len(rows)
+
     def list_items(self, scope: str | None = None, tier: str = "active", limit: int = 100) -> list[Item]:
         sql = "SELECT * FROM items WHERE tier=?"
         args: list = [tier]
@@ -849,16 +872,27 @@ class Memory:
         self.db.commit()
 
 
-def open_store(path: str | Path | None = None) -> Memory:
-    """The user's store. ``KANERVA_EMBEDDER=static`` adds the model2vec embedder, falling back to lexical search."""
-    from .paths import db_path
-
-    embedder = None
-    if os.environ.get("KANERVA_EMBEDDER") == "static":
-        try:
+def _user_embedder() -> Embedder | None:
+    """The embedder ``KANERVA_EMBEDDER`` names. Lexical search takes over whenever one cannot start."""
+    name = os.environ.get("KANERVA_EMBEDDER")
+    try:
+        if name == "static":
             from .embed import Model2VecEmbedder
 
-            embedder = Model2VecEmbedder()
-        except Exception:  # missing package or no network on first use: lexical search still works
-            embedder = None
-    return Memory(path or db_path(), embedder=embedder)
+            return Model2VecEmbedder()
+        if name == "minilm":
+            from .embed import OnnxEmbedder, fetch_in_background, minilm_ready
+
+            if minilm_ready():
+                return OnnxEmbedder()
+            fetch_in_background()
+    except Exception:  # a missing package or no network on first use
+        return None
+    return None
+
+
+def open_store(path: str | Path | None = None) -> Memory:
+    """The user's store, with the embedder ``KANERVA_EMBEDDER`` asks for, or lexical search."""
+    from .paths import db_path
+
+    return Memory(path or db_path(), embedder=_user_embedder())

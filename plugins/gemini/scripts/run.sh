@@ -9,11 +9,13 @@ cd "$ROOT" || exit 0
 
 run() {
   if command -v uv >/dev/null 2>&1; then
-    if [ "$KANERVA_EMBEDDER" = "static" ]; then
-      uv run --quiet --no-project --with 'numpy>=1.26' --with 'model2vec>=0.6' python -m kanerva "$@"
-    else
-      uv run --quiet --no-project --with 'numpy>=1.26' python -m kanerva "$@"
-    fi
+    case "$KANERVA_EMBEDDER" in
+      static) extras="--with model2vec>=0.6" ;;
+      minilm) extras="--with onnxruntime>=1.18 --with tokenizers>=0.19" ;;
+      *) extras="" ;;
+    esac
+    # shellcheck disable=SC2086
+    uv run --quiet --no-project --with 'numpy>=1.26' $extras python -m kanerva "$@"
   else
     python3 -m kanerva "$@"
   fi

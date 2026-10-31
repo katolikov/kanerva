@@ -23,6 +23,7 @@ dependencies = ["numpy>=1.26"]
 
 [project.optional-dependencies]
 embeddings = ["model2vec>=0.6"]
+onnx = ["onnxruntime>=1.18", "tokenizers>=0.19"]
 transformers = ["sentence-transformers>=3"]
 dev = ["pytest>=8", "ruff>=0.6"]
 experiments = ["matplotlib", "tiktoken", "sentence-transformers>=3", "huggingface_hub", "scikit-learn", "pyarrow"]

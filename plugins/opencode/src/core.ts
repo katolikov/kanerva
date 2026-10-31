@@ -42,6 +42,7 @@ export function resolveLaunch(env: NodeJS.ProcessEnv = process.env, bundled: str
   if (onPath("uv", env)) {
     const packages = ["--with", "numpy>=1.26"]
     if (env.KANERVA_EMBEDDER === "static") packages.push("--with", "model2vec>=0.6")
+    if (env.KANERVA_EMBEDDER === "minilm") packages.push("--with", "onnxruntime>=1.18", "--with", "tokenizers>=0.19")
     return { command: ["uv", "run", "--quiet", "--no-project", ...packages, "python", "-m", "kanerva"], environment, cwd: dirname(bundled) }
   }
   return { command: ["python3", "-m", "kanerva"], environment, cwd: dirname(bundled) }

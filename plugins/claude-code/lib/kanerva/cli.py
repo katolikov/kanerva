@@ -29,6 +29,14 @@ def export_markdown(mem: Memory, scope: str | None) -> str:
     return "\n".join(lines) + "\n"
 
 
+def fetch_model() -> int:
+    from .embed import fetch_marker, fetch_minilm
+
+    print(fetch_minilm())
+    fetch_marker().unlink(missing_ok=True)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="kanerva", description=__doc__)
     parser.add_argument("--scope", choices=["project", "global"], default="project")
@@ -59,6 +67,8 @@ def main(argv: list[str] | None = None) -> int:
     p = sub.add_parser("export")
     p.add_argument("path", nargs="?")
     sub.add_parser("mcp", help="run the MCP server on stdio")
+    sub.add_parser("fetch-model", help="download the MiniLM model for KANERVA_EMBEDDER=minilm")
+    sub.add_parser("reembed", help="add vectors from the current embedder to notes that lack them")
     args = parser.parse_args(argv)
 
     if args.command == "mcp":
@@ -66,6 +76,8 @@ def main(argv: list[str] | None = None) -> int:
 
         serve()
         return 0
+    if args.command == "fetch-model":
+        return fetch_model()
 
     mem = open_store()
     try:
@@ -90,6 +102,8 @@ def main(argv: list[str] | None = None) -> int:
             report = consolidate(mem, scope=scope)
             archived = forget(mem, time.time(), args.idle_days, args.capacity, scope)
             print(json.dumps(report.__dict__ | {"archived": archived}, indent=1))
+        elif args.command == "reembed":
+            print(mem.reembed())
         elif args.command == "export":
             text = export_markdown(mem, scope)
             if args.path:

@@ -144,6 +144,8 @@ test("launch prefers the override, then the CLI, then uv, then python3", () => {
   assert.ok(!viaUv.command.includes("model2vec>=0.6"))
   assert.equal(viaUv.environment.PYTHONPATH, lib)
   assert.ok(resolveLaunch({ PATH: binDir("uv"), KANERVA_EMBEDDER: "static" }, lib).command.includes("model2vec>=0.6"))
+  const minilm = resolveLaunch({ PATH: binDir("uv"), KANERVA_EMBEDDER: "minilm" }, lib).command
+  assert.ok(minilm.includes("onnxruntime>=1.18") && minilm.includes("tokenizers>=0.19") && !minilm.includes("model2vec>=0.6"))
   assert.deepEqual(resolveLaunch({ PATH: none, PYTHONPATH: "/x" }, lib), {
     command: ["python3", "-m", "kanerva"],
     environment: { PYTHONPATH: `${lib}:/x` },
