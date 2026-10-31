@@ -4,7 +4,7 @@ The plugin is copied out of this repository first, as an install would be. Insid
 .venv and skip the environment it builds for a real user. Each mode also gets one first call with an empty uv cache,
 which is what a new user meets: uv downloads the packages during that call. Writes results/hook_latency.json.
 
-Usage: python -m experiments.hook_latency <folder with the MiniLM model>
+Usage: python -m experiments.hook_latency [folder with the MiniLM model]
 """
 
 from __future__ import annotations
@@ -25,6 +25,7 @@ from experiments.embed_cache import TextCache
 from experiments.harness import RESULTS, git_commit
 from experiments.registry import load
 from kanerva import Memory
+from kanerva.embed import fetch_minilm
 from kanerva.paths import project_scope
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -99,7 +100,7 @@ def measure(mode: str, size: int, texts: list[str], questions: list[str], model:
 
 
 def main() -> None:
-    model = Path(sys.argv[1])
+    model = Path(sys.argv[1]) if len(sys.argv) > 1 else fetch_minilm()
     streams = load("lme")
     texts = list(dict.fromkeys(t.text for s in streams for t in s.writes))
     np.random.default_rng(0).shuffle(texts)

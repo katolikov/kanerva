@@ -18,7 +18,7 @@ plugin:
 data:
 	$(PY) scripts/fetch_data.py
 	$(PY) -m experiments.repomem
-	for name in lme locomo repomem repomem-holdout repomem-fresh repomem-new beam; do \
+	for name in lme locomo repomem repomem-holdout repomem-fresh repomem-new repomem-other beam; do \
 	  $(PY) -m experiments.embed_cache $$name; \
 	  $(PY) -m experiments.embed_cache $$name minishlab/potion-base-8M; \
 	done
