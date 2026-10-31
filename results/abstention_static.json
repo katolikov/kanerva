@@ -1,0 +1,381 @@
+{
+ "meta": {
+  "experiment": "abstention, static embedder",
+  "commit": "63e6b2568525-dirty",
+  "budget": 600,
+  "min_weight": 0.02,
+  "keep": 0.97
+ },
+ "sets": {
+  "lme": {
+   "none": {
+    "own": {
+     "spoke": 1.0,
+     "tokens": 436.5,
+     "queries": 12,
+     "recall": 0.979
+    },
+    "same": {
+     "spoke": 0.997,
+     "tokens": 482.8,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.973,
+     "tokens": 394.5,
+     "queries": 300
+    }
+   },
+   "minilm": {
+    "own": {
+     "spoke": 0.917,
+     "tokens": 388.2,
+     "queries": 12,
+     "recall": 0.896
+    },
+    "same": {
+     "spoke": 0.707,
+     "tokens": 357.2,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.287,
+     "tokens": 128.6,
+     "queries": 300
+    }
+   },
+   "lexical": {
+    "own": {
+     "spoke": 1.0,
+     "tokens": 436.5,
+     "queries": 12,
+     "recall": 0.979
+    },
+    "same": {
+     "spoke": 0.953,
+     "tokens": 471.4,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.81,
+     "tokens": 347.2,
+     "queries": 300
+    }
+   },
+   "static": {
+    "own": {
+     "spoke": 0.917,
+     "tokens": 388.2,
+     "queries": 12,
+     "recall": 0.896
+    },
+    "same": {
+     "spoke": 0.683,
+     "tokens": 344.3,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.31,
+     "tokens": 135.6,
+     "queries": 300
+    }
+   }
+  },
+  "locomo": {
+   "none": {
+    "own": {
+     "spoke": 1.0,
+     "tokens": 373.9,
+     "queries": 300,
+     "recall": 0.744
+    },
+    "same": {
+     "spoke": 0.948,
+     "tokens": 317.8,
+     "queries": 250
+    },
+    "other": {
+     "spoke": 0.736,
+     "tokens": 131.0,
+     "queries": 250
+    }
+   },
+   "minilm": {
+    "own": {
+     "spoke": 0.96,
+     "tokens": 361.6,
+     "queries": 300,
+     "recall": 0.724
+    },
+    "same": {
+     "spoke": 0.14,
+     "tokens": 60.6,
+     "queries": 250
+    },
+    "other": {
+     "spoke": 0.0,
+     "tokens": 0.0,
+     "queries": 250
+    }
+   },
+   "lexical": {
+    "own": {
+     "spoke": 0.987,
+     "tokens": 370.2,
+     "queries": 300,
+     "recall": 0.737
+    },
+    "same": {
+     "spoke": 0.424,
+     "tokens": 160.3,
+     "queries": 250
+    },
+    "other": {
+     "spoke": 0.08,
+     "tokens": 14.5,
+     "queries": 250
+    }
+   },
+   "static": {
+    "own": {
+     "spoke": 0.963,
+     "tokens": 363.5,
+     "queries": 300,
+     "recall": 0.727
+    },
+    "same": {
+     "spoke": 0.148,
+     "tokens": 59.8,
+     "queries": 250
+    },
+    "other": {
+     "spoke": 0.0,
+     "tokens": 0.0,
+     "queries": 250
+    }
+   }
+  },
+  "beam-dev": {
+   "none": {
+    "own": {
+     "spoke": 1.0,
+     "tokens": 558.6,
+     "queries": 213,
+     "recall": 0.472
+    },
+    "same": {
+     "spoke": 0.993,
+     "tokens": 462.2,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.957,
+     "tokens": 392.5,
+     "queries": 300
+    }
+   },
+   "minilm": {
+    "own": {
+     "spoke": 1.0,
+     "tokens": 558.6,
+     "queries": 213,
+     "recall": 0.472
+    },
+    "same": {
+     "spoke": 0.62,
+     "tokens": 310.2,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.233,
+     "tokens": 109.3,
+     "queries": 300
+    }
+   },
+   "lexical": {
+    "own": {
+     "spoke": 1.0,
+     "tokens": 558.6,
+     "queries": 213,
+     "recall": 0.472
+    },
+    "same": {
+     "spoke": 0.92,
+     "tokens": 438.4,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.493,
+     "tokens": 217.5,
+     "queries": 300
+    }
+   },
+   "static": {
+    "own": {
+     "spoke": 1.0,
+     "tokens": 558.6,
+     "queries": 213,
+     "recall": 0.472
+    },
+    "same": {
+     "spoke": 0.593,
+     "tokens": 291.3,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.327,
+     "tokens": 152.9,
+     "queries": 300
+    }
+   }
+  },
+  "repomem-new": {
+   "none": {
+    "own": {
+     "spoke": 1.0,
+     "tokens": 280.4,
+     "queries": 360,
+     "recall": 0.831
+    },
+    "same": {
+     "spoke": 0.99,
+     "tokens": 398.1,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.973,
+     "tokens": 348.8,
+     "queries": 300
+    }
+   },
+   "minilm": {
+    "own": {
+     "spoke": 0.936,
+     "tokens": 248.6,
+     "queries": 360,
+     "recall": 0.801
+    },
+    "same": {
+     "spoke": 0.36,
+     "tokens": 155.8,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.0,
+     "tokens": 0.0,
+     "queries": 300
+    }
+   },
+   "lexical": {
+    "own": {
+     "spoke": 0.967,
+     "tokens": 264.4,
+     "queries": 360,
+     "recall": 0.812
+    },
+    "same": {
+     "spoke": 0.467,
+     "tokens": 202.7,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.143,
+     "tokens": 66.5,
+     "queries": 300
+    }
+   },
+   "static": {
+    "own": {
+     "spoke": 0.925,
+     "tokens": 241.0,
+     "queries": 360,
+     "recall": 0.795
+    },
+    "same": {
+     "spoke": 0.367,
+     "tokens": 150.7,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.0,
+     "tokens": 0.0,
+     "queries": 300
+    }
+   }
+  },
+  "repomem-fresh": {
+   "none": {
+    "own": {
+     "spoke": 1.0,
+     "tokens": 289.1,
+     "queries": 360,
+     "recall": 0.815
+    },
+    "same": {
+     "spoke": 0.973,
+     "tokens": 427.7,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.973,
+     "tokens": 409.1,
+     "queries": 300
+    }
+   },
+   "minilm": {
+    "own": {
+     "spoke": 0.944,
+     "tokens": 267.0,
+     "queries": 360,
+     "recall": 0.784
+    },
+    "same": {
+     "spoke": 0.4,
+     "tokens": 198.2,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.0,
+     "tokens": 0.0,
+     "queries": 300
+    }
+   },
+   "lexical": {
+    "own": {
+     "spoke": 0.939,
+     "tokens": 269.5,
+     "queries": 360,
+     "recall": 0.777
+    },
+    "same": {
+     "spoke": 0.5,
+     "tokens": 236.8,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.057,
+     "tokens": 28.5,
+     "queries": 300
+    }
+   },
+   "static": {
+    "own": {
+     "spoke": 0.936,
+     "tokens": 264.0,
+     "queries": 360,
+     "recall": 0.779
+    },
+    "same": {
+     "spoke": 0.34,
+     "tokens": 162.5,
+     "queries": 300
+    },
+    "other": {
+     "spoke": 0.0,
+     "tokens": 0.0,
+     "queries": 300
+    }
+   }
+  }
+ }
+}

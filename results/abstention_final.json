@@ -1,0 +1,84 @@
+{
+ "meta": {
+  "experiment": "abstention on the third held-out test",
+  "commit": "63e6b2568525-dirty",
+  "budget": 600,
+  "min_weight": 0.02
+ },
+ "lexical": {
+  "without": {
+   "own": {
+    "spoke": 1.0,
+    "tokens": 397.4,
+    "queries": 360,
+    "recall": 0.591
+   },
+   "same": {
+    "spoke": 0.963,
+    "tokens": 306.7,
+    "queries": 300
+   },
+   "other": {
+    "spoke": 0.617,
+    "tokens": 116.0,
+    "queries": 300
+   }
+  },
+  "with": {
+   "own": {
+    "spoke": 0.942,
+    "tokens": 376.4,
+    "queries": 360,
+    "recall": 0.573
+   },
+   "same": {
+    "spoke": 0.413,
+    "tokens": 164.6,
+    "queries": 300
+   },
+   "other": {
+    "spoke": 0.017,
+    "tokens": 4.5,
+    "queries": 300
+   }
+  }
+ },
+ "full": {
+  "without": {
+   "own": {
+    "spoke": 1.0,
+    "tokens": 457.4,
+    "queries": 360,
+    "recall": 0.657
+   },
+   "same": {
+    "spoke": 1.0,
+    "tokens": 529.4,
+    "queries": 300
+   },
+   "other": {
+    "spoke": 1.0,
+    "tokens": 584.2,
+    "queries": 300
+   }
+  },
+  "with": {
+   "own": {
+    "spoke": 0.897,
+    "tokens": 398.4,
+    "queries": 360,
+    "recall": 0.62
+   },
+   "same": {
+    "spoke": 0.203,
+    "tokens": 105.6,
+    "queries": 300
+   },
+   "other": {
+    "spoke": 0.0,
+    "tokens": 0.0,
+    "queries": 300
+   }
+  }
+ }
+}

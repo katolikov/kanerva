@@ -1,0 +1,70 @@
+{
+ "meta": {
+  "experiment": "real agent on the write path",
+  "commit": "63e6b2568525-dirty",
+  "agent": "2.1.314 (Claude Code)",
+  "model": "claude-sonnet-5-5",
+  "prompt": "Remember this note for later, word for word:\n\n{note}",
+  "trials": 48,
+  "cost_usd": 3.42,
+  "seconds": 151
+ },
+ "sets": {
+  "repomem-final": {
+   "trials": 32,
+   "remembered": 32,
+   "changed": {
+    "n": 16,
+    "replaced": 9,
+    "kept": 7,
+    "not_listed": 0,
+    "right": 0.5625,
+    "interval": [
+     0.332,
+     0.769
+    ],
+    "extra": 0
+   },
+   "other": {
+    "n": 16,
+    "replaced": 0,
+    "kept": 16,
+    "not_listed": 0,
+    "right": 1.0,
+    "interval": [
+     0.806,
+     1.0
+    ],
+    "extra": 0
+   }
+  },
+  "lme-updates": {
+   "trials": 16,
+   "remembered": 16,
+   "changed": {
+    "n": 8,
+    "replaced": 0,
+    "kept": 7,
+    "not_listed": 1,
+    "right": 0.0,
+    "interval": [
+     0.0,
+     0.324
+    ],
+    "extra": 0
+   },
+   "other": {
+    "n": 8,
+    "replaced": 0,
+    "kept": 8,
+    "not_listed": 0,
+    "right": 1.0,
+    "interval": [
+     0.676,
+     1.0
+    ],
+    "extra": 0
+   }
+  }
+ }
+}

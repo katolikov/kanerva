@@ -1,0 +1,121 @@
+{
+ "meta": {
+  "experiment": "real agent on the write path",
+  "commit": "63e6b2568525-dirty",
+  "agent": "2.1.314 (Claude Code)",
+  "model": "claude-sonnet-5-5",
+  "prompts": {
+   "verbatim": "Remember this note for later, word for word:\n\n{note}",
+   "own": "Save what matters in this message with memory_remember, as one short note in your own words:\n\n{note}"
+  },
+  "trials": 80,
+  "cost_usd": 7.72,
+  "seconds": 432
+ },
+ "sets": {
+  "repomem-final": {
+   "trials": 32,
+   "remembered": 32,
+   "changed": {
+    "n": 16,
+    "replaced": 16,
+    "edited": 0,
+    "kept": 0,
+    "not_listed": 0,
+    "extra": 1,
+    "right": 1.0,
+    "interval": [
+     0.806,
+     1.0
+    ]
+   },
+   "other": {
+    "n": 16,
+    "replaced": 0,
+    "edited": 0,
+    "kept": 16,
+    "not_listed": 0,
+    "extra": 4,
+    "right": 0.75,
+    "interval": [
+     0.505,
+     0.898
+    ]
+   }
+  },
+  "lme-updates": {
+   "trials": 24,
+   "remembered": 24,
+   "changed": {
+    "n": 12,
+    "replaced": 0,
+    "edited": 8,
+    "kept": 4,
+    "not_listed": 0,
+    "extra": 3,
+    "right": 0.6666666666666666,
+    "interval": [
+     0.391,
+     0.862
+    ]
+   },
+   "other": {
+    "n": 12,
+    "replaced": 0,
+    "edited": 0,
+    "kept": 12,
+    "not_listed": 0,
+    "extra": 1,
+    "right": 0.9166666666666666,
+    "interval": [
+     0.646,
+     0.985
+    ]
+   }
+  },
+  "lme-own-notes": {
+   "trials": 24,
+   "remembered": 24,
+   "changed": {
+    "n": 12,
+    "replaced": 1,
+    "edited": 8,
+    "kept": 0,
+    "not_listed": 3,
+    "extra": 0,
+    "right": 0.75,
+    "interval": [
+     0.468,
+     0.911
+    ]
+   },
+   "other": {
+    "n": 12,
+    "replaced": 1,
+    "edited": 0,
+    "kept": 0,
+    "not_listed": 11,
+    "extra": 2,
+    "right": 0.8333333333333334,
+    "interval": [
+     0.552,
+     0.953
+    ]
+   }
+  }
+ },
+ "own_note_cosines": {
+  "changed": {
+   "n": 12,
+   "min": 0.378,
+   "median": 0.593,
+   "max": 0.84
+  },
+  "other": {
+   "n": 12,
+   "min": -0.022,
+   "median": 0.0325,
+   "max": 0.523
+  }
+ }
+}

@@ -1,0 +1,413 @@
+{
+ "meta": {
+  "experiment": "write path without keys",
+  "commit": "63e6b2568525-dirty",
+  "simulated": [
+   "oracle"
+  ],
+  "llm_calls": 0,
+  "picked_on": {
+   "repomem": "dev",
+   "lme-updates": "dev"
+  },
+  "reported_on": {
+   "lme-updates": "test",
+   "repomem-new": "new",
+   "repomem-fresh": "fresh",
+   "repomem-final": "final"
+  },
+  "budget": 1024,
+  "shipped": {
+   "spread": 2.0,
+   "overlap": 0.5,
+   "shared": 3.5,
+   "cosine": 0.4
+  },
+  "other_notes": "facts first seen after the first snapshot; user turns after the first session",
+  "wall_seconds": 850.5
+ },
+ "selection": {
+  "lexical": {
+   "spread": 2.0,
+   "overlap": 0.5,
+   "shared": 3.5,
+   "score": 0.36135875284723296,
+   "rates": {
+    "repomem": [
+     0.9689119170984456,
+     0.6531007751937985
+    ],
+    "lme-updates": [
+     0.7391304347826086,
+     0.3322240709927898
+    ]
+   }
+  },
+  "without_short_updates": {
+   "spread": 2.0,
+   "overlap": 0.75,
+   "shared": 3.5,
+   "score": 0.4740412159095255,
+   "rates": {
+    "repomem": [
+     0.9326424870466321,
+     0.3953488372093023
+    ],
+    "lme-updates": [
+     0.7391304347826086,
+     0.3283416528008874
+    ]
+   }
+  },
+  "cosine": {
+   "cosine": 0.95,
+   "score": 0.26398678444167273,
+   "rates": {
+    "repomem": [
+     0.9844559585492227,
+     0.6589147286821705
+    ],
+    "lme-updates": [
+     0.7391304347826086,
+     0.5366980957663154
+    ]
+   }
+  },
+  "cosines": [
+   {
+    "cosine": 0.4,
+    "score": -0.021307044833244637,
+    "rates": {
+     "repomem": [
+      0.9844559585492227,
+      0.9941860465116279
+     ],
+     "lme-updates": [
+      0.782608695652174,
+      0.8154926973562581
+     ]
+    }
+   },
+   {
+    "cosine": 0.5,
+    "score": 0.033084967618010164,
+    "rates": {
+     "repomem": [
+      0.9844559585492227,
+      0.9844961240310077
+     ],
+     "lme-updates": [
+      0.782608695652174,
+      0.7163985949343686
+     ]
+    }
+   },
+   {
+    "cosine": 0.6,
+    "score": 0.08667351727899719,
+    "rates": {
+     "repomem": [
+      0.9844559585492227,
+      0.9534883720930233
+     ],
+     "lme-updates": [
+      0.782608695652174,
+      0.640229247550379
+     ]
+    }
+   },
+   {
+    "cosine": 0.7,
+    "score": 0.12153397760184093,
+    "rates": {
+     "repomem": [
+      0.9689119170984456,
+      0.8837209302325582
+     ],
+     "lme-updates": [
+      0.7391304347826086,
+      0.5812534664448142
+     ]
+    }
+   },
+   {
+    "cosine": 0.8,
+    "score": 0.18501530714656467,
+    "rates": {
+     "repomem": [
+      0.9740932642487047,
+      0.7965116279069767
+     ],
+     "lme-updates": [
+      0.7391304347826086,
+      0.5466814568312073
+     ]
+    }
+   },
+   {
+    "cosine": 0.9,
+    "score": 0.25789551536816474,
+    "rates": {
+     "repomem": [
+      0.9844559585492227,
+      0.6705426356589147
+     ],
+     "lme-updates": [
+      0.7391304347826086,
+      0.5372527269365872
+     ]
+    }
+   },
+   {
+    "cosine": 0.95,
+    "score": 0.26398678444167273,
+    "rates": {
+     "repomem": [
+      0.9844559585492227,
+      0.6589147286821705
+     ],
+     "lme-updates": [
+      0.7391304347826086,
+      0.5366980957663154
+     ]
+    }
+   }
+  ]
+ },
+ "lexical": {
+  "lme-updates": {
+   "similar": {
+    "streams": 47,
+    "changed_notes": 47,
+    "top1": 0.5106382978723404,
+    "top3": 0.723404255319149,
+    "other_notes": 11060,
+    "shown_on_other_notes": 0.3729656419529837,
+    "notes_with_a_list": 4164,
+    "top_hit_not_older": 0.9942363112391931,
+    "top_hit_not_older_on_changed": 0.38461538461538464,
+    "list_tokens_when_shown": 85.15129682997119,
+    "ms_per_call": 15.939778476986302
+   },
+   "stale_on_changed_facts": {
+    "current_rule": {
+     "queries": 47,
+     "stale_any": 0.9787234042553191,
+     "stale_error": 0.0,
+     "recall": 1.0
+    },
+    "oracle_simulated": {
+     "queries": 47,
+     "stale_any": 0.3404255319148936,
+     "stale_error": 0.0,
+     "recall": 1.0
+    }
+   }
+  },
+  "repomem-new": {
+   "similar": {
+    "streams": 24,
+    "changed_notes": 5279,
+    "top1": 0.9302898276188672,
+    "top3": 0.9840878954347414,
+    "other_notes": 8128,
+    "shown_on_other_notes": 0.6123277559055118,
+    "notes_with_a_list": 10212,
+    "top_hit_not_older": 0.5190951821386603,
+    "top_hit_not_older_on_changed": 0.061891117478510026,
+    "list_tokens_when_shown": 89.61584410497454,
+    "ms_per_call": 3.624953468829322
+   },
+   "stale_on_changed_facts": {
+    "current_rule": {
+     "queries": 2505,
+     "stale_any": 0.24271457085828343,
+     "stale_error": 0.013572854291417165,
+     "recall": 0.9664670658682635
+    },
+    "oracle_simulated": {
+     "queries": 2505,
+     "stale_any": 0.030738522954091817,
+     "stale_error": 0.0015968063872255488,
+     "recall": 0.9680638722554891
+    }
+   }
+  },
+  "repomem-fresh": {
+   "similar": {
+    "streams": 15,
+    "changed_notes": 841,
+    "top1": 0.8953626634958383,
+    "top3": 0.9750297265160524,
+    "other_notes": 784,
+    "shown_on_other_notes": 0.48214285714285715,
+    "notes_with_a_list": 1207,
+    "top_hit_not_older": 0.376139188069594,
+    "top_hit_not_older_on_changed": 0.09167671893848009,
+    "list_tokens_when_shown": 94.1665285832643,
+    "ms_per_call": 1.9787861726407965
+   },
+   "stale_on_changed_facts": {
+    "current_rule": {
+     "queries": 1588,
+     "stale_any": 0.22858942065491183,
+     "stale_error": 0.005037783375314861,
+     "recall": 0.9603274559193955
+    },
+    "oracle_simulated": {
+     "queries": 1588,
+     "stale_any": 0.027707808564231738,
+     "stale_error": 0.0,
+     "recall": 0.9653652392947103
+    }
+   }
+  },
+  "repomem-final": {
+   "similar": {
+    "streams": 45,
+    "changed_notes": 1904,
+    "top1": 0.898109243697479,
+    "top3": 0.9522058823529411,
+    "other_notes": 7214,
+    "shown_on_other_notes": 0.5300803992237316,
+    "notes_with_a_list": 5666,
+    "top_hit_not_older": 0.6981997882103776,
+    "top_hit_not_older_on_changed": 0.07166123778501629,
+    "list_tokens_when_shown": 79.98641016590187,
+    "ms_per_call": 3.11717336685087
+   },
+   "stale_on_changed_facts": {
+    "current_rule": {
+     "queries": 1772,
+     "stale_any": 0.26636568848758463,
+     "stale_error": 0.004514672686230248,
+     "recall": 0.989841986455982
+    },
+    "oracle_simulated": {
+     "queries": 1772,
+     "stale_any": 0.034988713318284424,
+     "stale_error": 0.0,
+     "recall": 0.989841986455982
+    }
+   }
+  }
+ },
+ "vectors": {
+  "lme-updates": {
+   "similar": {
+    "streams": 47,
+    "changed_notes": 47,
+    "top1": 0.5106382978723404,
+    "top3": 0.7872340425531915,
+    "other_notes": 11060,
+    "shown_on_other_notes": 0.826130198915009,
+    "notes_with_a_list": 9183,
+    "top_hit_not_older": 0.9973864750081672,
+    "top_hit_not_older_on_changed": 0.4782608695652174,
+    "list_tokens_when_shown": 143.17771969944462,
+    "ms_per_call": 43.01810589035238
+   },
+   "stale_on_changed_facts": {
+    "current_rule": {
+     "queries": 47,
+     "stale_any": 1.0,
+     "stale_error": 0.0,
+     "recall": 1.0
+    },
+    "oracle_simulated": {
+     "queries": 47,
+     "stale_any": 0.3404255319148936,
+     "stale_error": 0.0,
+     "recall": 1.0
+    }
+   }
+  },
+  "repomem-new": {
+   "similar": {
+    "streams": 24,
+    "changed_notes": 5279,
+    "top1": 0.9391930289827619,
+    "top3": 0.9979162720212161,
+    "other_notes": 8128,
+    "shown_on_other_notes": 0.9984005905511811,
+    "notes_with_a_list": 13394,
+    "top_hit_not_older": 0.6298342541436464,
+    "top_hit_not_older_on_changed": 0.060806971017238115,
+    "list_tokens_when_shown": 150.1908317156936,
+    "ms_per_call": 14.741670521639024
+   },
+   "stale_on_changed_facts": {
+    "current_rule": {
+     "queries": 2505,
+     "stale_any": 0.26147704590818366,
+     "stale_error": 0.0027944111776447107,
+     "recall": 0.9820359281437125
+    },
+    "oracle_simulated": {
+     "queries": 2505,
+     "stale_any": 0.0031936127744510976,
+     "stale_error": 0.0027944111776447107,
+     "recall": 0.9816367265469061
+    }
+   }
+  },
+  "repomem-fresh": {
+   "similar": {
+    "streams": 15,
+    "changed_notes": 841,
+    "top1": 0.9096313912009513,
+    "top3": 0.9928656361474435,
+    "other_notes": 784,
+    "shown_on_other_notes": 0.9910714285714286,
+    "notes_with_a_list": 1618,
+    "top_hit_not_older": 0.5271940667490729,
+    "top_hit_not_older_on_changed": 0.09036860879904875,
+    "list_tokens_when_shown": 134.64771322620518,
+    "ms_per_call": 6.071935767755629
+   },
+   "stale_on_changed_facts": {
+    "current_rule": {
+     "queries": 1588,
+     "stale_any": 0.19269521410579346,
+     "stale_error": 0.0,
+     "recall": 0.9949622166246851
+    },
+    "oracle_simulated": {
+     "queries": 1588,
+     "stale_any": 0.0069269521410579345,
+     "stale_error": 0.0,
+     "recall": 0.9949622166246851
+    }
+   }
+  },
+  "repomem-final": {
+   "similar": {
+    "streams": 45,
+    "changed_notes": 1904,
+    "top1": 0.930672268907563,
+    "top3": 0.9942226890756303,
+    "other_notes": 7214,
+    "shown_on_other_notes": 0.9995841419462157,
+    "notes_with_a_list": 9115,
+    "top_hit_not_older": 0.8055951727921009,
+    "top_hit_not_older_on_changed": 0.06932773109243698,
+    "list_tokens_when_shown": 150.28875479978058,
+    "ms_per_call": 12.029732667490634
+   },
+   "stale_on_changed_facts": {
+    "current_rule": {
+     "queries": 1772,
+     "stale_any": 0.34875846501128666,
+     "stale_error": 0.003386004514672686,
+     "recall": 0.994920993227991
+    },
+    "oracle_simulated": {
+     "queries": 1772,
+     "stale_any": 0.003386004514672686,
+     "stale_error": 0.0,
+     "recall": 0.994920993227991
+    }
+   }
+  }
+ }
+}

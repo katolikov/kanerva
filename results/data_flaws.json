@@ -1,0 +1,161 @@
+{
+ "meta": {
+  "experiment": "flaws of the RepoMem facts",
+  "commit": "63e6b2568525-dirty",
+  "budget": 1024,
+  "budgets": [
+   128,
+   256,
+   512,
+   1024,
+   2048,
+   4096
+  ]
+ },
+ "counts": {
+  "signature/facts": 2511,
+  "signature/changed": 1350,
+  "dependency/facts": 213,
+  "dependency/changed": 201,
+  "location/facts": 765,
+  "constant/facts": 75,
+  "constant/changed": 4,
+  "signature/moved": 287,
+  "dependency/bogus": 7,
+  "location/changed": 217
+ },
+ "moved": 287,
+ "bogus": 7,
+ "repomem-final-plain": {
+  "stale_all": {
+   "kanerva": 0.3488,
+   "kanerva-lex": 0.2664,
+   "kanerva-0.4": 0.3516,
+   "kanerva-lex-0.4": 0.9554,
+   "hybrid": 0.9994,
+   "hybrid-dedup": 0.3646,
+   "bm25": 0.9904
+  },
+  "stale_value_changed": {
+   "kanerva": 0.3609,
+   "kanerva-lex": 0.3118,
+   "kanerva-0.4": 0.3643,
+   "kanerva-lex-0.4": 0.9475,
+   "hybrid": 0.9993,
+   "hybrid-dedup": 0.3798,
+   "bm25": 0.9886
+  },
+  "leads": {
+   "kanerva vs hybrid": {
+    "all": {
+     "diff": 0.023640378619834757,
+     "cluster_ci": [
+      0.01439980502826364,
+      0.03235266441084573
+     ],
+     "units_positive": "15/15",
+     "p": 6.103515625e-05,
+     "n": 6413
+    },
+    "clean": {
+     "diff": 0.02434042840698376,
+     "cluster_ci": [
+      0.014363642953400667,
+      0.034920909690016724
+     ],
+     "units_positive": "15/15",
+     "p": 6.103515625e-05,
+     "n": 6119
+    }
+   },
+   "kanerva-lex vs bm25": {
+    "all": {
+     "diff": 0.012739211088532553,
+     "cluster_ci": [
+      0.0025644936115961007,
+      0.022125536233264506
+     ],
+     "units_positive": "9/15",
+     "p": 0.03216552734375,
+     "n": 6413
+    },
+    "clean": {
+     "diff": 0.012969966886325532,
+     "cluster_ci": [
+      0.0013668531560534344,
+      0.02393427359020738
+     ],
+     "units_positive": "9/15",
+     "p": 0.03472900390625,
+     "n": 6119
+    }
+   }
+  }
+ },
+ "repomem-final": {
+  "stale_all": {
+   "kanerva": 0.0,
+   "kanerva-lex": 0.0,
+   "kanerva-0.4": 0.0,
+   "kanerva-lex-0.4": 0.0,
+   "hybrid": 0.9994,
+   "hybrid-dedup": 0.3646,
+   "bm25": 0.9904
+  },
+  "stale_value_changed": {
+   "kanerva": 0.0,
+   "kanerva-lex": 0.0,
+   "kanerva-0.4": 0.0,
+   "kanerva-lex-0.4": 0.0,
+   "hybrid": 0.9993,
+   "hybrid-dedup": 0.3798,
+   "bm25": 0.9886
+  },
+  "leads": {
+   "kanerva vs hybrid": {
+    "all": {
+     "diff": 0.025210680962871015,
+     "cluster_ci": [
+      0.016519177509358923,
+      0.033827467332389345
+     ],
+     "units_positive": "15/15",
+     "p": 6.103515625e-05,
+     "n": 6413
+    },
+    "clean": {
+     "diff": 0.02590446647298989,
+     "cluster_ci": [
+      0.016185525674268515,
+      0.03642971389214217
+     ],
+     "units_positive": "15/15",
+     "p": 6.103515625e-05,
+     "n": 6119
+    }
+   },
+   "kanerva-lex vs bm25": {
+    "all": {
+     "diff": 0.01723769692342071,
+     "cluster_ci": [
+      0.006212631458661677,
+      0.027327348665886753
+     ],
+     "units_positive": "9/15",
+     "p": 0.01300048828125,
+     "n": 6413
+    },
+    "clean": {
+     "diff": 0.01749392880697778,
+     "cluster_ci": [
+      0.005827881955503833,
+      0.028467524616626407
+     ],
+     "units_positive": "9/15",
+     "p": 0.0142822265625,
+     "n": 6119
+    }
+   }
+  }
+ }
+}

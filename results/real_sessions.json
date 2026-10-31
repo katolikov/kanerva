@@ -1,0 +1,137 @@
+{
+ "meta": {
+  "experiment": "real sessions",
+  "commit": "63e6b2568525-dirty",
+  "projects": 5,
+  "sessions": 29,
+  "prompts": 603,
+  "prompt_budget": 600,
+  "foreign_per_project": 60
+ },
+ "vectors": {
+  "notes": 787,
+  "all": {
+   "prompts": 603,
+   "free_spoke": 0.698,
+   "gated_spoke": 0.536,
+   "free_tokens": 197.0,
+   "gated_tokens": 162.0,
+   "known": 174,
+   "known_free_spoke": 0.77,
+   "known_gated_spoke": 0.655,
+   "known_free_hit": 0.144,
+   "known_gated_hit": 0.132
+  },
+  "ru": {
+   "prompts": 299,
+   "free_spoke": 0.522,
+   "gated_spoke": 0.375,
+   "free_tokens": 131.6,
+   "gated_tokens": 98.7,
+   "known": 71,
+   "known_free_spoke": 0.577,
+   "known_gated_spoke": 0.493,
+   "known_free_hit": 0.07,
+   "known_gated_hit": 0.07
+  },
+  "en": {
+   "prompts": 304,
+   "free_spoke": 0.872,
+   "gated_spoke": 0.694,
+   "free_tokens": 261.3,
+   "gated_tokens": 224.1,
+   "known": 103,
+   "known_free_spoke": 0.903,
+   "known_gated_spoke": 0.767,
+   "known_free_hit": 0.194,
+   "known_gated_hit": 0.175
+  },
+  "signal": {
+   "notes": 1027,
+   "fired": 0.205,
+   "random_notes": 1027,
+   "random_fired": 0.13
+  },
+  "foreign": {
+   "all": {
+    "prompts": 300,
+    "free_spoke": 0.513,
+    "gated_spoke": 0.277
+   },
+   "ru": {
+    "prompts": 149,
+    "free_spoke": 0.349,
+    "gated_spoke": 0.208
+   },
+   "en": {
+    "prompts": 151,
+    "free_spoke": 0.675,
+    "gated_spoke": 0.344
+   }
+  },
+  "session_start_share_of_edit_lines": 0.176
+ },
+ "lexical": {
+  "notes": 787,
+  "all": {
+   "prompts": 603,
+   "free_spoke": 0.499,
+   "gated_spoke": 0.459,
+   "free_tokens": 104.1,
+   "gated_tokens": 97.5,
+   "known": 174,
+   "known_free_spoke": 0.471,
+   "known_gated_spoke": 0.425,
+   "known_free_hit": 0.109,
+   "known_gated_hit": 0.098
+  },
+  "ru": {
+   "prompts": 299,
+   "free_spoke": 0.334,
+   "gated_spoke": 0.304,
+   "free_tokens": 68.6,
+   "gated_tokens": 61.3,
+   "known": 71,
+   "known_free_spoke": 0.268,
+   "known_gated_spoke": 0.211,
+   "known_free_hit": 0.042,
+   "known_gated_hit": 0.042
+  },
+  "en": {
+   "prompts": 304,
+   "free_spoke": 0.661,
+   "gated_spoke": 0.612,
+   "free_tokens": 139.1,
+   "gated_tokens": 133.1,
+   "known": 103,
+   "known_free_spoke": 0.612,
+   "known_gated_spoke": 0.573,
+   "known_free_hit": 0.155,
+   "known_gated_hit": 0.136
+  },
+  "signal": {
+   "notes": 533,
+   "fired": 0.231,
+   "random_notes": 533,
+   "random_fired": 0.099
+  },
+  "foreign": {
+   "all": {
+    "prompts": 300,
+    "free_spoke": 0.373,
+    "gated_spoke": 0.34
+   },
+   "ru": {
+    "prompts": 133,
+    "free_spoke": 0.293,
+    "gated_spoke": 0.226
+   },
+   "en": {
+    "prompts": 167,
+    "free_spoke": 0.437,
+    "gated_spoke": 0.431
+   }
+  },
+  "session_start_share_of_edit_lines": 0.314
+ }
+}
