@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import sys
 from collections.abc import Callable
 
@@ -79,8 +80,12 @@ def _antigravity(payload: dict) -> dict:
     }
 
 
+def _kiro(payload: dict) -> dict:
+    return payload | {"prompt": payload.get("prompt") or os.environ.get("USER_PROMPT", "")}
+
+
 READERS: dict[str, Callable[[dict], dict]] = {
-    "copilot": _copilot, "cursor": _cursor, "gemini": _gemini, "antigravity": _antigravity, "kiro": dict,
+    "copilot": _copilot, "cursor": _cursor, "gemini": _gemini, "antigravity": _antigravity, "kiro": _kiro,
 }
 
 

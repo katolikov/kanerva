@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [{"command": "{{RUN}} hook-host cursor sessionStart", "timeout": 10}],
+    "beforeSubmitPrompt": [{"command": "{{RUN}} hook-host cursor beforeSubmitPrompt", "timeout": 5}],
+    "postToolUse": [{"command": "{{RUN}} hook-host cursor postToolUse", "timeout": 5}],
+    "stop": [{"command": "{{RUN}} hook-host cursor stop", "timeout": 5}],
+    "preCompact": [{"command": "{{RUN}} hook-host cursor preCompact", "timeout": 5}]
+  }
+}

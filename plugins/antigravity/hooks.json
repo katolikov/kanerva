@@ -1,0 +1,7 @@
+{
+  "kanerva": {
+    "SessionStart": [{"type": "command", "command": "{{RUN}} hook-host antigravity SessionStart", "timeout": 10}],
+    "PostToolUse": [{"matcher": "*", "hooks": [{"type": "command", "command": "{{RUN}} hook-host antigravity PostToolUse", "timeout": 5}]}],
+    "Stop": [{"type": "command", "command": "{{RUN}} hook-host antigravity Stop", "timeout": 5}]
+  }
+}

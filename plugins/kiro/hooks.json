@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "hooks": [
+    {"name": "kanerva-session", "trigger": "SessionStart", "action": {"type": "command", "command": "{{RUN}} hook-host kiro SessionStart"}, "timeout": 10},
+    {"name": "kanerva-prompt", "trigger": "UserPromptSubmit", "action": {"type": "command", "command": "{{RUN}} hook-host kiro UserPromptSubmit"}, "timeout": 5},
+    {"name": "kanerva-tool", "trigger": "PostToolUse", "action": {"type": "command", "command": "{{RUN}} hook-host kiro PostToolUse"}, "timeout": 5},
+    {"name": "kanerva-stop", "trigger": "Stop", "action": {"type": "command", "command": "{{RUN}} hook-host kiro Stop"}, "timeout": 5}
+  ]
+}

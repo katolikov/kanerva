@@ -104,6 +104,11 @@ def test_kiro_prints_plain_text(store):
     assert "make test-all" in hosts.run("kiro", "UserPromptSubmit", raw)
 
 
+def test_kiro_falls_back_to_the_prompt_variable(store, monkeypatch):
+    monkeypatch.setenv("USER_PROMPT", "how do I run the test suite?")
+    assert "make test-all" in hosts.run("kiro", "UserPromptSubmit", {"session_id": "s", "cwd": CWD})
+
+
 @pytest.mark.parametrize("host", sorted(hosts.EVENTS))
 def test_unknown_events_write_nothing(store, host):
     before = texts()
@@ -111,10 +116,9 @@ def test_unknown_events_write_nothing(store, host):
     assert texts() == before
 
 
-@pytest.mark.parametrize("tool", ["apply_patch"])
-def test_codex_patches_record_each_file(store, tool):
+def test_codex_patches_record_each_file(store):
     patch = "*** Begin Patch\n*** Update File: src/a.py\n@@\n*** Add File: src/b.py\n+x\n*** End Patch"
-    hooks.handle("tool", {"session_id": "s", "cwd": CWD, "tool_name": tool, "tool_input": {"command": patch}})
+    hooks.handle("tool", {"session_id": "s", "cwd": CWD, "tool_name": "apply_patch", "tool_input": {"command": patch}})
     assert {"Edited src/a.py", "Edited src/b.py"} <= set(texts())
 
 
