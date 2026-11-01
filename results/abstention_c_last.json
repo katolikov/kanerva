@@ -1,0 +1,84 @@
+{
+ "meta": {
+  "experiment": "abstention on repomem-c-last",
+  "commit": "0d63d1f422a1-dirty",
+  "budget": 600,
+  "min_weight": 0.02
+ },
+ "lexical": {
+  "without": {
+   "own": {
+    "spoke": 1.0,
+    "tokens": 231.7,
+    "queries": 360,
+    "recall": 0.813
+   },
+   "same": {
+    "spoke": 0.967,
+    "tokens": 267.0,
+    "queries": 300
+   },
+   "other": {
+    "spoke": 0.553,
+    "tokens": 97.9,
+    "queries": 300
+   }
+  },
+  "with": {
+   "own": {
+    "spoke": 0.953,
+    "tokens": 218.6,
+    "queries": 360,
+    "recall": 0.8
+   },
+   "same": {
+    "spoke": 0.367,
+    "tokens": 115.9,
+    "queries": 300
+   },
+   "other": {
+    "spoke": 0.007,
+    "tokens": 1.4,
+    "queries": 300
+   }
+  }
+ },
+ "full": {
+  "without": {
+   "own": {
+    "spoke": 1.0,
+    "tokens": 277.4,
+    "queries": 360,
+    "recall": 0.854
+   },
+   "same": {
+    "spoke": 0.977,
+    "tokens": 429.0,
+    "queries": 300
+   },
+   "other": {
+    "spoke": 1.0,
+    "tokens": 575.2,
+    "queries": 300
+   }
+  },
+  "with": {
+   "own": {
+    "spoke": 0.933,
+    "tokens": 242.8,
+    "queries": 360,
+    "recall": 0.823
+   },
+   "same": {
+    "spoke": 0.187,
+    "tokens": 81.7,
+    "queries": 300
+   },
+   "other": {
+    "spoke": 0.0,
+    "tokens": 0.0,
+    "queries": 300
+   }
+  }
+ }
+}

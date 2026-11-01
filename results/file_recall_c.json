@@ -1,7 +1,7 @@
 {
  "meta": {
   "experiment": "file recall",
-  "commit": "f156711e6f20-dirty",
+  "commit": "0d63d1f422a1-dirty",
   "prompt_budget": 512,
   "file_budget": 150
  },
@@ -9,14 +9,14 @@
   "one/lexical": {
    "queries": 768,
    "prompt": 0.291,
-   "wider": 0.322,
-   "with_files": 0.436,
+   "wider": 0.315,
+   "with_files": 0.454,
    "expanded": 0.513,
-   "file_tokens": 122.547,
-   "file_notes": 2.363,
-   "file_precision": 0.328,
+   "file_tokens": 90.221,
+   "file_notes": 1.685,
+   "file_precision": 0.313,
    "with_files_vs_wider": {
-    "mean": 0.1146,
+    "mean": 0.1401,
     "up": 4,
     "down": 0,
     "repositories": 4
@@ -25,30 +25,30 @@
   "one/full": {
    "queries": 768,
    "prompt": 0.369,
-   "wider": 0.404,
-   "with_files": 0.494,
+   "wider": 0.397,
+   "with_files": 0.507,
    "expanded": 0.0,
-   "file_tokens": 122.547,
-   "file_notes": 2.363,
-   "file_precision": 0.328,
+   "file_tokens": 91.688,
+   "file_notes": 1.697,
+   "file_precision": 0.282,
    "with_files_vs_wider": {
-    "mean": 0.0906,
-    "up": 3,
-    "down": 1,
+    "mean": 0.1112,
+    "up": 4,
+    "down": 0,
     "repositories": 4
    }
   },
   "previous/lexical": {
    "queries": 745,
    "prompt": 0.296,
-   "wider": 0.341,
-   "with_files": 0.305,
+   "wider": 0.335,
+   "with_files": 0.308,
    "expanded": 0.263,
-   "file_tokens": 198.958,
-   "file_notes": 3.77,
-   "file_precision": 0.018,
+   "file_tokens": 161.639,
+   "file_notes": 2.999,
+   "file_precision": 0.017,
    "with_files_vs_wider": {
-    "mean": -0.036,
+    "mean": -0.0267,
     "up": 0,
     "down": 4,
     "repositories": 4
@@ -57,14 +57,14 @@
   "previous/full": {
    "queries": 745,
    "prompt": 0.375,
-   "wider": 0.43,
+   "wider": 0.423,
    "with_files": 0.383,
    "expanded": 0.0,
-   "file_tokens": 198.958,
-   "file_notes": 3.77,
-   "file_precision": 0.018,
+   "file_tokens": 161.686,
+   "file_notes": 3.009,
+   "file_precision": 0.015,
    "with_files_vs_wider": {
-    "mean": -0.0469,
+    "mean": -0.0394,
     "up": 0,
     "down": 4,
     "repositories": 4
@@ -75,14 +75,14 @@
   "one/lexical": {
    "queries": 1037,
    "prompt": 0.359,
-   "wider": 0.392,
-   "with_files": 0.492,
+   "wider": 0.386,
+   "with_files": 0.509,
    "expanded": 0.563,
-   "file_tokens": 123.791,
-   "file_notes": 2.874,
-   "file_precision": 0.32,
+   "file_tokens": 88.775,
+   "file_notes": 2.014,
+   "file_precision": 0.271,
    "with_files_vs_wider": {
-    "mean": 0.1231,
+    "mean": 0.1522,
     "up": 6,
     "down": 0,
     "repositories": 6
@@ -91,14 +91,14 @@
   "one/full": {
    "queries": 1037,
    "prompt": 0.425,
-   "wider": 0.462,
-   "with_files": 0.532,
+   "wider": 0.457,
+   "with_files": 0.552,
    "expanded": 0.0,
-   "file_tokens": 123.791,
-   "file_notes": 2.874,
-   "file_precision": 0.32,
+   "file_tokens": 88.986,
+   "file_notes": 2.009,
+   "file_precision": 0.24,
    "with_files_vs_wider": {
-    "mean": 0.0677,
+    "mean": 0.0992,
     "up": 6,
     "down": 0,
     "repositories": 6
@@ -107,32 +107,32 @@
   "previous/lexical": {
    "queries": 997,
    "prompt": 0.357,
-   "wider": 0.401,
-   "with_files": 0.373,
+   "wider": 0.394,
+   "with_files": 0.375,
    "expanded": 0.306,
-   "file_tokens": 187.213,
-   "file_notes": 4.144,
-   "file_precision": 0.025,
+   "file_tokens": 152.055,
+   "file_notes": 3.314,
+   "file_precision": 0.028,
    "with_files_vs_wider": {
-    "mean": -0.003,
-    "up": 1,
-    "down": 5,
+    "mean": 0.0045,
+    "up": 2,
+    "down": 4,
     "repositories": 6
    }
   },
   "previous/full": {
    "queries": 997,
    "prompt": 0.421,
-   "wider": 0.464,
-   "with_files": 0.435,
+   "wider": 0.457,
+   "with_files": 0.438,
    "expanded": 0.0,
-   "file_tokens": 187.213,
-   "file_notes": 4.144,
-   "file_precision": 0.025,
+   "file_tokens": 151.494,
+   "file_notes": 3.297,
+   "file_precision": 0.022,
    "with_files_vs_wider": {
-    "mean": -0.0169,
-    "up": 1,
-    "down": 5,
+    "mean": -0.0039,
+    "up": 2,
+    "down": 4,
     "repositories": 6
    }
   }
@@ -141,64 +141,130 @@
   "one/lexical": {
    "queries": 1047,
    "prompt": 0.396,
-   "wider": 0.433,
-   "with_files": 0.508,
+   "wider": 0.422,
+   "with_files": 0.517,
    "expanded": 0.6,
-   "file_tokens": 124.357,
-   "file_notes": 2.483,
-   "file_precision": 0.349,
+   "file_tokens": 71.922,
+   "file_notes": 1.352,
+   "file_precision": 0.319,
    "with_files_vs_wider": {
-    "mean": 0.0604,
-    "up": 4,
-    "down": 2,
+    "mean": 0.0887,
+    "up": 5,
+    "down": 1,
     "repositories": 6
    }
   },
   "one/full": {
    "queries": 1047,
    "prompt": 0.446,
-   "wider": 0.479,
-   "with_files": 0.54,
+   "wider": 0.47,
+   "with_files": 0.549,
    "expanded": 0.0,
-   "file_tokens": 124.357,
-   "file_notes": 2.483,
-   "file_precision": 0.349,
+   "file_tokens": 71.985,
+   "file_notes": 1.361,
+   "file_precision": 0.272,
    "with_files_vs_wider": {
-    "mean": 0.0537,
-    "up": 4,
-    "down": 2,
+    "mean": 0.0707,
+    "up": 6,
+    "down": 0,
     "repositories": 6
    }
   },
   "previous/lexical": {
    "queries": 1002,
    "prompt": 0.383,
-   "wider": 0.432,
-   "with_files": 0.398,
+   "wider": 0.419,
+   "with_files": 0.401,
    "expanded": 0.338,
-   "file_tokens": 199.824,
-   "file_notes": 3.907,
-   "file_precision": 0.034,
+   "file_tokens": 134.483,
+   "file_notes": 2.566,
+   "file_precision": 0.033,
    "with_files_vs_wider": {
-    "mean": -0.0385,
-    "up": 0,
-    "down": 6,
+    "mean": -0.008,
+    "up": 1,
+    "down": 5,
     "repositories": 6
    }
   },
   "previous/full": {
    "queries": 1002,
    "prompt": 0.437,
-   "wider": 0.487,
-   "with_files": 0.448,
+   "wider": 0.475,
+   "with_files": 0.45,
    "expanded": 0.0,
-   "file_tokens": 199.824,
-   "file_notes": 3.907,
-   "file_precision": 0.034,
+   "file_tokens": 133.452,
+   "file_notes": 2.552,
+   "file_precision": 0.025,
    "with_files_vs_wider": {
-    "mean": -0.0349,
+    "mean": -0.0213,
     "up": 0,
-    "down": 6,
+    "down": 5,
+    "repositories": 6
+   }
+  }
+ },
+ "repomem-c-last": {
+  "one/lexical": {
+   "queries": 819,
+   "prompt": 0.319,
+   "wider": 0.342,
+   "with_files": 0.441,
+   "expanded": 0.536,
+   "file_tokens": 67.276,
+   "file_notes": 1.283,
+   "file_precision": 0.295,
+   "with_files_vs_wider": {
+    "mean": 0.0886,
+    "up": 5,
+    "down": 0,
+    "repositories": 6
+   }
+  },
+  "one/full": {
+   "queries": 819,
+   "prompt": 0.373,
+   "wider": 0.395,
+   "with_files": 0.481,
+   "expanded": 0.0,
+   "file_tokens": 66.542,
+   "file_notes": 1.294,
+   "file_precision": 0.282,
+   "with_files_vs_wider": {
+    "mean": 0.0774,
+    "up": 5,
+    "down": 0,
+    "repositories": 6
+   }
+  },
+  "previous/lexical": {
+   "queries": 766,
+   "prompt": 0.313,
+   "wider": 0.349,
+   "with_files": 0.332,
+   "expanded": 0.286,
+   "file_tokens": 130.183,
+   "file_notes": 2.488,
+   "file_precision": 0.028,
+   "with_files_vs_wider": {
+    "mean": -0.0131,
+    "up": 1,
+    "down": 4,
+    "repositories": 6
+   }
+  },
+  "previous/full": {
+   "queries": 766,
+   "prompt": 0.362,
+   "wider": 0.394,
+   "with_files": 0.377,
+   "expanded": 0.0,
+   "file_tokens": 128.98,
+   "file_notes": 2.46,
+   "file_precision": 0.029,
+   "with_files_vs_wider": {
+    "mean": -0.0117,
+    "up": 1,
+    "down": 3,
     "repositories": 6
    }
   }

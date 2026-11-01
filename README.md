@@ -5,6 +5,7 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-a8431d" alt="License: Apache-2.0"></a>
   <img src="https://img.shields.io/badge/python-3.10%2B-b98a5e" alt="Python 3.10+">
+  <a href="https://doi.org/10.5281/zenodo.23849911"><img src="https://img.shields.io/badge/DOI-10.5281%2Fzenodo.23849911-b98a5e" alt="DOI: 10.5281/zenodo.23849911"></a>
   <a href="https://github.com/katolikov/kanerva/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/katolikov/kanerva/ci.yml?branch=main&label=tests&color=5f7f1a" alt="Tests"></a>
 </p>
 
@@ -49,9 +50,9 @@ The script runs each agent's own install commands. Agents that need local files 
 | Cline CLI | `cline` | start of each run | yes | run on 3.0.74 |
 | Goose, Zed | [MCP setup](plugins/mcp/README.md) | no, the agent has to ask | yes | docs only |
 
-"Run" means a real agent session against a local stub model, with a seeded note showing up in the model's request. "Docs only" means the setup follows the agent's documentation but has not been run, so expect rough edges and please report them. The agent's README under [`plugins/`](plugins) has its details and limits.
+"Run" means a real session against a local stub model, with a seeded note showing up in the model's request. "Docs only" means the setup follows the agent's documentation and has not been run, so please report rough edges. Each agent's README under [`plugins/`](plugins) has its limits.
 
-The table is about notes on prompts. [Notes about files](#notes-about-files) are checked on fewer agents.
+The table is about notes on prompts. Notes about files were checked on Claude Code with a real model, and on Copilot CLI with a stub model.
 
 If you would rather use the agent's own commands:
 
@@ -103,15 +104,11 @@ There is no notes file to maintain, and everything stays readable and editable w
   <img src="docs/assets/how-it-works.png" alt="How Kanerva captures notes and selects context" width="100%">
 </p>
 
-Search engines find text that looks like your query. Kanerva also asks what is worth paying for. A small gradient-boosted model reads up to 29 signals for each candidate, such as how it ranked, how long it is, who said it, what sits next to it in the session and whether it mentions the entities in your question. The result is a probability that the note is needed. Selection then packs the most expected value into your token budget.
+Search engines find text that looks like your query. Kanerva also asks what is worth paying for: a small gradient-boosted model estimates how likely each candidate is to be needed, and selection packs the most expected value into your token budget. Search runs on words and on MiniLM vectors, and the model ships as a JSON file, so there is no training on your side. Each project gets its own memory, and a `global` scope is shared across projects.
 
-Search runs on words and on MiniLM vectors. The relevance model ships as a JSON file and runs on NumPy, so there is no training step on your side. The embedding model and ONNX Runtime arrive in the background on first use, and search stays on words until then. Each project gets its own memory, and a `global` scope is shared across projects.
-
-Three more things happen around a prompt:
-
-- **Changed facts.** A note with a key closes the older note with that key. Without a key, a newer near-twin replaces an older fact only if it covers your question at least as well, because facts about two neighbouring functions read alike.
-- **The gate.** Before anything is injected, a small model looks at the whole result list and decides whether the store can answer this prompt at all. If not, the prompt gets no notes. Session start is not gated.
-- **Notes about files.** When a session first reads or edits a file, the notes that name that file are shown, up to 150 tokens per file.
+- **Changed facts.** A note with a key closes the older note with that key. Without a key, a newer near-twin replaces an older fact if it covers your question at least as well, and your agent fixes what the rule cannot tell.
+- **The gate.** A small model looks at the result list and decides whether the store can answer this prompt at all. If not, the prompt gets no notes.
+- **Notes about files.** When a session first reads or edits a file, it gets the notes that name that file and that the prompt has not already brought.
 
 The name comes from Pentti Kanerva, whose sparse distributed memory showed how a few active bits out of many can recall what you need. It is also the idea behind the logo.
 
@@ -120,12 +117,7 @@ The name comes from Pentti Kanerva, whose sparse distributed memory showed how a
 <!-- results:start -->
 <img src="docs/assets/recall.png" alt="Evidence recovered at each token budget on the third held-out test and the BEAM check" width="100%">
 
-Share of the needed evidence that made it into the context. These are retrieval metrics, with no LLM in the loop. The one exception is the answer test at the end of this list, where a small local model reads the notes.
-
-- **Code history** is the third held-out test: 2,148 queries over 15 repositories in Python, TypeScript, Go and Rust that nothing was fitted or tuned on, shown without keys.
-- **Long conversations** are 984 questions over 55 BEAM conversations. They were never fitted on, but earlier tests saw them, so this is a check and not a test. No untouched conversation benchmark is left.
-
-"Kanerva" is the default, with MiniLM. "Lexical" is what runs with `KANERVA_EMBEDDER=off` or until the model arrives. "Kanerva 0.4.1" is the previous release. The reranker was not rerun on BEAM.
+Share of the needed evidence that made it into the context, with no LLM in the loop. "Lexical" is what runs until the model arrives. Unless noted, these figures come from version 0.5.0.
 
 | Dataset | Budget | Kanerva | Lexical | Kanerva 0.4.1 | Hybrid + reranker | Hybrid | BM25 |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -136,21 +128,14 @@ Share of the needed evidence that made it into the context. These are retrieval 
 | Long conversations | 1024 | **0.635** | 0.550 | **0.635** | n/a | 0.430 | 0.369 |
 | Long conversations | 4096 | 0.760 | 0.650 | **0.762** | n/a | 0.528 | 0.433 |
 
-- **Code history.** Without keys, Kanerva leads hybrid search by 2.4 points over all budgets (interval +1.4 to +3.3), ahead on all 15 repositories, and the reranker by 2.6 points. With keys the lead over hybrid search is 2.5 points. Against 0.4.1 it gains 2.2 points without keys and 1.0 with them.
-- **Each language.** Over all budgets, against hybrid search: Python 0.870 against 0.844, TypeScript 0.545 against 0.529, Go 0.523 against 0.509, Rust 0.441 against 0.425. Exact code facts are measured on Python only, because that track reads Python source.
-- **C and C++.** The current version has its own test on six repositories that nothing was tuned on, nginx, libgit2, libevent, Catch2, benchmark and imgui, run once, with facts read by regular expressions. Without keys Kanerva leads hybrid search by 1.1 points over all budgets (interval +0.6 to +1.6, all 6 repositories) and the reranker by 1.2, also on all 6. On tasks at 1024 tokens it has 0.553 against 0.477. Lexical search leads BM25 by 0.9 points. Stale injection is 16.0% against 96.9% for hybrid search and 42.9% for 0.5.0, and 0% with keys. Strict fact recall is a little behind hybrid search (0.992 against 0.998), though the value itself reaches the context as often. File notes add 5.4 points at equal tokens, but lose on 2 of 6 repositories. A real agent fixed 12 of 12 changed facts. CMake, ctest, `make check` and Ninja runs count as test commands, and builds that worked are kept as build commands.
-- **Version 0.5.1.** Apart from the changed-notes figures, the others on this page come from 0.5.0. Version 0.5.1 changes one rule, how near-twins are compared. On the third test's data recall moves by -0.1 points and stale injection from 34.9% to 21.0%, or from 26.6% to 29.0% lexically, so lexical stores get a little worse there.
-- **Long conversations.** 0.574 against 0.440 for hybrid search over all budgets, and 0.635 against 0.430 at 1024 tokens. The refit changed little here (+0.5 points against 0.4.1). On LoCoMo, scored out of fold, it lost a little: 0.733 to 0.726.
-- **Stale facts.** At 1024 tokens on facts that changed, no outdated version got in with keys. Without keys, hybrid search injects one 99.9% of the time, Kanerva 34.9% and lexical 26.6%. A one-line keep-the-newest rule gets 36.5%, so most of this comes from a simple idea. The store alone does not detect free-text updates, so both versions get injected, newest first, until your agent fixes the older one.
-- **A correction.** This page used to give 24.3% stale next to the lexical plugin default. That figure held only with MiniLM vectors. Benchmark stores held vectors even in "lexical" runs, so those rows compared near-twins by vectors, which a real lexical store does not have. The real lexical figure for 0.4.1 was 95.5% on the third test. Lexical runs now compare near-twins by hashed words, as a real store does.
-- **Prompts it cannot answer.** On 12 sampled streams of the third test, the gate keeps Kanerva silent on 79.7% of questions from other repositories (58.7% lexical), where it used to speak on nearly all. This costs recall on a store's own questions: 0.657 to 0.620, or 0.591 to 0.573 lexical. Scored out of fold on the earlier TypeScript, Go and Rust repositories the cost was larger, 0.531 to 0.446. The false-alarm numbers come from foreign questions, not from real prompts that a store cannot answer.
-- **Notes about files.** When a session has just opened a file of the change, file notes add 7.2 points over spending the same tokens on the prompt, on all 15 repositories. When it is still on the files of the task before, they cost 4.9 points, again on all 15. Task labels come from file overlap, which is weak and favours this feature. Adding file names to the prompt query was tested and dropped, because it hurts in the second case.
-- **Changed notes without keys.** `memory_remember` lists similar notes, and your agent retires or corrects the older one. In 80 trials of Claude Code with Sonnet 5.5 on notes nothing was tuned on, it fixed 10 of 12 changed facts in its own notes about a conversation, 10 of 12 in long word-for-word turns, where it edits out the outdated part, and 16 of 16 on code facts. In an earlier round it fixed none of 8 conversation notes, and the hint, the server's instructions and the list threshold were changed after that. In 7 trials it also changed a note the labels did not mark. Reading them, most were renames, second copies of the old value or notes repeated by the new one, and one retired a signature along with a moved function, so that note survives only as history. The samples are small, and without vectors the list misses most paraphrases. An oracle that always marks the older version would take stale injection from 21.0% to 0.3%. The list costs about 154 tokens each time it appears.
-- **Real prompts.** On 603 real prompts of one developer, replayed through the hooks, the gate separates far less than on the benchmarks: 53.6% of a project's own prompts get notes against 27.7% of prompts from other projects, and Russian prompts over English notes get them 37.5% of the time. The use signal behind `KANERVA_LEARN` fired on 20.5% of notes the agent never saw, so it stays off.
-- **Where it loses.** Lexical search is close to level with BM25 at 512 tokens and above (+0.3 points at 512, +0.3 at 4096, and the intervals include zero). Its lead is at 128 and 256 tokens. At 1024 tokens lexical search is 0.5 points behind 0.4.1, the price of its stricter near-twin rule. Without keys Kanerva stays a little behind on exact facts (0.993 against 0.998 at 1024 tokens). It is just behind hybrid search at 256 tokens in Go and Rust, and at 128 tokens in Rust. RepoMem queries come from templates, so they favour word search, and real prompts are vaguer.
-- **Answers from a local model.** Qwen3-4B answered from the notes each method selected, with no judge in the scoring. Better recall turned into better answers only weakly. On 90 fact queries from the third test, Kanerva leads BM25 by 8.5 points over 256, 512 and 1024 tokens (interval +4.5 to +14.4, all 6 repositories), the only mean to reach raw p<.05, and no test survives Holm correction. On conversations it does not beat BM25, despite far higher recall: -1.1 on LoCoMo and -4.2 on BEAM-1M, all inside their intervals. Against hybrid search it moves +6.7 on LoCoMo, +6.7 on LongMemEval-S, -4.2 on BEAM-1M, +6.3 on RepoMem, third test. An outdated value was given in 0.0% of answers at 512 tokens against 11.4% for hybrid search and 14.3% for BM25, on 35 changed facts, and a stale note in the context rarely became a stale answer. The gate saved tokens but did not stop made-up answers: 4 of 160 foreign questions without it, 4 with it, 4 for hybrid search. This reader is small and the samples are small, so read these as weak evidence, in either direction.
+- **Code.** On 2,148 queries over 15 repositories in Python, TypeScript, Go and Rust that nothing was tuned on, Kanerva leads hybrid search by 2.4 points over all budgets, on all 15, and the reranker by 2.6.
+- **C and C++.** On six more repositories, run once on the current version, Kanerva leads clearly on C, 0.939 against 0.914 for hybrid search. On C++, with templates and class methods among the facts, it leads on tasks (0.414 against 0.351) but trails overall (0.816 against 0.827), mostly because a location note gives way to a newer note holding the same value, so the value still reaches the context. An earlier test of six other repositories gave a lead of 1.1 points on all 6. Notes about files add 7.7 points at equal tokens. Working CMake, make and Ninja commands are kept as notes.
+- **Long conversations.** 0.574 against 0.440 for hybrid search. This is a check and not a test, because earlier tests saw the data.
+- **Stale facts.** With keys, no outdated version gets in. Without keys at 1024 tokens, the current version injects one 16.4% of the time on C and C++ and 21.0% on the earlier test's repositories, against about 98.0% for hybrid search.
+- **Changed notes.** `memory_remember` lists similar notes and your agent fixes the older one. Across 104 real Claude Code sessions, it fixed 10 of 12 facts in its own conversation notes, 10 of 12 in long turns and 28 of 28 in code. It sometimes retires more than it should, and one such note survived only as history.
+- **Where it falls short.** Lexical search stays close to BM25 from 512 tokens up. Without keys it gives up a little on exact facts. On answers from a small local model, better recall barely helped and no difference survived correction. On 603 real prompts of one developer, the gate gave notes to 53.6% of a project's own prompts and 27.7% of other projects' prompts, far weaker than on benchmarks. RepoMem queries come from templates, and real prompts are vaguer.
 
-A query over 10,000 notes takes about 287 ms with vectors or 150 ms lexical on an M1 Pro. A hook starts a new process each time, so a prompt with 10,000 notes takes 0.72 s in all with MiniLM, 0.49 s lexical and 0.98 s with the static embedder.
+A query over 10,000 notes takes about 287 ms, or 0.72 s for a whole hook, which starts a new process.
 <!-- results:end -->
 
 The full method, proofs and all results are in the [paper](paper/paper.pdf).
@@ -161,48 +146,32 @@ Everything is optional.
 
 | Variable | Default | What it does |
 |---|---|---|
-| `KANERVA_EMBEDDER` | `minilm` | `off` stays lexical and downloads nothing. `multilingual` finds notes across languages ([details](#russian-and-other-languages)). `static` uses [model2vec](https://github.com/MinishLab/model2vec), which is good for long conversational notes, worse for exact code facts, and keeps its earlier fit. Each one downloads its model on first use. |
+| `KANERVA_EMBEDDER` | `minilm` | `off` stays lexical and downloads nothing. `multilingual` finds notes across languages. `static` uses [model2vec](https://github.com/MinishLab/model2vec). |
 | `KANERVA_PROMPT_BUDGET` | `600` | Tokens injected per prompt. |
 | `KANERVA_SESSION_BUDGET` | `400` | Tokens injected at session start. |
-| `KANERVA_FILE_BUDGET` | `150` | Tokens of notes when a session first touches a file. A session spends at most eight times this. `0` turns file notes off. |
-| `KANERVA_GATE` | on | Set to `0` to inject on every prompt, even when the store looks unable to answer it. |
+| `KANERVA_FILE_BUDGET` | `150` | Tokens of notes per file. `0` turns file notes off. |
+| `KANERVA_GATE` | on | `0` injects on every prompt. |
 | `KANERVA_MIN_WEIGHT` | `0.02` | Skip notes below this estimated probability of being needed. |
 | `KANERVA_HOME` | `~/.kanerva` | Where the database lives. |
-| `KANERVA_CONSOLIDATE` | off | Set to `1` to merge near-duplicate notes on compaction. Merges can be undone. |
-| `KANERVA_LEARN` | off | Set to `1` to scale each note by how often it was used against how often the model expected. On simulated feedback this gains a little on LoCoMo and is flat on RepoMem. On real sessions the usage signal also fires on notes the agent never saw, so this stays off. |
-| `KANERVA_WRAPUP` | on | Set to `0` to stop asking your agent for a note at the end of a session. It stays off in `claude -p` and the Agent SDK, where the extra turn would replace the last message a script reads, unless set to `1`. |
+| `KANERVA_CONSOLIDATE` | off | `1` merges near-duplicate notes on compaction. Merges can be undone. |
+| `KANERVA_LEARN` | off | `1` scales notes by how often they seem to be used. The signal is unreliable on real sessions, so it stays off. |
+| `KANERVA_WRAPUP` | on | `0` stops asking your agent for a note at the end of a session. It is off in `claude -p` and the Agent SDK unless set to `1`. |
 
 ### MiniLM
 
-Kanerva runs [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) on ONNX Runtime by default, with no torch. Its vectors match the ones behind the benchmarks, at a cosine above 0.9999 on samples of the benchmark texts, so the same relevance model applies.
-
-With uv you do nothing. On first use the 90 MB model comes from the official Hugging Face repository at a pinned revision, and ONNX Runtime comes with it, all in the background. Search stays lexical until they arrive, and no hook waits for them. Hooks try `uv run --offline` first, so a hook never waits on the network either.
-
-Without uv, a plugin needs `pip install onnxruntime tokenizers` first. An installed package needs the `onnx` extra, as in `uv tool install 'kanerva[onnx] @ git+https://github.com/katolikov/kanerva'`, and stays lexical without it. `KANERVA_EMBEDDER=off` stays lexical on purpose.
-
-Notes written before the model arrived have no vectors. Search still finds them by their words. The download gives them vectors, and each session start does so for up to 32 notes that still lack one. To do it all at once, for example after using the static embedder:
+[all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) runs on ONNX Runtime, with no torch. With uv you do nothing: the 90 MB model and ONNX Runtime arrive in the background on first use, search stays on words until then, and no hook waits for them. Without uv, run `pip install onnxruntime tokenizers`. After switching embedders, give older notes vectors with:
 
 ```bash
 uvx --from 'kanerva[onnx] @ git+https://github.com/katolikov/kanerva' kanerva reembed
 ```
 
-### Russian and other languages
+### Other languages
 
-Russian notes get a Snowball stemmer, stopwords and query patterns with no setting. English behaviour does not change. On translated SQuAD paragraphs, stemming adds 5 to 7 points of recall at 512 tokens and above.
-
-`KANERVA_EMBEDDER=multilingual` runs paraphrase-multilingual-MiniLM-L12-v2, so a Russian question finds English notes and the other way round. MiniLM stays the default, because this model is larger and slower to load and gains nothing on English. Run `kanerva reembed` after switching, or search stays on words for older notes.
-
-### Notes about files
-
-When a session first reads or edits a file, the hook returns the live notes that name it, newest first. On Claude Code this was checked live with a stub model, and the note reaches the model from the step after the tool call, since the hook is asynchronous. Codex accepts the same output according to its source, and it has not been run. OpenCode and Hermes hold the notes for the next request, which only unit tests cover. The other agents have not been checked.
+Russian notes get a stemmer and stopwords with no setting. `KANERVA_EMBEDDER=multilingual` lets a Russian question find English notes and the other way round, at the cost of a larger, slower model.
 
 ### Session wrap-up
 
-Only your agent knows what it tried and why, so Kanerva asks it. When a session has done real work (three file edits, one edit and a test run, or twelve shell commands), the agent gets one more turn to save a short outcome with `memory_remember`: what was tried, what worked and why. Kanerva still calls no model, but your agent's turn costs what any turn costs, and on Claude Code that can be a few model calls, because it has to load the tool first.
-
-The note goes through the same secret filter and ranking as any other. A session is asked once, and again only after 20 more edits. A note the agent writes by itself restarts the count.
-
-This has been run on Claude Code, Codex, OpenCode and Gemini CLI. Copilot CLI, Qwen Code, Devin and Cursor follow their hook docs and have not been run. The other agents are not asked yet. `opencode run` exits before the extra turn starts, so on OpenCode it needs the TUI or a server. Agents with the plugin's `Stop` hook now wait for it at the end of each turn, which takes about 0.2 s.
+Only your agent knows what it tried and why, so when a session has done real work it gets one more turn to save a short outcome with `memory_remember`. Kanerva calls no model, but that turn costs what any turn costs. It has been run on Claude Code, Codex, OpenCode and Gemini CLI.
 
 ## Use it as a library
 
@@ -236,7 +205,7 @@ make reproduce
 make tools && make paper && make check
 ```
 
-`make check` confirms that every number in the paper comes from `results/`. The first two held-out tests are the record of the earlier method, so `make reproduce` skips them unless you name them. Each result file names the commit that produced it.
+`make check` confirms that every number in the paper comes from `results/`.
 
 ## Contributing
 
@@ -249,6 +218,7 @@ Issues and pull requests are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md). Be
   title  = {Kanerva: Token-Budgeted, Validity-Aware Memory for Coding Agents, Without an LLM in the Loop},
   author = {Katolikov, Artem},
   year   = {2026},
+  doi    = {10.5281/zenodo.23849911},
   note   = {Preprint}
 }
 ```

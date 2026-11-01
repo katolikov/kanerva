@@ -1,0 +1,11 @@
+{
+ "meta": {
+  "experiment": "facts lost against hybrid",
+  "commit": "0d63d1f422a1-dirty",
+  "split": "c-last"
+ },
+ "facts": 3564,
+ "lost": 84,
+ "lost_locations": 74,
+ "value_in_context": 0.9916666666666666
+}

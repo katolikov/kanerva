@@ -1,22 +1,22 @@
 {
  "meta": {
   "experiment": "file recall",
-  "commit": "63e6b2568525-dirty",
+  "commit": "0d63d1f422a1-dirty",
   "prompt_budget": 512,
   "file_budget": 150
  },
  "repomem-final": {
   "one/lexical": {
    "queries": 2849,
-   "prompt": 0.398,
-   "wider": 0.435,
-   "with_files": 0.527,
+   "prompt": 0.399,
+   "wider": 0.426,
+   "with_files": 0.537,
    "expanded": 0.594,
-   "file_tokens": 124.321,
-   "file_notes": 2.512,
-   "file_precision": 0.345,
+   "file_tokens": 78.726,
+   "file_notes": 1.505,
+   "file_precision": 0.299,
    "with_files_vs_wider": {
-    "mean": 0.0917,
+    "mean": 0.1113,
     "up": 15,
     "down": 0,
     "repositories": 15
@@ -25,14 +25,14 @@
   "one/full": {
    "queries": 2849,
    "prompt": 0.43,
-   "wider": 0.475,
-   "with_files": 0.547,
+   "wider": 0.463,
+   "with_files": 0.56,
    "expanded": 0.0,
-   "file_tokens": 124.321,
-   "file_notes": 2.512,
-   "file_precision": 0.345,
+   "file_tokens": 79.696,
+   "file_notes": 1.524,
+   "file_precision": 0.289,
    "with_files_vs_wider": {
-    "mean": 0.0724,
+    "mean": 0.0964,
     "up": 15,
     "down": 0,
     "repositories": 15
@@ -41,30 +41,30 @@
   "previous/lexical": {
    "queries": 2747,
    "prompt": 0.399,
-   "wider": 0.454,
+   "wider": 0.441,
    "with_files": 0.415,
    "expanded": 0.338,
-   "file_tokens": 198.679,
-   "file_notes": 3.957,
-   "file_precision": 0.033,
+   "file_tokens": 143.792,
+   "file_notes": 2.779,
+   "file_precision": 0.024,
    "with_files_vs_wider": {
-    "mean": -0.039,
-    "up": 0,
-    "down": 15,
+    "mean": -0.0257,
+    "up": 1,
+    "down": 14,
     "repositories": 15
    }
   },
   "previous/full": {
    "queries": 2747,
    "prompt": 0.43,
-   "wider": 0.494,
+   "wider": 0.478,
    "with_files": 0.445,
    "expanded": 0.0,
-   "file_tokens": 198.679,
-   "file_notes": 3.957,
-   "file_precision": 0.033,
+   "file_tokens": 144.435,
+   "file_notes": 2.792,
+   "file_precision": 0.024,
    "with_files_vs_wider": {
-    "mean": -0.049,
+    "mean": -0.0324,
     "up": 0,
     "down": 15,
     "repositories": 15
