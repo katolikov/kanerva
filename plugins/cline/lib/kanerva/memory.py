@@ -17,6 +17,7 @@ import numpy as np
 
 from .bandit import LinearBandit
 from .embed import Embedder, HashingEmbedder
+from .learning import PROBE_FLOOR, Tuning, compare, note_group, pool, probes, shadow_update
 from .policy import (
     BANDIT_THETA,
     LEXICAL_THETA,
@@ -84,6 +85,12 @@ CREATE TABLE IF NOT EXISTS retrievals (
     features BLOB NOT NULL,
     resolved INTEGER NOT NULL DEFAULT 0
 );
+CREATE TABLE IF NOT EXISTS verdicts (item_id INTEGER, scope TEXT, at REAL NOT NULL, helped INTEGER NOT NULL, taken INTEGER NOT NULL DEFAULT 0);
+CREATE INDEX IF NOT EXISTS verdicts_open ON verdicts(taken, scope);
+CREATE TABLE IF NOT EXISTS gate_log (retrieval_id INTEGER PRIMARY KEY, scope TEXT, session TEXT, at REAL NOT NULL, margin REAL NOT NULL, prompt_weight REAL NOT NULL, note_weight REAL NOT NULL, ratios TEXT NOT NULL, helped INTEGER);
+CREATE INDEX IF NOT EXISTS gate_log_scope ON gate_log(scope, at);
+CREATE TABLE IF NOT EXISTS floor_log (scope TEXT, session TEXT, at REAL NOT NULL, ratio REAL NOT NULL, note_weight REAL NOT NULL, helped INTEGER);
+CREATE INDEX IF NOT EXISTS floor_log_scope ON floor_log(scope, at);
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 """
 
@@ -158,6 +165,7 @@ class Prepared:
     problem: SelectionProblem | None
     features: np.ndarray | None
     snippets: dict[int, str]
+    scope: str | None = None
 
 
 def alternate(first: list, second: list) -> list:
@@ -183,6 +191,7 @@ class Memory:
             if reranker is not None:
                 config = config.with_(use_reranker=True, theta0=RERANK_THETA)
         self.reranker = reranker
+        self.tuning = Tuning()  # what this project has learned about when to speak
         self.config = config
         self.embedder = embedder
         self.count_tokens = count_tokens
@@ -197,6 +206,9 @@ class Memory:
         self.db.executescript(_SCHEMA)
         self._add_column("session", "session TEXT")
         self._add_column("expected", "expected REAL NOT NULL DEFAULT 0")
+        self._add_column("hits", "hits REAL NOT NULL DEFAULT 0")  # verdicts only: used and expected also hold older, unreliable signals
+        self._add_column("chances", "chances REAL NOT NULL DEFAULT 0")
+        self._add_column("found", "found REAL NOT NULL DEFAULT 0")
         self._upgrade_index()
         self.hazard_prior = hazard_prior
         self.hazards: dict[str, HazardPosterior] = {}
@@ -583,15 +595,17 @@ class Memory:
         activation = np.zeros(n)
         usefulness = np.full(n, 0.5)
         lift = np.ones(n)
+        pooled = pool(self.db) if cfg.item_lift else None
         for idx, i in enumerate(ids):
             row = rows[i]
             activation[idx] = activation_score(ages[i])
             usefulness[idx] = row["used"] / (row["used"] + row["unused"])
-            lift[idx] = (row["used"] - 1.0 + cfg.lift_prior) / (row["expected"] + cfg.lift_prior)
+            if pooled is not None:
+                lift[idx] = pooled.lift(row["scope"], note_group(row["key"], row["kind"], row["text"]), row["hits"] + row["found"], row["chances"])
             if cfg.use_validity:
                 if row["valid_to"] is not None:
                     validity[idx] = 1.0 if historical else cfg.stale_factor
-                else:
+                elif cfg.use_hazard:
                     age = (now - row["confirmed_at"]) / DAY
                     validity[idx] = self._hazard_for(row["key"], row["kind"]).survival(age)
         cand = Candidates(
@@ -867,16 +881,20 @@ class Memory:
         problem, x, snippets = None, None, {}
         if cand.ids:
             problem, x, snippets = self.build_problem(cand, rows, vectors, terms, term_weights, stems, cfg, bandit)
-        return Prepared(query, now, cfg, cand, rows, problem, x, snippets)
+        return Prepared(query, now, cfg, cand, rows, problem, x, snippets, scope)
 
     def has_answer(self, prepared: Prepared) -> bool:
         """Whether the store looks able to answer this query at all, judging by its result list."""
+        return self.gate_margin(prepared) >= self.tuning.shift
+
+    def gate_margin(self, prepared: Prepared) -> float:
+        """How far the query's gate score lies above the shipped threshold."""
         cand = prepared.candidates
         vectors = prepared.config.use_dense and bool(cand.ids) and float(cand.dense_score.max()) > 0  # notes can lack them
         gate = QUERY_GATES["full" if vectors else "lexical"]
         weights = None if prepared.problem is None else prepared.problem.weights
         signals = query_signals(cand, weights, len(content_terms(prepared.query)))
-        return bool(gate.score(signals[: len(gate.use)]) >= gate.threshold)
+        return float(gate.score(signals[: len(gate.use)]) - gate.threshold)
 
     def select(
         self,
@@ -888,8 +906,13 @@ class Memory:
         gated: bool = False,
     ) -> RetrievalResult:
         problem = prepared.problem
-        if problem is None or (gated and not self.has_answer(prepared)):
+        margin = self.gate_margin(prepared) if gated and problem is not None else None
+        probe = margin is not None and probes(prepared.query, margin - self.tuning.shift, self.tuning.probe)
+        closed = margin is not None and margin < self.tuning.shift
+        if problem is None or (closed and not probe):
             return RetrievalResult([], 0, budget)
+        floor = min_weight
+        min_weight = floor * (PROBE_FLOOR if probe else self.tuning.floor)
         cand, rows = prepared.candidates, prepared.rows
         chosen = budgeted_select(problem, budget, prepared.config.cost_exponents)
         chosen = [i for i in chosen if problem.weights[i] >= min_weight]
@@ -910,6 +933,11 @@ class Memory:
         if record and chosen:
             ids = [cand.ids[origin(i)] for i in chosen]
             result.retrieval_id = self._record(prepared.query, prepared.now, ids, prepared.features[chosen])
+            if margin is not None:
+                seen = 1.0 / self.tuning.probe if probe else 1.0  # what only a probe can show stands for the prompts it was not run on
+                ratios = json.dumps([float(problem.weights[i]) / floor if floor > 0 else 1.0 for i in chosen])
+                self.db.execute("INSERT INTO gate_log VALUES (?, ?, NULL, ?, ?, ?, ?, ?, NULL)",
+                                (result.retrieval_id, prepared.scope, prepared.now, margin, seen if closed else 1.0, seen, ratios))
         return result
 
     def _item(self, row: sqlite3.Row, weight: float = 0.0, snippet: str | None = None) -> Item:
@@ -936,10 +964,65 @@ class Memory:
 
     # feedback ------------------------------------------------------------------------------
 
-    def feedback(self, retrieval_id: int, rewards: dict[int, float]) -> int:
+    def verdict(self, helped: Iterable[int], misled: Iterable[int] = (), scope: str | None = None, now: float | None = None) -> int:
+        """Keep what the host agent says about notes it was shown. An empty verdict still says that it looked."""
+        now = time.time() if now is None else now
+        rows = [(int(i), scope, now, 1) for i in helped] + [(int(i), scope, now, 0) for i in misled]
+        self.db.executemany("INSERT INTO verdicts (item_id, scope, at, helped) VALUES (?, ?, ?, ?)", [(None, scope, now, 0)] + rows)
+        self.db.commit()
+        return len(rows)
+
+    def open_verdict(self, scope: str | None) -> tuple[float, set[int], set[int]] | None:
+        """The verdict waiting in a project: its time, and the notes that helped and misled the agent."""
+        rows = self.db.execute("SELECT item_id, at, helped FROM verdicts WHERE scope IS ? AND taken = 0", (scope,)).fetchall()
+        if not rows:
+            return None
+        marks = [r for r in rows if r["item_id"] is not None]
+        return max(r["at"] for r in rows), {r["item_id"] for r in marks if r["helped"]}, {r["item_id"] for r in marks if not r["helped"]}
+
+    def close_verdict(self, scope: str | None, at: float) -> None:
+        self.db.execute("UPDATE verdicts SET taken = 1 WHERE scope IS ? AND at <= ?", (scope, at))
+
+    def credit(self, helped: Iterable[int], misled: Iterable[int] = ()) -> None:
+        """Notes the agent found itself, or met beside a file, have no injection on record. Their verdict still counts for them."""
+        self.db.executemany("UPDATE items SET found = found + 1 WHERE id = ?", [(i,) for i in helped])
+        self.db.executemany("UPDATE items SET chances = chances + 1 WHERE id = ?", [(i,) for i in misled])
+
+    def shadow_check(self, scope: str, retrieval_ids: Iterable[int], helped: set[int]) -> None:
+        """Score the model's ordering against the learned one on what a verdict covers, before its records change them."""
+        pooled = pool(self.db)
+        pairs = []
+        for retrieval_id in retrieval_ids:
+            row = self.db.execute("SELECT item_ids, features FROM retrievals WHERE id=?", (retrieval_id,)).fetchone()
+            ids = json.loads(row["item_ids"])
+            model = np.frombuffer(row["features"], dtype=np.float64).reshape(len(ids), -1)[:, 1]
+            notes = [self.db.execute("SELECT scope, key, kind, text, hits, chances, found FROM items WHERE id=?", (i,)).fetchone() for i in ids]
+            lifts = [1.0 if n is None else pooled.lift(n["scope"], note_group(n["key"], n["kind"], n["text"]), n["hits"] + n["found"], n["chances"]) for n in notes]
+            learned = model * np.array(lifts)
+            good = [k for k, i in enumerate(ids) if i in helped]
+            idle = [k for k, i in enumerate(ids) if i not in helped]
+            pairs += [(model[g], model[n], learned[g], learned[n]) for g in good for n in idle]
+        if pairs:
+            shadow_update(self.db, scope, *compare(pairs))
+
+    def narrow_retrieval(self, retrieval_id: int, keep: Iterable[int]) -> bool:
+        """Forget the notes of a logged retrieval that were dropped before anyone saw them, and say whether any are left."""
+        row = self.db.execute("SELECT item_ids, features FROM retrievals WHERE id=?", (retrieval_id,)).fetchone()
+        ids, wanted = json.loads(row["item_ids"]), set(keep)
+        if not wanted & set(ids):
+            self.db.execute("DELETE FROM retrievals WHERE id = ?", (retrieval_id,))
+            return False
+        x = np.frombuffer(row["features"], dtype=np.float64).reshape(len(ids), -1)
+        mask = np.array([i in wanted for i in ids], dtype=bool)
+        self.db.execute("UPDATE retrievals SET item_ids = ?, features = ? WHERE id = ?",
+                        (json.dumps([i for i, k in zip(ids, mask) if k]), x[mask].tobytes(), retrieval_id))
+        return True
+
+    def feedback(self, retrieval_id: int, rewards: dict[int, float], misled: Iterable[int] = (), session: str | None = None, save: bool = True) -> int:
         """Apply per-item rewards in [0, 1] for a logged retrieval. Items not named count as 0.
 
-        An item superseded by now says nothing about usefulness given validity, so the policy skips it.
+        An item superseded by now says nothing about usefulness given validity, so the policy skips it. A note that
+        misled the agent counts as one more chance it wasted, which an idle note does not.
         """
         row = self.db.execute("SELECT * FROM retrievals WHERE id=?", (retrieval_id,)).fetchone()
         if row is None or row["resolved"]:
@@ -951,17 +1034,21 @@ class Memory:
         if self.config.learn:
             self.bandit.update(x[live], y[live])
         expected = x[:, 1] if self.config.relevance == "trees" else np.zeros(len(ids))
+        wrong = set(misled)
         for item_id, reward, chance in zip(ids, y, expected):
+            chance += item_id in wrong
             self.db.execute(
-                "UPDATE items SET used = used + ?, unused = unused + ?, expected = expected + ? WHERE id=?",
-                (float(reward), 1.0 - float(reward), float(chance), item_id),
+                "UPDATE items SET used = used + ?, unused = unused + ?, expected = expected + ?, hits = hits + ?, chances = chances + ? WHERE id=?",
+                (float(reward), 1.0 - float(reward), float(chance), float(reward), float(chance), item_id),
             )
-            if reward >= 0.5:  # use in a task counts as a fresh confirmation that the fact holds
-                self.db.execute(
-                    "UPDATE items SET confirmed_at = max(confirmed_at, ?) WHERE id=?", (row["at"], item_id)
-                )
+        logged = self.db.execute("SELECT scope, note_weight, ratios FROM gate_log WHERE retrieval_id = ?", (retrieval_id,)).fetchone()
+        if logged is not None:
+            self.db.execute("UPDATE gate_log SET helped = ?, session = ? WHERE retrieval_id = ?", (int(bool((y >= 0.5).any())), session, retrieval_id))
+            self.db.executemany("INSERT INTO floor_log VALUES (?, ?, ?, ?, ?, ?)",
+                                [(logged["scope"], session, row["at"], ratio, logged["note_weight"], int(r >= 0.5)) for ratio, r in zip(json.loads(logged["ratios"]), y)])
         self.db.execute("UPDATE retrievals SET resolved=1 WHERE id=?", (retrieval_id,))
-        self._save_state()
+        if save:
+            self._save_state()
         return len(ids)
 
     def _live(self, item_id: int) -> bool:
@@ -1006,7 +1093,7 @@ class Memory:
             return False
         columns = ", ".join(c for c in row.keys() if c != "id")
         earlier = self.db.execute(f"INSERT INTO items ({columns}) SELECT {columns} FROM items WHERE id=?", (item_id,)).lastrowid
-        self.db.execute("UPDATE items SET tier='archive', key=NULL, valid_to=? WHERE id=?", (time.time(), earlier))
+        self.db.execute("UPDATE items SET tier='archive', key=NULL, valid_to=?, hits=0, chances=0, found=0 WHERE id=?", (time.time(), earlier))
         parents = json.dumps(json.loads(row["parents"]) + [earlier])
         self.db.execute("UPDATE items SET parents=? WHERE id=?", (parents, item_id))
         blob = None

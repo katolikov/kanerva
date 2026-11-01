@@ -49,14 +49,16 @@ TOOLS: dict[str, dict] = {
         "inputSchema": {"type": "object", "properties": {"id": {"type": "integer"}}, "required": ["id"]},
     },
     "memory_feedback": {
-        "description": "Report which memory ids from a retrieval were actually useful.",
+        "description": (
+            "Say which notes shown in this session mattered, by id. `helped`: notes that changed what you did or saved "
+            "you work. `misled`: notes that turned out wrong or out of date. Notes you did not rely on go in neither list."
+        ),
         "inputSchema": {
             "type": "object",
             "properties": {
-                "retrieval_id": {"type": "integer"},
-                "used_ids": {"type": "array", "items": {"type": "integer"}},
+                "helped": {"type": "array", "items": {"type": "integer"}},
+                "misled": {"type": "array", "items": {"type": "integer"}},
             },
-            "required": ["retrieval_id", "used_ids"],
         },
     },
     "memory_edit": {
@@ -155,8 +157,7 @@ class Server:
         if name == "memory_expand":
             return expand(self.mem, int(args["id"]))
         if name == "memory_feedback":
-            used = {int(i): 1.0 for i in args["used_ids"]}
-            return {"updated": self.mem.feedback(int(args["retrieval_id"]), used)}
+            return {"recorded": self.mem.verdict(args.get("helped") or (), args.get("misled") or (), self.scope)}
         if name == "memory_edit":
             return {"edited": self.mem.edit(int(args["id"]), args["text"])}
         if name == "memory_forget":

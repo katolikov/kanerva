@@ -7,7 +7,8 @@ The objective over candidate items is
 where R is a weighted probabilistic coverage of query facets and C is a facility-location
 coverage of the candidate pool (C uses fixed prior weights, so learning only touches R and w).
 ``budgeted_select`` runs cost-density greedy variants, adds the best singleton, and returns the
-highest-value feasible set, which keeps the (1 - 1/e) / 2 worst-case guarantee of Theorem 1.
+highest-value feasible set. That gives 1/2 of the optimum on the additive objective the system runs, and (1 - 1/e) / 2 with the
+coverage terms switched on.
 """
 
 from __future__ import annotations
@@ -91,7 +92,7 @@ def budgeted_select(
 ) -> list[int]:
     """Return the best feasible set among density greedy variants and the best singleton.
 
-    ``cost_exponents`` must contain 1.0 for Theorem 1 to apply. Other exponents can only raise the
+    ``cost_exponents`` must contain 1.0 for the guarantee to apply. Other exponents can only raise the
     returned value, since the result is the maximiser of F over all runs.
     """
     n = p.weights.shape[0]

@@ -2,11 +2,11 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it."
 title: "Kanerva: Token-Budgeted, Validity-Aware Memory for Coding Agents"
 repository-code: "https://github.com/katolikov/kanerva"
-doi: 10.5281/zenodo.23849911
+doi: 10.5281/zenodo.23849910
 authors:
   - family-names: Katolikov
     given-names: Artem
     orcid: "https://orcid.org/0009-0007-1585-8092"
-version: 0.5.2
-date-released: 2026-11-01
+version: 0.6.0
+date-released: 2026-11-02
 license: Apache-2.0

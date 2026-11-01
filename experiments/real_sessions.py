@@ -34,6 +34,7 @@ import numpy as np
 from experiments.harness import RESULTS, git_commit
 from kanerva import hooks
 from kanerva.embed import fetch_minilm
+from kanerva.text import content_terms
 
 TRANSCRIPTS = Path.home() / ".claude" / "projects"
 SKIP = re.compile(r"^-private-|observer-sessions")  # scratch folders, and sessions run by tools
@@ -43,6 +44,23 @@ FOREIGN = 60
 SESSION_QUERY = "project conventions decisions commands architecture bugs"
 _CYRILLIC = re.compile(r"[а-яё]", re.I)
 _LATIN = re.compile(r"[a-z]", re.I)
+_DISTINCTIVE = re.compile(r"[A-Za-z_][\w./-]*[_./-][\w./-]+|\w+(?:::|->)\w+|[a-z]+[A-Z]\w+|[A-Z][a-z]+[A-Z]\w+|\b\d{3,}\b")
+
+
+def distinctive_tokens(text: str) -> set[str]:
+    tokens = set(_DISTINCTIVE.findall(text))
+    if not tokens:
+        tokens = {t for t in content_terms(text) if len(t) >= 6}
+    return tokens
+
+
+def item_used(item_text: str, observed: str) -> bool:
+    """The implicit signal the plugins once used: a note counts as used when its distinctive tokens show up in later tool calls."""
+    tokens = distinctive_tokens(item_text)
+    if not tokens:
+        return False
+    hits = sum(1 for t in tokens if t in observed)
+    return hits >= 1 if len(tokens) <= 2 else hits >= 2
 
 
 def prompt_text(entry: dict) -> str | None:
@@ -169,8 +187,8 @@ def replay(project: list[tuple[str, list[dict]]], foreign: list[str], rng: rando
             own.append({
                 "language": language(text), "known": bool(known), "free_tokens": free.tokens, "gated_tokens": gated.tokens,
                 "free_hit": names_a_file(free.items), "gated_hit": names_a_file(gated.items),
-                "used": sum(hooks.item_used(i.text, observed) for i in free.items), "shown": len(free.items),
-                "random_used": sum(hooks.item_used(mem.get(i).text, observed) for i in random_ids), "random_shown": len(random_ids),
+                "used": sum(item_used(i.text, observed) for i in free.items), "shown": len(free.items),
+                "random_used": sum(item_used(mem.get(i).text, observed) for i in random_ids), "random_shown": len(random_ids),
             })
             for event in tools:
                 if event["kind"] == "tool":

@@ -70,31 +70,90 @@ def test_tool_hook_records_edits_and_test_commands(store):
     assert "Test command: pytest -x tests" in texts
 
 
-def test_stop_turns_execution_into_feedback(store):
-    used = seed(store, "The retry helper lives in src/billing/retry_policy.py")
+def verdict(helped=(), misled=(), scope="/tmp/project-x"):
+    from kanerva.paths import db_path, project_scope
+
+    mem = Memory(db_path())
+    mem.verdict(helped, misled, project_scope(scope))
+    mem.close()
+
+
+def record(item):
+    from kanerva.paths import db_path
+
+    mem = Memory(db_path())
+    row = mem.db.execute("SELECT hits, chances, found FROM items WHERE id=?", (item,)).fetchone()
+    mem.close()
+    return row
+
+
+def test_a_verdict_becomes_a_record_at_the_stop(store):
+    good = seed(store, "The retry helper lives in src/billing/retry_policy.py")
+    bad = seed(store, "The billing retry helper waits nine seconds")
+    idle = seed(store, "The billing retry helper is covered by tests")
+    hooks.handle("prompt", payload("UserPromptSubmit", prompt="fix the billing retry helper"))
+    hooks.handle("stop", payload("Stop", last_assistant_message="Done."))
+    assert record(good)["hits"] == 0.0  # not judged yet
+    verdict([good], [bad])
+    hooks.handle("stop", payload("Stop", last_assistant_message="", stop_hook_active=True))
+    assert record(good)["hits"] == 1.0 and record(bad)["hits"] == 0.0 and record(idle)["hits"] == 0.0
+    assert record(bad)["chances"] >= record(idle)["chances"] + 1.0
+
+
+def test_an_unjudged_session_teaches_nothing(store):
+    item = seed(store, "The retry helper lives in src/billing/retry_policy.py")
     hooks.handle("prompt", payload("UserPromptSubmit", prompt="fix the billing retry helper"))
     hooks.handle("tool", payload("PostToolUse", tool_name="Edit", tool_input={"file_path": "src/billing/retry_policy.py"}, tool_response={}))
     hooks.handle("stop", payload("Stop", last_assistant_message="Done."))
-    from kanerva.paths import db_path
-
-    mem = Memory(db_path())
-    row = mem.db.execute("SELECT used, unused FROM items WHERE id=?", (used,)).fetchone()
-    assert row["used"] == 2.0
-    assert mem.db.execute("SELECT count(*) AS n FROM session_events").fetchone()["n"] == 0
-    mem.close()
+    assert tuple(record(item)) == (0.0, 0.0, 0.0)
 
 
-def test_failed_tests_halve_the_reward(store):
-    used = seed(store, "The retry helper lives in src/billing/retry_policy.py")
+def test_an_empty_verdict_counts_as_judged(store):
+    item = seed(store, "The retry helper lives in src/billing/retry_policy.py")
     hooks.handle("prompt", payload("UserPromptSubmit", prompt="fix the billing retry helper"))
-    hooks.handle("tool", payload("PostToolUse", tool_name="Edit", tool_input={"file_path": "src/billing/retry_policy.py"}, tool_response={}))
-    hooks.handle("tool", payload("PostToolUse", tool_name="Bash", tool_input={"command": "pytest"}, tool_response={"stderr": "2 failed"}))
-    hooks.handle("stop", payload("Stop", last_assistant_message=""))
+    verdict()
+    hooks.handle("stop", payload("Stop", last_assistant_message="Done."))
+    assert record(item)["hits"] == 0.0 and record(item)["chances"] > 0.0
+
+
+def test_a_verdict_in_another_project_does_not_judge_this_session(store):
+    item = seed(store, "The retry helper lives in src/billing/retry_policy.py")
+    hooks.handle("prompt", payload("UserPromptSubmit", prompt="fix the billing retry helper"))
+    verdict(scope="/tmp/project-y")
+    hooks.handle("stop", payload("Stop", last_assistant_message="Done."))
+    assert tuple(record(item)) == (0.0, 0.0, 0.0)
+
+
+def test_a_verdict_that_names_what_another_session_saw_waits_for_it(store):
+    item = seed(store, "The retry helper lives in src/billing/retry_policy.py")
+    other = seed(store, "Deploys run from the staging branch")
+    hooks.handle("prompt", payload("UserPromptSubmit", prompt="fix the billing retry helper"))
+    hooks.handle("prompt", payload("UserPromptSubmit", prompt="how do deploys run from the staging branch", session_id="other"))
+    verdict([other])
+    hooks.handle("stop", payload("Stop", last_assistant_message="Done."))
+    assert tuple(record(item)) == (0.0, 0.0, 0.0)
+    hooks.handle("stop", payload("Stop", last_assistant_message="Done.", session_id="other"))
+    assert record(other)["hits"] == 1.0
+
+
+def test_a_note_found_by_hand_counts_once_for_a_session(store):
     from kanerva.paths import db_path
 
+    seed(store, "The retry helper lives in src/billing/retry_policy.py")
     mem = Memory(db_path())
-    assert mem.db.execute("SELECT used FROM items WHERE id=?", (used,)).fetchone()["used"] == 1.5
+    found = mem.write("Deploys run from the staging branch", scope="elsewhere", kind="semantic")
     mem.close()
+    hooks.handle("prompt", payload("UserPromptSubmit", prompt="fix the billing retry helper"))
+    for _ in range(2):
+        verdict([found])
+        hooks.handle("stop", payload("Stop", last_assistant_message=""))
+    assert record(found)["found"] == 1.0
+
+
+def test_null_lists_in_a_verdict_are_read_as_empty(tmp_path):
+    server = Server(Memory(tmp_path / "m.sqlite"), scope="project:x")
+    reply = server.handle({"id": 1, "method": "tools/call", "params": {"name": "memory_feedback", "arguments": {"helped": None, "misled": None}}})
+    assert "recorded" in reply["result"]["content"][0]["text"]
 
 
 def test_compaction_hooks(store):
@@ -135,7 +194,7 @@ def test_mcp_round_trip(tmp_path):
     item = call("memory_remember", text="Deploys go through the staging branch", key="process:deploy")["id"]
     found = call("memory_search", query="how do deploys work")
     assert found["memories"][0]["id"] == item
-    assert call("memory_feedback", retrieval_id=found["retrieval_id"], used_ids=[item])["updated"] == 1
+    assert call("memory_feedback", helped=[item], misled=[])["recorded"] == 1
     assert call("memory_edit", id=item, text="Deploys go through the release branch")["edited"]
     assert call("memory_expand", id=item)[0]["text"].endswith("release branch")
     assert call("memory_stats")["active"] == 1
@@ -169,3 +228,16 @@ def test_plugin_manifests_are_valid_json_and_reference_real_files():
     assert "mcpServers" in json.loads((plugin / ".mcp.json").read_text())
     for skill in ("memory", "remember", "forget"):
         assert (plugin / "skills" / skill / "SKILL.md").read_text().startswith("---\n")
+
+
+def test_a_session_start_of_only_edit_trails_logs_nothing(store):
+    from kanerva.paths import db_path, project_scope
+
+    mem = Memory(db_path())
+    mem.write("Edited src/app.py", scope=project_scope("/tmp/project-x"), kind="episodic")
+    mem.close()
+    assert hooks.handle("session_start", payload("SessionStart", source="startup")) == ""
+    mem = Memory(db_path())
+    assert mem.db.execute("SELECT count(*) AS n FROM retrievals").fetchone()["n"] == 0
+    mem.close()
+    hooks.handle("stop", payload("Stop", last_assistant_message="Done."))

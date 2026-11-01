@@ -255,6 +255,8 @@ def variants(base: RetrievalConfig) -> dict[str, RetrievalConfig]:
         "kanerva-x128": base.with_(excerpt_threshold=160, excerpt_tokens=128),
         "kanerva-events": base.with_(supersede_events=True),
         "kanerva-any-twin": base.with_(twin_needs_query=False, **VECTOR_TWINS),
+        "kanerva-no-hazard": base.with_(use_hazard=False),
+        "kanerva-lex-no-hazard": base.with_(**LEXICAL, use_hazard=False),
         "kanerva-0.5": base.with_(**VECTOR_TWINS),
         "kanerva-lex-0.5": base.with_(**LEXICAL, **VECTOR_TWINS),
         "kanerva-lex-any-twin": base.with_(**LEXICAL, twin_needs_query=False, **VECTOR_TWINS),

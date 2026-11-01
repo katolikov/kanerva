@@ -1,6 +1,6 @@
 {
   "name": "kanerva",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "private": true,
   "description": "Manifest for installing the Pi extension straight from this repository.",
   "license": "Apache-2.0",

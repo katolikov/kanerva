@@ -56,6 +56,7 @@ class RetrievalConfig:
     newest_first: bool = True  # list chosen items newest first, so a reader meets the latest version of a fact first
 
     use_validity: bool = True
+    use_hazard: bool = True  # age a live item by the class hazard of its kind of fact
     drop_superseded: bool = True  # exact version chains: old versions leave unless the query asks for history
     use_supersession: bool = True
     supersession_threshold: float = 0.8
@@ -77,7 +78,6 @@ class RetrievalConfig:
     use_bandit: bool = True
     learn: bool = True
     item_lift: bool = False  # scale each item by how often it helped against how often the model expected it to
-    lift_prior: float = 5.0  # expected uses at which an item's own record weighs as much as the model
     bandit_beta: float = 0.0
     bandit_ridge: float = 16.0
     theta0: tuple[float, ...] = DEFAULT_THETA

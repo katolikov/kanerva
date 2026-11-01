@@ -168,11 +168,6 @@ def test_cpp_build_systems_count_as_test_runs():
     assert not hooks._TEST_COMMAND.search("make all")
 
 
-def test_a_cpp_name_is_distinctive():
-    assert "Client::connect" in hooks.distinctive_tokens("Client::connect hides timeouts")
-    assert hooks.item_used("Client::connect hides timeouts", "git grep Client::connect")
-
-
 def test_a_cpp_file_finds_its_notes(store):
     remember("Status::OK in src/db/impl.cc must be checked before Client::connect retries.")
     assert "Client::connect" in touch("src/db/impl.cc")

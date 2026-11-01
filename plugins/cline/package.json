@@ -1,6 +1,6 @@
 {
   "name": "cline-kanerva",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "Long-term memory for the Cline CLI. Injects only what the current step needs, under a hard token budget.",
   "homepage": "https://github.com/katolikov/kanerva#readme",
   "repository": {

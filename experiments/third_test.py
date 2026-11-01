@@ -105,6 +105,17 @@ def twin_rule() -> None:
     (RESULTS / "twin_rule.json").write_text(json.dumps(report, indent=1))
 
 
+def hazard_check() -> None:
+    """What the class hazard adds, on data that has been read, so a check and not a test."""
+    spec = {"dataset": "repomem-final", "cache": "repomem-final", "split": "final", "keyed": False}
+    records = run("hazard", spec, {"kanerva", "kanerva-no-hazard", "kanerva-lex", "kanerva-lex-no-hazard"}, RetrievalConfig())
+    rng = np.random.default_rng(0)
+    report = {"meta": {"experiment": "class hazard ablation", "commit": git_commit()},
+              "vectors": compare(records, "repomem-final", "kanerva", "kanerva-no-hazard", rng)["mean"], "lexical": compare(records, "repomem-final", "kanerva-lex", "kanerva-lex-no-hazard", rng)["mean"],
+              "stale": {m: float(v["stale_any"]) for m, v in stale(records).items()}}
+    (RESULTS / "hazard_check.json").write_text(json.dumps(report, indent=1))
+
+
 def c_family(split: str) -> None:
     """C and C++, with facts read by the regular expressions of experiments/repomem.py. ``c-dev`` is for fixing what these
     languages break. ``c-test`` ran once on version 0.5.0, ``c-final`` once on the near-twin rule that it led to, and ``c-last``
@@ -136,6 +147,8 @@ def main() -> None:
     os.environ.setdefault("HF_HUB_OFFLINE", "1")
     if sys.argv[1:] == ["beam"]:
         return beam_check()
+    if sys.argv[1:] == ["hazard"]:
+        return hazard_check()
     if sys.argv[1:] == ["twins"]:
         return twin_rule()
     if sys.argv[1:] == ["losses"]:

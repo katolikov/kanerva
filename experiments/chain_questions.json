@@ -1,0 +1,2550 @@
+{
+ "Cyan4973/xxHash": {
+  "const:xxh_x86dispatch.c:XXH_DISPATCH_SCALAR": [
+   "Is the plain non-SIMD fallback selected by the runtime dispatcher?",
+   "Does the dispatcher have a portable scalar option enabled?",
+   "Can the library fall back to code that uses no vector instructions?"
+  ],
+  "const:xxh_x86dispatch.c:XXH_NB_DISPATCHES": [
+   "How many CPU-specific code variants does the x86 dispatcher choose between at runtime?",
+   "How many dispatch targets are available for selecting the best x86 implementation?",
+   "How many different x86 code paths can the runtime selector pick from?"
+  ],
+  "const:xxhash.h:PRIME_MX2": [
+   "What constant does the 64-bit mixing step multiply by to spread bits?",
+   "Which fixed multiplier is used in the 128-bit mixing function?",
+   "What large odd constant is used in the avalanche step of the hash?"
+  ],
+  "const:xxhash.h:XXH3_INTERNALBUFFER_SIZE": [
+   "How big is the scratch area the streaming hasher uses to hold leftover input bytes?",
+   "What is the capacity of the internal staging buffer when hashing data in pieces?",
+   "How many bytes can the hasher buffer internally before it has to process a chunk?"
+  ],
+  "const:xxhash.h:XXH3_ROUTINES_AVX512": [
+   "Is the wide 512-bit SIMD code path turned on in this build?",
+   "Does this build include the widest x86 vector implementation?",
+   "Can I check whether the largest x86 vector hashing path is enabled?"
+  ],
+  "const:xxhash.h:XXH3_ROUTINES_LASX": [
+   "Is the LoongArch vector path enabled in this build?",
+   "Does the build use LASX SIMD routines on LoongArch chips?",
+   "How do I turn on LASX acceleration for hashing?"
+  ],
+  "const:xxhash.h:XXH3_ROUTINES_NEON": [
+   "Is the ARM NEON vector code path enabled in this build?",
+   "Does the build use NEON SIMD routines for hashing on ARM?",
+   "How do I turn on NEON acceleration for the fast hash?"
+  ],
+  "const:xxhash.h:XXH3_ROUTINES_SVE": [
+   "Is the ARM SVE vector path turned on?",
+   "Does this build use scalable vector extension code for hashing?",
+   "How do I enable SVE acceleration for the hash?"
+  ],
+  "const:xxhash.h:XXH3_SECRET_DEFAULT_SIZE": [
+   "How many bytes long is the default key material used to scramble the newer fast hash?",
+   "What size is the default secret buffer for the newer fast hash variant?",
+   "How big does the default hash secret need to be?"
+  ],
+  "const:xxhash.h:XXH3_STREAM_USE_STACK": [
+   "Should streaming hash state live on the call stack instead of the heap?",
+   "Is the streaming state kept in stack memory by default?",
+   "Where does the incremental hashing context get allocated?"
+  ],
+  "const:xxhash.h:XXHASH_H_5627135585666179": [
+   "Is the header include guard defined in this build?",
+   "What prevents this header from being processed twice?",
+   "How can I tell whether this header has already been included?"
+  ],
+  "const:xxhash.h:XXH_AVX512": [
+   "Which AVX-512 mode is selected for the hash build?",
+   "What level of AVX-512 support does this build use?",
+   "How do I set the AVX-512 usage level for hashing?"
+  ],
+  "const:xxhash.h:XXH_CPU_LITTLE_ENDIAN": [
+   "Is the byte-order detection set to big-endian?",
+   "Does the build assume the machine is little-endian?",
+   "Is the library configured to treat memory byte order as big-endian?"
+  ],
+  "const:xxhash.h:XXH_DEBUGLEVEL": [
+   "How verbose are the library's internal debug checks set to?",
+   "What debug level is the library compiled with?",
+   "How much internal assertion checking is enabled in this build?"
+  ],
+  "const:xxhash.h:XXH_NEON": [
+   "Is ARM's NEON vector extension turned on in this build?",
+   "Does the build use the ARM vector extension for hashing?",
+   "Can I check whether the ARM SIMD acceleration is enabled?"
+  ],
+  "const:xxhash.h:XXH_PREFETCH_DIST": [
+   "How far ahead does the hash code prefetch memory?",
+   "What prefetch distance is used when streaming input?",
+   "How many bytes ahead does the hash prefetch data?"
+  ],
+  "const:xxhash.h:XXH_PRIME32_1": [
+   "What prime constant does the 32-bit hash use in its mixing?",
+   "Which fixed multiplier does the 32-bit hash use during its rounds?",
+   "What constant is used in the first 32-bit mixing step?"
+  ],
+  "const:xxhash.h:XXH_PRIME32_3": [
+   "What constant is used as the third prime multiplier in the 32-bit hash?",
+   "Which 32-bit prime value does the third mixing step use?",
+   "What is the third prime constant in the 32-bit hash mixing?"
+  ],
+  "const:xxhash.h:XXH_PRIME64_5": [
+   "What constant serves as one of the multipliers in the 64-bit mixing step?",
+   "Which prime constant is used in the 64-bit hash's mixing rounds?",
+   "What fixed number does the 64-bit hash multiply by during finalization?"
+  ],
+  "const:xxhash.h:XXH_SECRET_LASTACC_START": [
+   "Where does the last-stripe secret region begin?",
+   "What offset marks the start of the final accumulation portion of the secret?",
+   "Which secret byte position starts the last-accumulate section?"
+  ],
+  "const:xxhash.h:XXH_SECRET_MERGEACCS_START": [
+   "Where does the secret-merge region start in the secret buffer?",
+   "What offset starts the step that merges accumulator lanes?",
+   "Which secret position begins the accumulator merge section?"
+  ],
+  "const:xxhash.h:XXH_SSE2": [
+   "Is the older 128-bit x86 vector path enabled in this build?",
+   "Does the build use the SSE-era vector instructions for hashing?",
+   "Can I check whether the 128-bit x86 vector acceleration is active?"
+  ],
+  "const:xxhash.h:XXH_SVE": [
+   "Is the ARM scalable vector extension path selected in this build?",
+   "Does the build use the scalable-width ARM SIMD code?",
+   "Can I check whether the ARM scalable vector acceleration is turned on?"
+  ],
+  "const:xxhash.h:XXH_VSX_BE": [
+   "Is the POWER vector path configured to use big-endian byte order?",
+   "Does the build set the POWER vector code to big-endian mode?",
+   "Can I check the byte order setting for the POWER vector implementation?"
+  ],
+  "sig:XXH128_cmp": [
+   "How do I tell whether two 128-bit hash results are equal or which is larger?",
+   "Which function compares two 128-bit hash values?",
+   "How do I order two 128-bit hash results when sorting them?"
+  ],
+  "sig:XXH32_freeState": [
+   "How do I free a 32-bit streaming hash state I allocated?",
+   "What releases memory for a 32-bit incremental hash context?",
+   "Which call deallocates the 32-bit streaming state?"
+  ],
+  "sig:XXH32_hashFromCanonical": [
+   "How do I turn the stored big-endian byte form of a 32-bit hash back into a number?",
+   "Which function reads a canonical 32-bit hash representation back into a usable value?",
+   "How do I convert a saved 32-bit hash from its portable byte layout?"
+  ],
+  "sig:XXH3_128bits_reset": [
+   "How do I clear the 128-bit streaming hash state so I can reuse it?",
+   "Which function resets a 128-bit streaming hasher back to its starting state?",
+   "How do I reinitialize a 128-bit streaming context before hashing new data?"
+  ],
+  "sig:XXH3_128bits_reset_withSeed": [
+   "How do I reset a 128-bit streaming hash state and apply a seed?",
+   "What call reinitializes an incremental 128-bit hash context with a seed value?",
+   "How do I restart a 128-bit streaming hash with a new seed?"
+  ],
+  "sig:XXH3_128bits_withSecret_dispatch": [
+   "Which entry point hashes data into a 128-bit result using a custom secret and picks the best CPU path?",
+   "How do I compute a 128-bit hash with a caller-supplied secret and automatic CPU dispatch?",
+   "What function hashes with a custom secret and selects the fastest x86 implementation?"
+  ],
+  "sig:XXH3_64bits": [
+   "How do I get a 64-bit fast hash of a block of bytes in a single call?",
+   "Which function hashes an entire buffer at once and returns a 64-bit result?",
+   "What is the quick one-shot hash call for arbitrary-length input that produces 64 bits?"
+  ],
+  "sig:XXH3_64bits_withSeed": [
+   "How do I hash a buffer with a custom seed using the fast 64-bit variant?",
+   "Which call takes a byte buffer, its length, and a seed and returns a 64-bit hash?",
+   "What function gives me a seeded 64-bit hash without a dispatch layer?"
+  ],
+  "sig:XXH3_64bits_withSeed_dispatch": [
+   "Which runtime dispatcher picks the right seeded 64-bit hash implementation on x86?",
+   "What function routes seeded 64-bit hashing to the best x86 implementation at runtime?",
+   "What is the x86 dispatch entry point for seeded fast hashing?"
+  ],
+  "sig:XXH3_accumulate_512_avx2": [
+   "How does the 256-bit x86 vector path absorb an input block into the state?",
+   "Which function accumulates input data using the wider x86 vector path?",
+   "What routine processes a block of input in the medium-width x86 SIMD code?"
+  ],
+  "sig:XXH3_accumulate_512_lasx": [
+   "Which routine absorbs a wide input chunk into state on LoongArch vector hardware?",
+   "How does the LoongArch vector path accumulate an input block?",
+   "What function processes a block of input into the accumulator on LoongArch machines?"
+  ],
+  "sig:XXH3_accumulate_512_scalar": [
+   "Which plain non-vector routine absorbs an input block into the running state?",
+   "How does the portable code accumulate input data into the state?",
+   "What function processes an input block one lane at a time without vector instructions?"
+  ],
+  "sig:XXH3_accumulate_512_sse2": [
+   "How does the older 128-bit x86 vector path absorb an input block?",
+   "Which function accumulates input data using the SSE-era vector path?",
+   "What routine processes input blocks with the 128-bit x86 vector instructions?"
+  ],
+  "sig:XXH3_copyState": [
+   "How do I copy one fast-hash streaming state into another?",
+   "What function clones an in-progress fast-hash state so I can branch from it?",
+   "How do I duplicate a 64-bit or 128-bit streaming state?"
+  ],
+  "sig:XXH3_generateSecret_fromSeed": [
+   "How do I derive a secret key buffer from a seed value?",
+   "What call generates the hash secret from a single seed?",
+   "How can I build a custom secret for the fast hash using a seed?"
+  ],
+  "sig:XXH3_len_0to16_64b": [
+   "Which routine hashes very short inputs into a 64-bit result with a seed?",
+   "What function handles the 64-bit hashing of inputs up to a small size?",
+   "How does the library hash tiny inputs with a seed to produce 64 bits?"
+  ],
+  "sig:XXH3_len_4to8_128b": [
+   "Which routine produces a 128-bit hash for very small inputs using a seed?",
+   "What function handles the 128-bit hashing of tiny inputs?",
+   "How does the library hash short inputs into a 128-bit result?"
+  ],
+  "sig:XXH3_len_9to16_64b": [
+   "Which routine hashes slightly longer short inputs using a seed and a secret?",
+   "What code path handles the hashing of short-to-medium inputs in the 64-bit variant?",
+   "How does the library hash inputs in the middle size range with a seed?"
+  ],
+  "sig:XXH3_mix16B": [
+   "How do I mix a 16-byte block with secret and seed for the fast hash?",
+   "Which helper combines 16 input bytes, secret bytes, and a seed into one value?",
+   "What mixing step handles 16-byte chunks in the 64-bit hash?"
+  ],
+  "sig:XXH3_scalarRound": [
+   "What does the per-lane mixing step do in the plain non-vector fallback?",
+   "How is one lane of the state updated in the scalar code path?",
+   "Which helper performs a single round on one lane without SIMD?"
+  ],
+  "sig:XXH3_scrambleAcc_lasx": [
+   "What mixing step runs on LoongArch wide vector units to scramble the state?",
+   "How does the scrambling step work on LoongArch vector hardware?",
+   "Which function scrambles the accumulator using the secret on LoongArch processors?"
+  ],
+  "sig:XXH3_scrambleAcc_scalar": [
+   "What is the non-vector step that scrambles the accumulator state?",
+   "Which fallback routine scrambles the state without SIMD instructions?",
+   "How does the portable code mix the accumulator using the secret?"
+  ],
+  "sig:XXH3_scrambleAcc_sse2": [
+   "Which SSE2 routine scrambles the accumulator using the secret?",
+   "What SIMD step mixes accumulator lanes with the secret on SSE2 machines?",
+   "Which function scrambles the accumulator in the SSE2 path of the fast hash?"
+  ],
+  "sig:XXH3_scrambleAcc_vsx": [
+   "What step mixes the running state on IBM POWER processors' vector units?",
+   "How does the scrambling step work on POWER vector hardware?",
+   "Which function scrambles the accumulator using the secret on POWER machines?"
+  ],
+  "sig:XXH64_canonicalFromHash": [
+   "How do I convert a 64-bit hash into a fixed byte layout for storage?",
+   "What call writes a 64-bit hash into a canonical byte representation?",
+   "How do I serialize a 64-bit hash in a portable byte order?"
+  ],
+  "sig:XXH64_initAccs": [
+   "How do I set up the starting lane state for the 64-bit wide hash with a seed?",
+   "What function initializes the accumulator values from a seed?",
+   "How is the starting state of the 64-bit streaming accumulator set up?"
+  ],
+  "sig:XXH64_reset": [
+   "How do I reset a 64-bit streaming hash state with a seed?",
+   "What call reinitializes an incremental 64-bit hash with a seed?",
+   "How do I restart the 64-bit streaming hash?"
+  ],
+  "sig:XXH_featureTest": [
+   "How does the library detect which x86 CPU features are available at runtime?",
+   "Which function checks the processor for supported vector features?",
+   "How does the runtime figure out the best x86 hashing path to use?"
+  ],
+  "sig:XXH_readBE64": [
+   "How do I read a 64-bit big-endian value from a memory pointer?",
+   "Which helper loads a big-endian 64-bit integer from raw memory?",
+   "How do I safely pull a big-endian 64-bit number out of a byte buffer?"
+  ],
+  "sig:XXH_readLE32_align": [
+   "How do I read a 32-bit little-endian value with a stated alignment?",
+   "Which helper loads a 32-bit little-endian integer from memory while respecting alignment?",
+   "What reads four bytes as little-endian with an alignment hint?"
+  ],
+  "sig:XXH_vec_revb": [
+   "How do I swap the byte order of a 128-bit vector on IBM POWER?",
+   "Which helper reverses byte order inside a vector register on POWER?",
+   "What function flips the endianness of a 128-bit vector value on POWER machines?"
+  ],
+  "sig:XXH_xorshift64": [
+   "What helper shifts a 64-bit value right and XORs it with itself?",
+   "Which mixing helper performs an xor-shift on a 64-bit word?",
+   "What is the 64-bit xor-shift helper used for in the hash?"
+  ]
+ },
+ "dateutil/dateutil": {
+  "const:src/dateutil/tz/_tzfile.py:_TIMEDELTA_CACHE_SIZE": [
+   "How big is the cache that stores computed timedelta values when reading timezone files?",
+   "What is the maximum number of timedelta entries kept in memory by the tzfile reader?",
+   "How can I tune the memory footprint of the timedelta cache used for timezone file lookups?"
+  ],
+  "sig:isoparser.parse_tzstr": [
+   "How do I parse a timezone string in an ISO 8601 date using the isoparser module?",
+   "Which function turns a timezone portion of an ISO date string into a tzinfo object, and what does zero_as_utc do?",
+   "Is there a helper that reads the offset part of an ISO timestamp and treats a zero offset as UTC?"
+  ],
+  "sig:picknthweekday": [
+   "How do I calculate the date of the nth occurrence of a weekday, like the second Sunday of March, for Windows timezone rules?",
+   "Which helper finds a date such as the last Friday of a month given a week number and day of the week?",
+   "What function computes a specific weekday in a given month and year for Windows daylight saving transitions?"
+  ],
+  "sig:tzfile.dst": [
+   "How do I find the daylight saving offset that applies to a specific datetime when reading a timezone file?",
+   "Which method tells me how much extra time daylight saving adds at a given moment in a compiled timezone?",
+   "How can I get the DST adjustment for a datetime using a tzfile object?"
+  ],
+  "sig:tzfile.tzname": [
+   "How do I get the abbreviated name of a timezone for a given datetime when using a tzfile?",
+   "Which method tells me the timezone label, like EST or PST, for a specific moment?",
+   "How can I look up the name of the zone in effect at a particular time from a compiled timezone file?"
+  ],
+  "sig:tzlocal.is_ambiguous": [
+   "How do I check whether a local time is ambiguous, such as during a daylight saving fall-back hour?",
+   "Which method tells me if a datetime occurs twice on the local machine's clock?",
+   "How can I detect a repeated wall-clock time when using the system's local timezone?"
+  ],
+  "sig:tzrangebase.utcoffset": [
+   "How do I find out how far a custom time range is offset from UTC for a given datetime?",
+   "Which method reports the UTC offset of a rule-based timezone range at a specific moment?",
+   "How can I get the offset value for a datetime when I'm using a tzrange-style timezone?"
+  ],
+  "sig:tzutc.fromutc": [
+   "How do I convert a UTC datetime into UTC using the UTC timezone class in dateutil?",
+   "Which method takes a datetime in UTC and returns it attached to the UTC timezone?",
+   "How does the UTC timezone object handle conversion from another zone into UTC time?"
+  ],
+  "sig:tzwin.__init__": [
+   "How do I load a Windows timezone by its name in dateutil?",
+   "What do I pass to create a Windows-based timezone object from a zone name?",
+   "How can I construct a timezone object that reads its rules from the Windows registry using a name?"
+  ],
+  "sig:valuestodict": [
+   "How do I convert a Windows registry key into a Python dictionary?",
+   "What function reads values from a Windows registry key into a dict in dateutil?",
+   "Where is the code that turns Windows registry timezone data into a usable mapping?"
+  ]
+ },
+ "gulrak/filesystem": {
+  "sig:GHC_FS_API_CLASS::directory_entry": [
+   "How do I make a directory entry object for a given location on disk?",
+   "How can I create an object representing a file or folder from its location?",
+   "What constructor builds a directory listing item from a location?"
+  ],
+  "sig:GHC_FS_API_CLASS::disable_recursion_pending": [
+   "How do I tell a recursive folder walk to skip the contents of the current subfolder?",
+   "Is there a way to stop a directory traversal from going deeper into the folder I'm currently in?",
+   "How can I prevent a recursive directory walker from entering the current directory?"
+  ],
+  "sig:GHC_FS_API_CLASS::file_status": [
+   "How do I create a file information object from a known type and permissions?",
+   "How can I make a status record manually with a type and optionally unknown permissions?",
+   "Is there a way to construct file metadata without querying the disk?"
+  ],
+  "sig:GHC_FS_API_CLASS::hard_link_count": [
+   "How do I get the hard link count of an item from a directory entry, reporting errors through an error code?",
+   "Can a directory entry tell me how many hard links point to its file?",
+   "How can I check the number of hard links on an entry without throwing an exception?"
+  ],
+  "sig:GHC_FS_API_CLASS::is_directory": [
+   "How do I check whether a directory entry represents a folder, reporting errors through an error code?",
+   "Is there a way to ask an entry whether it is a folder without throwing an exception?",
+   "How can I tell if a listed item is a directory?"
+  ],
+  "sig:GHC_FS_API_CLASS::is_symlink": [
+   "How do I check whether this location is a symbolic link, reporting failure without an exception?",
+   "Can I ask an existing location object if it points to a link, getting errors back instead of throwing?",
+   "How do I test for a link on a location object while handling errors through a report?"
+  ],
+  "sig:GHC_FS_API_CLASS::options": [
+   "How can I check which settings a recursive directory traversal was started with?",
+   "Is there a way to read back the flags that control how a folder walk behaves?",
+   "How do I find out the options my directory walker is using, such as whether it follows links?"
+  ],
+  "sig:GHC_FS_API_CLASS::path1": [
+   "How do I get the first location involved in an operation that takes two locations?",
+   "How can I retrieve the source location recorded in an error report from a two-location call?",
+   "Which accessor returns the first of the two locations stored in a filesystem error?"
+  ],
+  "sig:GHC_FS_API_CLASS::recursion_pending": [
+   "How do I check whether a recursive directory walk is set to descend into subfolders next?",
+   "How can I tell if the iterator will go deeper into the current folder?",
+   "Is there a way to see if a directory traversal has a pending descent?"
+  ],
+  "sig:GHC_FS_API_CLASS::refresh": [
+   "How do I update a cached directory entry so it reflects the current state on disk, reporting errors through an error code?",
+   "How can I reload a directory entry's stored information after the underlying file may have changed?",
+   "Is there a way to re-read an entry's details from the filesystem without throwing an exception?"
+  ],
+  "sig:GHC_FS_API_CLASS::status": [
+   "How do I get the type and permissions of a file?",
+   "How can I look up information about a file, reporting failures without throwing?",
+   "What call tells me whether a location is a regular file or directory, and what its permissions are?"
+  ],
+  "sig:GHC_FS_API_CLASS::symlink_status": [
+   "How do I get the status of a directory entry without following a symbolic link, reporting errors through an error code?",
+   "Can a listed entry tell me its own status rather than the status of its link target?",
+   "How can I read the type and attributes of an entry while treating links as links?"
+  ],
+  "sig:GHC_FS_API_CLASS::type": [
+   "How do I get the kind of item (regular file, folder, link) that a directory entry represents?",
+   "Is there a way to read or set the type of a file system item stored on an entry object?",
+   "How can I find out which type of file a listed entry refers to?"
+  ],
+  "sig:basic_fstream": [
+   "How do I create a read-write file stream with no file opened yet?",
+   "Can I make an empty file stream object that I open later?",
+   "What is the no-argument constructor for this library's combined input and output file stream?"
+  ],
+  "sig:basic_ofstream": [
+   "How do I create an output file stream object with no file attached yet?",
+   "Can I declare a writable file stream without opening a file when it is constructed?",
+   "What is the no-argument constructor for this library's file writing stream class?"
+  ],
+  "sig:buf": [
+   "How do I allocate a buffer of a set size initialized to zero?",
+   "Is there a way to make a zero-filled container of a given length for holding data?",
+   "How can I set up a byte buffer pre-filled with zeros before reading into it?"
+  ],
+  "sig:c_str": [
+   "How do I get a plain C-style string out of my filesystem location object?",
+   "How can I pass a location to a C function that expects a null-terminated character array?",
+   "Where can I get a raw character pointer to the underlying text of the location?"
+  ],
+  "sig:compare_simple_insensitive": [
+   "How do I compare two raw strings without caring about upper or lower case?",
+   "What helper checks if two character sequences match case-insensitively when I already know their lengths?",
+   "How can I do a case-insensitive comparison of two strings where I already know their lengths?"
+  ],
+  "sig:consumeUtf8Fragment": [
+   "How do I decode UTF-8 one byte at a time while tracking progress through a multi-byte character?",
+   "Is there a step function that builds a Unicode code point from byte fragments?",
+   "How can I feed bytes one by one into a decoder that reports when a character is complete?"
+  ],
+  "sig:create_directories": [
+   "How do I create a folder along with any missing parent folders in its location?",
+   "Is there a way to make a whole chain of nested directories in one call, returning an error code on failure?",
+   "How can I make a directory tree from a location in one step?"
+  ],
+  "sig:create_hardlink": [
+   "How do I make a second name for an existing file that refers to the same data?",
+   "Is there a way to create a hard link to a file, returning an error code on failure?",
+   "How can I add a new directory entry that points to the same underlying file as another?"
+  ],
+  "sig:endsWith": [
+   "How do I check whether a text ends with a given suffix?",
+   "Is there a helper that tells me if a string finishes with a particular sequence?",
+   "How can I test whether one string's tail matches another string, for any string type?"
+  ],
+  "sig:equivalent": [
+   "How do I tell whether two file locations point to the same file on disk?",
+   "Is there a function that checks if two locations resolve to the same object, returning an error code instead of throwing?",
+   "How can I confirm that two names, such as links or different spellings, lead to one file?"
+  ],
+  "sig:exists": [
+   "How do I check whether a file or folder is there at a given location?",
+   "How can I test if a location exists without it throwing an exception?",
+   "Is there a way to verify that an entry is present on disk?"
+  ],
+  "sig:file_size": [
+   "How do I get the size of a file in bytes?",
+   "How can I find out how big a file is without opening it?",
+   "Is there a way to get a file's length, reporting errors without an exception?"
+  ],
+  "sig:file_type_from_dirent_impl": [
+   "How do I figure out an entry's type while iterating a directory without another lookup?",
+   "What internal helper derives an entry's kind from directory listing data, with a fallback when the system doesn't provide it?",
+   "How does the library decide file type from directory listing results on different systems?"
+  ],
+  "sig:generic_u16string": [
+   "How do I get the location as a 16-bit string using forward slashes?",
+   "How can I obtain a portable 16-bit text version of a location?",
+   "Which method gives me the location in UTF-16 with generic separators?"
+  ],
+  "sig:generic_u8string": [
+   "How do I get the location as a UTF-8 string with forward slashes?",
+   "What method gives a portable UTF-8 text form of a location?",
+   "How can I obtain the location as UTF-8 for logging or cross-platform storage?"
+  ],
+  "sig:hard_link_count": [
+   "How do I find out how many hard links point to a given file?",
+   "Is there a way to get a file's hard link count, returning an error code instead of throwing?",
+   "How can I check how many directory entries refer to the same file on disk?"
+  ],
+  "sig:has_parent_path": [
+   "How do I check whether a file location includes a folder part?",
+   "Is there a test that tells me if a location has a parent folder component?",
+   "How can I tell if a location contains any directory before the file name?"
+  ],
+  "sig:has_relative_path": [
+   "How can I tell if a location has anything beyond its root?",
+   "How do I check whether a location is relative, meaning it has a non-root portion?",
+   "Is there a way to see if the location contains a trailing portion after the root?"
+  ],
+  "sig:has_root_directory": [
+   "How can I tell if a location is anchored at the top of the filesystem?",
+   "How do I check whether a location starts from the root directory?",
+   "Is there a way to see if the location is absolute with a leading separator?"
+  ],
+  "sig:has_root_name": [
+   "How can I tell if a location begins with a drive letter or volume designation?",
+   "How do I check whether a location includes a root name like on Windows?",
+   "Is there a way to see if the location has a device or drive prefix?"
+  ],
+  "sig:has_root_path": [
+   "How do I check whether a file location begins at the top of the filesystem?",
+   "Is there a test that tells me if a location includes a root part, such as a drive or leading slash?",
+   "How can I tell if a location is absolute, with a root component?"
+  ],
+  "sig:has_stem": [
+   "How can I tell if a file name has a base part apart from its extension?",
+   "How do I check whether the last part of a location has a name before the suffix?",
+   "Is there a way to see if the filename portion is non-empty apart from its ending?"
+  ],
+  "sig:is_block_file": [
+   "How do I check whether a file location refers to a block device?",
+   "Is there a test that tells me if an item's status says it is a block special file, with or without an error code?",
+   "How can I determine if a given status describes a block device?"
+  ],
+  "sig:is_fifo": [
+   "How do I check whether a file is a named pipe?",
+   "How can I tell if a location refers to a FIFO?",
+   "Is there a way to detect a pipe-type entry in the filesystem?"
+  ],
+  "sig:is_high_surrogate": [
+   "How do I tell whether a 32-bit value is the leading half of a UTF-16 surrogate pair?",
+   "Is there a helper that returns true when a character code is in the upper surrogate range?",
+   "How can I test whether a code unit marks the start of a two-unit encoded character?"
+  ],
+  "sig:is_low_surrogate": [
+   "How do I check whether a code value is the trailing half of a UTF-16 surrogate pair?",
+   "Is there a test for whether a 32-bit value falls in the lower surrogate range?",
+   "How can I tell if a character code is the second unit of a two-unit encoded character?"
+  ],
+  "sig:is_symlink": [
+   "How do I check whether a file is a symbolic link?",
+   "How can I tell if an entry is a shortcut-style link to another file?",
+   "Is there a way to detect a link without following it to its target?"
+  ],
+  "sig:is_symlink_from_INFO": [
+   "When listing a Windows directory, how can I tell if an entry is a link using the data already returned?",
+   "How do I check for a symbolic link during directory iteration without an extra system call?",
+   "Is there a faster way on Windows to detect links while walking a folder?"
+  ],
+  "sig:make_error_code": [
+   "How do I turn one of this library's portable error values into a standard error code object?",
+   "Is there a function that wraps the library's own error categories into the standard error code type?",
+   "How can I convert a portable error result into a regular error code I can compare against?"
+  ],
+  "sig:read_symlink": [
+   "How do I find out where a symbolic link points?",
+   "Is there a way to get the target stored in a link, reporting failure through an error code?",
+   "How can I retrieve the destination recorded in a symbolic link without following it?"
+  ],
+  "sig:remove_filename": [
+   "How do I strip the file name from a location and keep just the folder portion?",
+   "Is there a method that removes the last component of a file location in place?",
+   "How can I get the parent folder portion of a location by discarding the file name?"
+  ],
+  "sig:replace_filename": [
+   "How do I swap out the file name in a location while keeping its folder?",
+   "Is there a method that changes just the last part of a file location to a new name?",
+   "How can I rename the final component of a location without touching the folder portion?"
+  ],
+  "sig:root_name": [
+   "How do I get the drive letter or volume prefix from a location?",
+   "How can I extract the root name portion of a location, such as on Windows?",
+   "What returns the device or drive part at the start of a location?"
+  ],
+  "sig:status_from_INFO": [
+   "How do I turn the raw information from a directory walk into a file status object?",
+   "Is there a helper that derives a file's status, size, and last-modified time from a low-level directory record?",
+   "How can I convert the platform's directory search result into this library's status type?"
+  ],
+  "sig:strerror_adapter": [
+   "How do I turn a system error number into a readable message, handling both flavors of the C library's error-text function?",
+   "Is there a helper that normalizes the differing error-message results across C libraries into one buffer?",
+   "How can I get a portable error description regardless of which error-text variant the C library provides?"
+  ],
+  "sig:swap": [
+   "How do I exchange the contents of two file location objects quickly?",
+   "Is there a way to trade the values of two locations without copying one through a temporary?",
+   "How can I swap two location values in place?"
+  ],
+  "sig:symlink_status": [
+   "How do I get information about a link itself rather than its target?",
+   "How can I check the type of an entry without following it to where it points?",
+   "Is there a way to inspect a shortcut's own details instead of the destination's?"
+  ],
+  "sig:symlink_status_ex": [
+   "How do I check a symbolic link's own status without following it, and also get its size, hard link count, and last-modified time?",
+   "Is there a way to read a link's status, size, and modification time in one call, reporting failures through an error code?",
+   "How can I inspect a symbolic link itself rather than the file it points to?"
+  ],
+  "sig:timeToFILETIME": [
+   "How do I convert a Unix timestamp into the Windows file time format?",
+   "Is there a helper that fills a Windows file time from a seconds-since-epoch value?",
+   "How can I turn a standard time value into the structure used by Windows file APIs?"
+  ],
+  "sig:toUtf8": [
+   "How do I convert wide characters into UTF-8 text?",
+   "What helper turns a wide string into a UTF-8 byte string?",
+   "How can I get a UTF-8 version of a string that is in another encoding?"
+  ],
+  "sig:toWChar": [
+   "How do I convert narrow text into wide characters for Windows APIs?",
+   "What helper turns a byte string into a wide string?",
+   "How can I transform a string or character pointer into the wide form the system needs?"
+  ],
+  "sig:u16string": [
+   "How do I get the location as a 16-bit wide string in its native form?",
+   "What method returns the location's text as UTF-16 without converting separators?",
+   "How can I get a 16-bit string copy of the location for a Windows-style API?"
+  ],
+  "sig:u32string": [
+   "How do I get a file location's text as a string of 32-bit characters?",
+   "Is there a way to convert a file location into a wide Unicode string with 32-bit units?",
+   "How can I obtain the 32-bit character representation of a file location?"
+  ],
+  "sig:unique_handle::reset": [
+   "How do I release a wrapped operating system handle so it gets closed and the wrapper is emptied?",
+   "How can I clear my handle wrapper and optionally point it at a new resource?",
+   "What happens to the resource held by my unique owner wrapper when I want to replace it?"
+  ],
+  "sig:weakly_canonical": [
+   "How do I turn a location into a clean absolute form when some parts may not exist yet?",
+   "How can I normalize a location, resolving links and dots where they exist, without requiring the whole thing to be present?",
+   "Is there a way to simplify a location string even when the final part doesn't exist?"
+  ]
+ },
+ "hynek/structlog": {
+  "const:src/structlog/_log_levels.py:CRITICAL": [
+   "What numeric value corresponds to the highest severity level in the logging constants?",
+   "What integer does the most serious log level map to?",
+   "Which number represents the top logging severity in the internal level table?"
+  ],
+  "const:src/structlog/_log_levels.py:NOTSET": [
+   "What numeric value represents the unset, no-level setting in the logging levels?",
+   "What level number means no filtering is applied, so every message passes?",
+   "Which level constant is zero and acts as the lowest threshold?"
+  ],
+  "const:src/structlog/stdlib.py:LOG_KWARG_NAMES": [
+   "Which keyword arguments does the standard library logging integration treat as special, passing them through rather than turning them into fields?",
+   "Where is the list of reserved logging options kept in the standard library wrapper?",
+   "What names are recognized as built-in logging options when calling the standard library adapter?"
+  ],
+  "const:src/structlog/tracebacks.py:SHOW_LOCALS": [
+   "Does the traceback display include local variable values by default?",
+   "How do I tell whether error reports show the variables from each stack frame?",
+   "Is showing local variables turned on in the traceback output setting?"
+  ],
+  "sig:AsyncBoundLogger.debug": [
+   "How do I asynchronously log a detailed diagnostic message through the standard library wrapper?",
+   "What async call emits the lowest-severity development-oriented message on the standard library logger?",
+   "Where is the coroutine for logging a low-level diagnostic message?"
+  ],
+  "sig:AsyncBoundLogger.exception": [
+   "How do I log an exception with its traceback asynchronously?",
+   "What async method records the current error and stack trace from inside an except block?",
+   "How can I write an error with traceback details from async code using the wrapper?"
+  ],
+  "sig:AsyncBoundLogger.fatal": [
+   "How do I asynchronously log a message at the most severe level in the standard library wrapper?",
+   "Which async method emits the top-severity message on the standard library logger?",
+   "Where is the coroutine for logging an unrecoverable situation in the standard library integration?"
+  ],
+  "sig:AsyncBoundLogger.new": [
+   "How do I create a fresh async logger carrying extra context values while leaving the original unchanged?",
+   "What call returns a new async standard library logger with additional fields attached?",
+   "How do I derive a copy of an async logger that includes extra key-value pairs?"
+  ],
+  "sig:AsyncBoundLogger.warn": [
+   "How do I send a warning message asynchronously through the wrapper?",
+   "Which async method logs a caution-level message?",
+   "How can I emit a warning from async code using the bound logger?"
+  ],
+  "sig:BindableLogger.unbind": [
+   "How do I remove specific stored context values from a logger so they no longer appear in later messages?",
+   "What's the interface for dropping named fields from a bound logger's context?",
+   "How can I clear some previously attached key-value pairs from a logger without touching the rest?"
+  ],
+  "sig:BoundLogger.adebug": [
+   "How do I write a debug message asynchronously through the standard-library logger wrapper?",
+   "Which method logs at debug level without blocking, for the standard logger?",
+   "How can I emit a low-severity debugging entry from async code using the standard logger?"
+  ],
+  "sig:BoundLogger.aerror": [
+   "How do I log an error from async code using the standard library logging integration?",
+   "What's the async method for emitting an error-level message on the standard library wrapper?",
+   "Where is the coroutine for logging a failure message in the standard library wrapper?"
+  ],
+  "sig:BoundLogger.aexception": [
+   "How do I log the current exception with its traceback asynchronously on the standard logger?",
+   "Which async method records an error with stack trace from the standard logger?",
+   "How can I await logging of an exception from within an except block?"
+  ],
+  "sig:BoundLogger.awarning": [
+   "How do I emit a caution-level log message asynchronously through the standard library wrapper?",
+   "What async call logs a warning-level message on the standard library logger?",
+   "Where is the async version of the caution-level logging method for the standard library integration?"
+  ],
+  "sig:BoundLogger.err": [
+   "How do I log an error message through the Twisted-compatible logger?",
+   "What method on the Twisted adapter records a failure-level message with extra fields?",
+   "Which shortcut sends an error-level message on the Twisted logger?"
+  ],
+  "sig:BoundLogger.error": [
+   "How do I record an error-level message with the standard logger wrapper?",
+   "Which method writes a severe message to the log at error severity?",
+   "How can I log a failure message with optional arguments and keyword context?"
+  ],
+  "sig:BoundLogger.getEffectiveLevel": [
+   "How do I get the severity threshold actually in effect for a standard library logger, taking inheritance into account?",
+   "Which call reports the active minimum level for a standard library compatible logger?",
+   "How can I find out whether a given severity will currently be output by the standard library wrapper?"
+  ],
+  "sig:BoundLogger.handle": [
+   "How do I pass an already built log record into the logger so it gets processed?",
+   "Which method feeds a prepared record through the logger's processing path?",
+   "How can I send a finished record object to be handled by the wrapped logger?"
+  ],
+  "sig:BoundLogger.level": [
+   "How do I find out the current minimum severity for a standard library logger?",
+   "How can I read the threshold a standard library logger is set to?",
+   "Which method tells me the logging threshold of the standard library wrapper?"
+  ],
+  "sig:BoundLogger.log": [
+   "How do I log a message at a severity I choose at runtime through the standard library wrapper?",
+   "What's the general logging call where I pass the severity as an argument?",
+   "How can I emit a message whose level comes from a variable rather than a dedicated method?"
+  ],
+  "sig:BoundLogger.msg": [
+   "How do I write a general log message through the logger adapter used with the Twisted networking framework?",
+   "What does the generic message method look like on the Twisted-compatible logger?",
+   "Which function sends a plain message with keyword fields from a Twisted-based logger?"
+  ],
+  "sig:BoundLogger.removeHandler": [
+   "How do I stop a logging destination from receiving messages from this logger?",
+   "What call unregisters an output handler from the wrapped logger?",
+   "How can I remove a previously attached output target from the logger?"
+  ],
+  "sig:BoundLogger.try_unbind": [
+   "How do I remove context values from the logger without raising an error if they're missing?",
+   "What method drops bound fields safely, ignoring keys that aren't set?",
+   "How can I clear some stored context entries from the logger while tolerating missing ones?"
+  ],
+  "sig:BoundLoggerLazyProxy.bind": [
+   "How do I attach extra fields to a logger that hasn't been created yet, before it's first used?",
+   "How can I pre-bind context values on a lazily created logger proxy?",
+   "What call adds key-value context to the proxy so the real logger inherits it later?"
+  ],
+  "sig:BoundLoggerLazyProxy.new": [
+   "How do I make a new logger that carries extra key-value context without changing the original?",
+   "How can I derive a lazily configured logger with additional fields added?",
+   "Where is the method that returns a copy of a proxy logger with more bound values?"
+  ],
+  "sig:BytesLogger.__init__": [
+   "How do I create a logger that writes raw bytes to an output stream?",
+   "What constructor sets up a logger that outputs binary data to a given file?",
+   "How can I make a logger that sends encoded bytes to a file or standard output?"
+  ],
+  "sig:ConsoleRenderer.__init__": [
+   "What options control padding, colors, key sorting, and column layout for human-readable console output?",
+   "How do I configure the developer-friendly console renderer's appearance?",
+   "Which settings adjust how event names are padded, whether colors are on, and whether keys are sorted in terminal output?"
+  ],
+  "sig:ConsoleRenderer.exception_formatter": [
+   "How do I change how tracebacks appear in the console output?",
+   "Which setting picks the style of exception display in the developer renderer?",
+   "Where can I choose the formatting used for errors shown in terminal logs?"
+  ],
+  "sig:ConsoleRenderer.force_colors": [
+   "How do I force colored output in the console renderer even when the output isn't going to a terminal?",
+   "How can I turn on coloring for development console output regardless of terminal detection?",
+   "Which setting makes the pretty console formatter always use colors?"
+  ],
+  "sig:ConsoleRenderer.get_default_level_styles": [
+   "How do I get the default colors used for each severity level in console output?",
+   "Where can I fetch the built-in color mapping for log levels in the developer console renderer?",
+   "How do I retrieve the standard styling per level, with an option to turn colors off?"
+  ],
+  "sig:ConsoleRenderer.pad_level": [
+   "Does the console output pad the severity label so columns line up?",
+   "How do I turn alignment padding on or off for the level text in developer output?",
+   "Where is the option that controls spacing around the severity word in console logs?"
+  ],
+  "sig:ConsoleRenderer.repr_native_str": [
+   "How does the developer console renderer decide how to display plain text strings in its output?",
+   "Which hook controls how the pretty console formatter represents native string values?",
+   "How can I customize the way the console renderer prints ordinary text fields?"
+  ],
+  "sig:ConsoleRenderer.sort_keys": [
+   "How do I control whether fields are alphabetized in the console output?",
+   "What setting decides if the keys in a printed log line are sorted?",
+   "Where can I turn key sorting on or off for the developer console display?"
+  ],
+  "sig:ExceptionPrettyPrinter.__init__": [
+   "How do I print formatted exception tracebacks to a particular output?",
+   "What class pretty-prints error details to a chosen file or stream?",
+   "How can I customize where and how exception details get printed?"
+  ],
+  "sig:ExceptionRenderer.__init__": [
+   "How do I set up a processor that turns exception info into structured data with a custom formatter?",
+   "Which constructor lets me choose how tracebacks are formatted in the log output?",
+   "How can I swap in my own function for formatting exceptions during rendering?"
+  ],
+  "sig:FilteringBoundLogger.awarn": [
+   "How do I asynchronously log a caution-level message through a typed filtering logger?",
+   "What's the async caution-level logging call on the filtering interface?",
+   "Where is the coroutine for logging a caution message with severity filtering?"
+  ],
+  "sig:FilteringBoundLogger.awarning": [
+   "How do I send an asynchronous warning-level message through a logger that drops messages below a set severity?",
+   "Which method logs a warning without blocking when I'm using the async filtering wrapper?",
+   "What call emits a warning-severity entry from async code on a logger that filters by threshold?"
+  ],
+  "sig:FilteringBoundLogger.critical": [
+   "How do I log a message at the highest severity level through a filtering logger?",
+   "What method records the most urgent kind of message in the typed filtering interface?",
+   "Which call logs something at the most serious level along with extra keyword fields?"
+  ],
+  "sig:FilteringBoundLogger.exception": [
+   "How do I log an error message while automatically including details of the current failure?",
+   "What method records a failure with its traceback in the typed filtering logger?",
+   "How do I report a caught problem with its stack information attached?"
+  ],
+  "sig:FilteringBoundLogger.warn": [
+   "How do I record a caution-level message through a logger that filters out messages below a set severity?",
+   "What arguments does the typed caution-level logging call accept in the filtering logger interface?",
+   "Where is the typed interface for emitting a caution-severity message defined?"
+  ],
+  "sig:LogCapture.__init__": [
+   "How do I collect logged events during a test so I can check them afterward?",
+   "What object records log entries for later assertions in unit tests?",
+   "How can I set up a container that stores emitted log messages for verification?"
+  ],
+  "sig:LogLevelColumnFormatter.__init__": [
+   "How do I set colors and padding for the log level column in console output?",
+   "What setup controls the styling and width of the severity label in the developer log display?",
+   "How can I define per-level colors and reset codes for level text in terminal output?"
+  ],
+  "sig:LoggerFactory.__init__": [
+   "How do I configure the standard library logger factory to skip certain function names when working out where a message came from?",
+   "What options control which stack frames are ignored when the standard library logger finds the caller?",
+   "How can I set up the factory so it passes over specific caller names when recording source location?"
+  ],
+  "sig:PlainFileLogObserver.__init__": [
+   "How do I write plain-text log lines to a file from an event-observer setup?",
+   "What class saves unformatted log events to a file for later reading?",
+   "How can I create an observer that appends simple text logs to a file?"
+  ],
+  "sig:ProcessorFormatter.__init__": [
+   "How do I run standard-library log records through structured processors for final output?",
+   "What formatter lets me apply processing chains to records from other logging libraries?",
+   "How can I configure a formatter that handles outside log records with a pre-processing step?"
+  ],
+  "sig:ProcessorFormatter.wrap_for_formatter": [
+   "How do I prepare a log record so the standard library formatter can finish processing it?",
+   "What step wraps a structured event so a standard library handler's formatter can render it?",
+   "Which helper packages the event dictionary for handoff to the standard library formatting chain?"
+  ],
+  "sig:ReturnLoggerFactory.__init__": [
+   "How do I set up a logger factory that returns the processed output directly instead of printing it, useful in tests?",
+   "What factory creates a logger that hands back messages rather than writing them to a stream, for testing?",
+   "How can I construct the simplest factory whose logged result is returned to the caller?"
+  ],
+  "sig:UnicodeEncoder.__init__": [
+   "How do I set up a processor that encodes log text into bytes with a chosen character set and a fallback for characters it can't handle?",
+   "What are the setup options for the byte-encoding processor that controls how unsupported characters get written?",
+   "How do I configure the text-to-bytes conversion step so it doesn't crash on unusual characters?"
+  ],
+  "sig:add_log_level_number": [
+   "How do I attach a numeric severity code to each log entry as a processor?",
+   "Which processor puts the numeric level of a message into the structured record for standard-library-style logging?",
+   "How can I include the level as a number in every log event?"
+  ],
+  "sig:aexception": [
+   "How do I log a failure with its traceback asynchronously in the built-in logger?",
+   "What's the async version of logging a caught problem with details on the native logger?",
+   "Where is the coroutine for recording a failure with its trace in the native implementation?"
+  ],
+  "sig:clear_threadlocal": [
+   "How do I wipe all stored per-thread logging context at once?",
+   "What call empties the thread-specific logging variables?",
+   "How can I reset a thread's logging context so no values carry over?"
+  ],
+  "sig:configure_once": [
+   "How do I set up the logging system once at startup, specifying the processors, output wrapper, context storage, and caching?",
+   "What function applies the initial configuration, and complains if configuration was already set?",
+   "How do I choose the processing steps and logger factory while blocking later reconfiguration?"
+  ],
+  "sig:exception": [
+   "How do I record an error along with its stack trace using the built-in logger?",
+   "Which logging call automatically captures the current exception details at error level?",
+   "What method should I use inside an except block to write the traceback to the log?"
+  ],
+  "sig:get_merged_contextvars": [
+   "How do I combine values stored in async context variables into a logger's current event fields?",
+   "What helper pulls in context-scoped values so they get included with each logged message?",
+   "How do I merge per-task context data into the event dictionary for a logger?"
+  ],
+  "sig:get_threadlocal": [
+   "How do I read the context values stored for the current thread?",
+   "Where can I get the per-thread dictionary of bound logging variables?",
+   "How do I access the logging context tied to the thread my code is running in?"
+  ],
+  "sig:make_filtering_bound_logger": [
+   "How do I build a logger class that drops messages below a severity threshold I specify?",
+   "What factory produces a severity-filtering logger for a given minimum level?",
+   "How can I create a logger type that only passes through messages at or above a chosen level?"
+  ],
+  "sig:map_method_name": [
+   "How do I convert a logging method name into its underlying level name?",
+   "What helper translates a logging call's name into the matching internal level label?",
+   "Where is the function that maps a method name to its level alias?"
+  ],
+  "sig:plainJSONStdOutLogger": [
+   "How do I log structured JSON lines to standard output through an event-based setup?",
+   "What factory produces a logger that prints JSON to the terminal's output stream?",
+   "How can I quickly get a logger that emits machine-readable JSON to stdout?"
+  ],
+  "sig:render_to_log_args_and_kwargs": [
+   "How do I convert structured log data into the arguments the standard logging library expects?",
+   "What processor turns the event dictionary into a message and extra fields for standard logging?",
+   "Which final step prepares output for handing off to the standard library's logging calls?"
+  ],
+  "sig:set_exc_info": [
+   "How do I make a log event automatically attach the current failure details when a certain level method is called?",
+   "What processor flags an event to include the active failure details?",
+   "Which hook sets failure details on the event dictionary for development output?"
+  ],
+  "sig:wrap_dict": [
+   "How do I create a per-thread storage container type for logging context?",
+   "How can I make logging context stored separately for each thread using a chosen dictionary type?",
+   "What helper builds a thread-local context class from a dictionary type I pass in?"
+  ]
+ },
+ "lepture/mistune": {
+  "const:src/mistune/helpers.py:LINK_LABEL": [
+   "What pattern limits how long link text in square brackets can be, and what characters does it allow?",
+   "How does the link label pattern restrict the number of characters and escaped brackets in link text?",
+   "What is the rule that decides how much text can go inside the square brackets of a link label?"
+  ],
+  "const:src/mistune/plugins/footnotes.py:_FOOTNOTE_LABEL": [
+   "What pattern defines valid footnote names?",
+   "How long can a footnote label be, and which characters are allowed?",
+   "Which regular expression matches footnote labels?"
+  ],
+  "const:src/mistune/plugins/table.py:NP_TABLE_PATTERN": [
+   "What regular expression detects a line that holds column separators but no outer border?",
+   "Which pattern is used to recognize the start of a table row line?",
+   "What matching rule identifies table rows that lack outer edges?"
+  ],
+  "sig:Admonition.parse": [
+   "How does the parser read an admonition block, such as a note or warning?",
+   "Which method handles parsing of admonition directives and their content?",
+   "Where is the code that converts admonition syntax into tokens?"
+  ],
+  "sig:BaseDirective.parse_method": [
+   "How does the base directive dispatch parsing to the right handler for a block?",
+   "Which method on the base directive class is responsible for parsing a directive block?",
+   "How do custom directives get their parsing routine called from the base class?"
+  ],
+  "sig:BaseDirective.register_block_parser": [
+   "How do I add a new directive's block recognizer to the parser?",
+   "Where do I hook a custom block-level syntax into the parser, possibly before another rule?",
+   "Which method lets a directive plugin insert itself into the parsing order?"
+  ],
+  "sig:BaseRenderer.render_token": [
+   "How does the base renderer decide which output method to call for a given token?",
+   "Which method in the base renderer dispatches a single token to its rendering logic?",
+   "How do I render one token using the renderer's general routing logic?"
+  ],
+  "sig:BlockState.get_text": [
+   "How do I get the text from the start of a block up to a given position?",
+   "Which method extracts a slice of text from the current block parsing state?",
+   "What retrieves the accumulated block source up to an end point?"
+  ],
+  "sig:DirectivePlugin.parse": [
+   "How does a directive plugin turn a matched block into tokens?",
+   "Which step of a directive plugin reads the block and produces its node?",
+   "Where is the common directive logic that interprets a matched chunk of text?"
+  ],
+  "sig:FencedParser.parse_title": [
+   "How does the parser extract the title from a fenced directive's opening line?",
+   "Which method reads the title portion of a fenced block?",
+   "Where is the title of a fenced-style directive parsed?"
+  ],
+  "sig:Figure.parse": [
+   "How does the parser read a figure block and its caption from the source text?",
+   "Which method handles parsing of the figure directive and its contents?",
+   "Where is the logic that converts figure syntax into tokens?"
+  ],
+  "sig:HTMLRenderer.__init__": [
+   "What options can I set when creating the HTML renderer, such as escaping and allowed link protocols?",
+   "How do I control whether HTML output escapes special characters and which URL protocols are permitted?",
+   "What does the setup of the HTML renderer accept for escaping and protocol filtering?"
+  ],
+  "sig:HTMLRenderer.block_code": [
+   "How are fenced code blocks rendered to HTML?",
+   "Which function outputs a code block with an optional language tag?",
+   "What produces the preformatted markup for code in HTML output?"
+  ],
+  "sig:HTMLRenderer.list": [
+   "How do I generate an HTML list from its contents, whether numbered or not?",
+   "Which function wraps list items in unordered or numbered list tags?",
+   "How does the HTML writer produce list markup with extra attributes?"
+  ],
+  "sig:HTMLRenderer.render_attrs": [
+   "How are a dictionary of attributes turned into the attribute text in an HTML tag?",
+   "Which method formats key and value pairs as HTML attributes?",
+   "How do I convert extra tag options into the string that goes inside an HTML element?"
+  ],
+  "sig:InlineParser.parse_auto_email": [
+   "How does the parser detect and convert plain email addresses into links while processing inline text?",
+   "Which inline parsing step handles bare email addresses in the text?",
+   "Where is the logic that turns an email address written without brackets into a clickable link?"
+  ],
+  "sig:InlineState.append_token": [
+   "How do I add a new token to the inline parsing state while parsing?",
+   "Which method on the inline state records a newly produced token?",
+   "How can a plugin append its own token to the list of tokens being built during inline parsing?"
+  ],
+  "sig:Markdown.parse": [
+   "Where do I start to convert a raw text string into its parsed form?",
+   "Which method runs the whole parsing pipeline on a document string?",
+   "How do I pass in an optional carried-over state when parsing a text?"
+  ],
+  "sig:Markdown.render_state": [
+   "How do I turn a saved parser state back into the final rendered output?",
+   "Which method on the main Markdown object takes a state and produces the rendered result?",
+   "How can I render an already-parsed document state into the output format?"
+  ],
+  "sig:MarkdownRenderer.block_code": [
+   "How does the Markdown renderer write out a code block when converting back to Markdown?",
+   "Which method formats a code block token as Markdown text?",
+   "How do I control how fenced or indented code blocks are output by the Markdown renderer?"
+  ],
+  "sig:MarkdownRenderer.block_text": [
+   "How is plain block content written out when regenerating Markdown?",
+   "Which function outputs text blocks when converting to Markdown?",
+   "What handles unformatted paragraph text on Markdown export?"
+  ],
+  "sig:MarkdownRenderer.heading": [
+   "How is a heading written back out as source text?",
+   "Which function regenerates a title line in text form?",
+   "What code converts a heading into its Markdown text markup?"
+  ],
+  "sig:MarkdownRenderer.insert": [
+   "How does the Markdown renderer insert text or content into its output?",
+   "Which method on the Markdown renderer handles insertion of a token?",
+   "How do I output inserted text when rendering back to Markdown?"
+  ],
+  "sig:MarkdownRenderer.linebreak": [
+   "How is a line break written back into Markdown source?",
+   "What code outputs an explicit break when regenerating Markdown?",
+   "Which function handles hard breaks on Markdown export?"
+  ],
+  "sig:MarkdownRenderer.list_item": [
+   "How does the Markdown output writer format each list entry when regenerating source text?",
+   "What code writes a single list entry back out as source?",
+   "Where is list entry formatting handled when regenerating Markdown?"
+  ],
+  "sig:MarkdownRenderer.table_row": [
+   "How is a row of a table written back out as text?",
+   "Which code converts one table row into source lines?",
+   "What regenerates a single row for a table in text form?"
+  ],
+  "sig:MarkdownRenderer.task_list_item": [
+   "How does the Markdown renderer write a single task list item with its checkbox?",
+   "Which method formats one item of a task list when converting to Markdown?",
+   "How do I control how checkbox list entries are output in Markdown?"
+  ],
+  "sig:RSTDirective.parse_directive": [
+   "How does the reStructuredText directive handler read a directive's header and body?",
+   "Where are reStructuredText-style directives turned into tokens?",
+   "Which method parses a reStructuredText directive from a matched block?"
+  ],
+  "sig:RSTParser.parse_type": [
+   "How does the reStructuredText parser read the type name of a directive?",
+   "Which method extracts the directive type from a matched line in reStructuredText?",
+   "Where is the code that identifies what kind of directive is being declared in reStructuredText?"
+  ],
+  "sig:RSTRenderer.block_error": [
+   "How does the reStructuredText renderer output an error that occurred while parsing a block?",
+   "Which method displays error blocks in reStructuredText output?",
+   "How are parsing errors shown in the reStructuredText rendering?"
+  ],
+  "sig:RSTRenderer.block_html": [
+   "How does the reStructuredText writer handle raw HTML blocks it encounters?",
+   "What happens to a block of raw markup when exporting to the reStructuredText format?",
+   "Where is the logic that passes through HTML sections when generating reStructuredText?"
+  ],
+  "sig:RSTRenderer.inline_html": [
+   "How does the reStructuredText writer handle inline raw markup within a sentence?",
+   "What happens to inline HTML fragments on reStructuredText export?",
+   "Which function passes through in-line tags when producing reStructuredText?"
+  ],
+  "sig:RSTRenderer.list_item": [
+   "How is a single list entry written out in reStructuredText output?",
+   "What code formats one bullet or numbered item for reStructuredText export?",
+   "Where does the reStructuredText writer handle each item inside a list?"
+  ],
+  "sig:RSTRenderer.render_children": [
+   "How does the reStructuredText renderer output the nested content of a token?",
+   "Which method renders the child elements of a token in the reStructuredText format?",
+   "How do I get the rendered contents of a node's children when producing reStructuredText?"
+  ],
+  "sig:RSTRenderer.softbreak": [
+   "How is a soft line break handled when writing reStructuredText?",
+   "What does the reStructuredText writer output for a line break inside a paragraph?",
+   "Which function handles a newline within text on reStructuredText export?"
+  ],
+  "sig:add_toc_hook": [
+   "How do I add automatic table of contents generation to a Markdown instance and limit which heading levels are included?",
+   "Which function attaches a table of contents hook and lets me set a heading level range and custom heading IDs?",
+   "How can I configure heading IDs and the minimum and maximum heading levels for a table of contents?"
+  ],
+  "sig:create_markdown": [
+   "How do I build a configured parser with options like escaping and hard wrapping?",
+   "Which factory function sets up a converter with a chosen output format and plugins?",
+   "What is the main way to make a new parser instance with settings?"
+  ],
+  "sig:def_list": [
+   "How do I enable definition list support in the Markdown object?",
+   "Which plugin function registers definition lists with a Markdown instance?",
+   "How can I turn on definition list syntax so it is parsed and rendered?"
+  ],
+  "sig:expand_leading_tab": [
+   "How do I convert leading tab characters into spaces with a set tab width?",
+   "Which utility function expands tabs at the start of a line to a given number of spaces?",
+   "How can I handle tab indentation so it is replaced with a fixed number of spaces?"
+  ],
+  "sig:footnotes": [
+   "How do I enable footnote support on a Markdown instance?",
+   "Which function adds footnote parsing and rendering to the Markdown object?",
+   "How can I turn on footnotes so references and their definitions are recognized?"
+  ],
+  "sig:math_in_quote": [
+   "How do math expressions inside block quotes get handled by the math plugin?",
+   "Which function prepares math support for quoted blocks in the Markdown object?",
+   "How do I make math formulas work inside quote sections?"
+  ],
+  "sig:parse_def_list": [
+   "How does the parser recognize and read a definition list block?",
+   "Which block parsing function handles definition lists and what does it receive?",
+   "Where is the code that turns definition list syntax into tokens?"
+  ],
+  "sig:parse_link_label": [
+   "How does the parser find the label part of a link starting at a position?",
+   "Which helper reads the bracketed label of a link from a text position?",
+   "What function extracts a link's label text?"
+  ],
+  "sig:parse_link_open": [
+   "How does the parser start processing a link when it sees the opening bracket?",
+   "Which inline parsing function handles the beginning of a link and its state?",
+   "Where is the code that reads the start of a link during inline parsing?"
+  ],
+  "sig:parse_link_title": [
+   "How does the library read the optional title in a link?",
+   "Which helper extracts a quoted link title from a position in text?",
+   "What function parses the title part of a link within a bounded range?"
+  ],
+  "sig:parse_subscript": [
+   "How does the formatting plugin parse text wrapped for subscript?",
+   "Which inline function handles subscript markup and adds it to the state?",
+   "How do I enable parsing of subscript text in inline content?"
+  ],
+  "sig:render_admonition": [
+   "How do I turn a piece of text into a highlighted note box with a heading?",
+   "Which helper builds a styled callout block and accepts extra options?",
+   "How can I produce a warning-style box whose title gets formatted automatically?"
+  ],
+  "sig:render_admonition_title": [
+   "How is the title line of a callout box formatted?",
+   "Which helper outputs the heading text for a note-style box?",
+   "What function renders the label portion of a titled admonition?"
+  ],
+  "sig:render_block_image": [
+   "How is a block image directive rendered with optional size and extra attributes?",
+   "Which function produces the output for a standalone image block with a source, alt text, width, and height?",
+   "How do I control the width, height, and alt text of a block image in the rendered output?"
+  ],
+  "sig:render_def_list": [
+   "How is a term-and-definition list rendered to output?",
+   "Which function produces the markup for a definition list?",
+   "What turns a glossary-style list into rendered output?"
+  ],
+  "sig:render_html_toc": [
+   "How do I generate a table of contents as HTML with a custom title and optional collapsing?",
+   "Which function turns a list of headings into an HTML table of contents block, and what options does it accept?",
+   "How can I pass extra attributes into the rendered table of contents section?"
+  ],
+  "sig:render_inline_math": [
+   "How is an inline math expression rendered?",
+   "Which function outputs formulas embedded in a sentence?",
+   "What code produces inline equation markup?"
+  ],
+  "sig:render_inline_spoiler": [
+   "How is hidden or spoiler text rendered inline?",
+   "Which function outputs concealed inline text?",
+   "What renders a spoiler span within a line?"
+  ],
+  "sig:render_strikethrough": [
+   "How is strikethrough text turned into output by the formatting plugin?",
+   "Which function renders struck-through text when given the renderer and the text?",
+   "How do I customize how deleted or crossed-out text appears in the rendered output?"
+  ],
+  "sig:render_superscript": [
+   "How is raised text rendered in output?",
+   "Which function outputs superscript formatting?",
+   "What code wraps text so it displays above the baseline?"
+  ],
+  "sig:render_table": [
+   "Which function produces the markup for a whole table?",
+   "How does the table plugin assemble the table body from its text?",
+   "What builds the complete grid of rows and cells for output?"
+  ],
+  "sig:render_table_head": [
+   "How is the heading row of a table produced?",
+   "Which code renders the column titles section of a table?",
+   "What function outputs the top row of a table?"
+  ],
+  "sig:render_table_row": [
+   "How does the table plugin render a single row of table content?",
+   "Which function turns the text of one table row into output?",
+   "How do I customize the output for each row in a rendered table?"
+  ],
+  "sig:render_task_list_item": [
+   "How is a checklist entry rendered in output?",
+   "Which function outputs a to-do item with a checked or unchecked state?",
+   "What renders a list item that has a checkbox?"
+  ],
+  "sig:subscript": [
+   "How do I enable small text positioned below the baseline?",
+   "Which function adds the lowered-text syntax to the parser?",
+   "What plugin lets me write small text below the line?"
+  ],
+  "sig:task_lists": [
+   "How do I enable task list checkboxes in the Markdown object?",
+   "Which plugin function adds support for task lists to a Markdown instance?",
+   "How can I turn on checkbox list items so they are recognized and rendered?"
+  ],
+  "sig:url": [
+   "How do I make plain web addresses in text automatically become links?",
+   "Which plugin turns bare URLs into clickable links when enabled on the Markdown object?",
+   "How can I enable automatic link detection for URLs in my content?"
+  ]
+ },
+ "libssh2/libssh2": {
+  "const:src/agent.c:SSH2_AGENTC_ADD_ID_CONSTRAINED": [
+   "What message code adds a key to the agent with usage limits attached?",
+   "Which number identifies the agent request that adds a constrained identity?",
+   "How do I find the ID for adding a time- or use-limited key to the agent?"
+  ],
+  "const:src/agent.c:SSH2_AGENTC_REMOVE_IDENTITY": [
+   "What message code does the client send to remove a key from the SSH agent?",
+   "Which number identifies the agent request that deletes an identity?",
+   "How do I find the ID for removing a key from the agent protocol?"
+  ],
+  "const:src/agent.c:SSH_AGENTC_REMOVE_SMARTCARD_KEY": [
+   "What message type asks the agent to remove a key stored on a smartcard?",
+   "Which request code tells the key agent to drop a smartcard key?",
+   "How do I tell the agent to forget a key kept on a smartcard?"
+  ],
+  "const:src/agent.c:SSH_AGENTC_UNLOCK": [
+   "What message type is used to unlock keys held by the key agent?",
+   "Which request code asks the agent to unlock its key store?",
+   "What command number tells the agent to unlock?"
+  ],
+  "const:src/crypto.h:PEM_ECDSA_HEADER": [
+   "What header line marks an elliptic-curve private key in a PEM file?",
+   "Which text string identifies an EC private key block in PEM format?",
+   "What begin-marker does the library expect for elliptic-curve keys in PEM?"
+  ],
+  "const:src/crypto.h:SSH2_ED25519_SIG_LEN": [
+   "How long is an Ed25519 signature in bytes?",
+   "What buffer size should I allocate for an Ed25519 signature?",
+   "Where is the fixed length of Ed25519 signatures defined?"
+  ],
+  "const:src/crypto.h:SSH2_MD5_DIG_LEN": [
+   "How many bytes long is an MD5 digest?",
+   "What is the output size of the MD5 hash in this code?",
+   "How big is the buffer needed to hold an MD5 result?"
+  ],
+  "const:src/crypto.h:SSH2_MLKEM_1024_PUBLIC_KEY_LEN": [
+   "How many bytes long is a public key from the strongest post-quantum key encapsulation variant?",
+   "What size is the public key buffer for the largest post-quantum key exchange parameter set?",
+   "How much space does the public key take in the top-tier post-quantum KEM?"
+  ],
+  "const:src/crypto.h:SSH2_SHA1_DIG_LEN": [
+   "How many bytes long is a SHA-1 digest?",
+   "What output buffer size do I need for a SHA-1 hash?",
+   "Where is the fixed size of a SHA-1 hash result defined?"
+  ],
+  "const:src/crypto_config.h:LIBSSH2_BLOWFISH": [
+   "How do I turn the Blowfish cipher on or off at build time?",
+   "Which compile-time flag controls support for the Blowfish algorithm?",
+   "Where is the switch that enables or disables Blowfish?"
+  ],
+  "const:src/crypto_config.h:LIBSSH2_MD5_PEM": [
+   "Is support for the old MD5-based PEM key encryption turned on in this build?",
+   "Does this build allow keys in PEM format to be protected with MD5?",
+   "Is the MD5 option for encrypted PEM files enabled by default here?"
+  ],
+  "const:src/libgcrypt.h:LIBSSH2_HMAC_RIPEMD": [
+   "Is RIPEMD-based message authentication available in this build?",
+   "Can I use RIPEMD for HMAC in this configuration?",
+   "Is the RIPEMD option for keyed hashing switched on here?"
+  ],
+  "const:src/libgcrypt.h:LIBSSH2_MLKEM": [
+   "Is the post-quantum key encapsulation method compiled into this build?",
+   "Is the newer quantum-resistant key exchange available in this configuration?",
+   "Has the ML-KEM style key exchange been disabled here?"
+  ],
+  "const:src/libgcrypt.h:SSH2_DH_GEX_OPTGROUP": [
+   "What is the default size of the optional Diffie-Hellman group in the libgcrypt backend?",
+   "Where is the default group size for optional Diffie-Hellman parameters set when using libgcrypt?",
+   "How large is the fallback Diffie-Hellman group in the libgcrypt build?"
+  ],
+  "const:src/libgcrypt.h:SSH2_DH_MAX_MODULUS_BITS": [
+   "What is the largest Diffie-Hellman modulus size this library will accept?",
+   "What upper limit is set on the bit length of a Diffie-Hellman modulus?",
+   "How big can a Diffie-Hellman group be before it is rejected?"
+  ],
+  "const:src/libssh2_priv.h:SSH2_MSG_KEX_ECDH_INIT": [
+   "What message code starts an elliptic-curve Diffie-Hellman key exchange?",
+   "Which number does the client send to begin the elliptic-curve key exchange?",
+   "How do I find the ID for the client's first message in an elliptic-curve exchange?"
+  ],
+  "const:src/libssh2_priv.h:SSH2_MSG_KEX_ECDH_REPLY": [
+   "What message code does the server send back to answer an elliptic-curve key exchange?",
+   "Which number marks the reply step of the elliptic-curve Diffie-Hellman handshake?",
+   "How do I find the numeric ID for the server's response in an elliptic-curve key exchange?"
+  ],
+  "const:src/libssh2_priv.h:SSH2_SOCKET_DISCONNECTED": [
+   "What status is reported when the network socket has closed?",
+   "Which code tells the library the connection has dropped?",
+   "What value means the socket is no longer connected?"
+  ],
+  "const:src/libssh2_priv.h:SSH_MSG_GLOBAL_REQUEST": [
+   "What message code does a global request carry in the protocol?",
+   "Which number identifies a global request message during a session?",
+   "How do I find the ID for server-wide requests sent over the connection?"
+  ],
+  "const:src/libssh2_priv.h:SSH_MSG_KEX_DH_GEX_REQUEST": [
+   "What message code starts a Diffie-Hellman group exchange request?",
+   "Which number identifies the client's request for a custom prime group during key exchange?",
+   "How do I find the message ID used when asking the server for a Diffie-Hellman group?"
+  ],
+  "const:src/mbedtls.h:LIBSSH2_AES_CBC": [
+   "Does the mbedTLS backend support AES in CBC mode?",
+   "Is AES-CBC encryption available when building against mbedTLS?",
+   "Can I use cipher block chaining with AES on the mbedTLS backend?"
+  ],
+  "const:src/openssl.h:SSH2_DH_GEX_MINGROUP": [
+   "What is the smallest Diffie-Hellman group size accepted when using OpenSSL?",
+   "What minimum group size applies to group exchange with the OpenSSL backend?",
+   "How small can a Diffie-Hellman group be on the OpenSSL path before it is refused?"
+  ],
+  "const:src/openssl.h:SSH2_DH_GEX_OPTGROUP": [
+   "What is the default size of the optional Diffie-Hellman group in the OpenSSL backend?",
+   "Where is the default group size for optional Diffie-Hellman parameters set when using OpenSSL?",
+   "How large is the fallback Diffie-Hellman group in the OpenSSL build?"
+  ],
+  "const:src/openssl.h:SSH2_DH_MAX_MODULUS_BITS": [
+   "What is the largest prime size the key exchange will accept when using the OpenSSL-based crypto backend?",
+   "How do I stop the library from accepting oversized Diffie-Hellman parameters?",
+   "Where is the upper bound on Diffie-Hellman key size set for builds that use OpenSSL?"
+  ],
+  "const:src/openssl.h:USE_OPENSSL_3": [
+   "How do I tell the build to use the newer OpenSSL API?",
+   "Which compile-time switch enables the OpenSSL 3 code paths?",
+   "Where is the flag that turns on support for the newer OpenSSL version?"
+  ],
+  "const:src/os400qc3.h:LIBSSH2_AES_CBC": [
+   "Is AES-CBC available on the IBM i crypto backend?",
+   "Does the OS/400 cryptography build support AES in CBC mode?",
+   "Can I use AES cipher block chaining on IBM i here?"
+  ],
+  "const:src/os400qc3.h:LIBSSH2_AES_GCM": [
+   "Is AES-GCM authenticated encryption unavailable on the IBM i backend?",
+   "Does the OS/400 build lack support for AES in GCM mode?",
+   "Is Galois-counter mode for AES switched off on IBM i?"
+  ],
+  "const:src/os400qc3.h:LIBSSH2_MD5": [
+   "How do I turn MD5 support on or off in the IBM i crypto backend?",
+   "Which compile-time flag enables MD5 on IBM i?",
+   "Where is the MD5 switch for the IBM i build defined?"
+  ],
+  "const:src/os400qc3.h:LIBSSH2_RSA": [
+   "Is RSA support compiled into the IBM i backend?",
+   "Does the OS/400 build include RSA public key operations?",
+   "Can I use RSA keys when building for IBM i?"
+  ],
+  "const:src/os400qc3.h:Qc3_Key_CSLabel": [
+   "Which fixed label bytes identify the key when the code runs on IBM i?",
+   "What value does the IBM i crypto code use to tag its key type?",
+   "Where is the identifying label for keys in the IBM i crypto layer defined?"
+  ],
+  "const:src/pem.c:LINE_SIZE": [
+   "How wide is each line when the PEM parser reads text?",
+   "What maximum line length does the PEM reader use?",
+   "How many characters are read per line when parsing PEM data?"
+  ],
+  "const:src/publickey.c:SSH2_PUBLICKEY_ACCESS_DENIED": [
+   "What error code means a public key operation was refused for lack of permission?",
+   "Which status is returned when access to a public key is denied?",
+   "What code signals that the public key request was rejected for access reasons?"
+  ],
+  "const:src/publickey.c:SSH2_PUBLICKEY_GENERAL_FAILURE": [
+   "What code does the public key module return when it fails without a more specific reason?",
+   "Which error code means a general failure in public key handling?",
+   "What status indicates a catch-all failure during public key operations?"
+  ],
+  "const:src/publickey.c:SSH2_PUBLICKEY_KEY_ALREADY_PRESENT": [
+   "What error code is returned when a public key is already stored?",
+   "Which status means the key I tried to add is already present?",
+   "What does the library report if I add a key that exists already?"
+  ],
+  "const:src/scp.c:SCP_C_FIELDS_OK": [
+   "What value does the SCP code use to show that a field check passed?",
+   "How does the SCP parser signal that its field validation succeeded?",
+   "What flag marks an SCP field as valid when checked?"
+  ],
+  "const:src/sftp.c:SSH_FXP_EXTENDED": [
+   "What request code does the client send for extended SFTP operations?",
+   "Which number identifies an extended request in the file transfer protocol?",
+   "Where is the code for SFTP extension requests defined?"
+  ],
+  "const:src/sftp.c:SSH_FXP_HANDLE": [
+   "What message code does the server use to return a file or directory handle?",
+   "Which number identifies the SFTP response that carries a handle?",
+   "How do I find the ID for the handle reply in the file transfer protocol?"
+  ],
+  "const:src/sftp.c:SSH_FXP_READLINK": [
+   "What request type is used over SFTP to read where a symbolic link points?",
+   "Which operation code asks the server for the target of a remote link?",
+   "How do I ask the SFTP server to resolve a symbolic link?"
+  ],
+  "const:src/sftp.c:SSH_FXP_VERSION": [
+   "What protocol version number does the client announce at the start of an SFTP session?",
+   "Which number is sent in the first SFTP handshake message?",
+   "Where is the SFTP protocol version used during startup defined?"
+  ],
+  "const:src/wincng.h:LIBSSH2_AES_CBC": [
+   "How do I turn on AES in CBC mode for the Windows crypto backend?",
+   "Which flag enables AES-CBC support in the Windows CNG layer?",
+   "Where is AES-CBC support for Windows builds switched on?"
+  ],
+  "sig:libssh2_agent_connect": [
+   "How do I attach my program to the running key agent?",
+   "Which function opens a connection to the key agent?",
+   "How do I connect to the agent that holds my private keys?"
+  ],
+  "sig:libssh2_channel_free": [
+   "How do I release a channel and its resources when I am done with it?",
+   "Which function closes and frees a channel object?",
+   "What call cleans up an open channel handle?"
+  ],
+  "sig:libssh2_channel_receive_window_adjust": [
+   "How do I change how much more data the remote side may send on a channel?",
+   "Which function grows or sets the receive window of a channel?",
+   "How can I tell the other end it can send more data before I acknowledge it?"
+  ],
+  "sig:libssh2_hostkey_hash": [
+   "How do I compute a fingerprint hash of the server's host key?",
+   "Which function returns a hash of the host key for verification?",
+   "What call gives me the digest of the remote host key in a chosen hash format?"
+  ],
+  "sig:libssh2_session_banner_set": [
+   "How do I set the identification string my session sends to the server?",
+   "Which function changes the banner my session presents?",
+   "How can I customize the version line my client announces?"
+  ],
+  "sig:libssh2_session_hostkey": [
+   "How do I get the server's host key and its type from a session?",
+   "Which function returns the host key data and key type for a connection?",
+   "What call retrieves the remote host's public key after the handshake?"
+  ],
+  "sig:libssh2_session_method_pref": [
+   "How do I set the preferred algorithms for a given negotiation category on a session?",
+   "Which function lets me choose which key exchange or cipher methods a session prefers?",
+   "What call overrides the default algorithm preference list for a session?"
+  ],
+  "sig:libssh2_sftp_mkdir_ex": [
+   "How do I create a directory on a remote server over SFTP and set its permissions?",
+   "Which function makes a remote folder with a given mode over SFTP?",
+   "How can I create a directory with explicit permission bits through SFTP?"
+  ],
+  "sig:libssh2_sftp_write": [
+   "How do I write data to an open remote file through an SFTP handle?",
+   "Which function sends a buffer of bytes to a file opened on the server?",
+   "What call uploads bytes to a remote file handle in the SFTP layer?"
+  ],
+  "sig:ssh2_bn_set_word": [
+   "How do I set a big integer to a small machine-sized number?",
+   "Which function initializes a bignum from a single 32-bit word?",
+   "What call assigns a simple integer value to a big number object?"
+  ],
+  "sig:ssh2_channel_write": [
+   "How do I send bytes out over an open channel to the remote side?",
+   "Which call writes a block of data into one stream of a channel?",
+   "What function pushes outgoing data onto a specific stream of a secure shell channel?"
+  ],
+  "sig:ssh2_check_length": [
+   "How do I check that a buffer has enough bytes left before reading from it?",
+   "Which function verifies a string buffer can supply a requested number of bytes?",
+   "How can I guard against reading past the end of a buffer?"
+  ],
+  "sig:ssh2_curve25519_new": [
+   "How do I generate a fresh elliptic-curve key pair for key exchange?",
+   "Which function creates new Curve25519 public and private keys for a session?",
+   "How can I allocate a new Curve25519 key pair tied to a session?"
+  ],
+  "sig:ssh2_deb_low": [
+   "Which function writes a formatted low-level debug message to the session log?",
+   "How do I log a debug message with a printf-style format from inside the session code?",
+   "What function handles low-level debug output with a context tag?"
+  ],
+  "sig:ssh2_ecdsa_get_curve_type": [
+   "How can I find out which elliptic curve an ECDSA context is using?",
+   "Which function returns the curve identifier from an ECDSA key context?",
+   "How do I check the curve type of an existing ECDSA context?"
+  ],
+  "sig:ssh2_fopen": [
+   "How do I open a file by name with a given mode in a portable way?",
+   "Which helper function opens a file using a filename and access mode?",
+   "What function wraps opening a file so it works the same across platforms?"
+  ],
+  "sig:ssh2_hash": [
+   "How do I compute a hash of some data with a chosen algorithm?",
+   "Which function produces a digest of an input buffer using a selected hash type?",
+   "What call lets me hash arbitrary bytes into a given output buffer?"
+  ],
+  "sig:ssh2_hmac_update": [
+   "How do I feed more input data into an ongoing message authentication computation?",
+   "Which function adds bytes to an HMAC context before it is finalized?",
+   "What call should I make to keep updating a keyed hash with new data?"
+  ],
+  "sig:ssh2_list_prev": [
+   "How do I get the entry that comes before a given node in a linked list?",
+   "Which function returns the previous element in a list?",
+   "How can I step backward to the earlier item in this list structure?"
+  ],
+  "sig:ssh2_list_remove": [
+   "How do I unlink an entry from a linked list?",
+   "Which function removes a node from a list in this library?",
+   "How can I take one element out of a list structure?"
+  ],
+  "sig:ssh2_ntohu64": [
+   "How do I read an 8-byte big-endian integer from a buffer?",
+   "Which function converts a 64-bit network-order value from a byte buffer?",
+   "What helper decodes a 64-bit unsigned number from raw network bytes?"
+  ],
+  "sig:ssh2_os400qc3_crypto_dtor": [
+   "What function cleans up the IBM i crypto context and releases its memory?",
+   "How do I free resources held by the IBM i crypto state?",
+   "Which destructor tears down the crypto context used on IBM i?"
+  ],
+  "sig:ssh2_pem_ecdsa_curve_type_from_name": [
+   "How do I convert a PEM curve name into the internal curve type?",
+   "Which function maps an ECDSA curve name from a PEM key to its identifier?",
+   "What call translates a curve name string from a PEM file into a curve type value?"
+  ],
+  "sig:ssh2_store_bignum_bytes": [
+   "How do I write a big number's bytes into an output buffer for sending?",
+   "Which function serializes raw big-number bytes into a buffer?",
+   "What helper copies a big integer's raw bytes into a wire-format buffer?"
+  ]
+ },
+ "marzer/tomlplusplus": {
+  "const:include/toml++/impl/preprocessor.hpp:TOML_ABI_NAMESPACES": [
+   "Is the library's internal naming wrapped in versioned namespaces to avoid binary clashes?",
+   "Does this build put its internal code under a versioned namespace?",
+   "Which setting controls whether the library's symbols are scoped to an ABI-specific namespace?"
+  ],
+  "const:include/toml++/impl/preprocessor.hpp:TOML_ARCH_AMD64": [
+   "How do I tell whether the build targets 64-bit x86 processors?",
+   "Is the library compiling for the 64-bit Intel-compatible chip family?",
+   "What flag shows if the target is the 64-bit x86 architecture?"
+  ],
+  "const:include/toml++/impl/preprocessor.hpp:TOML_ARCH_ARM64": [
+   "Is the build targeting the 64-bit ARM processor family?",
+   "How do I tell whether the ARM 64-bit architecture code path is disabled here?",
+   "Which setting shows whether the library is compiled for the newer ARM 64-bit chips?"
+  ],
+  "const:include/toml++/impl/preprocessor.hpp:TOML_ARCH_ITANIUM": [
+   "How can I tell whether the build is targeting the legacy 64-bit server processor family?",
+   "Is the code path for that older server chip family turned off in this configuration?",
+   "Which setting controls whether processor-specific code for that legacy architecture gets compiled?"
+  ],
+  "const:include/toml++/impl/preprocessor.hpp:TOML_ARCH_X86": [
+   "How do I tell whether the build is targeting 32-bit Intel-style processors?",
+   "Is the library compiling for the older 32-bit x86 chip family right now?",
+   "What compile-time flag shows whether the processor family is the classic 32-bit Intel line?"
+  ],
+  "const:include/toml++/impl/preprocessor.hpp:TOML_COMPILER_HAS_EXCEPTIONS": [
+   "How do I check whether the compiler has exception handling turned on for this build?",
+   "Does the library know if throwing and catching errors is available in the current setup?",
+   "How is the decision made about whether the library can use exceptions?"
+  ],
+  "const:include/toml++/impl/preprocessor.hpp:TOML_DISABLE_NOEXCEPT_NOEXCEPT": [
+   "What value is the noexcept-related preprocessor switch set to in this header?",
+   "Is the internal flag that disables a particular noexcept handling turned on or off here?",
+   "How do I tell whether the library has the noexcept workaround switched on in the preprocessor settings?"
+  ],
+  "const:include/toml++/impl/preprocessor.hpp:TOML_GCC_LIKE": [
+   "Is the build using a GNU-style or Clang-style compiler?",
+   "How do I tell whether the compiler family is GCC-like in this configuration?",
+   "Which setting shows if the compiler uses the GNU-compatible toolchain conventions?"
+  ],
+  "const:include/toml++/impl/preprocessor.hpp:TOML_INCLUDE_WINDOWS_H": [
+   "How do I stop the library from pulling in the Windows system headers during a build?",
+   "Which setting controls whether the platform-specific Windows header gets included?",
+   "Why does the build include a Windows-only header, and where is that decided?"
+  ],
+  "const:include/toml++/impl/preprocessor.hpp:TOML_LIB_SINGLE_HEADER": [
+   "How do I tell whether the library is being built as one combined header file?",
+   "What flag decides if the library ships as a single consolidated header?",
+   "How can I check whether the single-header bundling option is turned on?"
+  ],
+  "const:include/toml++/impl/preprocessor.hpp:TOML_MAX_DOTTED_KEYS_DEPTH": [
+   "What is the limit on how deeply dotted key paths can nest when parsing?",
+   "What maximum nesting depth does the parser allow for dotted keys?",
+   "How far can dotted key segments go before the parser stops accepting them?"
+  ],
+  "const:include/toml++/impl/preprocessor.hpp:TOML_NVCC": [
+   "Is the CUDA compiler compatibility switch enabled in this build configuration?",
+   "How do I tell whether the library is being compiled with the NVCC compiler support turned on?",
+   "What value does the NVIDIA compiler flag have in the preprocessor header?"
+  ],
+  "const:include/toml++/impl/preprocessor.hpp:TOML_SHARED_LIB": [
+   "Is the library being built as a dynamic shared library?",
+   "How do I check whether this build produces a shared library rather than a static one?",
+   "Which setting tells me if the library is exported for dynamic linking?"
+  ],
+  "const:include/toml++/impl/preprocessor.hpp:TOML_SIMPLE_STATIC_ASSERT_MESSAGES": [
+   "Why do compile-time check errors show short messages, and how do I get the fuller ones?",
+   "Is there a switch that simplifies the messages shown when a static check fails?",
+   "How do I control whether compile-time assertions print their descriptive text?"
+  ],
+  "const:include/toml++/impl/version.hpp:TOML_LANG_PATCH": [
+   "Which patch level of the config language spec does this library target?",
+   "How can I tell the minor-fix version of the language standard being supported?",
+   "Where is the patch number of the supported language version defined?"
+  ],
+  "sig:TOML_ABSTRACT_INTERFACE::as_array": [
+   "How do I cast a generic config value to a list if it actually holds one?",
+   "What call converts an unknown config entry into a list type or returns nothing?",
+   "How can I check and retrieve a list from a value whose type I don't know yet?"
+  ],
+  "sig:TOML_ABSTRACT_INTERFACE::as_boolean": [
+   "How do I read a true or false value from a looked-up item, if it is one?",
+   "What accessor gets the logical flag out of a generic item?",
+   "How can I safely pull a yes-or-no setting from an element that could be other types?"
+  ],
+  "sig:TOML_ABSTRACT_INTERFACE::constexpr": [
+   "When is the generic visiting function on the base item type allowed to run at compile time?",
+   "What condition decides whether the traversal helper on the base type can be compile-time?",
+   "Why does the visiting function on the base type only get marked compile-time in some cases?"
+  ],
+  "sig:TOML_ABSTRACT_INTERFACE::is_boolean": [
+   "How do I check whether a looked-up entry holds a true or false value?",
+   "Is there a way to test if an item stores a yes-or-no value before reading it?",
+   "What check tells me whether a generic item is a logical flag?"
+  ],
+  "sig:TOML_ABSTRACT_INTERFACE::is_date": [
+   "How do I check if an item holds only a calendar date?",
+   "Is there a test that tells me whether a value is a date without a time part?",
+   "What method confirms an element is a plain calendar day?"
+  ],
+  "sig:TOML_ABSTRACT_INTERFACE::is_date_time": [
+   "How do I check whether an item holds a combined date and clock time?",
+   "Is there a test to see if a value is a timestamp with a time of day?",
+   "What method confirms an entry is a date-plus-time value?"
+  ],
+  "sig:TOML_ABSTRACT_INTERFACE::is_floating_point": [
+   "How can I check whether a parsed TOML value holds a decimal number?",
+   "Which method tells me if a node in the TOML tree is a floating-point value?",
+   "How do I test, from the base node interface, if a value is a non-integer number?"
+  ],
+  "sig:TOML_ABSTRACT_INTERFACE::is_number": [
+   "How do I ask a generic config value whether it holds a numeric type?",
+   "Is there a way to check if a value of unknown kind is a number?",
+   "How can I determine whether an arbitrary config entry stores a number?"
+  ],
+  "sig:TOML_ABSTRACT_INTERFACE::is_string": [
+   "How do I check whether a lookup item holds text?",
+   "What test tells me if an entry is a string before I read it?",
+   "Is there a method to confirm an item is plain text?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::back": [
+   "How do I grab the final element of a list without removing it?",
+   "Which call peeks at the last item in an ordered collection?",
+   "Is there a way to access the trailing item of a sequence?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::detach": [
+   "How do I separate a node from its parent so I can keep it on its own?",
+   "Which method detaches a formatter or value from the structure it belongs to?",
+   "How can I take a part of a document out of its tree and hold it independently?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::dump_failed_parse_result": [
+   "How do I print out the details of a parse that failed so I can see what went wrong?",
+   "Which method dumps error information from a failed parse result to the output?",
+   "How can I display the reason a TOML document didn't parse?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::emplace_hint": [
+   "How do I insert a new key-value pair into a table with a position hint to speed things up?",
+   "Which call constructs an entry in a table in place, using a suggested iterator location?",
+   "How can I add an element to a table efficiently by giving it a nearby iterator as a starting point?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::flatten_child": [
+   "How do I splice the contents of a nested list into a parent list at a given position?",
+   "What is the way to flatten a sub-list into its parent list starting at a chosen index?",
+   "How can I move the items of an inner list into an outer list and track where I am in it?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::front": [
+   "How do I get the first item in a list of values?",
+   "What is the way to access the leading element of a list without removing it?",
+   "How can I read the item at the beginning of a list?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::indent": [
+   "How do I set the nesting depth used when printing a section?",
+   "Can I control how far a block is indented when writing output?",
+   "Is there a way to force a starting indentation level for the writer?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::indent_columns": [
+   "How can I find out how many columns each nesting level is indented in the written output?",
+   "Where is the setting that controls the width of each indentation step when printing?",
+   "What does the output writer report as its current per-level indent width?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::insert_at_back": [
+   "How do I append a new element to the end of an array in this library?",
+   "Which method adds a node to the back of an array, taking ownership of it?",
+   "How can I push a value onto the end of a TOML array?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::insert_with_hint": [
+   "How do I add an entry to a table at a suggested position, passing ownership of the value?",
+   "Which method inserts a node into a table near a given iterator hint?",
+   "How can I put a new node into a table with a location hint so it doesn't search from scratch?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::is_inline": [
+   "How do I mark a group of fields so the writer prints it on a single line?",
+   "Can I tell the writer to format this collection inline instead of as a separate section?",
+   "How do I check or change whether a nested group is printed inline?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::literal_strings_allowed": [
+   "How do I find out whether the formatter allows single-quoted literal strings in its output?",
+   "Which option tells me if the output writer can use literal string syntax?",
+   "How can I check if the formatter is permitted to emit literal, non-escaped strings?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::lower_bound": [
+   "How do I find the first entry in a table whose key isn't before a given key?",
+   "Which lookup finds the position where a key would be inserted in a sorted table, accepting either narrow or wide strings?",
+   "How can I search a TOML table for the earliest key at or after a particular name?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::pop_back": [
+   "How do I remove the final item from a list?",
+   "Which call drops the last element of an ordered collection?",
+   "Is there a way to delete the trailing entry from a sequence?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::push_back": [
+   "How do I add an item to the end of a list by moving it in, with optional formatting flags?",
+   "What method appends a value to a list and keeps its original source formatting by default?",
+   "How can I push a new element onto the back of a list without copying it?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::real_tabs_in_strings_allowed": [
+   "Can the output writer emit raw tab characters inside quoted text, or must they be escaped?",
+   "Does the writer allow actual tab characters within string values?",
+   "How do I check whether tabs are permitted unescaped inside strings?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::type": [
+   "How do I find out what kind of value a path expression refers to?",
+   "Which method tells me the category of node a path points to?",
+   "How can I determine the node type a path leads to in the document?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::unicode_strings_allowed": [
+   "How do I find out whether the formatter is set to allow Unicode characters in strings?",
+   "Which option controls if the output formatter writes non-ASCII string text as-is?",
+   "How can I query the formatter to see if it permits fancy Unicode in string output?"
+  ],
+  "sig:TOML_EXPORTED_CLASS::wide_str": [
+   "How do I get a wide-character string version of a path in this TOML library?",
+   "Which method gives me a path expression as wide text for a wide-string consumer?",
+   "How can I convert a TOML path into a wstring for use with Windows-style APIs?"
+  ],
+  "sig:TOML_TRIVIAL_ABI::array_iterator": [
+   "How do I construct an iterator over a list of values by copying or moving it?",
+   "What copy and move behavior does the iterator for a config list support?",
+   "Can the list iterator be relocated or duplicated without special handling?"
+  ],
+  "sig:TOML_TRIVIAL_ABI::as_date": [
+   "How can I get a calendar date out of a looked-up item when it really is a date?",
+   "What accessor returns a date from a lookup result, or nothing if it isn't one?",
+   "How do I safely convert a looked-up entry into a calendar date?"
+  ],
+  "sig:TOML_TRIVIAL_ABI::as_floating_point": [
+   "How do I read a decimal number from a lookup result?",
+   "What accessor yields a non-integer number, or nothing if the entry is another type?",
+   "How do I safely pull a fractional number out of a looked-up item?"
+  ],
+  "sig:TOML_TRIVIAL_ABI::as_integer": [
+   "How do I get a plain integer out of a value that might be a table, array, or other type in this TOML library?",
+   "Which call converts a parsed TOML node into a whole number, returning nothing if it isn't one?",
+   "What's the method I use to read a TOML value as an integer when reading a config file?"
+  ],
+  "sig:TOML_TRIVIAL_ABI::as_string": [
+   "How do I get the text value out of a lookup result, and nothing if it isn't text?",
+   "Which accessor returns a text value from a looked-up entry?",
+   "How can I safely read a string from an item that might be some other type?"
+  ],
+  "sig:TOML_TRIVIAL_ABI::is_array_of_tables": [
+   "How can I check whether a node is a list of tables, the double-bracket kind in TOML?",
+   "Which method tells me if a value is an array of tables rather than a plain array?",
+   "How do I test if a TOML entry is a repeated table section?"
+  ],
+  "sig:TOML_TRIVIAL_ABI::is_integer": [
+   "How can I test whether a config value holds a whole number?",
+   "What check tells me if a stored value is an integer rather than a fraction or text?",
+   "How do I confirm that a read-only view of a value is a whole number?"
+  ],
+  "sig:TOML_TRIVIAL_ABI::is_number": [
+   "How can I check, through a lightweight read-only view, whether its value is numeric?",
+   "What call tells me if the item behind a view is a number?",
+   "How do I test a viewed config entry to see if it holds a number?"
+  ],
+  "sig:TOML_TRIVIAL_ABI::node_view": [
+   "How do I make a lightweight read-only handle to a configuration element copy or move cheaply?",
+   "Can a read-only view of a config element be relocated in memory without special handling?",
+   "What copy and move behavior does the lightweight viewer for a config element support?"
+  ],
+  "sig:date_time::is_local": [
+   "How do I tell whether a date-time value has no timezone information attached?",
+   "How can I check if a date and time is stored as a local time without an offset?",
+   "What method tells me if a time value lacks a timezone offset?"
+  ],
+  "sig:fpclassify": [
+   "How can I determine whether a decimal number is NaN, infinite, or normal?",
+   "Is there a helper that categorizes the kind of a decimal number?",
+   "What function tells me the classification of a floating-point value?"
+  ],
+  "sig:get_line": [
+   "How do I pull out one line of text from a document given its line number?",
+   "What is the way to fetch a single line from a source string by index?",
+   "How can I get the contents of a specific line from a document for error reporting?"
+  ],
+  "sig:is_ascii_bare_key_character": [
+   "How can I check whether a single Unicode character is allowed in an unquoted TOML key?",
+   "Which helper tells me if a code point can appear in a bare key without quotes?",
+   "How do I validate a character as part of a plain (unquoted) key name during parsing?"
+  ],
+  "sig:is_bare_key_character": [
+   "How do I verify that a character is allowed in a name without quotes?",
+   "Is there a helper that checks if a code point is permitted in an unquoted field label?",
+   "What tells me whether a single character is valid in a plain, non-quoted name?"
+  ],
+  "sig:is_octal_digit": [
+   "How do I check whether a single character is a valid base-eight digit?",
+   "Is there a helper that tells me if a code point falls in the zero-to-seven range?",
+   "What function would I use to validate a base-eight character while parsing?"
+  ],
+  "sig:is_unicode_surrogate": [
+   "How do I detect whether a character value falls in the reserved range used for paired encoding halves?",
+   "What check tells me if a code point is an invalid standalone piece of a two-part character?",
+   "How can I test whether a Unicode value is one of the halves used in pairs for characters beyond the basic range?"
+  ],
+  "sig:key::data": [
+   "How do I get the raw text of a field's name exactly as it was stored?",
+   "What call returns the unprocessed characters that make up a field's label?",
+   "Is there a way to read the underlying string behind a name in the config tree?"
+  ],
+  "sig:min": [
+   "How do I get the smaller of two values of the same type?",
+   "What helper returns whichever of two same-typed values is lower?",
+   "Is there a function that picks the lesser of two items without extra setup?"
+  ],
+  "sig:parse_file": [
+   "How do I load a config file from disk when the path is given as a wide or UTF-8 string?",
+   "What function reads a document from a file path in different string encodings?",
+   "How can I parse a config file whose location I have as a text string of any encoding?"
+  ],
+  "sig:parse_result::bool": [
+   "How can I quickly check whether parsing the document succeeded using a true or false test?",
+   "Can I use the parse outcome directly in a condition to see if it worked?",
+   "What does converting the parse outcome to a yes-or-no value tell me?"
+  ],
+  "sig:parse_result::destroy": [
+   "How do I release the memory held by a parse result when I'm done with it?",
+   "Which method tears down a parse result object and frees its contents?",
+   "How can I clean up the data a failed or successful parse returned?"
+  ],
+  "sig:parse_result::failed": [
+   "How can I check whether reading the document produced an error?",
+   "What do I call to find out if a parse attempt did not succeed?",
+   "How do I test the result of loading a config file to see if it failed?"
+  ],
+  "sig:parse_result::succeeded": [
+   "How do I check whether the document was parsed without errors?",
+   "Is there a method that tells me if the parse went through?",
+   "What call returns true when the parsing step finished successfully?"
+  ],
+  "sig:print_to_stream_bookended": [
+   "How do I print a value to an output stream wrapped in a prefix and suffix?",
+   "What helper writes a value to a stream surrounded by matching delimiters?",
+   "How can I output a config value between two decorative markers to a stream?"
+  ],
+  "sig:source_region::wide_path": [
+   "How do I get the source file path of a parsed snippet as a wide-character string?",
+   "Which accessor gives the file location in a wide-character form for error reporting?",
+   "Is there a way to retrieve the source file path in a format suited to Windows APIs?"
+  ],
+  "sig:table_iterator::table_iterator": [
+   "How do I create a new, empty iterator for a table?",
+   "Which constructor makes a default table iterator I can later assign to?",
+   "How can I make a blank table iterator without pointing it at any entry?"
+  ],
+  "sig:value::is_homogeneous": [
+   "How do I check whether all items in a list share the same kind of data?",
+   "Is there a way to tell if a collection is made of one uniform type?",
+   "What test confirms every element in a sequence has matching types?"
+  ]
+ },
+ "python-poetry/tomlkit": {
+  "const:tomlkit/parser.py:CHR_DEL": [
+   "What code point represents the delete control character in the parser?",
+   "Which numeric value does the parser use for the delete key character?",
+   "What is the character code the parser treats as delete?"
+  ],
+  "sig:AbstractTable.append": [
+   "How do I add a new entry at the end of a section in a settings document?",
+   "What's the way to put a key with a value onto the bottom of a config table?",
+   "How can I attach a new named item to a table so it gets written last?"
+  ],
+  "sig:AoT.body": [
+   "How can I access the list of tables inside an array of tables element?",
+   "What gives me the contents of a TOML array of tables item?",
+   "Is there a way to get the underlying entries of an array-of-tables node?"
+  ],
+  "sig:AoT.insert": [
+   "How do I insert a table into a list of tables at a given position?",
+   "How can I add an entry at a specific index in an array of tables?",
+   "Is there a way to place a new table into an array of tables at a chosen spot?"
+  ],
+  "sig:Array.clear": [
+   "How do I empty out all the items in a TOML array?",
+   "Is there a way to remove every element from a TOML array in one call?",
+   "What method wipes the contents of a TOML array so it's left empty?"
+  ],
+  "sig:Array.multiline": [
+   "How do I switch a TOML array between being written on one line and spread across several lines?",
+   "Is there a way to make a TOML array render with line breaks instead of inline?",
+   "What setting controls whether a TOML array is formatted over multiple lines when serialized?"
+  ],
+  "sig:Bool.as_string": [
+   "How do I turn a TOML boolean value back into its text form?",
+   "Is there a way to get the written representation of a true or false value in TOML?",
+   "What call converts a TOML boolean into a string as it would appear in a file?"
+  ],
+  "sig:Bool.value": [
+   "How do I get the true or false value out of a boolean node?",
+   "How can I read the plain boolean from this node?",
+   "Which method returns the underlying yes-or-no value?"
+  ],
+  "sig:Comment.as_string": [
+   "How do I get the text form of a comment so I can write it back out?",
+   "Which method turns a comment back into its original string for output?",
+   "Is there a way to serialize a comment node into plain text?"
+  ],
+  "sig:Comment.discriminant": [
+   "How can I identify that a node is a comment when checking types?",
+   "What type tag does a comment node carry?",
+   "How do I distinguish comment nodes from other values at runtime?"
+  ],
+  "sig:Container.body": [
+   "How can I get the list of entries that make up the main content of a TOML container?",
+   "What method gives me the body of a parsed container, excluding its header?",
+   "Is there a way to access the sequence of key and table entries stored in a container?"
+  ],
+  "sig:Container.setdefault": [
+   "How do I fetch a value from a settings document and add a fallback if that key is missing?",
+   "What's the way to read a key from a config structure and have it created with a starting value when it doesn't exist yet?",
+   "How can I make sure an entry exists in a document, using a supplied initial value if it isn't already there?"
+  ],
+  "sig:Date.discriminant": [
+   "How can I tell which kind of value a date is at runtime?",
+   "What number identifies a date value in type checks?",
+   "Where does a date report its type tag?"
+  ],
+  "sig:Date.replace": [
+   "How do I make a modified copy of a date with some fields changed?",
+   "Can I create a new date value by altering parts of an existing one?",
+   "How do I change a date's components without mutating the original?"
+  ],
+  "sig:Date.unwrap": [
+   "How do I get the plain built-in date object out of this wrapper?",
+   "How can I strip the wrapper and get the raw date value?",
+   "Is there a way to convert a date node into a standard date value?"
+  ],
+  "sig:DottedKey.__init__": [
+   "How do I build a key from several dot-separated parts?",
+   "What do I pass in to create a multi-part key?",
+   "How can I construct a compound key with a separator and original text?"
+  ],
+  "sig:Float.__init__": [
+   "How do I create a float value that keeps its original spelling and formatting?",
+   "What do I need to build a float node with its whitespace and raw text?",
+   "How can I construct a decimal number value that remembers how it was written?"
+  ],
+  "sig:InlineTable.as_string": [
+   "How do I get the text form of an inline table for output?",
+   "How can I serialize a compact table value back to text?",
+   "Which method renders an inline table as a string?"
+  ],
+  "sig:InlineTable.discriminant": [
+   "How do I identify an inline table node by type?",
+   "What number tags an inline table so code can tell it apart?",
+   "How can I check whether a value is an inline-style table?"
+  ],
+  "sig:Integer.unwrap": [
+   "How do I get the ordinary numeric value out of a config document's number item?",
+   "What converts a document's whole-number wrapper back into a standard number for use in code?",
+   "How can I strip the document wrapper off a numeric entry to get its plain value?"
+  ],
+  "sig:InvalidControlChar.__init__": [
+   "How do I build an error that reports the position of an illegal control character?",
+   "What information does the error for a forbidden control character need to store?",
+   "How is the error for a bad control character constructed?"
+  ],
+  "sig:InvalidTimeError.__init__": [
+   "What error should I expect when a TOML time value is malformed, and what position info does it carry?",
+   "How do I create an error that reports where in a TOML file an invalid time value was found?",
+   "What exception gets raised for a bad time in TOML, and how does it record the line and column?"
+  ],
+  "sig:Item.indent": [
+   "How do I add indentation to a TOML item when writing it out?",
+   "What method changes the indent of an item in a parsed document?",
+   "Is there a way to adjust the whitespace prefix of a TOML node?"
+  ],
+  "sig:Item.is_aot": [
+   "How do I check whether a TOML item is an array of tables?",
+   "What test tells me if a node is an array-of-tables element?",
+   "Is there a method to identify array-of-tables items in a parsed document?"
+  ],
+  "sig:Item.is_inline_table": [
+   "How can I check whether a TOML item is an inline table before I work with it?",
+   "Is there a way to test if a node in a parsed document is written as an inline table?",
+   "What method lets me tell inline tables apart from other items?"
+  ],
+  "sig:Item.is_table": [
+   "How can I check whether a TOML item is a table before I try to treat it like one?",
+   "Is there a quick test to tell if a parsed TOML node is a table versus a plain value?",
+   "What's the way to confirm that a TOML element is a table section rather than something else?"
+  ],
+  "sig:Key.is_dotted": [
+   "How do I check if a key is made of several dot-separated segments?",
+   "Is there a way to tell whether a key is a dotted path?",
+   "How can I test if a key uses dotted notation?"
+  ],
+  "sig:Null.__init__": [
+   "How do I create an empty null-like value?",
+   "Is there a constructor for a null value with no arguments?",
+   "How can I make a placeholder null node?"
+  ],
+  "sig:Null.value": [
+   "How can I get the Python value that a TOML null item represents?",
+   "What method returns the underlying value of a null node?",
+   "Is there a way to read the value stored inside a null item?"
+  ],
+  "sig:OutOfOrderTableProxy.__init__": [
+   "How does a proxy wrap a TOML container so that tables defined out of order are still accessible?",
+   "What is the setup needed for the helper that tracks out-of-order table positions in a TOML document?",
+   "How do I construct the object that maps out-of-sequence table entries back to their container?"
+  ],
+  "sig:OutOfOrderTableProxy.setdefault": [
+   "How do I set a default value for a key in a table that has been split across the file?",
+   "What method adds a key with a fallback value to a proxy for out-of-order tables?",
+   "Can I use a setdefault-style call on tables that were defined out of sequence?"
+  ],
+  "sig:ParseError.col": [
+   "How do I find the column position where a TOML parsing error occurred?",
+   "What method tells me the character offset of a syntax error?",
+   "Where can I get the column number from a parse failure?"
+  ],
+  "sig:ParseError.line": [
+   "How do I find out which line in the file caused a TOML parsing failure?",
+   "Where can I get the line number from an error raised while reading a TOML document?",
+   "What method reports the row where a syntax problem was detected?"
+  ],
+  "sig:Parser.__init__": [
+   "How do I create a parser for a string of input?",
+   "What do I pass in to start parsing a document from text?",
+   "How is a parser set up for a given string?"
+  ],
+  "sig:Parser.mark": [
+   "How do I save my current place while reading through the input so I can return to it later?",
+   "What lets the reader remember a spot in the text it is parsing?",
+   "How can the parsing step note where it currently is for backtracking or tracking spans?"
+  ],
+  "sig:SingleKey.__init__": [
+   "How do I create a simple one-part key with optional separator and original text?",
+   "What do I pass in to build a basic key?",
+   "How can I make a single-segment key node?"
+  ],
+  "sig:Source.inc": [
+   "How do I move the parser's position forward one character while handling end-of-input errors?",
+   "What steps the reader to the next character and can raise a given error when it runs out?",
+   "How can I advance the input position and signal a custom error at the end of the text?"
+  ],
+  "sig:Source.inc_n": [
+   "How do I move the reading position forward by a set number of characters while parsing, and optionally raise an error?",
+   "What moves the scanner ahead in the input text, possibly reporting a problem?",
+   "How can I skip ahead a given count in the source text during parsing?"
+  ],
+  "sig:String.__init__": [
+   "How do I build a TOML string element with its original source text and whitespace details?",
+   "When creating a string node, what do I pass to keep the original text and trivia?",
+   "What arguments set up a string item so it remembers how it was written in the file?"
+  ],
+  "sig:String.as_string": [
+   "How do I get the plain Python string out of a TOML string element?",
+   "What call converts a parsed string node back into a regular string value?",
+   "Is there a method that returns the raw text content of a TOML string item?"
+  ],
+  "sig:String.discriminant": [
+   "How can I find out which kind of string style a TOML string element uses?",
+   "Is there a way to identify the quoting variant of a string node in a parsed document?",
+   "What method tells me the type marker that describes a string's form?"
+  ],
+  "sig:String.type": [
+   "How do I find out what style of string a value uses, such as quoted or multi-line?",
+   "Which method reports the quoting style of a string?",
+   "How can I check the string format variant of a value?"
+  ],
+  "sig:String.value": [
+   "How do I get the plain text contents of a string node?",
+   "How can I read the raw string value out of this node?",
+   "Which method returns the text held by a string value?"
+  ],
+  "sig:StringType.is_basic": [
+   "How do I check whether a string uses the simple quoted style with escapes?",
+   "Can I tell if a string format is the basic kind?",
+   "How do I test that a string style is the non-literal quoted type?"
+  ],
+  "sig:StringType.is_literal": [
+   "How can I check whether a string value is written as a plain literal rather than a multi-line or escaped form?",
+   "Is there a quick way to tell if a TOML string element uses literal quoting?",
+   "What method lets me test if a string node in a parsed document is a literal string?"
+  ],
+  "sig:Table.append": [
+   "How do I add a new key and value to an existing TOML table?",
+   "What method inserts an item into a table while keeping the document structure?",
+   "Is there a way to append an entry to a table node in a parsed document?"
+  ],
+  "sig:Table.as_string": [
+   "How do I convert a TOML table back into its text form?",
+   "Is there a way to get the string representation of a TOML table as it would be written to a file?",
+   "What call produces the serialized text for a TOML table section?"
+  ],
+  "sig:Table.discriminant": [
+   "How do I tell a table node apart from other node kinds?",
+   "What type identifier does a table report?",
+   "How can I check whether a value is a standard table?"
+  ],
+  "sig:Table.indent": [
+   "How do I add a set number of spaces in front of a TOML table's contents when writing it out?",
+   "Is there a way to control how far a TOML table's lines are pushed in when generating the text?",
+   "What call lets me set the leading whitespace used for a table's entries before serializing it?"
+  ],
+  "sig:Table.is_super_table": [
+   "How can I tell if a section in a settings document is only a grouping parent for nested sections and not declared on its own?",
+   "Is there a way to check whether a table is just an implicit container for deeper tables?",
+   "How do I detect if a section was created only to hold subsections?"
+  ],
+  "sig:Time.replace": [
+   "How do I make a changed copy of a time value with some parts swapped?",
+   "Can I produce an updated time without altering the original?",
+   "How do I adjust the hour or minute of a time value into a new one?"
+  ],
+  "sig:Whitespace.__init__": [
+   "How do I create a padding element that holds a given run of spaces and can be locked so it isn't modified?",
+   "What sets up a new spacing piece for a settings document, with an option to keep it from changing?",
+   "How can I construct a spacing node from a string and mark it as unchangeable?"
+  ],
+  "sig:Whitespace.as_string": [
+   "How do I get the blank spaces I stored in a document back out as a plain string?",
+   "What gives me the text form of the padding characters held in a settings document?",
+   "How can I turn a preserved run of spaces in the document into a regular string?"
+  ],
+  "sig:Whitespace.value": [
+   "How do I get the raw text of a whitespace segment from a parsed TOML document?",
+   "Where can I read back the spacing characters stored in a TOML whitespace element?",
+   "What returns the actual whitespace string held by a TOML whitespace node?"
+  ],
+  "sig:aot": [
+   "How do I create a new array of tables when building a TOML document in code?",
+   "What helper function makes an empty array-of-tables for writing TOML?",
+   "Is there a shortcut for constructing a list of tables to add to a TOML document?"
+  ],
+  "sig:boolean": [
+   "How do I make a true or false entry that serializes properly in a settings file?",
+   "What helper builds a yes/no style flag value for a config document?",
+   "How can I produce an on/off item from text to write into a document?"
+  ],
+  "sig:dump": [
+   "How do I write a TOML document to an open file object?",
+   "What function saves data as TOML into a file, with an option to order keys alphabetically?",
+   "Is there a way to serialize a dictionary to a file in TOML format and sort its keys?"
+  ],
+  "sig:float_": [
+   "How do I create a float value from its raw text?",
+   "Is there a helper that builds a decimal number from a string as written?",
+   "How can I make a floating-point value from its original spelling?"
+  ],
+  "sig:integer": [
+   "How can I make a whole-number value that keeps its original written form when the settings file is saved?",
+   "What helper produces a numeric entry from text so the document writes it back unchanged?",
+   "How do I convert a text representation of a count into a number item that a config document can store?"
+  ],
+  "sig:item": [
+   "How do I wrap a plain Python value into the library's node type?",
+   "What function converts an ordinary value into a document node, optionally with a parent and sorting?",
+   "How can I turn a regular value into an editable node?"
+  ],
+  "sig:key_value": [
+   "How do I parse a single TOML key and value from a string into a usable item?",
+   "Is there a helper that builds a TOML key-value pair from a source string?",
+   "What function turns a piece of TOML text containing one assignment into a structured entry?"
+  ],
+  "sig:parse_rfc3339": [
+   "How do I turn a standard timestamp text into a date-time value?",
+   "Is there a function that reads a date-time string following the internet timestamp standard?",
+   "How can I convert a date-and-time string into a value object?"
+  ],
+  "sig:string": [
+   "How do I turn a plain text value into an entry I can write into a settings file, with control over whether backslashes get escaped?",
+   "Which helper creates a text entry for a config document that can span several lines or keep its contents unprocessed?",
+   "What is the way to wrap some text so it serializes correctly in a settings document?"
+  ]
+ },
+ "yaml/pyyaml": {
+  "sig:BaseConstructor.add_constructor": [
+   "How do I register a custom handler for a particular type label when loading data?",
+   "What adds a function that knows how to build values for a given label during loading?",
+   "Where can I attach my own loading logic for a specific kind of tagged value?"
+  ],
+  "sig:BaseConstructor.add_multi_constructor": [
+   "How do I register a handler for a whole family of type labels that share the same beginning?",
+   "Which method lets me attach one constructor to every type label that starts with a given prefix?",
+   "Where can I add a catch-all constructor for a group of type tags?"
+  ],
+  "sig:BaseConstructor.construct_pairs": [
+   "How do I turn the key-value entries of a mapping node into a list of pairs during loading?",
+   "Which function gathers the entries of a mapping node as pairs, optionally going deeper into nested nodes?",
+   "Where is the code that pulls out the pairs from a mapping before building the final object?"
+  ],
+  "sig:BaseConstructor.get_data": [
+   "How do I get the Python object that was built from the loaded document?",
+   "Which method returns the constructed result after the document has been processed?",
+   "Where is the code that hands back the final built data from the loader?"
+  ],
+  "sig:BaseDumper.__init__": [
+   "What sets up the writer's options like indentation, line width, and sorting of keys before any output is written?",
+   "Where are the base writer's settings, such as output target and formatting choices, first established?",
+   "What is the setup routine for the base writer class that accepts output and formatting options?"
+  ],
+  "sig:BaseRepresenter.represent_sequence": [
+   "How do I convert a list into an output node with a given type and style?",
+   "Which method turns a sequence of items into a node for the safe writer?",
+   "Where is the code that represents a list when writing data?"
+  ],
+  "sig:BaseResolver.add_implicit_resolver": [
+   "How do I register a pattern so that plain text matching it is automatically given a type without an explicit marker?",
+   "Where can I add a rule that infers a data type from how a plain value looks, based on its first characters?",
+   "How does the reader decide the type of an unlabeled value that matches a custom text pattern?"
+  ],
+  "sig:CFullLoader.__init__": [
+   "How do I set up the fast C-backed loader for reading from a stream?",
+   "What initializes the full loader implemented in C for a given input?",
+   "Which constructor prepares the compiled full loader to read from a source?"
+  ],
+  "sig:Composer.__init__": [
+   "What sets up the builder that turns parsed events into a node tree when it starts?",
+   "What initial state does the node-building component get when it is created?",
+   "How is the component that assembles nodes from events prepared before use?"
+  ],
+  "sig:Composer.compose_scalar_node": [
+   "How do I build a node for a single plain value while also recording an optional reference name for it?",
+   "Which step turns a simple leaf value in a document into a node and keeps its alias label?",
+   "Where is the logic that creates a node for a standalone value during document reading?"
+  ],
+  "sig:Composer.get_single_node": [
+   "How do I fetch the only root element from a document that should contain just one?",
+   "What makes sure a stream holds exactly one top-level item and returns it?",
+   "Which step checks that a document has a single root and hands that root back?"
+  ],
+  "sig:Emitter.check_empty_document": [
+   "How does the writer tell if a document has no content to write?",
+   "What check determines whether a document is empty before output begins?",
+   "Which step looks for an empty document so the writer can handle it differently?"
+  ],
+  "sig:Emitter.expect_block_mapping": [
+   "What does the writer do when it expects a key-value section written in indented form?",
+   "Which step prepares output for an indented dictionary block?",
+   "How does the writer begin an indented block of keys and values?"
+  ],
+  "sig:Emitter.expect_block_mapping_key": [
+   "How does the writer handle writing each key of an indented dictionary, including the first one?",
+   "What step writes the key entries of a block-style dictionary and tracks whether it is the first?",
+   "Which routine outputs keys one by one in an indented section?"
+  ],
+  "sig:Emitter.expect_block_sequence": [
+   "How does the writer handle the point where it expects the start of an indented list?",
+   "Which state in the output step is active right before a block-style list is written?",
+   "Where is the code that decides what to emit when a block list is about to begin?"
+  ],
+  "sig:Emitter.expect_first_block_mapping_key": [
+   "How does the writer handle the first key of an indented mapping?",
+   "Which state in output formatting is active right before the first key of a block-style mapping is written?",
+   "Where is the code that decides formatting for the opening key of an indented mapping?"
+  ],
+  "sig:Emitter.expect_flow_mapping_key": [
+   "How does the writer handle the state where it expects a key inside an inline braced mapping?",
+   "Which step in output formatting is active when the next item should be a key in a flow-style mapping?",
+   "Where is the code that decides what to write for a key in an inline mapping?"
+  ],
+  "sig:Emitter.need_events": [
+   "How does the writer check whether enough upcoming events are queued before deciding how to format output?",
+   "Which step looks ahead in the event queue to decide formatting?",
+   "Where is the code that verifies there are enough buffered events before writing?"
+  ],
+  "sig:Emitter.prepare_tag": [
+   "How do I convert a full type tag into a shorter form before writing it to output?",
+   "Which step prepares a type label so it can be written compactly in the output?",
+   "Where is the code that formats a type tag for the writer?"
+  ],
+  "sig:Emitter.prepare_tag_prefix": [
+   "How do I prepare a tag prefix string for writing to output?",
+   "Which step formats the prefix part of a type label for the writer?",
+   "Where is the code that converts a prefix into the form used in the output?"
+  ],
+  "sig:Emitter.prepare_version": [
+   "How does the writer turn the format revision label into the text that opens the output?",
+   "Where is the format revision label converted into the header line for a written document?",
+   "What step prepares the revision label before it goes into the output file?"
+  ],
+  "sig:FullConstructor.construct_python_unicode": [
+   "How does the full loader turn a stored unicode value back into a text object?",
+   "What converts a saved unicode entry into a text value when loading?",
+   "Which step restores a unicode text value during full loading?"
+  ],
+  "sig:FullConstructor.set_python_instance_state": [
+   "How do I restore saved attributes onto an object while controlling whether unsafe changes are allowed?",
+   "Which method sets an object's state from stored data and has an option to permit unrestricted attribute setting?",
+   "Where is the code that applies saved state to a rebuilt object in the full loader?"
+  ],
+  "sig:Parser.parse_block_mapping_value": [
+   "How does the parser handle the value after a colon in an indented key-value section?",
+   "What step reads the value that follows a key in a block-style dictionary?",
+   "Which routine processes the part of a key-value pair that comes after the colon?"
+  ],
+  "sig:Parser.parse_block_sequence_first_entry": [
+   "How does the parser handle the first item of an indented list?",
+   "Which step starts reading a block-style list by consuming its first entry?",
+   "Where is the code that processes the opening entry of a block sequence?"
+  ],
+  "sig:Parser.parse_document_end": [
+   "How does the parser handle the end of a document, including an optional end marker?",
+   "Which step finishes a document and checks for an explicit closing marker?",
+   "Where is the code that closes out a document during parsing?"
+  ],
+  "sig:Parser.parse_document_start": [
+   "How does the parser handle the beginning of a document, including any directives before it?",
+   "Which step processes the opening marker of a document and its preceding settings?",
+   "Where is the code that starts parsing a new document in the input stream?"
+  ],
+  "sig:Parser.parse_flow_sequence_entry_mapping_key": [
+   "Which step handles a key-value pair inside an inline list when the key is being read?",
+   "How does the reader deal with a key-value entry that appears inside a bracketed list?",
+   "What processes the key part of a single-pair entry found within a comma-separated list?"
+  ],
+  "sig:Parser.parse_node": [
+   "How does the parser read a single node, whether it is a value, list, mapping, or reference, in block or inline style?",
+   "Which step parses one node and handles the case where a list has no indentation?",
+   "Where is the central code that parses an individual node during document reading?"
+  ],
+  "sig:Reader.update_raw": [
+   "How does the input reader pull more raw bytes from the source in chunks of a default size?",
+   "What loads the next block of raw data into the input buffer?",
+   "Which step refills the reader's buffer from the source when it runs low?"
+  ],
+  "sig:Representer.represent_complex": [
+   "How are complex numbers written out when saving data?",
+   "What does the writer do with complex number values when producing output?",
+   "Which step converts a complex number into its written form?"
+  ],
+  "sig:SafeConstructor.construct_yaml_binary": [
+   "How is encoded binary data decoded from a document into bytes when loading safely?",
+   "What converts a stored binary entry into raw bytes during safe loading?",
+   "Which step turns encoded binary text back into bytes when loading data safely?"
+  ],
+  "sig:SafeConstructor.construct_yaml_pairs": [
+   "How is an ordered list of key-value pairs read into a value when loading safely?",
+   "How does the safe loader handle a sequence of pairs that keeps their order?",
+   "What step converts a list of pairs into a value during safe loading?"
+  ],
+  "sig:SafeConstructor.construct_yaml_str": [
+   "How is a plain text value turned into a string by the safe loader?",
+   "What converts a simple text node into a string without creating any extra types?",
+   "Which step produces the string value for a basic text entry when loading data safely?"
+  ],
+  "sig:SafeRepresenter.represent_date": [
+   "How are calendar dates written out when saving data with the safe writer?",
+   "What does the writer do with date values when producing output?",
+   "Which step converts a date into its written form?"
+  ],
+  "sig:SafeRepresenter.represent_float": [
+   "How does the writer convert a decimal number into output, including special values like infinity and not-a-number?",
+   "Which step turns a floating-point value into the text form used when writing data?",
+   "Where is the code that formats decimal numbers for the safe writer?"
+  ],
+  "sig:SafeRepresenter.represent_int": [
+   "How does the safe writer convert an integer into an output node?",
+   "Which method represents a whole number when writing data with the safe writer?",
+   "Where is the code that turns integers into nodes for output?"
+  ],
+  "sig:SafeRepresenter.represent_list": [
+   "How are lists converted into output form when saving data with the safe writer?",
+   "What does the writer do with list values when producing output?",
+   "Which step writes a list out as a sequence of entries?"
+  ],
+  "sig:SafeRepresenter.represent_yaml_object": [
+   "How do I convert an arbitrary object into an output node with a chosen type using the safe writer?",
+   "Which method lets the safe writer serialize a custom object by its fields under a given type label?",
+   "Where is the code that wraps a plain object into a node for safe output?"
+  ],
+  "sig:ScalarAnalysis.__init__": [
+   "What records which quoting or line styles are allowed for a given text value?",
+   "What object holds the results of checking whether a text value can be written in each style?",
+   "Which setup step stores the allowed output styles for a scalar value?"
+  ],
+  "sig:Scanner.check_block_entry": [
+   "How does the reader detect a dash marking a new list item in indented form?",
+   "What check determines whether the next entry starts a new item in a block list?",
+   "Which step recognizes the marker that begins a list entry?"
+  ],
+  "sig:Scanner.check_directive": [
+   "How does the reader detect a percent-prefixed directive line at the start of a line?",
+   "What determines whether the current line is a special directive header?",
+   "Which step checks if the line being read is a directive rather than content?"
+  ],
+  "sig:Scanner.check_document_end": [
+   "How does the reader tell if the document-ending marker has been reached?",
+   "What check looks for the end-of-document marker in the input?",
+   "Which step determines whether the current position is at the end of a document?"
+  ],
+  "sig:Scanner.check_value": [
+   "How does the reader decide whether the upcoming symbol is a colon separating a key from its value?",
+   "What checks whether the next character marks the start of a value?",
+   "Which step tells the reader if a colon follows the current key?"
+  ],
+  "sig:Scanner.fetch_flow_entry": [
+   "How does the tokenizer handle the comma separator inside an inline bracketed collection?",
+   "Which step recognizes the separator between items in a flow-style list or mapping?",
+   "Where is the code that emits a token for a comma inside an inline collection?"
+  ],
+  "sig:Scanner.fetch_flow_mapping_end": [
+   "What handles the closing brace that ends an inline key-value collection?",
+   "Which step records the closing position of an inline dictionary being read?",
+   "How does the reader process the ending symbol of a bracketed set of pairs?"
+  ],
+  "sig:Scanner.fetch_folded": [
+   "How does the tokenizer handle a multi-line text block that joins its lines into one paragraph?",
+   "Which step reads a block of text that folds line breaks into spaces?",
+   "Where is the code that processes the folded block-style marker when scanning input?"
+  ],
+  "sig:Scanner.get_token": [
+   "How do I get the next meaningful chunk of text from the input while breaking a document apart?",
+   "Which step hands back the following piece of the document during that breakdown?",
+   "What is the call that moves the reader on to the next chunk of the document?"
+  ],
+  "sig:Scanner.remove_possible_simple_key": [
+   "How does the reader drop a pending key candidate that is no longer valid?",
+   "What step removes a tentative key marker when it can no longer apply?",
+   "Which routine clears a possible key position that the reader has stopped tracking?"
+  ],
+  "sig:Scanner.scan_directive_ignored_line": [
+   "How does the scanner skip the leftover text or comment at the end of a directive line?",
+   "Which step ignores the trailing content on a directive line after reading it?",
+   "Where is the logic that discards unused text after a directive during tokenizing?"
+  ],
+  "sig:Scanner.scan_plain": [
+   "How does the tokenizer read an unquoted plain text value?",
+   "Which step scans a value that has no quotes or special markers?",
+   "Where is the code that extracts plain unquoted text from the input?"
+  ],
+  "sig:Scanner.scan_tag_handle": [
+   "How does the scanner read the prefix part of a type tag, such as a named handle?",
+   "Which step extracts the handle name from a tag while tokenizing?",
+   "Where is the code that reads the handle portion of a type label during scanning?"
+  ],
+  "sig:Scanner.scan_uri_escapes": [
+   "Which step decodes percent-escaped bytes inside a web address and reports errors at the right spot?",
+   "How are percent-encoded sequences in a link turned back into their original bytes?",
+   "What handles unpacking escaped characters in a web address while keeping track of where it began?"
+  ],
+  "sig:Serializer.anchor_node": [
+   "How does the writer find values that appear more than once in a structure so it can label them for reuse?",
+   "Which part of the output step decides which nodes need a reference label because they are shared?",
+   "How can I tell which parts of a data tree get written as shared references instead of being repeated?"
+  ],
+  "sig:Serializer.serialize_node": [
+   "How does the output step write out a single node, given its parent and its position among siblings?",
+   "What routine writes one node to the output while knowing where it sits in the tree?",
+   "Which step handles the output of an individual node within a larger structure?"
+  ],
+  "sig:StreamStartToken.__init__": [
+   "How do I create the token that marks the start of the input stream, with optional position and encoding info?",
+   "Which constructor builds the initial token for an input stream?",
+   "Where is the code that sets up the opening token when reading a stream?"
+  ],
+  "sig:UnsafeConstructor.set_python_instance_state": [
+   "How do I restore object state without any safety restrictions using the unrestricted loader?",
+   "Which method sets an object's saved attributes in the unrestricted variant of the loader?",
+   "Where is the code that applies saved state in the loader that does not restrict unsafe operations?"
+  ],
+  "sig:add_path_resolver": [
+   "How do I register a rule that assigns a type to nodes found at a specific location in a document?",
+   "Which public function lets me attach a type to values based on where they sit in the structure?",
+   "Where can I set up a location-based rule for typing nodes when loading or dumping data?"
+  ],
+  "sig:compose_all": [
+   "How do I read every document in an input stream and get back all of their node trees at once?",
+   "Which top-level function loads all documents from a stream and returns their composed nodes?",
+   "Where is the entry point that composes every document in a stream using a chosen loader?"
+  ],
+  "sig:emit": [
+   "What top-level function writes a list of events out as text to a file or string?",
+   "Which entry point turns a sequence of events into formatted output?",
+   "How do I produce a written document from a list of events in one call?"
+  ],
+  "sig:scan": [
+   "What top-level function reads through a document and produces its raw pieces for a chosen loader?",
+   "Which entry point breaks an input stream into its pieces using a specified loader?",
+   "How do I start reading a document into its parts with a chosen loading class?"
+  ],
+  "sig:serialize_all": [
+   "How do I write a sequence of tree nodes out as multiple documents to a stream?",
+   "Which top-level function converts many node trees into text for output?",
+   "What routine turns a list of nodes into a stream of documents at once?"
+  ]
+ }
+}
