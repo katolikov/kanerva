@@ -303,8 +303,8 @@ def c_table(summary: dict) -> str:
 
 def c_macros(lines: list[str]) -> None:
     """C and C++: both tests, the dev group, file notes, the gate, and the check of the near-twin rule on older data."""
-    reports = {"test": load("c-test_tests"), "dev": load("c-dev_tests"), "final": load("c-final_tests")}
-    data = {"test": load("fresh_repomem-c-test-plain"), "final": load("fresh_repomem-c-final-plain")}
+    reports = {"test": load("c-test_tests"), "dev": load("c-dev_tests"), "final": load("c-final_tests"), "last": load("c-last_tests")}
+    data = {"test": load("fresh_repomem-c-test-plain"), "final": load("fresh_repomem-c-final-plain"), "last": load("fresh_repomem-c-last-plain")}
     for name, entry in data.items():
         define(lines, f"v-c-queries-{name}", f"{entry['meta']['queries']:,}".replace(",", "{,}"))
         for key, row in entry["summary"].items():
@@ -338,7 +338,7 @@ def c_macros(lines: list[str]) -> None:
                     track, method = key.split("/")
                     define(lines, f"v-clang-{name}-{safe}-{track}-{method}", fmt(values[-1]))
     recall_files = load("file_recall_c")
-    for name in ("test", "final"):
+    for name in ("test", "final", "last"):
         files = recall_files[f"repomem-c-{name}"]
         for session in ("one", "previous"):
             for config in ("full", "lexical"):
@@ -350,7 +350,7 @@ def c_macros(lines: list[str]) -> None:
                 define(lines, f"{prefix}-gain", signed(move["mean"]))
                 define(lines, f"{prefix}-up", f"{move['up']}/{move['repositories']}")
                 define(lines, f"{prefix}-down", f"{move['down']}/{move['repositories']}")
-    for name, path in (("test", "abstention_c"), ("final", "abstention_c_final")):
+    for name, path in (("test", "abstention_c"), ("final", "abstention_c_final"), ("last", "abstention_c_last")):
         gate = load(path)
         for config in ("full", "lexical"):
             for arm in ("without", "with"):
@@ -380,6 +380,12 @@ def c_macros(lines: list[str]) -> None:
     define(lines, "v-awpc-other-clean", entry["other"]["n"] - entry["other"]["extra"])
     (OUT / "table_c.tex").write_text(c_table(data["test"]["summary"]))
     (OUT / "table_c_final.tex").write_text(c_table(data["final"]["summary"]))
+    (OUT / "table_c_last.tex").write_text(c_table(data["last"]["summary"]))
+    losses = load("fact_losses")
+    define(lines, "v-cl-facts", f"{losses['facts']:,}".replace(",", "{,}"))
+    define(lines, "v-cl-lost", losses["lost"])
+    define(lines, "v-cl-locations", losses["lost_locations"])
+    define(lines, "v-cl-value", fmt(losses["value_in_context"]))
 
 
 def answer_macros(lines: list[str], sets: dict) -> None:
@@ -519,67 +525,31 @@ def update_readme(data: dict, latency: dict) -> None:
             best = max(values.values())
             cells = [("n/a" if m not in values else f"**{fmt(values[m])}**" if abs(values[m] - best) < 5e-4 else fmt(values[m])) for m in columns]
             rows.append(f"| {title} | {b} | " + " | ".join(cells) + " |")
-    tests = load("final_tests")
-    keyed, plain = tests["repomem-final"], tests["repomem-final-plain"]
-    stale = plain["stale_on_changed_facts"]
-    tracks = load("final_tracks")["results"]["repomem-final-plain"]
-    languages = load("final_languages")["results"]["repomem-final-plain"]
-    versus = " ".join(f"{name} {fmt(languages[name]['all/kanerva'][-1])} against {fmt(languages[name]['all/hybrid'][-1])}{mark}"
-                      for name, mark in (("Python", ","), ("TypeScript", ","), ("Go", ","), ("Rust", ".")))
-    check = load("beam_check")["beam"]
-    refit = load("refit")["dense"]["recipes"]
-    locomo = [sum(refit[r]["locomo"]) / len(refit[r]["locomo"]) for r in ("as-shipped", "all-families")]
-    gate = load("abstention_final")
-    full, lexical = gate["full"], gate["lexical"]
-    spent = load("abstention")["sets"]["repomem-other"]["full"]
-    files = load("file_recall_final")["repomem-final"]
-    file_now, file_old = files["one/full"], files["previous/full"]
-    writes = load("write_path")
-    notes, changed = writes["vectors"]["repomem-final"]["similar"], writes["vectors"]["repomem-final"]["stale_on_changed_facts"]
+    plain = load("final_tests")["repomem-final-plain"]
     hooks = load("hook_latency")["results"]
-    c_plain = load("c-final_tests")["repomem-c-final-plain"]
-    c_stale = c_plain["stale_on_changed_facts"]
-    c_files = load("file_recall_c")["repomem-c-final"]["one/full"]
-    c_agent = load("agent_write_path_c")["sets"]["repomem-c-final"]
+    final_c, last_c = load("c-final_tests"), load("c-last_tests")
+    c_lang, c_earlier = last_c["languages"], final_c["repomem-c-final-plain"]["kanerva vs hybrid"]
+    c_stale = last_c["repomem-c-last-plain"]["stale_on_changed_facts"]
+    c_files = load("file_recall_c")["repomem-c-last"]["one/full"]
+    c_agent, c_agent_trials = load("agent_write_path_c")["sets"]["repomem-c-final"], load("agent_write_path_c")["meta"]["trials"]
     twins = load("twin_rule")
     agent = load("agent_write_path")
     own, verbatim, code_notes = agent["sets"]["lme-own-notes"], agent["sets"]["lme-updates"], agent["sets"]["repomem-final"]
-    first = load("agent_write_path_first_hint")["sets"]
-    touched = sum(e[k]["extra"] for e in agent["sets"].values() for k in ("changed", "other"))
     real = load("real_sessions")
-    answers = load("answers")["sets"]
-    final_answers, final_stale = answers["repomem-final"], answers["repomem-final"]["stale"]
-    conversations = " and ".join(f"{points(answers[name]['tests']['kanerva vs bm25']['contain']['mean']['diff'])} on {title}" for name, title in (("locomo", "LoCoMo"), ("beam-dev", "BEAM-1M")))
-    invented = {m: round(sum(s["noise"][f"{m}@512"]["invented"] * s["noise"][f"{m}@512"]["n"] for s in answers.values())) for m in ("kanerva", "kanerva+gate", "hybrid")}
-    foreign = sum(s["noise"]["kanerva@512"]["n"] for s in answers.values())
-    versus_bm25 = final_answers["tests"]["kanerva vs bm25"]["contain"]["mean"]
-    against_hybrid = ", ".join(f"{points(answers[name]['tests']['kanerva vs hybrid']['contain']['mean']['diff'])} on {title}" for name, title in ANSWER_SETS.items())
     text = f"""<img src="docs/assets/recall.png" alt="Evidence recovered at each token budget on the third held-out test and the BEAM check" width="100%">
 
-Share of the needed evidence that made it into the context. These are retrieval metrics, with no LLM in the loop. The one exception is the answer test at the end of this list, where a small local model reads the notes.
-
-- **Code history** is the third held-out test: {code['meta']['queries']:,} queries over 15 repositories in Python, TypeScript, Go and Rust that nothing was fitted or tuned on, shown without keys.
-- **Long conversations** are {beam['meta']['queries']:,} questions over 55 BEAM conversations. They were never fitted on, but earlier tests saw them, so this is a check and not a test. No untouched conversation benchmark is left.
-
-"Kanerva" is the default, with MiniLM. "Lexical" is what runs with `KANERVA_EMBEDDER=off` or until the model arrives. "Kanerva 0.4.1" is the previous release. The reranker was not rerun on BEAM.
+Share of the needed evidence that made it into the context, with no LLM in the loop. "Lexical" is what runs until the model arrives. Unless noted, these figures come from version 0.5.0.
 
 {chr(10).join(rows)}
 
-- **Code history.** Without keys, Kanerva leads hybrid search by {100 * plain['kanerva vs hybrid']['mean']['diff']:.1f} points over all budgets (interval {span(plain['kanerva vs hybrid']['mean'])}), ahead on all 15 repositories, and the reranker by {100 * plain['kanerva vs rerank']['mean']['diff']:.1f} points. With keys the lead over hybrid search is {100 * keyed['kanerva vs hybrid']['mean']['diff']:.1f} points. Against 0.4.1 it gains {100 * plain['kanerva vs kanerva-0.4']['mean']['diff']:.1f} points without keys and {100 * keyed['kanerva vs kanerva-0.4']['mean']['diff']:.1f} with them.
-- **Each language.** Over all budgets, against hybrid search: {versus} Exact code facts are measured on Python only, because that track reads Python source.
-- **C and C++.** The current version has its own test on six repositories that nothing was tuned on, nginx, libgit2, libevent, Catch2, benchmark and imgui, run once, with facts read by regular expressions. Without keys Kanerva leads hybrid search by {100 * c_plain['kanerva vs hybrid']['mean']['diff']:.1f} points over all budgets (interval {span(c_plain['kanerva vs hybrid']['mean'])}, all 6 repositories) and the reranker by {100 * c_plain['kanerva vs rerank']['mean']['diff']:.1f}, also on all 6. On tasks at 1024 tokens it has {fmt(c_plain['tracks']['task/kanerva@1024'])} against {fmt(c_plain['tracks']['task/hybrid@1024'])}. Lexical search leads BM25 by {100 * c_plain['kanerva-lex vs bm25']['mean']['diff']:.1f} points. Stale injection is {percent(c_stale['kanerva']['stale_any'])}% against {percent(c_stale['hybrid']['stale_any'])}% for hybrid search and {percent(c_stale['kanerva-0.5']['stale_any'])}% for 0.5.0, and 0% with keys. Strict fact recall is a little behind hybrid search ({fmt(c_plain['tracks']['fact/kanerva@1024'])} against {fmt(c_plain['tracks']['fact/hybrid@1024'])}), though the value itself reaches the context as often. File notes add {100 * c_files['with_files_vs_wider']['mean']:.1f} points at equal tokens, but lose on {c_files['with_files_vs_wider']['down']} of 6 repositories. A real agent fixed {c_agent['changed']['replaced'] + c_agent['changed']['edited']} of {c_agent['changed']['n']} changed facts. CMake, ctest, `make check` and Ninja runs count as test commands, and builds that worked are kept as build commands.
-- **Version 0.5.1.** Apart from the changed-notes figures, the others on this page come from 0.5.0. Version 0.5.1 changes one rule, how near-twins are compared. On the third test's data recall moves by {points(twins['third test']['kanerva vs kanerva-0.5']['diff'])} points and stale injection from {percent(twins['third test']['stale']['kanerva-0.5'])}% to {percent(twins['third test']['stale']['kanerva'])}%, or from {percent(twins['third test']['stale']['kanerva-lex-0.5'])}% to {percent(twins['third test']['stale']['kanerva-lex'])}% lexically, so lexical stores get a little worse there.
-- **Long conversations.** {fmt(sum(beam['summary'][f'kanerva@{b}']['recall'] for b in BUDGETS) / len(BUDGETS))} against {fmt(sum(beam['summary'][f'hybrid@{b}']['recall'] for b in BUDGETS) / len(BUDGETS))} for hybrid search over all budgets, and {fmt(beam['summary']['kanerva@1024']['recall'])} against {fmt(beam['summary']['hybrid@1024']['recall'])} at 1024 tokens. The refit changed little here ({points(check['kanerva vs kanerva-0.4']['mean']['diff'])} points against 0.4.1). On LoCoMo, scored out of fold, it lost a little: {fmt(locomo[0])} to {fmt(locomo[1])}.
-- **Stale facts.** At 1024 tokens on facts that changed, no outdated version got in with keys. Without keys, hybrid search injects one {percent(stale['hybrid']['stale_any'])}% of the time, Kanerva {percent(stale['kanerva']['stale_any'])}% and lexical {percent(stale['kanerva-lex']['stale_any'])}%. A one-line keep-the-newest rule gets {percent(stale['hybrid-dedup']['stale_any'])}%, so most of this comes from a simple idea. The store alone does not detect free-text updates, so both versions get injected, newest first, until your agent fixes the older one.
-- **A correction.** This page used to give {percent(load('new_tests')['repomem-new-plain']['stale_on_changed_facts']['kanerva']['stale_any'])}% stale next to the lexical plugin default. That figure held only with MiniLM vectors. Benchmark stores held vectors even in "lexical" runs, so those rows compared near-twins by vectors, which a real lexical store does not have. The real lexical figure for 0.4.1 was {percent(stale['kanerva-lex-0.4']['stale_any'])}% on the third test. Lexical runs now compare near-twins by hashed words, as a real store does.
-- **Prompts it cannot answer.** On 12 sampled streams of the third test, the gate keeps Kanerva silent on {percent(1 - full['with']['same']['spoke'])}% of questions from other repositories ({percent(1 - lexical['with']['same']['spoke'])}% lexical), where it used to speak on nearly all. This costs recall on a store's own questions: {fmt(full['without']['own']['recall'])} to {fmt(full['with']['own']['recall'])}, or {fmt(lexical['without']['own']['recall'])} to {fmt(lexical['with']['own']['recall'])} lexical. Scored out of fold on the earlier TypeScript, Go and Rust repositories the cost was larger, {fmt(spent['without']['own']['recall'])} to {fmt(spent['with']['own']['recall'])}. The false-alarm numbers come from foreign questions, not from real prompts that a store cannot answer.
-- **Notes about files.** When a session has just opened a file of the change, file notes add {100 * file_now['with_files_vs_wider']['mean']:.1f} points over spending the same tokens on the prompt, on all 15 repositories. When it is still on the files of the task before, they cost {-100 * file_old['with_files_vs_wider']['mean']:.1f} points, again on all 15. Task labels come from file overlap, which is weak and favours this feature. Adding file names to the prompt query was tested and dropped, because it hurts in the second case.
-- **Changed notes without keys.** `memory_remember` lists similar notes, and your agent retires or corrects the older one. In {agent['meta']['trials']} trials of Claude Code with Sonnet 5.5 on notes nothing was tuned on, it fixed {own['changed']['replaced'] + own['changed']['edited']} of {own['changed']['n']} changed facts in its own notes about a conversation, {verbatim['changed']['replaced'] + verbatim['changed']['edited']} of {verbatim['changed']['n']} in long word-for-word turns, where it edits out the outdated part, and {code_notes['changed']['replaced'] + code_notes['changed']['edited']} of {code_notes['changed']['n']} on code facts. In an earlier round it fixed none of {first['lme-updates']['changed']['n']} conversation notes, and the hint, the server's instructions and the list threshold were changed after that. In {touched} trials it also changed a note the labels did not mark. Reading them, most were renames, second copies of the old value or notes repeated by the new one, and one retired a signature along with a moved function, so that note survives only as history. The samples are small, and without vectors the list misses most paraphrases. An oracle that always marks the older version would take stale injection from {percent(changed['current_rule']['stale_any'])}% to {percent(changed['oracle_simulated']['stale_any'])}%. The list costs about {notes['list_tokens_when_shown']:.0f} tokens each time it appears.
-- **Real prompts.** On {real['meta']['prompts']} real prompts of one developer, replayed through the hooks, the gate separates far less than on the benchmarks: {percent(real['vectors']['all']['gated_spoke'])}% of a project's own prompts get notes against {percent(real['vectors']['foreign']['all']['gated_spoke'])}% of prompts from other projects, and Russian prompts over English notes get them {percent(real['vectors']['ru']['gated_spoke'])}% of the time. The use signal behind `KANERVA_LEARN` fired on {percent(real['vectors']['signal']['fired'])}% of notes the agent never saw, so it stays off.
-- **Where it loses.** Lexical search is close to level with BM25 at 512 tokens and above ({points(plain['kanerva-lex vs bm25']['512']['diff'])} points at 512, {points(plain['kanerva-lex vs bm25']['4096']['diff'])} at 4096, and the intervals include zero). Its lead is at 128 and 256 tokens. At 1024 tokens lexical search is {-100 * plain['kanerva-lex vs kanerva-lex-0.4']['1024']['diff']:.1f} points behind 0.4.1, the price of its stricter near-twin rule. Without keys Kanerva stays a little behind on exact facts ({fmt(tracks['fact/kanerva@1024'])} against {fmt(tracks['fact/hybrid@1024'])} at 1024 tokens). It is just behind hybrid search at 256 tokens in Go and Rust, and at 128 tokens in Rust. RepoMem queries come from templates, so they favour word search, and real prompts are vaguer.
-- **Answers from a local model.** Qwen3-4B answered from the notes each method selected, with no judge in the scoring. Better recall turned into better answers only weakly. On {final_answers['queries']} fact queries from the third test, Kanerva leads BM25 by {100 * versus_bm25['diff']:.1f} points over 256, 512 and 1024 tokens (interval {span(versus_bm25)}, all 6 repositories), the only mean to reach raw p<.05, and no test survives Holm correction. On conversations it does not beat BM25, despite far higher recall: {conversations}, all inside their intervals. Against hybrid search it moves {against_hybrid}. An outdated value was given in {percent(final_stale['kanerva@512']['old'])}% of answers at 512 tokens against {percent(final_stale['hybrid@512']['old'])}% for hybrid search and {percent(final_stale['bm25@512']['old'])}% for BM25, on {final_stale['kanerva@512']['n']} changed facts, and a stale note in the context rarely became a stale answer. The gate saved tokens but did not stop made-up answers: {invented['kanerva']} of {foreign} foreign questions without it, {invented['kanerva+gate']} with it, {invented['hybrid']} for hybrid search. This reader is small and the samples are small, so read these as weak evidence, in either direction.
+- **Code.** On {code['meta']['queries']:,} queries over 15 repositories in Python, TypeScript, Go and Rust that nothing was tuned on, Kanerva leads hybrid search by {100 * plain['kanerva vs hybrid']['mean']['diff']:.1f} points over all budgets, on all 15, and the reranker by {100 * plain['kanerva vs rerank']['mean']['diff']:.1f}.
+- **C and C++.** On six more repositories, run once on the current version, Kanerva leads clearly on C, {fmt(c_lang['C']['all/kanerva'][-1])} against {fmt(c_lang['C']['all/hybrid'][-1])} for hybrid search. On C++, with templates and class methods among the facts, it leads on tasks ({fmt(c_lang['C++']['task/kanerva'][-1])} against {fmt(c_lang['C++']['task/hybrid'][-1])}) but trails overall ({fmt(c_lang['C++']['all/kanerva'][-1])} against {fmt(c_lang['C++']['all/hybrid'][-1])}), mostly because a location note gives way to a newer note holding the same value, so the value still reaches the context. An earlier test of six other repositories gave a lead of {100 * c_earlier['mean']['diff']:.1f} points on all 6. Notes about files add {100 * c_files['with_files_vs_wider']['mean']:.1f} points at equal tokens. Working CMake, make and Ninja commands are kept as notes.
+- **Long conversations.** {fmt(sum(beam['summary'][f'kanerva@{b}']['recall'] for b in BUDGETS) / len(BUDGETS))} against {fmt(sum(beam['summary'][f'hybrid@{b}']['recall'] for b in BUDGETS) / len(BUDGETS))} for hybrid search. This is a check and not a test, because earlier tests saw the data.
+- **Stale facts.** With keys, no outdated version gets in. Without keys at 1024 tokens, the current version injects one {percent(c_stale['kanerva']['stale_any'])}% of the time on C and C++ and {percent(twins['third test']['stale']['kanerva'])}% on the earlier test's repositories, against about {percent(c_stale['hybrid']['stale_any'])}% for hybrid search.
+- **Changed notes.** `memory_remember` lists similar notes and your agent fixes the older one. Across {agent['meta']['trials'] + c_agent_trials} real Claude Code sessions, it fixed {own['changed']['replaced'] + own['changed']['edited']} of {own['changed']['n']} facts in its own conversation notes, {verbatim['changed']['replaced'] + verbatim['changed']['edited']} of {verbatim['changed']['n']} in long turns and {code_notes['changed']['replaced'] + code_notes['changed']['edited'] + c_agent['changed']['replaced'] + c_agent['changed']['edited']} of {code_notes['changed']['n'] + c_agent['changed']['n']} in code. It sometimes retires more than it should, and one such note survived only as history.
+- **Where it falls short.** Lexical search stays close to BM25 from 512 tokens up. Without keys it gives up a little on exact facts. On answers from a small local model, better recall barely helped and no difference survived correction. On {real['meta']['prompts']} real prompts of one developer, the gate gave notes to {percent(real['vectors']['all']['gated_spoke'])}% of a project's own prompts and {percent(real['vectors']['foreign']['all']['gated_spoke'])}% of other projects' prompts, far weaker than on benchmarks. RepoMem queries come from templates, and real prompts are vaguer.
 
-A query over 10,000 notes takes about {latency['hybrid@10000']['p50_ms']:.0f} ms with vectors or {latency['lexical@10000']['p50_ms']:.0f} ms lexical on an M1 Pro. A hook starts a new process each time, so a prompt with 10,000 notes takes {hooks['minilm@10000']['prompt']['p50_ms'] / 1000:.2f} s in all with MiniLM, {hooks['lexical@10000']['prompt']['p50_ms'] / 1000:.2f} s lexical and {hooks['static@10000']['prompt']['p50_ms'] / 1000:.2f} s with the static embedder."""
+A query over 10,000 notes takes about {latency['hybrid@10000']['p50_ms']:.0f} ms, or {hooks['minilm@10000']['prompt']['p50_ms'] / 1000:.2f} s for a whole hook, which starts a new process."""
     path = ROOT / "README.md"
     readme = path.read_text()
     start, end = "<!-- results:start -->", "<!-- results:end -->"

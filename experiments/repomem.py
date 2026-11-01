@@ -99,8 +99,15 @@ REPOS = {
     "catchorg/Catch2": ("src/catch2", "c-final"),
     "google/benchmark": ("src", "c-final"),
     "ocornut/imgui": ("", "c-final"),
+    # After that test: these also read templates, overloads and class methods, which the groups above leave out.
+    "lz4/lz4": ("lib", "c-last"),
+    "facebook/zstd": ("lib", "c-last"),
+    "libexpat/libexpat": ("expat/lib", "c-last"),
+    "yhirose/cpp-httplib": ("", "c-last"),
+    "CLIUtils/CLI11": ("include/CLI", "c-last"),
+    "jbeder/yaml-cpp": ("include/yaml-cpp", "c-last"),
 }
-C_SPLITS = ("c-dev", "c-test", "c-final")
+C_SPLITS = ("c-dev", "c-test", "c-final", "c-last")
 LANGUAGES = {
     "TypeScript": ("vite", "hono", "zod"),
     "Go": ("gin", "caddy", "fzf"),
@@ -108,6 +115,7 @@ LANGUAGES = {
 }
 C_LANGUAGES = {"C": ("redis", "curl", "jq"), "C++": ("fmt", "spdlog", "leveldb")}
 C_FINAL_LANGUAGES = {"C": ("nginx", "libgit2", "libevent"), "C++": ("Catch2", "benchmark", "imgui")}
+C_LAST_LANGUAGES = {"C": ("lz4", "zstd", "libexpat"), "C++": ("cpp-httplib", "CLI11", "yaml-cpp")}
 FINAL_LANGUAGES = {
     "Python": ("scrapy", "celery", "cli", "sanic", "boto3", "channels"),
     "TypeScript": ("core", "query", "immer"),
@@ -238,7 +246,50 @@ def extract_c_facts(path: str, source: str) -> dict[str, tuple[str, str, str]]:
     return facts
 
 
-def c_snapshot_facts(repo_dir: Path, sha: str, root: str) -> dict[str, tuple[str, str, str, str]]:
+_C_TEMPLATE = re.compile(r"template[ \t\n]*<[^;{}()]*>[ \t\n]*")
+_C_CLASS = re.compile(r"^[ \t]*(?:class|struct)[ \t]+(?:[A-Z_]+_(?:EXPORT|API)[ \t]+)?([A-Za-z_]\w+)[^;{()]*\{", re.M)
+MAX_OVERLOADS = 3
+
+
+def class_spans(code: str) -> list[tuple[int, int, str]]:
+    """Where each class body lies, innermost last."""
+    spans = []
+    for m in _C_CLASS.finditer(code):
+        depth, at = 1, m.end()
+        while depth and at < len(code):
+            depth += {"{": 1, "}": -1}.get(code[at], 0)
+            at += 1
+        spans.append((m.end(), at, m.group(1)))
+    return spans
+
+
+def extract_cpp_facts(path: str, source: str) -> dict[str, tuple[str, str, str]]:
+    """As ``extract_c_facts``, and templates count, methods carry their class, and an overloaded name lists its signatures."""
+    facts = {key: fact for key, fact in extract_c_facts(path, source).items() if not key.startswith("sig:")}
+    code = _C_TEMPLATE.sub("", _C_COMMENT.sub("", source))
+    spans = class_spans(code)
+    found: dict[str, list[str]] = {}
+    for m in _C_FUNCTION.finditer(code):
+        name, head = m["name"], m["head"]
+        if name in C_KEYWORDS or name.startswith("_") or name.isupper() or re.search(r"\b(?:static|return|else|new|delete|typedef|goto|case)\b", head):
+            continue
+        if path.endswith(C_SOURCES) and (m["end"] != "{" or m["lead"]):
+            continue
+        owners = [owner for start, end, owner in spans if start <= m.start() < end]
+        qualified = f"{owners[-1]}::{name}" if owners else name
+        found.setdefault(qualified, [])
+        args = " ".join(m["args"].split())
+        if args not in found[qualified]:
+            found[qualified].append(args)
+    for name, values in found.items():
+        value = " | ".join(sorted(values))
+        if len(values) <= MAX_OVERLOADS and len(value) <= 120:
+            facts[f"sig:{name}"] = ("signature", name, value)
+            facts[f"loc:{name}"] = ("location", name, path)
+    return facts
+
+
+def c_snapshot_facts(repo_dir: Path, sha: str, root: str, read=extract_c_facts) -> dict[str, tuple[str, str, str, str]]:
     """Headers first: a function declared in one and defined in a source file is one fact, and the header holds it."""
     listing = git(repo_dir, "ls-tree", "-r", "--name-only", sha).splitlines()
     inside = [f for f in listing if not root or f.startswith(root + "/")]
@@ -251,7 +302,7 @@ def c_snapshot_facts(repo_dir: Path, sha: str, root: str) -> dict[str, tuple[str
     for group in (headers, sources):
         seen: set[str] = set()
         for path in group:
-            for key, (kind, name, value) in extract_c_facts(path, git(repo_dir, "show", f"{sha}:{path}")).items():
+            for key, (kind, name, value) in read(path, git(repo_dir, "show", f"{sha}:{path}")).items():
                 if key in facts and group is sources and key not in seen:
                     continue
                 if key in seen:
@@ -350,8 +401,15 @@ def build_repo(repo: str) -> dict:
     picks = [span[round(i * step)] for i in range(SNAPSHOTS)]
     snapshots = []
     for sha, at in picks:
-        read = c_snapshot_facts if split in C_SPLITS else snapshot_facts
-        snapshots.append({"sha": sha, "at": at, "facts": read(repo_dir, sha, root) if root is not None else {}})
+        if root is None:
+            facts = {}
+        elif split == "c-last":
+            facts = c_snapshot_facts(repo_dir, sha, root, extract_cpp_facts)
+        elif split in C_SPLITS:
+            facts = c_snapshot_facts(repo_dir, sha, root)
+        else:
+            facts = snapshot_facts(repo_dir, sha, root)
+        snapshots.append({"sha": sha, "at": at, "facts": facts})
     windows = []
     for a, b in zip(picks, picks[1:]):
         windows.append([c.__dict__ for c in _window_commits(repo_dir, a[0], b[0])])

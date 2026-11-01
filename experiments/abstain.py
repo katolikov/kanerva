@@ -42,7 +42,7 @@ SETS = {
     "repomem-new": ("repomem-new", "locomo"),
     "repomem-other": ("repomem-other", "locomo"),
 }
-HELD_OUT = {"repomem-final": ("repomem-final", "locomo"), "repomem-c-test": ("repomem-c-test", "locomo"), "repomem-c-final": ("repomem-c-final", "locomo")}
+HELD_OUT = {"repomem-final": ("repomem-final", "locomo"), "repomem-c-test": ("repomem-c-test", "locomo"), "repomem-c-final": ("repomem-c-final", "locomo"), "repomem-c-last": ("repomem-c-last", "locomo")}
 STATIC = ("lme", "locomo", "beam-dev", "repomem-new", "repomem-fresh")  # the sets with static vectors in the cache
 
 
@@ -238,4 +238,7 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["c-final"]:
         main(["repomem-c-final"])
         sys.exit(final_report("repomem-c-final", "abstention_c_final.json"))
+    if sys.argv[1:] == ["c-last"]:
+        main(["repomem-c-last"])
+        sys.exit(final_report("repomem-c-last", "abstention_c_last.json"))
     sys.exit(main(sys.argv[1:] or list(SETS)))

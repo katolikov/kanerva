@@ -28,7 +28,7 @@ def load(name: str) -> list[Stream]:
         from experiments.repomem import load_repomem
 
         return load_repomem(split="final")
-    if name in ("repomem-c-dev", "repomem-c-test", "repomem-c-final"):
+    if name in ("repomem-c-dev", "repomem-c-test", "repomem-c-final", "repomem-c-last"):
         from experiments.repomem import load_repomem
 
         return load_repomem(split=name.removeprefix("repomem-"))

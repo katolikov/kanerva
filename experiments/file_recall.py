@@ -27,7 +27,7 @@ FILE_BUDGET = 150
 MAX_FILES = 3
 SETS = ("repomem", "repomem-holdout", "repomem-fresh", "repomem-new", "repomem-other")
 HELD_OUT = ("repomem-final",)
-C_FAMILY = ("repomem-c-dev", "repomem-c-test", "repomem-c-final")
+C_FAMILY = ("repomem-c-dev", "repomem-c-test", "repomem-c-final", "repomem-c-last")
 
 
 def configs() -> dict[str, RetrievalConfig]:
@@ -62,14 +62,14 @@ def run_stream(args: tuple) -> list[dict]:
             files = picked(query, session, rng)
             if not files:
                 continue
-            found: dict[int, int] = {}
-            for path in files:
-                for item in mem.about_file(path, FILE_BUDGET, None, found):
-                    found[item.id] = item.tokens + mem.config.item_overhead
-            spent = sum(found.values())
             for name, cfg in cfgs.items():
                 prepared = mem.prepare(query.question, query.now, None, cfg, qvec)
                 base = {item.id for item in mem.select(prepared, PROMPT_BUDGET, record=False).items}
+                found: dict[int, int] = {}
+                for path in files:  # as the hook does: what the prompt brought is not repeated
+                    for item in mem.about_file(path, FILE_BUDGET, None, base | set(found)):
+                        found[item.id] = item.tokens + mem.config.item_overhead
+                spent = sum(found.values())
                 wider = {item.id for item in mem.select(prepared, PROMPT_BUDGET + spent, record=False).items}
                 grown: set[int] = set()
                 if name == "lexical":  # the embedding cache has no vectors for expanded queries

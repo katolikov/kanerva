@@ -30,3 +30,7 @@ make reproduce   # runs everything
 ```
 
 LoCoMo is CC BY-NC 4.0 and BEAM is CC BY-SA 4.0. They are downloaded at run time and are not part of this repository.
+
+## Releases
+
+A published GitHub release sends the Python package to PyPI and the five npm plugins to npm through `.github/workflows/publish.yml`. Both steps stay off until the repository variable `PUBLISH_PACKAGES` is `true`. PyPI needs a trusted publisher for this repository with the workflow `publish.yml` and the environment `pypi`. npm needs the secret `NPM_TOKEN`. A published version cannot be replaced.
