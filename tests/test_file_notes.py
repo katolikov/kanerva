@@ -212,3 +212,11 @@ def test_a_word_that_only_looks_like_a_build_tool_is_ignored(store):
 def test_a_build_after_other_commands_counts(store):
     shell("cd build && CC=clang make -j8")
     assert stored() == ["Build command: cd build && CC=clang make -j8"]
+
+
+def test_a_file_most_notes_name_says_nothing(store):
+    for index in range(30):
+        remember(f"Change {index} touched src/core.cc and nothing else of note.")
+    remember("src/rare.cc hides a retry loop.")
+    assert touch("src/core.cc") == ""
+    assert "retry loop" in touch("src/rare.cc")

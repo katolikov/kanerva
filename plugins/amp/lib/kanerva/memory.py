@@ -103,6 +103,8 @@ _HISTORICAL = re.compile(
 )
 SCHEMA_VERSION = 2  # 2: items_fts holds the stems of Russian words
 
+FILE_COMMON = 0.05  # a file this share of the notes names says nothing about any of them
+FILE_COMMON_NOTES = 20  # a small store has no such files
 SIMILAR_POOL = 50  # candidates taken from lexical search, and four times that from vectors
 SIMILAR_STORE = 1000  # word rarity is judged as if the store held at least this many notes
 SIMILAR_SPREAD = 2.0  # a note with more than this many times the words of another is not a version of it
@@ -1044,7 +1046,7 @@ class Memory:
         """Live notes that name this file, newest first, within ``budget`` tokens.
 
         ``path`` is relative to the project. A name that many projects share counts only together with its folder, and
-        the notes the edit hook writes by itself say nothing about the file.
+        the notes the edit hook writes by itself say nothing about the file. Neither does a file that most notes name.
         """
         name = path.rsplit("/", 1)[-1]
         target = path.rsplit("/", 2)[-2] + "/" + name if name in COMMON_FILE_NAMES and "/" in path else name
@@ -1062,10 +1064,13 @@ class Memory:
         sql += " ORDER BY items.created_at DESC, items.id DESC LIMIT 200"
         pattern = re.compile(r"(?<![\w-])" + re.escape(target) + r"(?![\w-])")
         skip = set(skip)
+        found = [row for row in self.db.execute(sql, args)
+                 if row["id"] not in skip and not row["text"].startswith("Edited ") and pattern.search(row["text"])]
+        total = self.db.execute("SELECT count(*) AS n FROM items WHERE tier='active'").fetchone()["n"]
+        if len(found) >= FILE_COMMON_NOTES and len(found) >= FILE_COMMON * total:
+            return []
         items, spent = [], 0
-        for row in self.db.execute(sql, args):
-            if row["id"] in skip or row["text"].startswith("Edited ") or not pattern.search(row["text"]):
-                continue
+        for row in found:
             cost = row["tokens"] + self.config.item_overhead
             if spent + cost <= budget:
                 items.append(self._item(row))
