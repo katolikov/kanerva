@@ -19,7 +19,7 @@ Coding agents start every session from zero. You explain the test command again,
 - **Notes about the file at hand.** When a session first opens a file, the notes that name it come along.
 - **Private by default.** One SQLite file in your home folder. No account, no cloud, no API key. Known key and token formats are redacted before anything is stored. The only download is the embedding model and its runtime, once, and you can turn that off.
 - **No LLM of its own.** Nothing calls a model on write or read, so memory costs you the tokens it injects, plus one short turn of your own agent when a session with real work ends. You can [turn that off](#session-wrap-up).
-- **Asks your agent what helped.** At the end of a session with real work, your agent says which notes helped and which misled it. Kanerva records that. Acting on it did not pass its test, so that stays opt-in.
+- **Learns from your agent.** At the end of a session with real work, your agent says which notes helped and which misled it. Kanerva learns from that per project and across projects. So far this has shown no measurable gain or harm, and `KANERVA_LEARN=0` turns it off.
 - **Fits your tools.** Plugins for Claude Code, Codex, OpenCode, Copilot CLI and more, plus an MCP server for everything else. The [table](#install) says which ones have been run.
 
 ## Install
@@ -110,7 +110,7 @@ Search engines find text that looks like your query. Kanerva also asks what is w
 - **Changed facts.** A note with a key closes the older note with that key. Without a key, a newer near-twin replaces an older fact if it covers your question at least as well, and your agent fixes what the rule cannot tell.
 - **The gate.** A small model looks at the result list and decides whether the store can answer this prompt at all. If not, the prompt gets no notes.
 - **Notes about files.** When a session first reads or edits a file, it gets the notes that name that file and that the prompt has not already brought.
-- **Learning.** With `KANERVA_LEARN=auto`, your agent's verdicts raise or lower a note, its kind of note in the project, and that kind across projects, and a project moves its gate and weight floor. A shadow check decides when lift starts. The model itself never changes. This is off by default, because it [did not pass its test](#benchmarks).
+- **Learning.** A note rises on questions like the ones it helped with, and falls wherever it sits idle. A shadow check decides when that starts. A project also learns when to speak: some prompts get a short wider list, and verdicts on it move the gate and the weight floor. The model itself never changes.
 
 The name comes from Pentti Kanerva, whose sparse distributed memory showed how a few active bits out of many can recall what you need. It is also the idea behind the logo.
 
@@ -135,8 +135,8 @@ Share of the needed evidence that made it into the context, with no LLM in the l
 - **Long conversations.** 0.574 against 0.440 for hybrid search. This is a check and not a test, because earlier tests saw the data.
 - **Stale facts.** With keys, no outdated version gets in. Without keys at 1024 tokens, the current version injects one 16.4% of the time on C and C++ and 21.0% on the earlier test's repositories, against about 98.0% for hybrid search.
 - **Changed notes.** `memory_remember` lists similar notes and your agent fixes the older one. Across 104 real Claude Code sessions, it fixed 10 of 12 facts in its own conversation notes, 10 of 12 in long turns and 28 of 28 in code. It sometimes retires more than it should, and one such note survived only as history.
-- **Learning.** Over 60 real sessions on repositories nothing had seen, your agent's verdicts on notes were right 96.7% of the time, against 29.2% for matching identifiers in tool calls. Acting on those verdicts did not pass its test: on six more repositories, sessions a note helped rose from 94.4% to 97.2%, but right answers fell from 76.4% to 66.7%. So by default Kanerva only records verdicts.
-- **Where it falls short.** Asked in plain words with no identifier, the shipped gate brings the needed note on only 97 of 336 questions, though it reaches the candidate list on 301 of them. Lexical search stays close to BM25 from 512 tokens up. Without keys it gives up a little on exact facts. On answers from a small local model, better recall barely helped and no difference survived correction. On 603 real prompts of one developer, the gate gave notes to 53.6% of a project's own prompts and 27.7% of other projects' prompts, far weaker than on benchmarks. RepoMem queries come from templates, and real prompts are vaguer.
+- **Learning.** Over 60 real sessions on repositories nothing had seen, your agent's verdicts on notes were right 96.7% of the time, against 29.2% for matching identifiers in tool calls. Acting on them has shown no measurable gain or harm on the current build: on six more repositories, right answers were 79.2% against 81.9% and tokens per session 267 against 318, all within noise. It is on because a project's gate can move no other way.
+- **Where it falls short.** Asked in plain words with no identifier, the shipped gate brings the needed note on only 127 of 480 questions, though it reaches the candidate list on 420 of them. Lexical search stays close to BM25 from 512 tokens up. Without keys it gives up a little on exact facts. On answers from a small local model, better recall barely helped and no difference survived correction. On 603 real prompts of one developer, the gate gave notes to 53.6% of a project's own prompts and 27.7% of other projects' prompts, far weaker than on benchmarks. RepoMem queries come from templates, and real prompts are vaguer.
 
 A query over 10,000 notes takes about 287 ms, or 0.72 s for a whole hook, which starts a new process.
 <!-- results:end -->
@@ -157,7 +157,7 @@ Everything is optional.
 | `KANERVA_MIN_WEIGHT` | `0.02` | Skip notes below this estimated probability of being needed. |
 | `KANERVA_HOME` | `~/.kanerva` | Where the database lives. |
 | `KANERVA_CONSOLIDATE` | off | `1` merges near-duplicate notes on compaction. Merges can be undone. |
-| `KANERVA_LEARN` | `shadow` | `shadow` records your agent's verdicts and acts on nothing. `auto` acts on them once a shadow check allows it, and shows a wider list on some prompts. `1` forces that, and `0` stops asking for verdicts. |
+| `KANERVA_LEARN` | `auto` | Learn from your agent's verdicts. `shadow` records them and acts on nothing, `1` forces lift on, and `0` stops asking for verdicts. |
 | `KANERVA_WRAPUP` | on | `0` stops asking your agent for a note at the end of a session. It is off in `claude -p` and the Agent SDK unless set to `1`. |
 
 ### MiniLM

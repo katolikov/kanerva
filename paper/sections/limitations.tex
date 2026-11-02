@@ -1,6 +1,6 @@
 \section{Limitations}\label{sec:limitations}
 
-\paragraph{Outcomes.} Most metrics are retrieval-level. The answer test rests on one small reader, short extractive questions and small samples, so its nulls do not show that methods are equal, and a stronger model may use notes differently. The chains measure a real agent on small documentation chores, not on real tasks, and their answers are scored by exact match. How much recall per token turns into finished work is still unknown.
+\paragraph{Outcomes.} Most metrics are retrieval-level. The answer test rests on one small reader, short extractive questions and small samples, so its nulls do not show that methods are equal, and a stronger model may use notes differently. The chains measure a real agent on small documentation chores, not on real tasks, and their answers are scored by string match on a name or value. How much recall per token turns into finished work is still unknown.
 
 \paragraph{Baselines.} Mem0 with inference, Graphiti, A-MEM, HippoRAG, LangMem and Cognee all call an LLM on write, so the comparison does not cover them, and it says nothing about what LLM extraction would add to those systems. Published evidence suggests a small effect on the write side \cite{yuan2026diagnosing}.
 
@@ -12,6 +12,6 @@
 
 \paragraph{The gate.} It costs recall on a store's own questions, and those queries get nothing when it closes. Its false-alarm rates come from foreign questions, and on one developer's real prompts it separates far less. How often it is wrongly silent in real use is not known.
 
-\paragraph{Learning.} A verdict covers only notes the agent was shown, so the shadow check cannot see what either ordering left out. Verdicts are tied to a project rather than a session, so two sessions open on one project can mix. The signal test labels notes by construction, and its distractors are easy to reject. The chains use one model, small chores and six repositories at a time, and they did not log whether a project's gate or floor moved, so they say little about settled per-project tuning.
+\paragraph{Learning.} A verdict covers only notes the agent was shown, so the shadow check cannot see what either ordering left out. Verdicts are tied to a project rather than a session, so two sessions open on one project can mix. The signal test labels notes by construction, and its distractors are easy to reject. The chains use one model, small chores and six repositories at a time. A project's gate moved in only two of them, late in the chain, so per-project tuning over longer use is unmeasured.
 
 \paragraph{Plugins.} The benchmarks ran the library with exact token counts, while the plugins estimate tokens with a dependency-free approximation. Until the embedding model arrives, a new install runs the lexical model, so its first sessions get the lexical numbers.

@@ -7,6 +7,6 @@ authors:
   - family-names: Katolikov
     given-names: Artem
     orcid: "https://orcid.org/0009-0007-1585-8092"
-version: 0.6.0
+version: 0.6.1
 date-released: 2026-11-02
 license: Apache-2.0

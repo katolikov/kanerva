@@ -4,4 +4,4 @@ Treating agent memory as budgeted selection gives a read path that needs no LLM,
 
 The next step is to make the gate speak on vague prompts without flooding unrelated ones, and to measure end to end whether any of this changes what a coding agent gets done.
 
-\paragraph{Reproducibility.} \texttt{make data \&\& make reproduce} rebuilds the results in \texttt{results/*.json}, \texttt{make check} verifies each number in this paper against those files, and the RepoMem manifest pins every repository snapshot.
+\paragraph{Reproducibility.} \texttt{make data \&\& make reproduce} rebuilds the benchmark results, the tests with a real agent are run by hand with the scripts named in \texttt{experiments/}, \texttt{make check} verifies each number in this paper against \texttt{results/*.json}, and the RepoMem manifest pins every repository snapshot.
