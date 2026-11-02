@@ -1167,6 +1167,168 @@
    "What position information does a type mismatch error carry?"
   ]
  },
+ "agronholm/apscheduler": {
+  "sig:AsyncScheduler.configure_task": [
+   "How do I change the settings of an already registered function in the non-blocking scheduler?",
+   "How can I update the executor, grace time, or concurrency for a function without re-adding it?",
+   "How do I reconfigure a registered schedulable function without blocking?"
+  ],
+  "sig:BaseEventBroker.start": [
+   "How do I start the event broker and tie its cleanup to an exit stack and logger?",
+   "How does the base event broker get initialized with a logging and lifecycle context?",
+   "What runs when the event messaging component is brought online?"
+  ],
+  "sig:BaseExternalEventBroker.generate_notification_str": [
+   "How is the text message for an external event produced for the broker?",
+   "How does the broker build the payload string for an event sent to other processes?",
+   "What turns an event into the string that gets published externally?"
+  ],
+  "sig:BaseField.get_max": [
+   "How do I find the largest allowed value for a time-pattern field given a date?",
+   "What method gives the upper bound for a recurring time rule's field based on a date?",
+   "How do time-pattern fields determine their maximum value for a particular date?"
+  ],
+  "sig:DataStore.extend_acquired_schedule_leases": [
+   "How does the storage backend extend the time a scheduler holds its schedules?",
+   "How do I renew a scheduler's claim on schedules through the generic storage interface?",
+   "How can a scheduler keep its hold on schedules from expiring?"
+  ],
+  "sig:DataStore.get_job_result": [
+   "How do I fetch the outcome of a finished job from the store using its identifier?",
+   "Where can I look up what a completed job returned or raised?",
+   "How do I retrieve the stored result for a given job?"
+  ],
+  "sig:DataStore.get_next_schedule_run_time": [
+   "How do I find when the next scheduled run is due from the store?",
+   "What's the way to ask the storage backend for the earliest upcoming fire time?",
+   "How can I check when the soonest schedule will next trigger?"
+  ],
+  "sig:DataStore.remove_task": [
+   "How do I delete a function's definition from the storage backend?",
+   "What's the way to unregister a schedulable function by its identifier at the storage layer?",
+   "How can I remove a registered function from persistence so it's no longer known?"
+  ],
+  "sig:JobExecutor.run_job": [
+   "How does the executor actually run a job's function with its details?",
+   "Which method carries out the execution of a single job inside an executor?",
+   "How do I invoke a job through the executor component?"
+  ],
+  "sig:JobLookupError.__init__": [
+   "What error is raised when I refer to a job that doesn't exist, and what information does it carry?",
+   "How do I create the error that says a job identifier wasn't found?",
+   "What exception should I expect when looking up a job that isn't in the store?"
+  ],
+  "sig:JobReleased.from_result": [
+   "How do I build the job-finished event from an execution outcome?",
+   "What creates the released-job notification from a run's result and identifiers?",
+   "How can I construct the event that reports a job's completion from its result?"
+  ],
+  "sig:JobReleased.marshal": [
+   "How do I convert the job-finished notification into a format I can send over the wire?",
+   "Which method turns the job-released event into a serialized representation?",
+   "How can I encode the released-job event for storage or transport?"
+  ],
+  "sig:MemoryDataStore.get_task": [
+   "How do I look up a stored function definition from the in-memory store by its identifier?",
+   "How can I retrieve a registered function's record from memory-only storage?",
+   "Which method fetches a schedulable definition from the in-memory backend?"
+  ],
+  "sig:MongoDBDataStore.acquire_schedules": [
+   "How does a document-database store let a scheduler claim due schedules for a limited time?",
+   "How do I lock a batch of schedules so only one scheduler instance processes them?",
+   "In the document-database storage, how is a scheduler given ownership of upcoming schedules for a set period?"
+  ],
+  "sig:MongoDBDataStore.extend_acquired_schedule_leases": [
+   "How do I extend my claim on schedules in a document-database store so another scheduler doesn't take them?",
+   "How can a scheduler keep its lock on schedules longer in that storage?",
+   "How do I renew the lease time on a batch of schedules in the document-database backend?"
+  ],
+  "sig:OrTrigger.next": [
+   "How do I find the next run time for a schedule that fires whenever any of several combined rules matches?",
+   "Which method gives the following occurrence when I've joined multiple trigger rules so that any one of them can fire?",
+   "How can I ask a combined trigger for its upcoming fire time?"
+  ],
+  "sig:RangeExpression.validate_range": [
+   "How do I check that a range in a time-pattern rule has bounds within allowed limits?",
+   "What verifies a range expression's start and end against the field's minimum and maximum?",
+   "How can I make sure a recurring time range doesn't go outside the valid values?"
+  ],
+  "sig:Scheduler.max_concurrent_jobs": [
+   "How do I find out the most jobs that can run at the same time?",
+   "What method reports the concurrency ceiling of the scheduler?",
+   "How can I see how many jobs may execute simultaneously?"
+  ],
+  "sig:Scheduler.pause_schedule": [
+   "How do I temporarily stop a scheduled job from firing without deleting it?",
+   "What's the way to suspend one recurring schedule by its identifier so it can resume later?",
+   "How can I halt a particular schedule until I choose to turn it back on?"
+  ],
+  "sig:Scheduler.start_in_background": [
+   "How do I run the scheduler in a separate thread without blocking my main program?",
+   "Is there a way to start the scheduler so it runs alongside the rest of my code instead of tying up the current thread?",
+   "How can I launch the synchronous scheduler without it holding up the main flow?"
+  ],
+  "sig:Scheduler.state": [
+   "How do I check whether the scheduler is running, stopped, or starting?",
+   "What method reports the current status of the scheduler?",
+   "How can I query the scheduler's lifecycle state?"
+  ],
+  "sig:Serializer.deserialize": [
+   "How do I turn stored bytes back into Python objects using the converter?",
+   "Which method reverses serialization for stored data?",
+   "How can I decode a serialized value back to its original form?"
+  ],
+  "sig:Task.unmarshal": [
+   "How do I rebuild a function's definition from its serialized form?",
+   "How do I reconstruct a stored definition from bytes using a converter?",
+   "Which method turns saved data back into a schedulable definition?"
+  ],
+  "sig:TaskLookupError.__init__": [
+   "What error signals that a requested function definition doesn't exist, and how is it built?",
+   "What exception do I get when a function identifier isn't registered?",
+   "How is the error raised for a missing schedulable function constructed?"
+  ],
+  "sig:WeekdayPositionExpression.__init__": [
+   "How do I build a recurring time rule that means something like 'the second Monday of the month'?",
+   "How are the option name and weekday set for a nth-weekday rule?",
+   "How do I create a time-pattern piece that selects a particular weekday in a month?"
+  ],
+  "sig:as_uuid": [
+   "How do I convert a value into a unique identifier object?",
+   "What helper turns a string into the standard unique identifier type?",
+   "How can I coerce an input into a unique identifier?"
+  ],
+  "sig:aware_datetime": [
+   "How do I make sure a date value has timezone info when setting an attribute?",
+   "What check rejects naive timestamps and requires timezone-aware ones?",
+   "How can I validate that a time value includes a timezone?"
+  ],
+  "sig:get_task_params": [
+   "How do I read back the settings that were attached to a decorated function?",
+   "Which helper pulls out the configuration stored on a function?",
+   "How can I inspect the options a function was decorated with?"
+  ],
+  "sig:non_negative_number": [
+   "How do I make sure a number attribute isn't below zero?",
+   "What validator rejects negative values?",
+   "How can I enforce that a numeric setting is zero or greater?"
+  ],
+  "sig:positive_number": [
+   "How do I require a number to be strictly greater than zero?",
+   "What check ensures a value is above zero?",
+   "How do I validate that a duration setting is positive?"
+  ],
+  "sig:require_state_version": [
+   "How do I make sure saved trigger state is from a compatible version before loading it?",
+   "What check stops me from loading state that is newer than the version I support?",
+   "How do I enforce a maximum version on a trigger's saved state?"
+  ],
+  "sig:task": [
+   "How do I mark a function so the scheduler knows its defaults, such as executor and grace period?",
+   "What decorator sets per-function options like concurrency limits and metadata?",
+   "How can I register a plain function as a schedulable callable with custom settings?"
+  ]
+ },
  "dateutil/dateutil": {
   "const:src/dateutil/tz/_tzfile.py:_TIMEDELTA_CACHE_SIZE": [
    "How big is the cache that stores computed timedelta values when reading timezone files?",
@@ -1437,6 +1599,168 @@
    "How do I check whether two datetimes are within a given time window of each other?",
    "Is there a helper that tells me if the gap between two times is less than a set amount?",
    "How can I compare two timestamps and see if they differ by no more than a threshold?"
+  ]
+ },
+ "encode/django-rest-framework": {
+  "const:rest_framework/status.py:HTTP_302_FOUND": [
+   "Which number tells the client that a resource has temporarily moved to another location?",
+   "What status value do I return for a temporary redirect?",
+   "Which constant holds the code for a temporary location change response?"
+  ],
+  "sig:APIClient.delete": [
+   "How do I send a delete request in an API test?",
+   "Where is the test client method for removing a resource?",
+   "What do I call in tests to simulate deleting an item?"
+  ],
+  "sig:APIRequestFactory.patch": [
+   "How do I send a partial update in an API test using the request factory?",
+   "Where is the test helper for issuing a PATCH-style request with a body?",
+   "What do I call in tests to simulate a partial-update request with data?"
+  ],
+  "sig:APIView.determine_version": [
+   "How do I figure out which API version the client asked for?",
+   "Where is the version detection that runs on each request?",
+   "What method decides which API version applies to a request?"
+  ],
+  "sig:APIView.http_method_not_allowed": [
+   "What response is returned when a client uses an unsupported method on an endpoint?",
+   "Where is the fallback that answers with a method-not-allowed error?",
+   "How can I customize the reply sent when someone calls a verb the view doesn't handle?"
+  ],
+  "sig:APIView.initial": [
+   "Where do authentication, permission, and throttle checks happen before a view runs?",
+   "What hook runs preliminary checks on each request before the handler is called?",
+   "How can I add logic that executes before every request is processed by a view?"
+  ],
+  "sig:BaseRouter.urls": [
+   "How do I get the full list of URL paths that a router builds from my registered resources?",
+   "Where are the endpoint paths assembled after I register resources with the router?",
+   "What do I call to collect every route the router produces so I can add them to the URL config?"
+  ],
+  "sig:ChoiceField.__init__": [
+   "How do I create an input field limited to a fixed list of allowed values?",
+   "Where is the field setup for a dropdown-style set of choices?",
+   "What do I pass to define the list of valid options for an input field?"
+  ],
+  "sig:Field.__init__": [
+   "What options can I pass when declaring a single input field on a serializer?",
+   "Where are the common settings for a field, such as whether it is required or write-only, defined?",
+   "What arguments control a field's default value, help text, and validation messages?"
+  ],
+  "sig:GenericAPIView.get_serializer_context": [
+   "How do I pass extra information, such as the request, into a serializer from a view?",
+   "Where is the extra data handed to serializers created by generic views?",
+   "What method builds the context dictionary that serializers receive?"
+  ],
+  "sig:HTMLFormRenderer.render": [
+   "How is the HTML form for the browsable API generated from the data?",
+   "Where is the code that turns response data into the HTML form view?",
+   "What class produces the web form page shown in the browser?"
+  ],
+  "sig:LimitOffsetPagination.get_next_link": [
+   "How do I get the URL for the following page when using offset and limit paging?",
+   "Where is the next-page link generated for limit-offset pagination?",
+   "What returns the address of the next set of results in offset-style paging?"
+  ],
+  "sig:ListSerializer.run_validation": [
+   "How is input validated when I send a list of objects to be processed together?",
+   "Where is the validation entry point for a collection serializer?",
+   "What runs the validation step over multiple records submitted at once?"
+  ],
+  "sig:ModelField.to_internal_value": [
+   "How is incoming data converted into a value for a model-backed field during validation?",
+   "Where does input get turned into a usable value for a field linked to a database model?",
+   "What step cleans and converts submitted data for a model field?"
+  ],
+  "sig:ModelSerializer.build_field": [
+   "How does the framework decide which serializer field to create for a model column?",
+   "Where is the code that creates a field definition for each database attribute?",
+   "What method constructs the form field for a given model attribute, including nesting depth?"
+  ],
+  "sig:ModelSerializer.get_extra_kwargs": [
+   "How do I add extra settings like read-only to specific fields in a model-based serializer?",
+   "Where are per-field overrides for a model serializer collected?",
+   "What method lets me adjust field options without redefining each field?"
+  ],
+  "sig:OR.has_permission": [
+   "How do I allow access when at least one of several permission rules passes?",
+   "Where is the rule that combines permissions so that either one is enough?",
+   "How can I combine two access checks so that passing either one grants the request?"
+  ],
+  "sig:PrimaryKeyRelatedField.to_representation": [
+   "How do I show the ID of a linked record in the API response instead of the full object?",
+   "What controls how a reference to a related record is turned into output?",
+   "Where is the logic that formats a related record's key when building responses?"
+  ],
+  "sig:SearchFilter.filter_queryset": [
+   "How do I make the list endpoint filter results by a search query parameter?",
+   "Where is the code that applies text search matching to the records returned?",
+   "How do I limit results based on what the user typed in the search box?"
+  ],
+  "sig:SessionAuthentication.authenticate": [
+   "How do I let users who are already logged in through the website authenticate to the API?",
+   "Where is the code that checks the session cookie to identify the user?",
+   "What handles authentication based on an existing browser session?"
+  ],
+  "sig:ValidationError.__init__": [
+   "How do I raise a validation error with a custom message and error code?",
+   "Where is the base constructor for the error that signals invalid input?",
+   "What arguments does the error for bad input accept?"
+  ],
+  "sig:add_query_param": [
+   "How do I add or replace a query parameter in a link inside a template?",
+   "Where is the template tag that builds URLs with an extra parameter appended?",
+   "What helper appends a key and value to the current address on the browsable page?"
+  ],
+  "sig:as_serializer_error": [
+   "How do I turn a validation exception into the same error shape that serializers produce?",
+   "Where is the conversion from a raised error into serializer error output?",
+   "What helper reformats an exception so its messages look like serializer validation errors?"
+  ],
+  "sig:cleanup_url_patterns": [
+   "How do I reset URL patterns after a test that changed them?",
+   "Where is the teardown that restores the original routes in tests?",
+   "What clears temporary URL changes made during testing?"
+  ],
+  "sig:clone_request": [
+   "How do I duplicate a request but change its method before passing it along?",
+   "Where is the code that creates a copy of the request with a different verb?",
+   "What helper lets me reuse an incoming request under a different action type?"
+  ],
+  "sig:exception_handler": [
+   "How can I customize the response body returned when an error is raised inside an API view?",
+   "Where do exceptions get turned into HTTP error responses for the API?",
+   "How do I hook into the step that decides what error response a failed request sends back?"
+  ],
+  "sig:get_view_name": [
+   "How do I get the human-readable name of an endpoint shown in the docs?",
+   "Where is the readable title for a view derived?",
+   "What function generates the label that identifies a view in the browsable API?"
+  ],
+  "sig:list_repr": [
+   "How do I get a printable, indented summary of a list-type serializer for debugging?",
+   "What creates the text shown when printing a collection serializer in the console?",
+   "Where is the code that builds the pretty-printed text for nested serializer output?"
+  ],
+  "sig:markup_description": [
+   "How do I render a view's docstring as formatted markup in the API documentation?",
+   "Where is the description text turned into HTML for display?",
+   "What turns plain description text into markup for the docs page?"
+  ],
+  "sig:raise_errors_on_nested_writes": [
+   "What error happens if I try to save nested related data through a serializer without custom code?",
+   "Where is the guard that stops create or update from writing into nested fields by default?",
+   "Why does saving nested data fail with an error unless I override the method?"
+  ],
+  "sig:render_field": [
+   "How do I render one form input with custom styling in a template?",
+   "Where is the template helper that outputs a single field's HTML?",
+   "What function produces the markup for one form field using a style setting?"
+  ],
+  "sig:search_smart_split": [
+   "How do I break a search string the user typed into individual keywords?",
+   "Where is the logic that separates quoted phrases and words in a search query?",
+   "What function splits the raw search text into terms before matching?"
   ]
  },
  "fastfloat/fast_float": {
@@ -2318,6 +2642,168 @@
    "How do I create a per-thread storage container type for logging context?",
    "How can I make logging context stored separately for each thread using a chosen dictionary type?",
    "What helper builds a thread-local context class from a dictionary type I pass in?"
+  ]
+ },
+ "ibireme/yyjson": {
+  "const:src/yyjson.c:F32_EXP_BITS": [
+   "How many exponent bits does a 32-bit float use in this library's floating-point handling?",
+   "What exponent width is defined for single-precision floats in the number handling code?",
+   "How many bits are reserved for the exponent in the single-precision format used here?"
+  ],
+  "const:src/yyjson.c:MSC_HAS_BIT_SCAN_64": [
+   "Does the build turn on the 64-bit bit-scan compiler intrinsic support for this JSON library?",
+   "How do I check whether the compiler-specific 64-bit bit-scanning feature is enabled in the build setup?",
+   "Is the optimized bit-scan path for 64-bit integers disabled in this configuration?"
+  ],
+  "const:src/yyjson.c:MSG_ERR_TYPE": [
+   "What message does the library show when a JSON value has an unrecognized type?",
+   "What error text is used when a value's type is invalid?",
+   "Which message string reports an invalid value type during processing?"
+  ],
+  "const:src/yyjson.c:MSG_ERR_UTF32": [
+   "What error message does the parser show when someone feeds it UTF-32 encoded input?",
+   "What text is returned when the library rejects a 32-bit wide Unicode encoding?",
+   "Which message tells the user that this wide-character Unicode format isn't handled?"
+  ],
+  "const:src/yyjson.c:YYJSON_HAS_IEEE_754": [
+   "Does this build configuration turn off IEEE 754 floating-point support in the JSON library?",
+   "How do I check whether the library assumes standard floating-point behavior in this build?",
+   "Is the floating-point standard compliance flag disabled for this compile?"
+  ],
+  "const:src/yyjson.h:YYJSON_DISABLE_UTF8_VALIDATION": [
+   "Is UTF-8 validation turned off by default in this JSON library?",
+   "How do I tell whether the library skips checking that input is valid UTF-8?",
+   "Which flag controls whether the library validates UTF-8 encoding, and what is its default setting?"
+  ],
+  "const:src/yyjson.h:YYJSON_GCC_VER": [
+   "What GCC version does the build detect in this JSON library's header?",
+   "Which value tells the library whether the GNU compiler is in use, and what is it set to?",
+   "Is the GCC version macro defined or zero in this configuration?"
+  ],
+  "const:src/yyjson.h:YYJSON_PATCH_ERROR_MEMORY_ALLOCATION": [
+   "What error code is reported when a JSON patch operation runs out of memory?",
+   "Which numeric value signals a memory allocation failure during patching?",
+   "What code does a patch call return when it cannot allocate memory?"
+  ],
+  "const:src/yyjson.h:YYJSON_PTR_ERR_SET_ROOT": [
+   "What error code signals that a JSON pointer refers to the root itself when it isn't allowed?",
+   "Which numeric value represents the error for an attempt to set the whole document as the target?",
+   "What code does the library report when a pointer operation tries to replace the root node?"
+  ],
+  "const:src/yyjson.h:YYJSON_READ_ERROR_UNEXPECTED_CONTENT": [
+   "What error code is reported when a JSON document has extra content that shouldn't be there?",
+   "Which numeric code signals unexpected trailing or misplaced content during parsing?",
+   "What read error value means the parser found content it didn't expect?"
+  ],
+  "sig:char_is_exp": [
+   "How do I check whether a character is an exponent marker in a number being parsed?",
+   "Which helper tests if a byte is the letter that begins the exponent part of a number?",
+   "What function identifies exponent characters while reading a numeric literal?"
+  ],
+  "sig:hex_load_4": [
+   "How do I read four hex characters from a string and convert them into a 16-bit value?",
+   "Which helper decodes a four-digit hexadecimal escape sequence into a numeric code unit?",
+   "What function parses the four hex digits following a unicode escape in a JSON string?"
+  ],
+  "sig:ptr_token_to_idx": [
+   "How do I convert a path token into an array index and detect whether it's valid?",
+   "Which function parses a JSON pointer segment as a number for array access?",
+   "What helper turns a path segment into an array position and reports success?"
+  ],
+  "sig:unsafe_yyjson_get_str": [
+   "How do I get the string content from a JSON value without checking its type first?",
+   "Which unchecked function returns the text of a string node directly?",
+   "What helper extracts the raw string from a JSON value quickly without validation?"
+  ],
+  "sig:unsafe_yyjson_get_subtype": [
+   "What helper extracts the subtype tag from a JSON value without performing type checks?",
+   "Which unchecked function reads the subtype bits of a JSON value?",
+   "How do I get the internal subtype of a value quickly without validation?"
+  ],
+  "sig:unsafe_yyjson_is_sint": [
+   "How do I quickly check whether a JSON value is a signed integer without validating its type first?",
+   "Which unchecked function tests for a signed integer node?",
+   "What helper detects signed integer values without the safety checks?"
+  ],
+  "sig:write_f64_raw_fixed": [
+   "How do I write a 64-bit floating-point number into a buffer as a fixed-precision decimal using its raw bit pattern?",
+   "Which helper formats a double's raw representation into text with a set number of decimal places?",
+   "What function serializes a float from its binary form into a fixed-precision string output?"
+  ],
+  "sig:yyjson_arr_get": [
+   "How do I get the element at a given position from a read-only JSON array?",
+   "Which function returns the item at a numeric index in a parsed array?",
+   "What call fetches an array entry by its position from an immutable JSON array?"
+  ],
+  "sig:yyjson_doc_get_pointer": [
+   "How do I look up a value in a parsed JSON document using a path string?",
+   "Which function gets a nested field from a JSON document by following a slash-separated address?",
+   "What call should I use to fetch data at a location described by a pointer string from the document root?"
+  ],
+  "sig:yyjson_get_pointern": [
+   "How do I get a value from a read-only-capable JSON tree by following a pointer with a known length?",
+   "Which function resolves a sized JSON pointer against a parsed value?",
+   "What call navigates a mutable-capable JSON value using a path string and its length?"
+  ],
+  "sig:yyjson_mut_arr_add_float": [
+   "How do I add a single-precision floating-point number to a mutable JSON array?",
+   "Which function appends a float value to the end of a mutable array?",
+   "What call inserts a 32-bit float element into a mutable JSON array?"
+  ],
+  "sig:yyjson_mut_doc_ptr_add": [
+   "How do I add a new value at a location specified by a pointer in a mutable document?",
+   "Which function inserts a node into a mutable JSON document at a path I give it?",
+   "What call creates a new entry at a path in a mutable JSON document?"
+  ],
+  "sig:yyjson_mut_doc_ptr_replacen": [
+   "How do I replace the value at a pointer location in a mutable JSON document, specifying the path length?",
+   "Which function swaps out the node at a sized path in a mutable document?",
+   "What's the call to overwrite a value at a given pointer in a mutable JSON tree?"
+  ],
+  "sig:yyjson_mut_equals_str": [
+   "How do I check whether a mutable JSON value holds a particular text string?",
+   "Which function compares a mutable node's string content against a C string?",
+   "What call tests if a mutable JSON value matches a given string exactly?"
+  ],
+  "sig:yyjson_mut_get_pointern": [
+   "How do I fetch a value from a mutable JSON tree using a pointer string with an explicit length?",
+   "Which function finds a nested mutable node by following a path of given length?",
+   "What's the call to navigate a mutable document by a sized pointer string?"
+  ],
+  "sig:yyjson_mut_obj_add": [
+   "How do I attach a key-value pair to an object in a mutable JSON tree?",
+   "Which function inserts a named member into a JSON object I'm building?",
+   "What's the call for adding a new field with its value to an existing mutable JSON object?"
+  ],
+  "sig:yyjson_mut_obj_iter_get_val": [
+   "How do I get the value attached to a key in a mutable JSON object iterator?",
+   "Which function retrieves the value paired with a given key during mutable object iteration?",
+   "What call fetches the value node that follows a key when walking a mutable object?"
+  ],
+  "sig:yyjson_mut_set_null": [
+   "How do I turn a mutable JSON value into a null?",
+   "Which function sets an existing mutable node to the null value?",
+   "What call changes a mutable value's type to null?"
+  ],
+  "sig:yyjson_mut_set_sint": [
+   "How do I assign a signed 64-bit integer to a mutable JSON value?",
+   "Which function changes an existing mutable node to hold a signed integer number?",
+   "What call sets a mutable value's content to a signed integer without creating a new node?"
+  ],
+  "sig:yyjson_mut_set_strncpy": [
+   "How do I set a mutable JSON value to a string by copying a given number of characters into the document?",
+   "Which function assigns a sized string copy to a mutable node, allocating from the document?",
+   "What call stores a length-limited copy of text in a mutable value?"
+  ],
+  "sig:yyjson_ptr_getn": [
+   "How do I look up a nested value in a read-only JSON tree using a pointer with a given length?",
+   "Which function resolves a sized path string against an immutable JSON value?",
+   "What is the way to follow a JSON pointer of known length through a parsed document?"
+  ],
+  "sig:yyjson_ptr_getx": [
+   "How do I resolve a path string of a given length against a read-only JSON value and get back an error code on failure?",
+   "Which function looks up a nested JSON value from a sized path buffer and reports what went wrong?",
+   "What's the way to navigate a JSON value by a pointer with explicit length and capture any error details?"
   ]
  },
  "jemalloc/jemalloc": {
@@ -3618,6 +4104,330 @@
    "What test confirms every element in a sequence has matching types?"
   ]
  },
+ "nanomsg/nng": {
+  "const:src/platform/posix/posix_impl.h:NNG_PLATFORM_DIR_SEP": [
+   "What character separates folder names in paths on this operating system?",
+   "Which separator should I use when building paths on this system?",
+   "What is the directory delimiter used in paths here?"
+  ],
+  "const:src/sp/protocol/pubsub0/sub.c:SUB0_DEFAULT_RECV_BUF_LEN": [
+   "How big is the default receive buffer for a subscriber socket?",
+   "What is the initial receive buffer size for the subscribe protocol?",
+   "What default buffer length does a subscribing socket use when receiving?"
+  ],
+  "const:src/sp/protocol/reqrep0/xrep.c:REP0_SELF": [
+   "What code identifies the self role for the request-reply responder socket?",
+   "Which numeric code marks the reply-side socket's own identity?",
+   "What constant tags the reply socket type when it refers to its own node?"
+  ],
+  "const:src/supplemental/tls/tls_engine.h:NNI_TLS_MAX_GROUPS": [
+   "How many key-exchange groups can the security engine hold at most?",
+   "What is the maximum number of supported named curve groups in the secure engine?",
+   "What is the upper limit on key-exchange groups the security engine supports?"
+  ],
+  "const:src/testing/acutest.h:ACUTEST_COLOR_GREEN_INTENSIVE_": [
+   "What terminal color setting produces bright green text in the unit test tool?",
+   "Which display code gives intense green output in the test framework?",
+   "What color code does the test framework use for bright green text?"
+  ],
+  "sig:nng_aio_reap": [
+   "How do I release a finished asynchronous operation handle and free its resources?",
+   "Which call cleans up an async I/O request object once it is done?",
+   "How can I dispose of a pending operation's handle after it completes?"
+  ],
+  "sig:nng_dialer_set_ms": [
+   "How do I set a time-based option on a dialer to a given duration?",
+   "Which call changes a dialer's timeout setting?",
+   "How can I configure the delay value of a connection-initiating endpoint?"
+  ],
+  "sig:nng_http_read": [
+   "How do I start reading an HTTP response from a connection asynchronously?",
+   "Which function begins receiving HTTP data on a connection with a completion handle?",
+   "How can I read an incoming web request on an open connection?"
+  ],
+  "sig:nng_http_server_get_port": [
+   "How do I find out which port an HTTP server is listening on?",
+   "Which call reports the port number my web server bound to?",
+   "How can I query the listening port of an HTTP server?"
+  ],
+  "sig:nng_listener_get_string": [
+   "How do I read a text property of a listener by its name?",
+   "Which call fetches a string-valued setting from a listening endpoint?",
+   "How can I look up a named string attribute on a listener?"
+  ],
+  "sig:nng_msg_alloc": [
+   "How do I create a new message with a given payload size?",
+   "Which call allocates a fresh message buffer of a requested length?",
+   "How can I make an empty message object sized for my data?"
+  ],
+  "sig:nng_recv": [
+   "How do I receive a message from a socket into my own buffer and get its size back?",
+   "Which function blocks to pull incoming data off a socket?",
+   "How can I read an incoming message with flags that control the wait behavior?"
+  ],
+  "sig:nng_stat_type": [
+   "How do I find out what kind of statistic an entry represents?",
+   "Which call tells me the category of a stats record?",
+   "How can I check whether a stats item is a counter or a gauge?"
+  ],
+  "sig:nng_stats_dump": [
+   "How do I print out all the fields of a statistics record?",
+   "Which call writes a readable summary of a single stats entry?",
+   "How can I display the contents of one statistics object for debugging?"
+  ],
+  "sig:nng_tls_cert_free": [
+   "How do I release a certificate object I no longer need?",
+   "Which call frees a parsed certificate and its memory?",
+   "How can I clean up a certificate handle when I'm done with it?"
+  ],
+  "sig:nng_tls_cert_parse_der": [
+   "How do I turn a raw binary certificate into a parsed certificate object?",
+   "Which call decodes an encoded certificate blob into a usable handle?",
+   "How do I load a binary-encoded certificate from a memory buffer into a certificate object?"
+  ],
+  "sig:nng_url_hostname": [
+   "How do I get the host portion of a parsed address?",
+   "Which helper returns the server name from a parsed URL?",
+   "How can I pull the machine name out of a URL structure?"
+  ],
+  "sig:nni_aio_completions_add_msg": [
+   "How do I attach a message to a completion list for an async operation?",
+   "Which routine adds a finished message to an operation's completion queue?",
+   "How can I register a message result with a pending I/O request's completions?"
+  ],
+  "sig:nni_copyin_size": [
+   "How do I read a size-type option and check that it falls within a range?",
+   "Which helper copies in a bounded numeric size setting from user input?",
+   "How can I validate and store a size option with minimum and maximum limits?"
+  ],
+  "sig:nni_copyin_str": [
+   "How can I copy a text string from a caller's buffer into an option while checking its type?",
+   "Which helper reads a string option from a user-supplied pointer and length?",
+   "What routine stores a text setting from the application into an internal option slot?"
+  ],
+  "sig:nni_copyout_sockaddr": [
+   "How do I copy a socket address out to the caller's buffer?",
+   "Which helper returns an address structure to user memory with a length check?",
+   "How can I read a network address option into an application-provided buffer?"
+  ],
+  "sig:nni_file_basename": [
+   "How do I get just the final name portion of a file path?",
+   "Which helper strips the directory parts off a path string?",
+   "How can I extract the filename from a full path?"
+  ],
+  "sig:nni_http_client_connect": [
+   "How do I start connecting an HTTP client asynchronously?",
+   "Which function initiates an HTTP client connection with a completion handle?",
+   "How can I open a client connection for web requests without blocking?"
+  ],
+  "sig:nni_id_get": [
+   "How do I look up an entry in an ID-keyed map by its numeric key?",
+   "Which function finds a stored item in a hash table by its identifier number?",
+   "How can I retrieve a record from the ID table given a wide numeric key?"
+  ],
+  "sig:nni_msg_insert": [
+   "How do I add raw bytes into the middle of a message at a given position?",
+   "Which routine inserts a block of data into an existing message buffer?",
+   "How can I splice a chunk of bytes into a message I already built?"
+  ],
+  "sig:nni_mtx_lock": [
+   "How do I acquire a mutex lock before touching shared state?",
+   "Which call locks a mutual-exclusion object for thread safety?",
+   "How can I take exclusive access with a lock in multithreaded code?"
+  ],
+  "sig:nni_pipe_hold": [
+   "How do I increase the reference count on a pipe so it stays alive?",
+   "Which call keeps a pipe object from being freed while I use it?",
+   "How can I take a hold on a connection pipe to prevent its release?"
+  ],
+  "sig:nni_pipe_remove": [
+   "How do I detach a pipe from its socket?",
+   "Which call removes a connection pipe from the socket's internal list?",
+   "How can I unlink a pipe object from its owning socket?"
+  ],
+  "sig:nni_strdup": [
+   "How do I make a copy of a string that I own in heap memory?",
+   "Which helper duplicates a text string so it can be stored independently?",
+   "How can I allocate and copy a null-terminated string?"
+  ],
+  "sig:nni_stream_listener_get_tls": [
+   "How do I get the encryption settings attached to a stream listener?",
+   "Which call retrieves the secure configuration from a listener for a stream?",
+   "How can I fetch the security config object of a listening stream?"
+  ],
+  "sig:nni_tls_close": [
+   "How do I shut down a secured connection cleanly?",
+   "Which call closes a secure connection object?",
+   "How can I terminate an encrypted session connection?"
+  ],
+  "sig:usdelay": [
+   "How do I pause the program for a short number of microseconds in a performance tool?",
+   "Which helper sleeps briefly in the publish-drop benchmark?",
+   "How can I add a microsecond-level delay in the benchmark code?"
+  ]
+ },
+ "python-poetry/poetry-core": {
+  "sig:AmbiguousExpander.__init__": [
+   "How do I set up the component that expands ambiguous parse results?",
+   "What constructor creates the expander for ambiguous tree nodes?",
+   "How is the helper initialized to handle expansions when building trees?"
+  ],
+  "sig:AnyMarker.exclude": [
+   "How do I build a condition that excludes one named environment variable?",
+   "How can I create an environment condition with a specific variable removed?",
+   "What gives me an always-true condition with a named variable taken out?"
+  ],
+  "sig:BaseMarker.complexity": [
+   "How do I measure how complex an environment condition is?",
+   "Is there a way to get a score for how many parts an environment condition has?",
+   "How can I rank environment conditions by their complexity?"
+  ],
+  "sig:CYK_FrontEnd.parse": [
+   "How do I parse a token stream using a table-based method?",
+   "What runs the table-based parser on input starting from a chosen rule?",
+   "How can I parse tokens with this frontend starting from a given rule?"
+  ],
+  "sig:Dependency.__init__": [
+   "How do I create a new dependency with a version requirement and optional extras or groups?",
+   "What constructs a dependency record including its source location and reference?",
+   "How can I make a dependency object for a package with optional group and extra settings?"
+  ],
+  "sig:FindRuleSize.expansions": [
+   "How do I compute the size of each option in a grammar rule?",
+   "What helper measures how many symbols each alternative of a rule expands to?",
+   "How can I find the length of rule alternatives when sizing the grammar?"
+  ],
+  "sig:ForestTransformer.transform_token_node": [
+   "How do I transform a leaf token inside a parse forest?",
+   "What handles single token nodes when transforming an ambiguous parse result?",
+   "How do I customize how individual tokens get processed in the forest?"
+  ],
+  "sig:InteractiveParser.accepts": [
+   "How do I see which tokens are valid next in the parser?",
+   "What tells me the expected inputs at the current parse state?",
+   "How can I check what the step-by-step parser would accept right now?"
+  ],
+  "sig:InteractiveParser.feed_eof": [
+   "How do I tell an incremental parser that no more input is coming?",
+   "What call marks the end of the token stream for a step-by-step parser?",
+   "Is there a way to finish feeding a partial parser so it can produce its final result?"
+  ],
+  "sig:PEP440Version.first_prerelease": [
+   "How do I get the first pre-release version after this one?",
+   "What gives the smallest beta or release-candidate version above this version?",
+   "How can I find the lowest pre-release for a version?"
+  ],
+  "sig:PEP440Version.is_stable": [
+   "How do I check whether a version is a stable release?",
+   "How can I tell if a version number is a final release rather than a beta or dev build?",
+   "Is there a method that says whether this version counts as stable?"
+  ],
+  "sig:Package.pretty_name": [
+   "How do I get the readable name of a package for showing to users?",
+   "What gives the formatted display name of a package?",
+   "How can I get the name as the author wrote it rather than the normalized form?"
+  ],
+  "sig:Package.unique_name": [
+   "How do I get a distinct name for a package that tells it apart from others with the same name?",
+   "What gives a unique string label for a package object?",
+   "How can I produce a non-ambiguous name for a package?"
+  ],
+  "sig:PackageInclude.refresh": [
+   "How do I update a package include rule after files change?",
+   "What reloads the include settings for packages during the build?",
+   "How can I make a package inclusion entry recompute its matched files?"
+  ],
+  "sig:PackageSpecification.is_same_package_as": [
+   "How do I tell if two package specifications refer to the same package?",
+   "What checks whether a specification and another specification identify the same project?",
+   "How can I compare package identities between two specifications?"
+  ],
+  "sig:Pattern.max_width": [
+   "How do I find the maximum number of characters a token pattern can match?",
+   "What gives the upper bound on the width of a lexer pattern?",
+   "How can I tell the longest possible match of a pattern?"
+  ],
+  "sig:PyProjectTOML.data": [
+   "How do I get the parsed data from the project's configuration file?",
+   "Where can I read the contents of the project settings file as a structured object?",
+   "Which function gives me the loaded settings from the project configuration file?"
+  ],
+  "sig:Serialize.serialize": [
+   "How do I convert this object into a form I can save or send?",
+   "What turns a grammar or structure into a serializable form without looping forever?",
+   "How can I serialize something that may contain references to itself?"
+  ],
+  "sig:SingleMarkerLike.only": [
+   "How can I tell if a single environment condition only uses certain named variables?",
+   "Which method checks that a lone environment condition involves just the names I pass in?",
+   "How do I test whether an environment condition depends solely on a given set of names?"
+  ],
+  "sig:SpecifierSet.is_subset": [
+   "How do I check that one set of version requirements fits entirely inside another?",
+   "Is there a way to tell if every version allowed by one specifier set is also allowed by another?",
+   "How can I confirm one version specifier collection is a subset of another?"
+  ],
+  "sig:Transformer.transform": [
+   "How do I apply a transformation to every node in a parse tree?",
+   "What method runs my transformer over a tree and gives back the output?",
+   "How do I process a tree with a visitor that rewrites it?"
+  ],
+  "sig:Value.serialize": [
+   "How do I turn a parsed version value back into a string?",
+   "What converts a value node back to its text representation?",
+   "How can I write a parsed environment condition value out as text?"
+  ],
+  "sig:VersionRange.full": [
+   "How do I get a version range that accepts all versions?",
+   "What creates an unrestricted version range, with options for pre-releases?",
+   "How can I build a range that matches any version?"
+  ],
+  "sig:VersionRange.max": [
+   "How do I find the upper end of a version range?",
+   "What gives the maximum version allowed by a range?",
+   "How can I get the top version of a range object?"
+  ],
+  "sig:contains": [
+   "How do I check if one constraint fully covers another?",
+   "Is there a way to test whether a range constraint includes a second one?",
+   "How can I see if one generic constraint is a superset of another?"
+  ],
+  "sig:default_environment": [
+   "How can I get the details of the current Python interpreter for evaluating environment conditions?",
+   "What returns the system and interpreter information used to check environment conditions?",
+   "How do I fetch the running platform and Python version details as a mapping?"
+  ],
+  "sig:is_url": [
+   "How do I tell if a dependency name is actually a web address?",
+   "What tests whether this text is a link rather than a package name?",
+   "How can I check if an input string points to a URL?"
+  ],
+  "sig:mac_platforms": [
+   "How do I get the macOS platform compatibility tags for a version and CPU type?",
+   "What lists the macOS platform identifiers a built package can target?",
+   "How can I generate macOS tags for a specific OS version and architecture?"
+  ],
+  "sig:pydot__tree_to_png": [
+   "How do I draw a parse tree as an image file?",
+   "What exports a tree visualization to PNG with a configurable direction?",
+   "How can I save a parse tree as a picture?"
+  ],
+  "sig:ranges_are_prerelease_only": [
+   "How do I check whether all the version ranges I have are pre-releases only?",
+   "How can I tell if a collection of version intervals contains nothing but pre-release versions?",
+   "Is there a helper that determines whether every range in a list is a pre-release range?"
+  ],
+  "sig:splitext": [
+   "How do I separate a file's name from its extension in this codebase?",
+   "What helper splits a path into its base and suffix, optionally treating the input as a bare filename?",
+   "How can I get the extension off a path while keeping the rest?"
+  ],
+  "sig:translate": [
+   "How do I rewrite a tree using a template pattern?",
+   "What function converts a parse tree from one template into another?",
+   "How can I translate a tree between two template formats?"
+  ]
+ },
  "python-poetry/tomlkit": {
   "const:tomlkit/parser.py:CHR_DEL": [
    "What code point represents the delete control character in the parser?",
@@ -3933,6 +4743,168 @@
    "How do I turn a plain text value into an entry I can write into a settings file, with control over whether backslashes get escaped?",
    "Which helper creates a text entry for a config document that can span several lines or keep its contents unprocessed?",
    "What is the way to wrap some text so it serializes correctly in a settings document?"
+  ]
+ },
+ "taocpp/PEGTL": {
+  "const:include/tao/pegtl/version.hpp:TAO_PEGTL_VERSION_MINOR": [
+   "What is the minor version number of this parsing library?",
+   "Which release line does this version of the parser belong to?",
+   "How can I check the minor part of the library's version macro?"
+  ],
+  "sig:basic_node::emplace_back": [
+   "How do I add a child node to a parse tree node and pass along extra state?",
+   "What function attaches a new child subtree to a parse tree node?",
+   "Where is the code that appends an owned child node to a tree node during parsing?"
+  ],
+  "sig:basic_node::remove_content": [
+   "How do I clear out the stored content of a parse tree node while keeping the node itself?",
+   "What function empties a parse tree node's data during parsing?",
+   "How can I drop the matched text from a tree node in a parse tree with extra state?"
+  ],
+  "sig:basic_node::success": [
+   "How does a parse tree node get marked as successfully matched?",
+   "What function runs when a tree node's rule has finished matching successfully?",
+   "Where is the success handler for parse tree nodes that takes the input and extra state?"
+  ],
+  "sig:change_action_and_states::constexpr": [
+   "How do I pick at compile time whether an action and its states are active or disabled?",
+   "What compile-time switch controls whether actions and state are applied for a rule?",
+   "How can I make an action-change wrapper run only when a flag is set, decided during compilation?"
+  ],
+  "sig:copy_input::consume": [
+   "How do I advance the read position of a copying input by a given number of characters?",
+   "What moves a copied input forward past a number of bytes?",
+   "How do I skip ahead a set count in an input that copies its data?"
+  ],
+  "sig:copy_input::rewind_to_position": [
+   "How do I return a copied input to a saved position after a failed match attempt?",
+   "What restores the read position of the copying input to a checkpoint?",
+   "How do I backtrack an input that makes its own copy of the data?"
+  ],
+  "sig:count_position::apply_offset": [
+   "How do I shift a position counter by an offset, such as when joining parts of input?",
+   "What adds a given offset to the line and column tracking of a position?",
+   "How can I move a count position forward by a fixed amount?"
+  ],
+  "sig:coverage": [
+   "How do I measure which grammar rules and branches a parser actually exercised during a run?",
+   "Where is the function that records parse coverage results across the input and any extra state?",
+   "What does the debug coverage helper do when it is handed the parsing input and a result object?"
+  ],
+  "sig:coverage_state::raise_nested": [
+   "How do I handle a nested exception inside the coverage tracker when a rule raises an error?",
+   "What function in the coverage state reports a nested exception from a rule?",
+   "Where is the code that passes a wrapped exception through the coverage recording layer?"
+  ],
+  "sig:ignore_arguments": [
+   "How do I discard all the arguments passed to a function without writing unused-variable warnings?",
+   "What helper accepts any arguments and does nothing with them?",
+   "How can I write a placeholder that swallows any number of parameters?"
+  ],
+  "sig:input_with_start::restart": [
+   "How do I reset an input that tracks a start position so it begins parsing again from that point?",
+   "What restores the input with a start offset back to its initial state?",
+   "How can I restart a parse on an input that has a designated starting position?"
+  ],
+  "sig:rematch::i2": [
+   "How do I test whether a rematch-style matcher succeeds on the second part of its input?",
+   "What is the second step of the rematch matching logic that checks the input?",
+   "Where is the helper that runs the follow-up match in the rematch rule?"
+  ],
+  "sig:rematch_input_impl::rewind_to_position": [
+   "How do I jump a regex-style rematch input back to a previously saved spot?",
+   "What resets the reading position of the matching input to where it was earlier?",
+   "How can I roll back a rematch parse to a checkpoint I stored before trying an alternative?"
+  ],
+  "sig:resize_uninitialized": [
+   "How do I change the size of a string or byte buffer without paying for zeroing its contents?",
+   "What helper grows a container to a given length while leaving the new elements uninitialized?",
+   "How can I resize a string or byte vector quickly when I will overwrite all of its contents anyway?"
+  ],
+  "sig:state::emplace_back": [
+   "How do I add a new empty entry to the parse tree state's stack?",
+   "What function pushes a fresh element onto the state used while building a parse tree?",
+   "Where is the code that creates a new blank node on the parse tree state?"
+  ],
+  "sig:state::pop_back": [
+   "How do I remove the most recent entry from the parse tree state's stack?",
+   "What function drops the last element off the stack used while building a parse tree?",
+   "How can I pop the top node from the parse tree state after I'm done with it?"
+  ],
+  "sig:stream_input_base::buffer_assert_consistency": [
+   "How do I check that the internal buffer bookkeeping of a stream input is still in a valid state?",
+   "What function verifies the consistency of the buffer used by a streaming input?",
+   "Where is the debugging check that asserts a stream's buffer state is correct?"
+  ],
+  "sig:stream_input_with_auto_discard::auto_discard": [
+   "How do I make a streaming input drop data it no longer needs automatically?",
+   "What function discards consumed buffer contents in an input that auto-discards?",
+   "How can I turn on automatic cleanup of already-read data in a stream input?"
+  ],
+  "sig:string_proxy::resize_uninitialized_proxy": [
+   "How do I resize a string-like proxy object without initializing its characters?",
+   "What helper resizes a proxy wrapper around a string or vector without filling it?",
+   "How can I grow a string proxy to a given size efficiently?"
+  ],
+  "sig:terminal_rule_traits::constexpr": [
+   "How do I check at compile time whether the end-of-line rule matches the same character as the terminal rule?",
+   "What compile-time test compares the end-of-line character rule with a given terminal rule?",
+   "Where is the trait that decides if an end-of-line rule and a terminal rule are the same type?"
+  ],
+  "sig:text_input::consume": [
+   "How do I move forward a set number of characters in a text input?",
+   "What advances the read position of a plain text input by a count?",
+   "How can I consume a given number of characters from a string-based input?"
+  ],
+  "sig:text_input::restart": [
+   "How do I reset a text input so I can parse the same string again from the beginning?",
+   "What puts a plain text input back to its starting position?",
+   "How can I rewind a string-based input to the start without creating a new one?"
+  ],
+  "sig:trace_state::apply": [
+   "How do I log what the parser is doing at each step for debugging?",
+   "Where is the function that prints tracing output for each rule the parser applies?",
+   "What handles the per-step trace reporting when a grammar rule runs?"
+  ],
+  "sig:trace_struct::print_position": [
+   "How do I print the current position in a debug trace?",
+   "What function outputs the location of the parser during tracing?",
+   "Where is the code that writes the position information for each trace line?"
+  ],
+  "sig:trace_struct::raise": [
+   "How do I throw the parse error for a trace-enabled rule when matching fails?",
+   "What raises the exception from the tracing layer when a debug parse goes wrong?",
+   "Where is the code that turns a trace failure into a thrown error?"
+  ],
+  "sig:trace_struct::start": [
+   "How do I begin a trace report when a debug parse starts?",
+   "What function kicks off tracing for a rule when it begins matching?",
+   "Where is the start hook for the debug tracing of a struct rule?"
+  ],
+  "sig:trace_struct::unwind": [
+   "How do I report a trace when a parse has to back out to an earlier error position?",
+   "What handles the trace output when the parser unwinds to a given position?",
+   "Where is the logic that records unwinding during debug tracing of a struct rule?"
+  ],
+  "sig:trace_struct::wont_rewind": [
+   "How do I record that a trace position was reached without a rewind happening?",
+   "What handles the case in debug tracing where the parser will not go back to a saved position?",
+   "Where is the code that notes a rewind position will never be used during tracing?"
+  ],
+  "sig:utf8_append_4_impl": [
+   "How do I encode a single Unicode code point as a four-byte UTF-8 sequence and add it to a string?",
+   "What helper appends a four-byte UTF-8 character to an existing string?",
+   "Where is the code that writes a 4-byte UTF-8 encoding of a char32 value into a string?"
+  ],
+  "sig:value_slot::store": [
+   "How do I store a parsed value into a slot that a builder is holding onto?",
+   "What puts a value into the holder used by the value-building utilities?",
+   "How can I assign a result to a builder slot, moving it in when possible?"
+  ],
+  "sig:visit_nested": [
+   "How do I walk through nested exceptions and call a visitor on each one?",
+   "What helper applies a visitor to an exception or exception pointer, including any nested ones?",
+   "How can I handle every level of a chained exception with a single callable?"
   ]
  },
  "yaml/pyyaml": {

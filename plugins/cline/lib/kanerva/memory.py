@@ -17,7 +17,18 @@ import numpy as np
 
 from .bandit import LinearBandit
 from .embed import Embedder, HashingEmbedder
-from .learning import HELPED_QUERIES, PROBE_BUDGET, PROBE_FLOOR, Tuning, compare, note_group, pool, probes, reach, shadow_update
+from .learning import (
+    HELPED_QUERIES,
+    PROBE_BUDGET,
+    PROBE_FLOOR,
+    Tuning,
+    compare,
+    note_group,
+    pool,
+    probes,
+    reach,
+    shadow_update,
+)
 from .policy import (
     BANDIT_THETA,
     LEXICAL_THETA,

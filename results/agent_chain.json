@@ -1,431 +1,532 @@
 {
  "meta": {
   "experiment": "learning from verdicts on chains of real sessions",
-  "commit": "a63c370e43cd-dirty",
+  "commit": "14f7c6d0a448-dirty",
   "agent": "2.1.314 (Claude Code)",
   "model": "claude-sonnet-5-5",
   "sessions": 24,
   "recurrence": 0.353,
   "store_notes": 160,
   "repos": [
-   "dateutil/dateutil",
-   "PyCQA/isort",
-   "Pylons/pyramid",
-   "jemalloc/jemalloc",
-   "ToruNiina/toml11",
-   "fastfloat/fast_float"
+   "encode/django-rest-framework",
+   "python-poetry/poetry-core",
+   "agronholm/apscheduler",
+   "nanomsg/nng",
+   "ibireme/yyjson",
+   "taocpp/PEGTL"
   ],
   "pass": {
-   "loss": 0.05
+   "right_loss": 0.05,
+   "tokens_rise": 0.25
   },
-  "cost_usd": 34.93,
-  "seconds": 1471
+  "prompt": "{question} (round {n})",
+  "chore": "\n# Documentation rounds\nEach request asks a question and names a round N. Write the answer to docs/roundN/answer.md, who the project is for to\ndocs/roundN/audience.md, and one line per file to docs/roundN/index.md, then stop.\n",
+  "cost_usd": 37.51,
+  "seconds": 1966
  },
  "budgets": {
   "default": {
    "helped_count": {
-    "p": 0.625,
-    "fixed": 11.3333,
-    "learned": 11.6667,
-    "delta": 0.3333,
+    "p": 1.0,
+    "fixed": 8.6667,
+    "learned": 8.6667,
+    "delta": 0.0,
     "interval": [
-     -0.3333,
-     0.8333
+     -2.3333,
+     2.3333
     ],
-    "up": 3,
-    "down": 1
+    "up": 4,
+    "down": 2
    },
    "right_count": {
-    "p": 0.25,
-    "fixed": 9.1667,
-    "learned": 8.0,
-    "delta": -1.1667,
+    "p": 0.75,
+    "fixed": 9.8333,
+    "learned": 9.5,
+    "delta": -0.3333,
     "interval": [
-     -2.5,
-     -0.1667
+     -1.1667,
+     0.3333
     ],
-    "up": 0,
-    "down": 3
+    "up": 1,
+    "down": 2
+   },
+   "quoted": {
+    "p": 1.0,
+    "fixed": 0.6806,
+    "learned": 0.6667,
+    "delta": -0.0139,
+    "interval": [
+     -0.1111,
+     0.0972
+    ],
+    "up": 1,
+    "down": 2
    },
    "probed": {
-    "p": 0.031,
+    "p": 0.062,
     "fixed": 0.0,
-    "learned": 0.1597,
-    "delta": 0.1597,
+    "learned": 0.1528,
+    "delta": 0.1528,
     "interval": [
-     0.1111,
-     0.2153
+     0.0764,
+     0.2222
     ],
-    "up": 6,
+    "up": 5,
     "down": 0
    },
    "seeded_share": {
-    "p": 0.312,
-    "fixed": 0.1485,
-    "learned": 0.2074,
-    "delta": 0.0588,
+    "p": 0.281,
+    "fixed": 0.2647,
+    "learned": 0.3633,
+    "delta": 0.0986,
     "interval": [
-     -0.0092,
-     0.136
+     -0.021,
+     0.2334
     ],
     "up": 4,
-    "down": 1
+    "down": 2
    },
    "helped_sessions": {
-    "p": 0.625,
-    "fixed": 0.9444,
-    "learned": 0.9722,
-    "delta": 0.0278,
+    "p": 1.0,
+    "fixed": 0.7222,
+    "learned": 0.7222,
+    "delta": 0.0,
     "interval": [
-     -0.0278,
-     0.0694
+     -0.1944,
+     0.1944
     ],
-    "up": 3,
-    "down": 1
+    "up": 4,
+    "down": 2
    },
    "repeat_helped": {
     "p": 1.0,
-    "fixed": 0.9667,
-    "learned": 1.0,
-    "delta": 0.0333,
+    "fixed": 0.7917,
+    "learned": 0.7083,
+    "delta": -0.0833,
     "interval": [
-     0.0,
-     0.1
+     -0.375,
+     0.125
     ],
     "up": 1,
-    "down": 0
+    "down": 1
    },
    "helped_share": {
-    "p": 0.906,
-    "fixed": 0.2099,
-    "learned": 0.2083,
-    "delta": -0.0015,
+    "p": 0.781,
+    "fixed": 0.2946,
+    "learned": 0.2769,
+    "delta": -0.0176,
     "interval": [
-     -0.0434,
-     0.0343
+     -0.0832,
+     0.0296
     ],
     "up": 3,
     "down": 3
    },
    "needed_shown": {
-    "p": 0.25,
-    "fixed": 0.2361,
-    "learned": 0.3194,
-    "delta": 0.0833,
+    "p": 0.5,
+    "fixed": 0.4167,
+    "learned": 0.4722,
+    "delta": 0.0556,
     "interval": [
-     0.0,
-     0.1667
+     -0.0139,
+     0.1389
     ],
-    "up": 4,
+    "up": 3,
     "down": 1
    },
    "repeat_needed_shown": {
-    "p": 0.25,
-    "fixed": 0.1806,
-    "learned": 0.3028,
-    "delta": 0.1222,
+    "p": 1.0,
+    "fixed": 0.3194,
+    "learned": 0.4028,
+    "delta": 0.0833,
     "interval": [
-     0.0333,
-     0.2333
+     0.0,
+     0.25
     ],
-    "up": 3,
+    "up": 1,
     "down": 0
    },
    "tokens": {
-    "p": 0.969,
-    "fixed": 583.3333,
-    "learned": 585.0556,
-    "delta": 1.7222,
+    "p": 0.219,
+    "fixed": 317.875,
+    "learned": 266.7917,
+    "delta": -51.0833,
     "interval": [
-     -45.6944,
-     55.0139
+     -125.3333,
+     15.0556
     ],
-    "up": 2,
-    "down": 4
+    "up": 1,
+    "down": 5
    },
    "lookups": {
-    "p": 0.844,
-    "fixed": 3.8194,
-    "learned": 3.9444,
-    "delta": 0.125,
+    "p": 1.0,
+    "fixed": 4.8194,
+    "learned": 4.8194,
+    "delta": 0.0,
     "interval": [
-     -1.0417,
-     1.375
+     -0.4167,
+     0.625
     ],
-    "up": 3,
-    "down": 3
+    "up": 1,
+    "down": 5
    },
    "right": {
-    "p": 0.25,
-    "fixed": 0.7639,
-    "learned": 0.6667,
-    "delta": -0.0972,
+    "p": 0.75,
+    "fixed": 0.8194,
+    "learned": 0.7917,
+    "delta": -0.0278,
     "interval": [
-     -0.2083,
-     -0.0139
+     -0.0972,
+     0.0278
     ],
-    "up": 0,
-    "down": 3
+    "up": 1,
+    "down": 2
    },
    "cost": {
-    "p": 1.0,
-    "fixed": 0.1176,
-    "learned": 0.1175,
-    "delta": -0.0001,
+    "p": 0.25,
+    "fixed": 0.1234,
+    "learned": 0.1154,
+    "delta": -0.0081,
     "interval": [
-     -0.0045,
-     0.0066
+     -0.0199,
+     0.0028
     ],
     "up": 2,
     "down": 4
    },
    "shown": {
-    "p": 1.0,
-    "fixed": 9.4444,
-    "learned": 9.4583,
-    "delta": 0.0139,
+    "p": 0.375,
+    "fixed": 5.2639,
+    "learned": 4.6944,
+    "delta": -0.5694,
     "interval": [
-     -0.4722,
-     0.5694
+     -1.5139,
+     0.25
     ],
-    "up": 3,
-    "down": 3
+    "up": 2,
+    "down": 4
    },
    "passed": false
   }
  },
+ "lift": {
+  "chains": 2,
+  "scored_sessions": 5
+ },
+ "tuning": [
+  {
+   "repo": "encode/django-rest-framework",
+   "arm": "fixed",
+   "shift": 0.0,
+   "floor": 1.0,
+   "probe": 0.1
+  },
+  {
+   "repo": "encode/django-rest-framework",
+   "arm": "learned",
+   "shift": 0.0,
+   "floor": 1.0,
+   "probe": 0.1
+  },
+  {
+   "repo": "python-poetry/poetry-core",
+   "arm": "fixed",
+   "shift": 0.0,
+   "floor": 1.0,
+   "probe": 0.1
+  },
+  {
+   "repo": "python-poetry/poetry-core",
+   "arm": "learned",
+   "shift": -1.0,
+   "floor": 1.0,
+   "probe": 0.1
+  },
+  {
+   "repo": "agronholm/apscheduler",
+   "arm": "fixed",
+   "shift": 0.0,
+   "floor": 1.0,
+   "probe": 0.1
+  },
+  {
+   "repo": "agronholm/apscheduler",
+   "arm": "learned",
+   "shift": -2.0,
+   "floor": 1.0,
+   "probe": 0.1
+  },
+  {
+   "repo": "nanomsg/nng",
+   "arm": "fixed",
+   "shift": 0.0,
+   "floor": 1.0,
+   "probe": 0.1
+  },
+  {
+   "repo": "nanomsg/nng",
+   "arm": "learned",
+   "shift": 0.0,
+   "floor": 1.0,
+   "probe": 0.1
+  },
+  {
+   "repo": "ibireme/yyjson",
+   "arm": "fixed",
+   "shift": 0.0,
+   "floor": 1.0,
+   "probe": 0.1
+  },
+  {
+   "repo": "ibireme/yyjson",
+   "arm": "learned",
+   "shift": 0.0,
+   "floor": 1.0,
+   "probe": 0.1
+  },
+  {
+   "repo": "taocpp/PEGTL",
+   "arm": "fixed",
+   "shift": 0.0,
+   "floor": 1.0,
+   "probe": 0.1
+  },
+  {
+   "repo": "taocpp/PEGTL",
+   "arm": "learned",
+   "shift": 0.0,
+   "floor": 1.0,
+   "probe": 0.1
+  }
+ ],
  "shadow": [
   {
-   "repo": "dateutil/dateutil",
+   "repo": "encode/django-rest-framework",
    "budget": "default",
    "arm": "fixed",
    "records": {
     "project": {
-     "model": 72.83221497591451,
-     "learned": 74.24724734775356,
-     "pairs": 118.31687484070994,
+     "model": 35.599787685557104,
+     "learned": 35.6178661014931,
+     "pairs": 46.8840814136211,
      "on": false
     },
     "*": {
-     "model": 72.83221497591451,
-     "learned": 74.24724734775356,
-     "pairs": 118.31687484070994,
+     "model": 35.599787685557104,
+     "learned": 35.6178661014931,
+     "pairs": 46.8840814136211,
      "on": false
     }
    }
   },
   {
-   "repo": "dateutil/dateutil",
+   "repo": "encode/django-rest-framework",
    "budget": "default",
    "arm": "learned",
    "records": {
     "project": {
-     "model": 69.40480240858678,
-     "learned": 70.36630897162892,
-     "pairs": 106.63965246712162,
+     "model": 25.243254429722874,
+     "learned": 30.430671003724942,
+     "pairs": 43.01384919612242,
      "on": true
     },
     "*": {
-     "model": 69.40480240858678,
-     "learned": 70.36630897162892,
-     "pairs": 106.63965246712162,
+     "model": 25.243254429722874,
+     "learned": 30.430671003724942,
+     "pairs": 43.01384919612242,
      "on": true
     }
    }
   },
   {
-   "repo": "PyCQA/isort",
+   "repo": "python-poetry/poetry-core",
    "budget": "default",
    "arm": "fixed",
    "records": {
     "project": {
-     "model": 62.735921618854036,
-     "learned": 72.9219065227383,
-     "pairs": 97.8648865062915,
-     "on": true
+     "model": 35.236004321063106,
+     "learned": 35.31812721031156,
+     "pairs": 46.16599977334717,
+     "on": false
     },
     "*": {
-     "model": 62.735921618854036,
-     "learned": 72.9219065227383,
-     "pairs": 97.8648865062915,
-     "on": true
+     "model": 35.236004321063106,
+     "learned": 35.31812721031156,
+     "pairs": 46.16599977334717,
+     "on": false
     }
    }
   },
   {
-   "repo": "PyCQA/isort",
+   "repo": "python-poetry/poetry-core",
    "budget": "default",
    "arm": "learned",
    "records": {
     "project": {
-     "model": 133.49193335465,
-     "learned": 132.65813389342827,
-     "pairs": 168.4869665838599,
+     "model": 38.441341215309755,
+     "learned": 35.97044553067278,
+     "pairs": 49.100639587537074,
      "on": false
     },
     "*": {
-     "model": 133.49193335465,
-     "learned": 132.65813389342827,
-     "pairs": 168.4869665838599,
+     "model": 38.441341215309755,
+     "learned": 35.97044553067278,
+     "pairs": 49.100639587537074,
      "on": false
     }
    }
   },
   {
-   "repo": "Pylons/pyramid",
+   "repo": "agronholm/apscheduler",
    "budget": "default",
    "arm": "fixed",
    "records": {
     "project": {
-     "model": 66.85031854712251,
-     "learned": 75.06844318530902,
-     "pairs": 110.97368810007998,
+     "model": 49.37180483943045,
+     "learned": 71.37959261452434,
+     "pairs": 86.02342292026371,
      "on": true
     },
     "*": {
-     "model": 66.85031854712251,
-     "learned": 75.06844318530902,
-     "pairs": 110.97368810007998,
+     "model": 49.37180483943045,
+     "learned": 71.37959261452434,
+     "pairs": 86.02342292026371,
      "on": true
     }
    }
   },
   {
-   "repo": "Pylons/pyramid",
+   "repo": "agronholm/apscheduler",
    "budget": "default",
    "arm": "learned",
    "records": {
     "project": {
-     "model": 74.39264227759483,
-     "learned": 84.25831621092452,
-     "pairs": 119.27816716345984,
+     "model": 43.038552340467234,
+     "learned": 43.940544340467234,
+     "pairs": 62.0455121157451,
      "on": true
     },
     "*": {
-     "model": 74.39264227759483,
-     "learned": 84.25831621092452,
-     "pairs": 119.27816716345984,
+     "model": 43.038552340467234,
+     "learned": 43.940544340467234,
+     "pairs": 62.0455121157451,
      "on": true
     }
    }
   },
   {
-   "repo": "jemalloc/jemalloc",
+   "repo": "nanomsg/nng",
    "budget": "default",
    "arm": "fixed",
    "records": {
     "project": {
-     "model": 74.3198071124857,
-     "learned": 79.50773531744422,
-     "pairs": 110.85940087064756,
-     "on": true
+     "model": 6.821199999999999,
+     "learned": 6.821199999999999,
+     "pairs": 7.821199999999999,
+     "on": false
     },
     "*": {
-     "model": 74.3198071124857,
-     "learned": 79.50773531744422,
-     "pairs": 110.85940087064756,
-     "on": true
+     "model": 6.821199999999999,
+     "learned": 6.821199999999999,
+     "pairs": 7.821199999999999,
+     "on": false
     }
    }
   },
   {
-   "repo": "jemalloc/jemalloc",
+   "repo": "nanomsg/nng",
    "budget": "default",
    "arm": "learned",
    "records": {
     "project": {
-     "model": 76.53804486781584,
-     "learned": 81.90292343394376,
-     "pairs": 121.96221435854821,
-     "on": true
+     "model": 19.824535241983998,
+     "learned": 19.824535241983998,
+     "pairs": 22.518588163712003,
+     "on": false
     },
     "*": {
-     "model": 76.53804486781584,
-     "learned": 81.90292343394376,
-     "pairs": 121.96221435854821,
-     "on": true
+     "model": 19.824535241983998,
+     "learned": 19.824535241983998,
+     "pairs": 22.518588163712003,
+     "on": false
     }
    }
   },
   {
-   "repo": "ToruNiina/toml11",
+   "repo": "ibireme/yyjson",
    "budget": "default",
    "arm": "fixed",
    "records": {
     "project": {
-     "model": 102.20423954528174,
-     "learned": 101.68590316874324,
-     "pairs": 130.91776761406646,
+     "model": 50.92146180121933,
+     "learned": 50.92146180121933,
+     "pairs": 67.36558328878823,
      "on": false
     },
     "*": {
-     "model": 102.20423954528174,
-     "learned": 101.68590316874324,
-     "pairs": 130.91776761406646,
+     "model": 50.92146180121933,
+     "learned": 50.92146180121933,
+     "pairs": 67.36558328878823,
      "on": false
     }
    }
   },
   {
-   "repo": "ToruNiina/toml11",
+   "repo": "ibireme/yyjson",
    "budget": "default",
    "arm": "learned",
    "records": {
     "project": {
-     "model": 98.14291286111154,
-     "learned": 100.28351317606062,
-     "pairs": 141.17648758844032,
+     "model": 24.470799458562816,
+     "learned": 24.470799458562816,
+     "pairs": 40.94561008987184,
      "on": false
     },
     "*": {
-     "model": 98.14291286111154,
-     "learned": 100.28351317606062,
-     "pairs": 141.17648758844032,
+     "model": 24.470799458562816,
+     "learned": 24.470799458562816,
+     "pairs": 40.94561008987184,
      "on": false
     }
    }
   },
   {
-   "repo": "fastfloat/fast_float",
+   "repo": "taocpp/PEGTL",
    "budget": "default",
    "arm": "fixed",
    "records": {
     "project": {
-     "model": 76.00940888577033,
-     "learned": 83.77832656034263,
-     "pairs": 136.16141013436805,
-     "on": true
+     "model": 36.91223137834779,
+     "learned": 36.120546616619805,
+     "pairs": 46.429947300477956,
+     "on": false
     },
     "*": {
-     "model": 76.00940888577033,
-     "learned": 83.77832656034263,
-     "pairs": 136.16141013436805,
-     "on": true
+     "model": 36.91223137834779,
+     "learned": 36.120546616619805,
+     "pairs": 46.429947300477956,
+     "on": false
     }
    }
   },
   {
-   "repo": "fastfloat/fast_float",
+   "repo": "taocpp/PEGTL",
    "budget": "default",
    "arm": "learned",
    "records": {
     "project": {
-     "model": 86.63955123432864,
-     "learned": 97.44226337592168,
-     "pairs": 148.64364705083864,
-     "on": true
+     "model": 25.12724187662387,
+     "learned": 26.12724187662387,
+     "pairs": 39.340345077581304,
+     "on": false
     },
     "*": {
-     "model": 86.63955123432864,
-     "learned": 97.44226337592168,
-     "pairs": 148.64364705083864,
-     "on": true
+     "model": 25.12724187662387,
+     "learned": 26.12724187662387,
+     "pairs": 39.340345077581304,
+     "on": false
     }
    }
   }
- ],
- "lift": {
-  "chains": 6,
-  "scored_sessions": 49
- }
+ ]
 }
