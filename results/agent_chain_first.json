@@ -1,0 +1,369 @@
+{
+ "meta": {
+  "experiment": "learning from verdicts on chains of real sessions",
+  "commit": "dc442cbb8c00-dirty",
+  "agent": "2.1.314 (Claude Code)",
+  "model": "claude-sonnet-5-5",
+  "sessions": 24,
+  "recurrence": 0.35,
+  "store_notes": 160,
+  "repos": [
+   "yaml/pyyaml",
+   "lepture/mistune",
+   "hynek/structlog",
+   "Cyan4973/xxHash",
+   "libssh2/libssh2",
+   "gulrak/filesystem"
+  ],
+  "pass": {
+   "loss": 0.05
+  },
+  "cost_usd": 33.17,
+  "seconds": 1501
+ },
+ "budgets": {
+  "default": {
+   "helped_sessions": {
+    "fixed": 0.9444,
+    "learned": 0.9861,
+    "delta": 0.0417,
+    "interval": [
+     0.0139,
+     0.0694
+    ],
+    "up": 3,
+    "down": 0
+   },
+   "repeat_helped": {
+    "fixed": 0.8833,
+    "learned": 1.0,
+    "delta": 0.1167,
+    "interval": [
+     0.0,
+     0.2833
+    ],
+    "up": 2,
+    "down": 0
+   },
+   "helped_share": {
+    "fixed": 0.252,
+    "learned": 0.2462,
+    "delta": -0.0058,
+    "interval": [
+     -0.0346,
+     0.0336
+    ],
+    "up": 2,
+    "down": 4
+   },
+   "needed_shown": {
+    "fixed": 0.1528,
+    "learned": 0.1806,
+    "delta": 0.0278,
+    "interval": [
+     -0.0278,
+     0.0694
+    ],
+    "up": 3,
+    "down": 1
+   },
+   "repeat_needed_shown": {
+    "fixed": 0.0833,
+    "learned": 0.0833,
+    "delta": 0.0,
+    "interval": [
+     0.0,
+     0.0
+    ],
+    "up": 0,
+    "down": 0
+   },
+   "tokens": {
+    "fixed": 500.4861,
+    "learned": 581.3056,
+    "delta": 80.8194,
+    "interval": [
+     13.3861,
+     159.5972
+    ],
+    "up": 4,
+    "down": 2
+   },
+   "lookups": {
+    "fixed": 3.3056,
+    "learned": 3.1111,
+    "delta": -0.1944,
+    "interval": [
+     -0.8611,
+     0.3611
+    ],
+    "up": 3,
+    "down": 3
+   },
+   "right": {
+    "fixed": 0.5972,
+    "learned": 0.5972,
+    "delta": -0.0,
+    "interval": [
+     -0.0556,
+     0.0556
+    ],
+    "up": 2,
+    "down": 2
+   },
+   "cost": {
+    "fixed": 0.1123,
+    "learned": 0.1135,
+    "delta": 0.0013,
+    "interval": [
+     -0.0022,
+     0.0046
+    ],
+    "up": 3,
+    "down": 3
+   },
+   "shown": {
+    "fixed": 7.5139,
+    "learned": 8.0833,
+    "delta": 0.5694,
+    "interval": [
+     -1.0983,
+     2.0694
+    ],
+    "up": 4,
+    "down": 2
+   },
+   "passed": true
+  }
+ },
+ "shadow": [
+  {
+   "repo": "yaml/pyyaml",
+   "budget": "default",
+   "arm": "fixed",
+   "records": {
+    "project": {
+     "model": 96.26838658979415,
+     "learned": 93.46202941060147,
+     "pairs": 131.41367721864077,
+     "on": false
+    },
+    "*": {
+     "model": 96.26838658979415,
+     "learned": 93.46202941060147,
+     "pairs": 131.41367721864077,
+     "on": false
+    }
+   }
+  },
+  {
+   "repo": "yaml/pyyaml",
+   "budget": "default",
+   "arm": "learned",
+   "records": {
+    "project": {
+     "model": 130.17179171177386,
+     "learned": 138.15145377397815,
+     "pairs": 180.73428473833894,
+     "on": true
+    },
+    "*": {
+     "model": 130.17179171177386,
+     "learned": 138.15145377397815,
+     "pairs": 180.73428473833894,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "lepture/mistune",
+   "budget": "default",
+   "arm": "fixed",
+   "records": {
+    "project": {
+     "model": 97.17567658363792,
+     "learned": 107.77189577262517,
+     "pairs": 164.0996134472165,
+     "on": true
+    },
+    "*": {
+     "model": 97.17567658363792,
+     "learned": 107.77189577262517,
+     "pairs": 164.0996134472165,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "lepture/mistune",
+   "budget": "default",
+   "arm": "learned",
+   "records": {
+    "project": {
+     "model": 81.31333570533604,
+     "learned": 75.64262633508758,
+     "pairs": 118.84084556693999,
+     "on": false
+    },
+    "*": {
+     "model": 81.31333570533604,
+     "learned": 75.64262633508758,
+     "pairs": 118.84084556693999,
+     "on": false
+    }
+   }
+  },
+  {
+   "repo": "hynek/structlog",
+   "budget": "default",
+   "arm": "fixed",
+   "records": {
+    "project": {
+     "model": 59.37844570614865,
+     "learned": 64.3772464389195,
+     "pairs": 101.8290588804143,
+     "on": true
+    },
+    "*": {
+     "model": 59.37844570614865,
+     "learned": 64.3772464389195,
+     "pairs": 101.8290588804143,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "hynek/structlog",
+   "budget": "default",
+   "arm": "learned",
+   "records": {
+    "project": {
+     "model": 113.04852829649853,
+     "learned": 120.43545892046777,
+     "pairs": 168.01378345054042,
+     "on": true
+    },
+    "*": {
+     "model": 113.04852829649853,
+     "learned": 120.43545892046777,
+     "pairs": 168.01378345054042,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "Cyan4973/xxHash",
+   "budget": "default",
+   "arm": "fixed",
+   "records": {
+    "project": {
+     "model": 142.54550063357613,
+     "learned": 159.1691002421418,
+     "pairs": 196.36254218998732,
+     "on": true
+    },
+    "*": {
+     "model": 142.54550063357613,
+     "learned": 159.1691002421418,
+     "pairs": 196.36254218998732,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "Cyan4973/xxHash",
+   "budget": "default",
+   "arm": "learned",
+   "records": {
+    "project": {
+     "model": 114.04329669750372,
+     "learned": 122.4325369843035,
+     "pairs": 163.07501847899277,
+     "on": true
+    },
+    "*": {
+     "model": 114.04329669750372,
+     "learned": 122.4325369843035,
+     "pairs": 163.07501847899277,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "libssh2/libssh2",
+   "budget": "default",
+   "arm": "fixed",
+   "records": {
+    "project": {
+     "model": 89.68250459553525,
+     "learned": 96.7127987972743,
+     "pairs": 126.30114817556502,
+     "on": true
+    },
+    "*": {
+     "model": 89.68250459553525,
+     "learned": 96.7127987972743,
+     "pairs": 126.30114817556502,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "libssh2/libssh2",
+   "budget": "default",
+   "arm": "learned",
+   "records": {
+    "project": {
+     "model": 134.38059186305583,
+     "learned": 137.9499183714932,
+     "pairs": 172.86067595196704,
+     "on": true
+    },
+    "*": {
+     "model": 134.38059186305583,
+     "learned": 137.9499183714932,
+     "pairs": 172.86067595196704,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "gulrak/filesystem",
+   "budget": "default",
+   "arm": "fixed",
+   "records": {
+    "project": {
+     "model": 108.1179909065271,
+     "learned": 131.89953784752237,
+     "pairs": 154.26968395617808,
+     "on": true
+    },
+    "*": {
+     "model": 108.1179909065271,
+     "learned": 131.89953784752237,
+     "pairs": 154.26968395617808,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "gulrak/filesystem",
+   "budget": "default",
+   "arm": "learned",
+   "records": {
+    "project": {
+     "model": 108.91899566576365,
+     "learned": 126.17665727756552,
+     "pairs": 176.4820338747419,
+     "on": true
+    },
+    "*": {
+     "model": 108.91899566576365,
+     "learned": 126.17665727756552,
+     "pairs": 176.4820338747419,
+     "on": true
+    }
+   }
+  }
+ ]
+}

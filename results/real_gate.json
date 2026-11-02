@@ -1,0 +1,130 @@
+{
+ "meta": {
+  "experiment": "the learning gate on real prompts",
+  "commit": "dc442cbb8c00-dirty",
+  "projects": 5,
+  "foreign_every": 4,
+  "miss": 0.213
+ },
+ "recurrence": {
+  "turns": 260,
+  "returning": 93,
+  "share": 0.358
+ },
+ "fixed": {
+  "all": {
+   "rows": 388,
+   "useful": 5,
+   "spoke_useful": 1.0,
+   "spoke_idle": 0.561,
+   "spoke_foreign": 0.436,
+   "tokens": 186.9,
+   "last_shift": 0.0
+  },
+  "projects": [
+   {
+    "rows": 25,
+    "useful": 0,
+    "spoke_useful": null,
+    "spoke_idle": 0.5,
+    "spoke_foreign": 0.0,
+    "tokens": 97.5,
+    "last_shift": 0.0
+   },
+   {
+    "rows": 214,
+    "useful": 1,
+    "spoke_useful": 1.0,
+    "spoke_idle": 0.665,
+    "spoke_foreign": 0.628,
+    "tokens": 215.3,
+    "last_shift": 0.0
+   },
+   {
+    "rows": 113,
+    "useful": 4,
+    "spoke_useful": 1.0,
+    "spoke_idle": 0.471,
+    "spoke_foreign": 0.273,
+    "tokens": 194.1,
+    "last_shift": 0.0
+   },
+   {
+    "rows": 23,
+    "useful": 0,
+    "spoke_useful": null,
+    "spoke_idle": 0.222,
+    "spoke_foreign": 0.2,
+    "tokens": 69.5,
+    "last_shift": 0.0
+   },
+   {
+    "rows": 13,
+    "useful": 0,
+    "spoke_useful": null,
+    "spoke_idle": 0.3,
+    "spoke_foreign": 0.0,
+    "tokens": 35.3,
+    "last_shift": 0.0
+   }
+  ]
+ },
+ "learned": {
+  "all": {
+   "rows": 388,
+   "useful": 5,
+   "spoke_useful": 1.0,
+   "spoke_idle": 0.57,
+   "spoke_foreign": 0.474,
+   "tokens": 190.8,
+   "last_shift": 0.0
+  },
+  "projects": [
+   {
+    "rows": 25,
+    "useful": 0,
+    "spoke_useful": null,
+    "spoke_idle": 0.5,
+    "spoke_foreign": 0.4,
+    "tokens": 108.7,
+    "last_shift": 0.0
+   },
+   {
+    "rows": 214,
+    "useful": 1,
+    "spoke_useful": 1.0,
+    "spoke_idle": 0.676,
+    "spoke_foreign": 0.628,
+    "tokens": 216.8,
+    "last_shift": 0.0
+   },
+   {
+    "rows": 113,
+    "useful": 4,
+    "spoke_useful": 1.0,
+    "spoke_idle": 0.483,
+    "spoke_foreign": 0.318,
+    "tokens": 202.5,
+    "last_shift": 0.0
+   },
+   {
+    "rows": 23,
+    "useful": 0,
+    "spoke_useful": null,
+    "spoke_idle": 0.222,
+    "spoke_foreign": 0.2,
+    "tokens": 69.5,
+    "last_shift": 0.0
+   },
+   {
+    "rows": 13,
+    "useful": 0,
+    "spoke_useful": null,
+    "spoke_idle": 0.3,
+    "spoke_foreign": 0.0,
+    "tokens": 35.3,
+    "last_shift": 0.0
+   }
+  ]
+ }
+}

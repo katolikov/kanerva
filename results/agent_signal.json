@@ -1,0 +1,733 @@
+{
+ "meta": {
+  "experiment": "can a real agent say which notes helped",
+  "commit": "dc442cbb8c00-dirty",
+  "agent": "2.1.314 (Claude Code)",
+  "model": "claude-sonnet-5-5",
+  "pass": {
+   "coverage": 0.8,
+   "precision": 0.8,
+   "recall": 0.6,
+   "false_mark": 0.1,
+   "misled": 0.5
+  },
+  "prompt": "A documentation chore for this repository. Create four short files under docs/handover/, each under five lines:\n1. first.md: answer this: {first}\n2. second.md: answer this: {second}\n3. audience.md: who this project is for, in one line.\n4. index.md: one line per file above.\nDo not build or run anything.",
+  "repos": [
+   "python-humanize/humanize",
+   "more-itertools/more-itertools",
+   "madler/zlib",
+   "leethomason/tinyxml2",
+   "zeux/pugixml"
+  ],
+  "cost_usd": 7.37,
+  "seconds": 445
+ },
+ "trials": 60,
+ "coverage": 1.0,
+ "shown": {
+  "needed": 75,
+  "stale": 11,
+  "related": 6,
+  "other": 318
+ },
+ "verdict": {
+  "precision": 0.967,
+  "precision_interval": [
+   0.888,
+   0.991
+  ],
+  "recall": {
+   "hits": 59,
+   "n": 75,
+   "share": 0.787,
+   "interval": [
+    0.681,
+    0.864
+   ]
+  },
+  "false_mark": {
+   "hits": 0,
+   "n": 318,
+   "share": 0.0,
+   "interval": [
+    -0.0,
+    0.012
+   ]
+  },
+  "related_marked": {
+   "hits": 1,
+   "n": 6,
+   "share": 0.167,
+   "interval": [
+    0.03,
+    0.564
+   ]
+  },
+  "stale_marked_misled": {
+   "hits": 10,
+   "n": 11,
+   "share": 0.909,
+   "interval": [
+    0.623,
+    0.984
+   ]
+  },
+  "stale_marked_helped": {
+   "hits": 1,
+   "n": 11,
+   "share": 0.091,
+   "interval": [
+    0.016,
+    0.377
+   ]
+  },
+  "other_marked_misled": {
+   "hits": 0,
+   "n": 318,
+   "share": 0.0,
+   "interval": [
+    -0.0,
+    0.012
+   ]
+  }
+ },
+ "old_signal": {
+  "precision": 0.292,
+  "precision_interval": [
+   0.24,
+   0.351
+  ],
+  "recall": {
+   "hits": 74,
+   "n": 75,
+   "share": 0.987,
+   "interval": [
+    0.928,
+    0.998
+   ]
+  },
+  "false_mark": {
+   "hits": 162,
+   "n": 318,
+   "share": 0.509,
+   "interval": [
+    0.455,
+    0.564
+   ]
+  },
+  "stale_marked_helped": {
+   "hits": 11,
+   "n": 11,
+   "share": 1.0,
+   "interval": [
+    0.741,
+    1.0
+   ]
+  }
+ },
+ "unseen_marks": 0,
+ "stale_trials": {
+  "n": 16,
+  "wrote_new": 13,
+  "wrote_old": 5
+ },
+ "passed": {
+  "coverage": true,
+  "precision": true,
+  "recall": true,
+  "false_mark": true,
+  "misled": true
+ },
+ "by_repo": {
+  "python-humanize/humanize": {
+   "trials": 12,
+   "coverage": 1.0,
+   "shown": {
+    "needed": 14,
+    "stale": 0,
+    "related": 3,
+    "other": 60
+   },
+   "verdict": {
+    "precision": 0.933,
+    "precision_interval": [
+     0.702,
+     0.988
+    ],
+    "recall": {
+     "hits": 14,
+     "n": 14,
+     "share": 1.0,
+     "interval": [
+      0.785,
+      1.0
+     ]
+    },
+    "false_mark": {
+     "hits": 0,
+     "n": 60,
+     "share": 0.0,
+     "interval": [
+      -0.0,
+      0.06
+     ]
+    },
+    "related_marked": {
+     "hits": 1,
+     "n": 3,
+     "share": 0.333,
+     "interval": [
+      0.061,
+      0.792
+     ]
+    },
+    "stale_marked_misled": {
+     "hits": 0,
+     "n": 0,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.0
+     ]
+    },
+    "stale_marked_helped": {
+     "hits": 0,
+     "n": 0,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.0
+     ]
+    },
+    "other_marked_misled": {
+     "hits": 0,
+     "n": 60,
+     "share": 0.0,
+     "interval": [
+      -0.0,
+      0.06
+     ]
+    }
+   },
+   "old_signal": {
+    "precision": 0.565,
+    "precision_interval": [
+     0.368,
+     0.744
+    ],
+    "recall": {
+     "hits": 13,
+     "n": 14,
+     "share": 0.929,
+     "interval": [
+      0.685,
+      0.987
+     ]
+    },
+    "false_mark": {
+     "hits": 7,
+     "n": 60,
+     "share": 0.117,
+     "interval": [
+      0.058,
+      0.222
+     ]
+    },
+    "stale_marked_helped": {
+     "hits": 0,
+     "n": 0,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "unseen_marks": 0,
+   "stale_trials": {
+    "n": 0,
+    "wrote_new": 0,
+    "wrote_old": 0
+   },
+   "passed": {
+    "coverage": true,
+    "precision": true,
+    "recall": true,
+    "false_mark": true,
+    "misled": false
+   }
+  },
+  "more-itertools/more-itertools": {
+   "trials": 12,
+   "coverage": 1.0,
+   "shown": {
+    "needed": 12,
+    "stale": 1,
+    "related": 0,
+    "other": 44
+   },
+   "verdict": {
+    "precision": 1.0,
+    "precision_interval": [
+     0.741,
+     1.0
+    ],
+    "recall": {
+     "hits": 11,
+     "n": 12,
+     "share": 0.917,
+     "interval": [
+      0.646,
+      0.985
+     ]
+    },
+    "false_mark": {
+     "hits": 0,
+     "n": 44,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.08
+     ]
+    },
+    "related_marked": {
+     "hits": 0,
+     "n": 0,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.0
+     ]
+    },
+    "stale_marked_misled": {
+     "hits": 1,
+     "n": 1,
+     "share": 1.0,
+     "interval": [
+      0.207,
+      1.0
+     ]
+    },
+    "stale_marked_helped": {
+     "hits": 0,
+     "n": 1,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.793
+     ]
+    },
+    "other_marked_misled": {
+     "hits": 0,
+     "n": 44,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.08
+     ]
+    }
+   },
+   "old_signal": {
+    "precision": 0.429,
+    "precision_interval": [
+     0.265,
+     0.609
+    ],
+    "recall": {
+     "hits": 12,
+     "n": 12,
+     "share": 1.0,
+     "interval": [
+      0.757,
+      1.0
+     ]
+    },
+    "false_mark": {
+     "hits": 15,
+     "n": 44,
+     "share": 0.341,
+     "interval": [
+      0.219,
+      0.489
+     ]
+    },
+    "stale_marked_helped": {
+     "hits": 1,
+     "n": 1,
+     "share": 1.0,
+     "interval": [
+      0.207,
+      1.0
+     ]
+    }
+   },
+   "unseen_marks": 0,
+   "stale_trials": {
+    "n": 4,
+    "wrote_new": 4,
+    "wrote_old": 1
+   },
+   "passed": {
+    "coverage": true,
+    "precision": true,
+    "recall": true,
+    "false_mark": true,
+    "misled": true
+   }
+  },
+  "madler/zlib": {
+   "trials": 12,
+   "coverage": 1.0,
+   "shown": {
+    "needed": 12,
+    "stale": 4,
+    "related": 1,
+    "other": 44
+   },
+   "verdict": {
+    "precision": 1.0,
+    "precision_interval": [
+     0.741,
+     1.0
+    ],
+    "recall": {
+     "hits": 11,
+     "n": 12,
+     "share": 0.917,
+     "interval": [
+      0.646,
+      0.985
+     ]
+    },
+    "false_mark": {
+     "hits": 0,
+     "n": 44,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.08
+     ]
+    },
+    "related_marked": {
+     "hits": 0,
+     "n": 1,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.793
+     ]
+    },
+    "stale_marked_misled": {
+     "hits": 4,
+     "n": 4,
+     "share": 1.0,
+     "interval": [
+      0.51,
+      1.0
+     ]
+    },
+    "stale_marked_helped": {
+     "hits": 0,
+     "n": 4,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.49
+     ]
+    },
+    "other_marked_misled": {
+     "hits": 0,
+     "n": 44,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.08
+     ]
+    }
+   },
+   "old_signal": {
+    "precision": 0.429,
+    "precision_interval": [
+     0.265,
+     0.609
+    ],
+    "recall": {
+     "hits": 12,
+     "n": 12,
+     "share": 1.0,
+     "interval": [
+      0.757,
+      1.0
+     ]
+    },
+    "false_mark": {
+     "hits": 11,
+     "n": 44,
+     "share": 0.25,
+     "interval": [
+      0.146,
+      0.394
+     ]
+    },
+    "stale_marked_helped": {
+     "hits": 4,
+     "n": 4,
+     "share": 1.0,
+     "interval": [
+      0.51,
+      1.0
+     ]
+    }
+   },
+   "unseen_marks": 0,
+   "stale_trials": {
+    "n": 4,
+    "wrote_new": 4,
+    "wrote_old": 1
+   },
+   "passed": {
+    "coverage": true,
+    "precision": true,
+    "recall": true,
+    "false_mark": true,
+    "misled": true
+   }
+  },
+  "leethomason/tinyxml2": {
+   "trials": 12,
+   "coverage": 1.0,
+   "shown": {
+    "needed": 17,
+    "stale": 3,
+    "related": 2,
+    "other": 157
+   },
+   "verdict": {
+    "precision": 1.0,
+    "precision_interval": [
+     0.757,
+     1.0
+    ],
+    "recall": {
+     "hits": 12,
+     "n": 17,
+     "share": 0.706,
+     "interval": [
+      0.469,
+      0.867
+     ]
+    },
+    "false_mark": {
+     "hits": 0,
+     "n": 157,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.024
+     ]
+    },
+    "related_marked": {
+     "hits": 0,
+     "n": 2,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.658
+     ]
+    },
+    "stale_marked_misled": {
+     "hits": 3,
+     "n": 3,
+     "share": 1.0,
+     "interval": [
+      0.438,
+      1.0
+     ]
+    },
+    "stale_marked_helped": {
+     "hits": 0,
+     "n": 3,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.562
+     ]
+    },
+    "other_marked_misled": {
+     "hits": 0,
+     "n": 157,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.024
+     ]
+    }
+   },
+   "old_signal": {
+    "precision": 0.121,
+    "precision_interval": [
+     0.077,
+     0.186
+    ],
+    "recall": {
+     "hits": 17,
+     "n": 17,
+     "share": 1.0,
+     "interval": [
+      0.816,
+      1.0
+     ]
+    },
+    "false_mark": {
+     "hits": 118,
+     "n": 157,
+     "share": 0.752,
+     "interval": [
+      0.679,
+      0.813
+     ]
+    },
+    "stale_marked_helped": {
+     "hits": 3,
+     "n": 3,
+     "share": 1.0,
+     "interval": [
+      0.438,
+      1.0
+     ]
+    }
+   },
+   "unseen_marks": 0,
+   "stale_trials": {
+    "n": 4,
+    "wrote_new": 4,
+    "wrote_old": 3
+   },
+   "passed": {
+    "coverage": true,
+    "precision": true,
+    "recall": true,
+    "false_mark": true,
+    "misled": true
+   }
+  },
+  "zeux/pugixml": {
+   "trials": 12,
+   "coverage": 1.0,
+   "shown": {
+    "needed": 20,
+    "stale": 3,
+    "related": 0,
+    "other": 13
+   },
+   "verdict": {
+    "precision": 0.917,
+    "precision_interval": [
+     0.646,
+     0.985
+    ],
+    "recall": {
+     "hits": 11,
+     "n": 20,
+     "share": 0.55,
+     "interval": [
+      0.342,
+      0.742
+     ]
+    },
+    "false_mark": {
+     "hits": 0,
+     "n": 13,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.228
+     ]
+    },
+    "related_marked": {
+     "hits": 0,
+     "n": 0,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.0
+     ]
+    },
+    "stale_marked_misled": {
+     "hits": 2,
+     "n": 3,
+     "share": 0.667,
+     "interval": [
+      0.208,
+      0.939
+     ]
+    },
+    "stale_marked_helped": {
+     "hits": 1,
+     "n": 3,
+     "share": 0.333,
+     "interval": [
+      0.061,
+      0.792
+     ]
+    },
+    "other_marked_misled": {
+     "hits": 0,
+     "n": 13,
+     "share": 0.0,
+     "interval": [
+      0.0,
+      0.228
+     ]
+    }
+   },
+   "old_signal": {
+    "precision": 0.588,
+    "precision_interval": [
+     0.422,
+     0.736
+    ],
+    "recall": {
+     "hits": 20,
+     "n": 20,
+     "share": 1.0,
+     "interval": [
+      0.839,
+      1.0
+     ]
+    },
+    "false_mark": {
+     "hits": 11,
+     "n": 13,
+     "share": 0.846,
+     "interval": [
+      0.578,
+      0.957
+     ]
+    },
+    "stale_marked_helped": {
+     "hits": 3,
+     "n": 3,
+     "share": 1.0,
+     "interval": [
+      0.438,
+      1.0
+     ]
+    }
+   },
+   "unseen_marks": 0,
+   "stale_trials": {
+    "n": 4,
+    "wrote_new": 1,
+    "wrote_old": 0
+   },
+   "passed": {
+    "coverage": true,
+    "precision": true,
+    "recall": false,
+    "false_mark": true,
+    "misled": true
+   }
+  }
+ }
+}

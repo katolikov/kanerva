@@ -1,0 +1,342 @@
+{
+ "meta": {
+  "experiment": "what the gate and the floor hide on plain questions",
+  "commit": "a63c370e43cd-dirty",
+  "prompt_budget": 600,
+  "repos": [
+   "python-poetry/tomlkit",
+   "marzer/tomlplusplus",
+   "yaml/pyyaml",
+   "lepture/mistune",
+   "hynek/structlog",
+   "Cyan4973/xxHash",
+   "libssh2/libssh2",
+   "gulrak/filesystem",
+   "dateutil/dateutil",
+   "PyCQA/isort",
+   "Pylons/pyramid",
+   "jemalloc/jemalloc",
+   "ToruNiina/toml11",
+   "fastfloat/fast_float"
+  ],
+  "probes": "off"
+ },
+ "settings": {
+  "0.0/0.02": {
+   "found": 97,
+   "n": 336,
+   "share": 0.28869047619047616,
+   "tokens": 37.24702380952381
+  },
+  "-3.0/0.02": {
+   "found": 156,
+   "n": 336,
+   "share": 0.4642857142857143,
+   "tokens": 90.37797619047619
+  },
+  "-3.0/0.002": {
+   "found": 232,
+   "n": 336,
+   "share": 0.6904761904761905,
+   "tokens": 461.88690476190476
+  }
+ },
+ "in_pool": 301,
+ "n": 336,
+ "repos": {
+  "python-poetry/tomlkit": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 0,
+     "n": 24,
+     "tokens": 4.0
+    },
+    "-3.0/0.02": {
+     "found": 1,
+     "n": 24,
+     "tokens": 48.75
+    },
+    "-3.0/0.002": {
+     "found": 14,
+     "n": 24,
+     "tokens": 427.6666666666667
+    }
+   },
+   "in_pool": 20,
+   "n": 24
+  },
+  "marzer/tomlplusplus": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 2,
+     "n": 24,
+     "tokens": 6.083333333333333
+    },
+    "-3.0/0.02": {
+     "found": 10,
+     "n": 24,
+     "tokens": 50.125
+    },
+    "-3.0/0.002": {
+     "found": 14,
+     "n": 24,
+     "tokens": 539.5833333333334
+    }
+   },
+   "in_pool": 22,
+   "n": 24
+  },
+  "yaml/pyyaml": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 9,
+     "n": 24,
+     "tokens": 36.625
+    },
+    "-3.0/0.02": {
+     "found": 15,
+     "n": 24,
+     "tokens": 104.83333333333333
+    },
+    "-3.0/0.002": {
+     "found": 21,
+     "n": 24,
+     "tokens": 438.75
+    }
+   },
+   "in_pool": 24,
+   "n": 24
+  },
+  "lepture/mistune": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 15,
+     "n": 24,
+     "tokens": 46.75
+    },
+    "-3.0/0.02": {
+     "found": 16,
+     "n": 24,
+     "tokens": 63.083333333333336
+    },
+    "-3.0/0.002": {
+     "found": 24,
+     "n": 24,
+     "tokens": 314.625
+    }
+   },
+   "in_pool": 24,
+   "n": 24
+  },
+  "hynek/structlog": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 9,
+     "n": 24,
+     "tokens": 61.75
+    },
+    "-3.0/0.02": {
+     "found": 9,
+     "n": 24,
+     "tokens": 84.20833333333333
+    },
+    "-3.0/0.002": {
+     "found": 15,
+     "n": 24,
+     "tokens": 390.375
+    }
+   },
+   "in_pool": 17,
+   "n": 24
+  },
+  "Cyan4973/xxHash": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 11,
+     "n": 24,
+     "tokens": 59.875
+    },
+    "-3.0/0.02": {
+     "found": 18,
+     "n": 24,
+     "tokens": 135.75
+    },
+    "-3.0/0.002": {
+     "found": 20,
+     "n": 24,
+     "tokens": 587.0833333333334
+    }
+   },
+   "in_pool": 22,
+   "n": 24
+  },
+  "libssh2/libssh2": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 6,
+     "n": 24,
+     "tokens": 28.833333333333332
+    },
+    "-3.0/0.02": {
+     "found": 13,
+     "n": 24,
+     "tokens": 126.45833333333333
+    },
+    "-3.0/0.002": {
+     "found": 16,
+     "n": 24,
+     "tokens": 575.375
+    }
+   },
+   "in_pool": 24,
+   "n": 24
+  },
+  "gulrak/filesystem": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 3,
+     "n": 24,
+     "tokens": 28.666666666666668
+    },
+    "-3.0/0.02": {
+     "found": 7,
+     "n": 24,
+     "tokens": 84.08333333333333
+    },
+    "-3.0/0.002": {
+     "found": 11,
+     "n": 24,
+     "tokens": 488.2083333333333
+    }
+   },
+   "in_pool": 19,
+   "n": 24
+  },
+  "dateutil/dateutil": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 3,
+     "n": 24,
+     "tokens": 59.791666666666664
+    },
+    "-3.0/0.02": {
+     "found": 3,
+     "n": 24,
+     "tokens": 93.625
+    },
+    "-3.0/0.002": {
+     "found": 6,
+     "n": 24,
+     "tokens": 458.5
+    }
+   },
+   "in_pool": 18,
+   "n": 24
+  },
+  "PyCQA/isort": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 9,
+     "n": 24,
+     "tokens": 49.458333333333336
+    },
+    "-3.0/0.02": {
+     "found": 11,
+     "n": 24,
+     "tokens": 121.625
+    },
+    "-3.0/0.002": {
+     "found": 18,
+     "n": 24,
+     "tokens": 464.5
+    }
+   },
+   "in_pool": 22,
+   "n": 24
+  },
+  "Pylons/pyramid": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 8,
+     "n": 24,
+     "tokens": 53.208333333333336
+    },
+    "-3.0/0.02": {
+     "found": 15,
+     "n": 24,
+     "tokens": 136.25
+    },
+    "-3.0/0.002": {
+     "found": 18,
+     "n": 24,
+     "tokens": 427.75
+    }
+   },
+   "in_pool": 24,
+   "n": 24
+  },
+  "jemalloc/jemalloc": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 8,
+     "n": 24,
+     "tokens": 21.708333333333332
+    },
+    "-3.0/0.02": {
+     "found": 13,
+     "n": 24,
+     "tokens": 42.041666666666664
+    },
+    "-3.0/0.002": {
+     "found": 21,
+     "n": 24,
+     "tokens": 329.9166666666667
+    }
+   },
+   "in_pool": 24,
+   "n": 24
+  },
+  "ToruNiina/toml11": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 9,
+     "n": 24,
+     "tokens": 42.25
+    },
+    "-3.0/0.02": {
+     "found": 18,
+     "n": 24,
+     "tokens": 136.41666666666666
+    },
+    "-3.0/0.002": {
+     "found": 19,
+     "n": 24,
+     "tokens": 578.5
+    }
+   },
+   "in_pool": 22,
+   "n": 24
+  },
+  "fastfloat/fast_float": {
+   "settings": {
+    "0.0/0.02": {
+     "found": 5,
+     "n": 24,
+     "tokens": 22.458333333333332
+    },
+    "-3.0/0.02": {
+     "found": 7,
+     "n": 24,
+     "tokens": 38.041666666666664
+    },
+    "-3.0/0.002": {
+     "found": 15,
+     "n": 24,
+     "tokens": 445.5833333333333
+    }
+   },
+   "in_pool": 19,
+   "n": 24
+  }
+ }
+}

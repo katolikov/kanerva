@@ -1,0 +1,431 @@
+{
+ "meta": {
+  "experiment": "learning from verdicts on chains of real sessions",
+  "commit": "a63c370e43cd-dirty",
+  "agent": "2.1.314 (Claude Code)",
+  "model": "claude-sonnet-5-5",
+  "sessions": 24,
+  "recurrence": 0.353,
+  "store_notes": 160,
+  "repos": [
+   "dateutil/dateutil",
+   "PyCQA/isort",
+   "Pylons/pyramid",
+   "jemalloc/jemalloc",
+   "ToruNiina/toml11",
+   "fastfloat/fast_float"
+  ],
+  "pass": {
+   "loss": 0.05
+  },
+  "cost_usd": 34.93,
+  "seconds": 1471
+ },
+ "budgets": {
+  "default": {
+   "helped_count": {
+    "p": 0.625,
+    "fixed": 11.3333,
+    "learned": 11.6667,
+    "delta": 0.3333,
+    "interval": [
+     -0.3333,
+     0.8333
+    ],
+    "up": 3,
+    "down": 1
+   },
+   "right_count": {
+    "p": 0.25,
+    "fixed": 9.1667,
+    "learned": 8.0,
+    "delta": -1.1667,
+    "interval": [
+     -2.5,
+     -0.1667
+    ],
+    "up": 0,
+    "down": 3
+   },
+   "probed": {
+    "p": 0.031,
+    "fixed": 0.0,
+    "learned": 0.1597,
+    "delta": 0.1597,
+    "interval": [
+     0.1111,
+     0.2153
+    ],
+    "up": 6,
+    "down": 0
+   },
+   "seeded_share": {
+    "p": 0.312,
+    "fixed": 0.1485,
+    "learned": 0.2074,
+    "delta": 0.0588,
+    "interval": [
+     -0.0092,
+     0.136
+    ],
+    "up": 4,
+    "down": 1
+   },
+   "helped_sessions": {
+    "p": 0.625,
+    "fixed": 0.9444,
+    "learned": 0.9722,
+    "delta": 0.0278,
+    "interval": [
+     -0.0278,
+     0.0694
+    ],
+    "up": 3,
+    "down": 1
+   },
+   "repeat_helped": {
+    "p": 1.0,
+    "fixed": 0.9667,
+    "learned": 1.0,
+    "delta": 0.0333,
+    "interval": [
+     0.0,
+     0.1
+    ],
+    "up": 1,
+    "down": 0
+   },
+   "helped_share": {
+    "p": 0.906,
+    "fixed": 0.2099,
+    "learned": 0.2083,
+    "delta": -0.0015,
+    "interval": [
+     -0.0434,
+     0.0343
+    ],
+    "up": 3,
+    "down": 3
+   },
+   "needed_shown": {
+    "p": 0.25,
+    "fixed": 0.2361,
+    "learned": 0.3194,
+    "delta": 0.0833,
+    "interval": [
+     0.0,
+     0.1667
+    ],
+    "up": 4,
+    "down": 1
+   },
+   "repeat_needed_shown": {
+    "p": 0.25,
+    "fixed": 0.1806,
+    "learned": 0.3028,
+    "delta": 0.1222,
+    "interval": [
+     0.0333,
+     0.2333
+    ],
+    "up": 3,
+    "down": 0
+   },
+   "tokens": {
+    "p": 0.969,
+    "fixed": 583.3333,
+    "learned": 585.0556,
+    "delta": 1.7222,
+    "interval": [
+     -45.6944,
+     55.0139
+    ],
+    "up": 2,
+    "down": 4
+   },
+   "lookups": {
+    "p": 0.844,
+    "fixed": 3.8194,
+    "learned": 3.9444,
+    "delta": 0.125,
+    "interval": [
+     -1.0417,
+     1.375
+    ],
+    "up": 3,
+    "down": 3
+   },
+   "right": {
+    "p": 0.25,
+    "fixed": 0.7639,
+    "learned": 0.6667,
+    "delta": -0.0972,
+    "interval": [
+     -0.2083,
+     -0.0139
+    ],
+    "up": 0,
+    "down": 3
+   },
+   "cost": {
+    "p": 1.0,
+    "fixed": 0.1176,
+    "learned": 0.1175,
+    "delta": -0.0001,
+    "interval": [
+     -0.0045,
+     0.0066
+    ],
+    "up": 2,
+    "down": 4
+   },
+   "shown": {
+    "p": 1.0,
+    "fixed": 9.4444,
+    "learned": 9.4583,
+    "delta": 0.0139,
+    "interval": [
+     -0.4722,
+     0.5694
+    ],
+    "up": 3,
+    "down": 3
+   },
+   "passed": false
+  }
+ },
+ "shadow": [
+  {
+   "repo": "dateutil/dateutil",
+   "budget": "default",
+   "arm": "fixed",
+   "records": {
+    "project": {
+     "model": 72.83221497591451,
+     "learned": 74.24724734775356,
+     "pairs": 118.31687484070994,
+     "on": false
+    },
+    "*": {
+     "model": 72.83221497591451,
+     "learned": 74.24724734775356,
+     "pairs": 118.31687484070994,
+     "on": false
+    }
+   }
+  },
+  {
+   "repo": "dateutil/dateutil",
+   "budget": "default",
+   "arm": "learned",
+   "records": {
+    "project": {
+     "model": 69.40480240858678,
+     "learned": 70.36630897162892,
+     "pairs": 106.63965246712162,
+     "on": true
+    },
+    "*": {
+     "model": 69.40480240858678,
+     "learned": 70.36630897162892,
+     "pairs": 106.63965246712162,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "PyCQA/isort",
+   "budget": "default",
+   "arm": "fixed",
+   "records": {
+    "project": {
+     "model": 62.735921618854036,
+     "learned": 72.9219065227383,
+     "pairs": 97.8648865062915,
+     "on": true
+    },
+    "*": {
+     "model": 62.735921618854036,
+     "learned": 72.9219065227383,
+     "pairs": 97.8648865062915,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "PyCQA/isort",
+   "budget": "default",
+   "arm": "learned",
+   "records": {
+    "project": {
+     "model": 133.49193335465,
+     "learned": 132.65813389342827,
+     "pairs": 168.4869665838599,
+     "on": false
+    },
+    "*": {
+     "model": 133.49193335465,
+     "learned": 132.65813389342827,
+     "pairs": 168.4869665838599,
+     "on": false
+    }
+   }
+  },
+  {
+   "repo": "Pylons/pyramid",
+   "budget": "default",
+   "arm": "fixed",
+   "records": {
+    "project": {
+     "model": 66.85031854712251,
+     "learned": 75.06844318530902,
+     "pairs": 110.97368810007998,
+     "on": true
+    },
+    "*": {
+     "model": 66.85031854712251,
+     "learned": 75.06844318530902,
+     "pairs": 110.97368810007998,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "Pylons/pyramid",
+   "budget": "default",
+   "arm": "learned",
+   "records": {
+    "project": {
+     "model": 74.39264227759483,
+     "learned": 84.25831621092452,
+     "pairs": 119.27816716345984,
+     "on": true
+    },
+    "*": {
+     "model": 74.39264227759483,
+     "learned": 84.25831621092452,
+     "pairs": 119.27816716345984,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "jemalloc/jemalloc",
+   "budget": "default",
+   "arm": "fixed",
+   "records": {
+    "project": {
+     "model": 74.3198071124857,
+     "learned": 79.50773531744422,
+     "pairs": 110.85940087064756,
+     "on": true
+    },
+    "*": {
+     "model": 74.3198071124857,
+     "learned": 79.50773531744422,
+     "pairs": 110.85940087064756,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "jemalloc/jemalloc",
+   "budget": "default",
+   "arm": "learned",
+   "records": {
+    "project": {
+     "model": 76.53804486781584,
+     "learned": 81.90292343394376,
+     "pairs": 121.96221435854821,
+     "on": true
+    },
+    "*": {
+     "model": 76.53804486781584,
+     "learned": 81.90292343394376,
+     "pairs": 121.96221435854821,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "ToruNiina/toml11",
+   "budget": "default",
+   "arm": "fixed",
+   "records": {
+    "project": {
+     "model": 102.20423954528174,
+     "learned": 101.68590316874324,
+     "pairs": 130.91776761406646,
+     "on": false
+    },
+    "*": {
+     "model": 102.20423954528174,
+     "learned": 101.68590316874324,
+     "pairs": 130.91776761406646,
+     "on": false
+    }
+   }
+  },
+  {
+   "repo": "ToruNiina/toml11",
+   "budget": "default",
+   "arm": "learned",
+   "records": {
+    "project": {
+     "model": 98.14291286111154,
+     "learned": 100.28351317606062,
+     "pairs": 141.17648758844032,
+     "on": false
+    },
+    "*": {
+     "model": 98.14291286111154,
+     "learned": 100.28351317606062,
+     "pairs": 141.17648758844032,
+     "on": false
+    }
+   }
+  },
+  {
+   "repo": "fastfloat/fast_float",
+   "budget": "default",
+   "arm": "fixed",
+   "records": {
+    "project": {
+     "model": 76.00940888577033,
+     "learned": 83.77832656034263,
+     "pairs": 136.16141013436805,
+     "on": true
+    },
+    "*": {
+     "model": 76.00940888577033,
+     "learned": 83.77832656034263,
+     "pairs": 136.16141013436805,
+     "on": true
+    }
+   }
+  },
+  {
+   "repo": "fastfloat/fast_float",
+   "budget": "default",
+   "arm": "learned",
+   "records": {
+    "project": {
+     "model": 86.63955123432864,
+     "learned": 97.44226337592168,
+     "pairs": 148.64364705083864,
+     "on": true
+    },
+    "*": {
+     "model": 86.63955123432864,
+     "learned": 97.44226337592168,
+     "pairs": 148.64364705083864,
+     "on": true
+    }
+   }
+  }
+ ],
+ "lift": {
+  "chains": 6,
+  "scored_sessions": 49
+ }
+}

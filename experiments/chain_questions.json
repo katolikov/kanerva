@@ -281,41 +281,1127 @@
    "What is the 64-bit xor-shift helper used for in the hash?"
   ]
  },
+ "PyCQA/isort": {
+  "const:isort/core.py:DOCSTRING_INDICATORS": [
+   "What markers does the code use to recognize where docstrings start and end?",
+   "Which constants list the delimiters that mark a docstring?",
+   "How does the code know which quote sequences open and close a documentation string?"
+  ],
+  "const:isort/settings.py:KNOWN_PREFIX": [
+   "What prefix marks the settings that assign modules to a user-defined section?",
+   "Which string is used to recognize the family of configuration options for custom section placement?",
+   "How do I know which settings keys control where a module is placed in a custom group?"
+  ],
+  "const:isort/settings.py:RUNTIME_SOURCE": [
+   "What label marks settings that came from the program at runtime rather than from a config file?",
+   "How can I tell that a setting was supplied by the running program and not by a user file?",
+   "What value identifies the origin of settings created during execution?"
+  ],
+  "sig:AssignmentsFormatMismatch.__init__": [
+   "What error is raised when the formatting of assignments in the output does not match the original?",
+   "How do I report that the assignment layout changed unexpectedly during formatting?",
+   "Which exception signals a mismatch in how assignment statements were formatted?"
+  ],
+  "sig:BasicPrinter.success": [
+   "How do I print a success message to the terminal without any color formatting?",
+   "What method prints a plain confirmation message for the basic output printer?",
+   "How can I show a success notice through the simple, uncolored printer?"
+  ],
+  "sig:ColoramaPrinter.diff_line": [
+   "How do I color a single line of diff output based on whether it was added or removed?",
+   "Which method applies the right color to one line of a difference report?",
+   "How can I style a changed line in a diff so it is easy to read in the terminal?"
+  ],
+  "sig:ColoramaPrinter.style_text": [
+   "How do I add terminal color or emphasis to a piece of text in formatted output?",
+   "Which method applies a display style to a string when printing results in the console?",
+   "How can I wrap a message in color codes so it stands out in the terminal?"
+  ],
+  "sig:Config.__init__": [
+   "How do I create a settings object from a config file and extra overrides?",
+   "Which constructor builds configuration from a settings file location plus keyword overrides?",
+   "How can I load settings from a file path and then apply my own values on top?"
+  ],
+  "sig:Config.is_skipped": [
+   "How do I check whether a particular file is excluded from processing by the current settings?",
+   "Which method tells me if a file path should be skipped?",
+   "How can I test if a given file is on the ignore list?"
+  ],
+  "sig:Config.posix_skips": [
+   "How do I get the list of skip rules converted to a format that works on every operating system?",
+   "Which method returns the ignore patterns with forward slashes so they match consistently across platforms?",
+   "How can I read the skipped paths in a portable form for cross-platform matching?"
+  ],
+  "sig:Config.section_comments": [
+   "How do I get the comment text that appears above each group of imports?",
+   "Which method returns the comments placed before each import section in the settings?",
+   "How can I look up the header comment configured for each import section?"
+  ],
+  "sig:Config.section_comments_end": [
+   "Which setting holds the closing comment lines placed at the end of a grouped section?",
+   "How do I get the comment text that closes a section header in the output?",
+   "What method returns the end-of-section comment configured for formatting?"
+  ],
+  "sig:Config.skips": [
+   "How do I get the list of paths the tool is configured to skip?",
+   "Which method returns the skip rules from the current settings?",
+   "How can I see all the ignore entries that apply to this configuration?"
+  ],
+  "sig:Config.sorting_function": [
+   "How do I get the ordering function the current settings use to sort names?",
+   "Which method returns the sorting behavior chosen by the configuration?",
+   "How can I access the function that decides the order of items under my settings?"
+  ],
+  "sig:ExistingSyntaxErrors.__init__": [
+   "What error is raised when a file cannot be processed because it already has broken syntax?",
+   "Which exception tells me the file I am formatting contains syntax problems before I started?",
+   "How do I handle the case where the source file cannot be parsed due to existing errors?"
+  ],
+  "sig:File.extension": [
+   "How do I get the file suffix from a file object?",
+   "Which method returns the extension of a file I am working with?",
+   "How can I find out what type a file is based on its ending?"
+  ],
+  "sig:FileSkipSetting.__init__": [
+   "Which exception marks a file as one that should be skipped during processing?",
+   "How do I signal that a particular file should be left alone because of a skip setting?",
+   "What error class is used to indicate a file is excluded from sorting?"
+  ],
+  "sig:FileSkipped.__init__": [
+   "What exception is raised when a file is intentionally left out of processing?",
+   "Which error tells me that a file was skipped and gives its path?",
+   "How do I handle the case where a file is excluded from being formatted?"
+  ],
+  "sig:FormattingPluginDoesNotExist.__init__": [
+   "What error appears when a requested output formatter plugin cannot be found?",
+   "Which exception is raised when the formatting plugin I asked for is not installed?",
+   "How do I handle the case where a formatter I named is missing?"
+  ],
+  "sig:IntroducedSyntaxErrors.__init__": [
+   "What error is raised when reordering imports would leave a file with invalid syntax?",
+   "How do I signal that the sorted output of a file is no longer valid Python code?",
+   "Which exception tells the user that the file's syntax was broken by the sorting step?"
+  ],
+  "sig:InvalidSettingsPath.__init__": [
+   "What error is raised when the configuration file location I provided is not valid?",
+   "Which exception tells me the settings path I gave cannot be used?",
+   "How do I handle the error that appears when a config file path points to nothing usable?"
+  ],
+  "sig:LiteralSortTypeMismatch.__init__": [
+   "What error is raised when a literal's sort style differs from the style that was expected?",
+   "How do I report that a list or set literal is sorted in the wrong way for the configured setting?",
+   "Which exception tells me the sort type of a literal does not match what was required?"
+  ],
+  "sig:UnsupportedSettings.__init__": [
+   "What error is raised when a user passes configuration options the tool does not support?",
+   "How do I report a list of unrecognized settings back to the user as an error?",
+   "Which exception class should I use when some requested settings are not allowed?"
+  ],
+  "sig:add_to_line": [
+   "How do I attach trailing comments to a line while keeping the original text intact?",
+   "Which helper appends comments to a line and can optionally remove them?",
+   "How can I add a comment prefix and existing comments onto a line of output?"
+  ],
+  "sig:check_code_string": [
+   "How can I check whether a code string is already in the correct order without changing it?",
+   "Which function reports whether code is sorted properly and can show what would change?",
+   "How do I verify the ordering of a code snippet and display a diff if it is off?"
+  ],
+  "sig:check_stream": [
+   "How can I check whether code read from a stream is sorted and show the differences if not?",
+   "Which function checks an input stream of source code and can display a diff?",
+   "How do I verify the import order of code coming from a stream, optionally honoring skip rules?"
+  ],
+  "sig:create_terminal_printer": [
+   "How do I create a printer that writes to the terminal with optional color and custom messages?",
+   "Which function builds a terminal output helper with configurable success and error text?",
+   "How can I make a console printer that lets me choose the output stream and messages?"
+  ],
+  "sig:find_all_configs": [
+   "How do I find every configuration file that applies to a given folder?",
+   "Which function searches a path and returns all the config files it finds?",
+   "How can I locate the settings files that take effect for a directory?"
+  ],
+  "sig:find_imports_in_code": [
+   "How do I list the dependency lines from a code string, with an option to remove duplicates?",
+   "Which function finds the module references inside a snippet of code held in memory?",
+   "How can I get only the top-level dependency declarations from a code string?"
+  ],
+  "sig:find_imports_in_file": [
+   "How do I list the dependency lines from a file on disk, with options to deduplicate or limit to the top?",
+   "Which function reads a file and returns the module references it contains?",
+   "How can I find the dependency declarations in a source file?"
+  ],
+  "sig:format_simplified": [
+   "How do I get a shortened, simplified version of a line for display?",
+   "Which helper produces a compact form of a dependency line for messages or diffs?",
+   "How can I turn a full line into its simplified display version?"
+  ],
+  "sig:formatter_from_string": [
+   "How do I get the line-wrapping formatter that matches a given name?",
+   "Which function looks up the wrap formatter for a name string?",
+   "How can I select a wrapping style by giving its name as text?"
+  ],
+  "sig:from_string": [
+   "How do I turn a text label into the matching line-wrapping mode?",
+   "Which method converts a plain string into the corresponding wrap option?",
+   "How can I parse a wrap setting written as text into the right mode value?"
+  ],
+  "sig:get_output": [
+   "How do I run a shell command and capture what it prints in the hook code?",
+   "Which helper executes a command and returns its output to the caller?",
+   "How can I get the output of an external command for use in a hook?"
+  ],
+  "sig:hanging_indent_with_parentheses": [
+   "What wrapping style puts a long list of names inside parentheses with the continuation lines indented?",
+   "Which line wrap mode uses a hanging indent under an opening parenthesis?",
+   "How do I format a long statement so it wraps inside parentheses with an indent?"
+  ],
+  "sig:import_statement": [
+   "How do I build a complete formatted statement from a set of names, applying wrapping and comments?",
+   "Which function assembles the full text of a statement with line wrapping based on the settings?",
+   "How can I generate the finished text for a dependency statement from its parts?"
+  ],
+  "sig:imports": [
+   "How do I list the module references found in a source stream, and only the ones near the top of the file?",
+   "Which routine reads code from a stream and returns the dependency lines it contains?",
+   "How can I collect the top-of-file dependency declarations from a stream of source code?"
+  ],
+  "sig:main": [
+   "Where is the program's command-line entry point that accepts arguments and optional input?",
+   "Which function runs the tool from the command line and takes an argument list and a standard input stream?",
+   "How do I invoke the command-line interface programmatically with custom arguments?"
+  ],
+  "sig:module": [
+   "How do I determine which category a package name falls into, such as standard library or third-party?",
+   "Which function tells me the section a given package belongs to based on the settings?",
+   "How can I classify a package name to see where it should be grouped?"
+  ],
+  "sig:module_with_reason": [
+   "Which function tells me whether a given import belongs to the standard library, a third-party package, or the local project, and why?",
+   "How can I find out the reasoning behind where a particular import gets placed in the sorted groups?",
+   "What helper reports the category decision for a single import name, along with an explanation?"
+  ],
+  "sig:normalize_line": [
+   "How do I clean up a raw line of text so it is ready for parsing?",
+   "Which function normalizes an unprocessed line before the rest of the code reads it?",
+   "What helper tidies up a raw source line as a first step in parsing?"
+  ],
+  "sig:parse": [
+   "How do I split a line into its code part and its comment part?",
+   "Which function parses a line and separates out any trailing comment?",
+   "What helper pulls the comment text off a line of source code?"
+  ],
+  "sig:process": [
+   "What is the main entry point that reads source from one stream, sorts it, and writes to another?",
+   "Which function takes an input stream and an output stream and formats the code between them?",
+   "How do I sort the dependency lines of a file by streaming it in and writing the result out?"
+  ],
+  "sig:remove_whitespace": [
+   "How do I strip out extra blank spaces from text while keeping the line breaks intact?",
+   "Which helper cleans up whitespace in a block of text but preserves the line separators?",
+   "How can I trim the spaces in a string without collapsing its lines together?"
+  ],
+  "sig:section_key": [
+   "Which function produces the sort key for a single line based on the current settings?",
+   "How do I work out which section a line belongs to so I can order it correctly?",
+   "What helper decides the ordering position of a line when sorting imports by section?"
+  ],
+  "sig:skip_line": [
+   "How do I tell whether a line should be ignored while scanning, especially inside a multi-line string?",
+   "Which helper decides if a line is skipped during parsing and tracks whether I am inside a quoted block?",
+   "How can I check if a line of source should be passed over before looking for dependency declarations?"
+  ],
+  "sig:sort_code_string": [
+   "How do I reorder the dependency lines of a code string and get the sorted text back?",
+   "Which function sorts a code snippet held in memory and returns the result?",
+   "How can I sort the module references in a string without touching a file on disk?"
+  ],
+  "sig:sort_imports": [
+   "Which function sorts the imports in a file and can also just check whether they are already sorted?",
+   "What is the main function for sorting a file's imports that can ask before applying changes or write to standard output?",
+   "How do I call the primary sorting routine on a file with options to check it or print the result?"
+  ],
+  "sig:sorted_imports": [
+   "How do I turn parsed dependency data into sorted output text?",
+   "Which function takes parsed statements and returns them in the correct order with the chosen settings?",
+   "How can I produce sorted output from the parsed structure of a file?"
+  ],
+  "sig:strip_syntax": [
+   "How do I strip the leading keyword from a dependency line so I only have the names left?",
+   "Which helper removes the syntax around a dependency line and returns the bare module names?",
+   "How can I get just the names out of a line that declares dependencies?"
+  ],
+  "sig:vertical_grid_grouped_no_comma": [
+   "Which wrapping routine lays out imports in a grouped vertical grid without a trailing comma?",
+   "How do I format a multi-line import in a vertical layout that groups names and omits the final comma?",
+   "What function produces the grouped vertical wrap style with no trailing comma?"
+  ],
+  "sig:vertical_hanging_indent": [
+   "What wrapping style stacks each name vertically with an indent under the opening bracket?",
+   "Which wrap mode puts every name on its own indented line without a separate closing line?",
+   "How do I format a long list so each entry is indented on its own line?"
+  ],
+  "sig:vertical_hanging_indent_bracket": [
+   "What wrapping style puts each name on its own line with the closing bracket also on its own line?",
+   "Which wrap mode places every item vertically and closes the parentheses on a separate line?",
+   "How do I format a long list so each entry sits on its own line inside brackets?"
+  ]
+ },
+ "Pylons/pyramid": {
+  "const:src/pyramid/traversal.py:PATH_SEGMENT_SAFE": [
+   "Which characters are left unescaped when building URL path segments for traversal?",
+   "What set of symbols does the framework allow in a path segment without percent-encoding?",
+   "Which punctuation marks are considered safe in traversal URL paths?"
+  ],
+  "sig:AssetsConfiguratorMixin.override_asset": [
+   "How do I redirect a packaged resource to a different file without editing the original package?",
+   "How can I replace a template or static file from an installed add-on with my own version?",
+   "What configuration call lets me swap one asset for another?"
+  ],
+  "sig:CallbackMethodsMixin.response_callbacks": [
+   "How do I get the list of callbacks that run after a response is produced?",
+   "Where are the post-response hooks stored on the request?",
+   "What returns the registered functions to call once the response is ready?"
+  ],
+  "sig:Configurator.end": [
+   "How do I finish a configuration block and get back to the parent configurator?",
+   "What call closes out a nested configurator section?",
+   "How do I return from a sub-configurator to the main one?"
+  ],
+  "sig:DefaultCSRFOptions.__init__": [
+   "How do I configure protection against cross-site forged requests using its options?",
+   "What class holds the default settings for request forgery checks like the token header and allowed methods?",
+   "Where are the default options for anti-forgery token checking defined?"
+  ],
+  "sig:DefaultViewMapper.map_class_native": [
+   "How does the framework adapt a class-based view whose methods take the request directly?",
+   "What mapping step handles class views so their methods get called correctly?",
+   "How are class-based handlers wrapped so the framework can call them properly?"
+  ],
+  "sig:DummyRootFactory.__init__": [
+   "How do I make a dummy root object for traversal in tests?",
+   "What creates a placeholder root factory that takes the request for testing?",
+   "How can I set up a fake root resource to use in unit tests?"
+  ],
+  "sig:DummySecurityPolicy.__init__": [
+   "How do I set up a fake security policy with a chosen user and permission behavior in tests?",
+   "What creates a dummy access-control policy for unit tests with optional remember and forget results?",
+   "How can I stub out the security policy for testing and control who is logged in?"
+  ],
+  "sig:DummySession.changed": [
+   "How do I mark a fake session in tests as modified?",
+   "What test stand-in method flags session data as altered?",
+   "Which method on the test session double signals a change?"
+  ],
+  "sig:EffectivePrincipalsPredicate.text": [
+   "How do I get a readable description of a predicate that checks the user's principals?",
+   "What label describes a route condition matching the effective principals?",
+   "How can I see what a principal-based route filter is checking?"
+  ],
+  "sig:FSAssetDescriptor.abspath": [
+   "How do I get the absolute filesystem path of a file-based asset?",
+   "What gives me the full on-disk location of a static file asset?",
+   "How can I resolve a filesystem asset to its absolute path?"
+  ],
+  "sig:FactoriesConfiguratorMixin.set_response_factory": [
+   "How do I customize how response objects are created for each request?",
+   "What configuration call replaces the default way responses are built?",
+   "How can I plug in my own function to construct responses?"
+  ],
+  "sig:IAssetDescriptor.stream": [
+   "How can I read the contents of a static asset as a stream?",
+   "How do I get a file-like stream of a bundled asset's data?",
+   "What is the way to open an asset's bytes for incremental reading?"
+  ],
+  "sig:IAuthorizationPolicy.principals_allowed_by_permission": [
+   "How do I find which principals are granted a given permission on a resource?",
+   "What lists the users or groups allowed a certain permission for a context?",
+   "How can I ask the authorization policy who has access to something?"
+  ],
+  "sig:IDict.clear": [
+   "How do I empty out a dictionary-like object defined by the interface?",
+   "What removes all entries from the dictionary contract?",
+   "How can I wipe every key from a mapping-style object?"
+  ],
+  "sig:IDict.pop": [
+   "How do I remove a key from a dictionary-like object and get a fallback if it's missing?",
+   "What method takes a key out of the mapping and returns a default when absent?",
+   "How can I pop an entry from a dict-style interface with a default value?"
+  ],
+  "sig:IDict.values": [
+   "How do I get all the values from a dictionary-like interface?",
+   "What method returns the stored values of a mapping?",
+   "How can I iterate over just the values in a dictionary-style object?"
+  ],
+  "sig:IIntrospectable.register": [
+   "How do I add a configuration item to the introspection system along with where it was defined?",
+   "What interface method records an introspectable object together with its source location?",
+   "How does a configuration object get added to the introspector along with its action details?"
+  ],
+  "sig:IIntrospector.add": [
+   "How do I register a new introspection record with the registry's introspector?",
+   "How can I add an entry to the introspection data so it shows up in reports?",
+   "What method records an introspectable item in the introspector?"
+  ],
+  "sig:IIntrospector.remove": [
+   "What interface method deletes an introspection record by its category and key?",
+   "How do I declare that the introspector can remove an entry by its category and identifier?",
+   "Which method in the introspector contract takes out a registered item?"
+  ],
+  "sig:IMultiDict.add": [
+   "How do I append another value under the same key in a dictionary that allows repeated keys?",
+   "What interface method adds an extra value to a multi-valued mapping?",
+   "How can I insert a second entry for an existing key without overwriting the first?"
+  ],
+  "sig:IPEP302Loader.get_code": [
+   "How do I get the compiled code for a module from a custom import loader?",
+   "What loader method returns the bytecode for a named module?",
+   "How can an import hook supply the code for a module by its full name?"
+  ],
+  "sig:ISecurityPolicy.permits": [
+   "How do I check whether a request is allowed to perform a certain action?",
+   "Where do I plug in my own access-control logic for deciding who can do what?",
+   "What method decides if a user has permission for an operation on a given resource?"
+  ],
+  "sig:ISession.changed": [
+   "How do I tell the session that its data was modified so it gets saved?",
+   "What method marks session contents as altered so changes persist?",
+   "Why would I call a session method after editing values stored in it?"
+  ],
+  "sig:ISession.peek_flash": [
+   "How do I look at pending flash messages without removing them from the queue?",
+   "What lets me read queued flash messages without consuming them?",
+   "How can I peek at the messages waiting in a flash queue?"
+  ],
+  "sig:InstancePropertyHelper.set_property": [
+   "How do I attach a new computed attribute to an existing object at runtime?",
+   "What utility lets me add a property to an object, optionally caching its result after the first access?",
+   "How can I dynamically add a lazily computed attribute onto a target object?"
+  ],
+  "sig:Introspector.relate": [
+   "How do I link two registered configuration objects together so they show up as related?",
+   "What method records an association between introspectable items?",
+   "How can I declare that one introspection entry is connected to another?"
+  ],
+  "sig:Introspector.remove": [
+   "How do I delete a previously recorded configuration entry from the introspector?",
+   "How can I remove an item from a category using its unique key?",
+   "What method takes out an introspection entry given its category and identifier?"
+  ],
+  "sig:Localizer.pluralize": [
+   "How do I pick the singular or plural translation of a message based on a count?",
+   "How can I translate a string that changes form depending on a number?",
+   "What method handles plural forms for translated text with optional domain and substitutions?"
+  ],
+  "sig:MatchParamPredicate.__init__": [
+   "How do I create a route predicate that matches a request parameter against a value?",
+   "What builds a condition checking that a query or form parameter equals some value?",
+   "How do I set up a match-param filter for a route using the configurator?"
+  ],
+  "sig:MockTemplate.__init__": [
+   "How do I build a fake template that always returns a fixed response in tests?",
+   "How can I create a stub renderer for unit tests that wraps a canned result?",
+   "What helper makes a dummy template object for testing views?"
+  ],
+  "sig:PTweensCommand.out": [
+   "How do I print a message from the command that lists tweens?",
+   "Where does the tween listing script write its output?",
+   "What handles printing lines for the tweens command-line tool?"
+  ],
+  "sig:PackageOverrides.get_filename": [
+   "How do I resolve a resource name to a file path when assets have been overridden?",
+   "What returns the filename for an overridden package asset?",
+   "How can I find the real file behind an asset name after overrides are applied?"
+  ],
+  "sig:PathInfoPredicate.text": [
+   "How do I see a readable description of a route predicate that matches on the URL path?",
+   "What gives me a human-readable label for a path-matching route condition?",
+   "How can I print out what a path-based route filter is checking?"
+  ],
+  "sig:Registry.registerHandler": [
+   "How do I register an event handler with the component registry?",
+   "What call hooks a handler up to the registry for a set of interfaces?",
+   "How can I subscribe a callable to handle certain kinds of objects in the registry?"
+  ],
+  "sig:RemoteUserAuthenticationPolicy.__init__": [
+   "How do I set up authentication that trusts the username passed in by a web server or proxy?",
+   "Which environment key holds the username for remote-user login, and how do I change it?",
+   "How do I configure login that reads the username set by an upstream server in the request environment?"
+  ],
+  "sig:RendererHelper.render": [
+   "How do I turn a view's return value into final output using a renderer?",
+   "What method produces the rendered result from a value and system variables?",
+   "How do I run a renderer on a value and get back the response body?"
+  ],
+  "sig:RendererHelper.render_to_response": [
+   "How do I render a template into a full HTTP response using the request and extra values?",
+   "What method turns a value and template data into a response object?",
+   "How can I produce a finished response from a renderer helper given the template data?"
+  ],
+  "sig:RendererHelper.renderer": [
+   "How do I get the rendering engine object used to turn a template into output?",
+   "What method returns the template renderer behind a renderer helper?",
+   "How can I access the underlying renderer that produces text from a template?"
+  ],
+  "sig:RendererHelper.settings": [
+   "How do I get the settings that a renderer helper is using?",
+   "Where can I read the configuration a renderer was set up with?",
+   "What exposes the settings attached to a renderer helper?"
+  ],
+  "sig:RequestContext.end": [
+   "How do I close out the current request context and release its thread-local state?",
+   "What ends a request context so the active request is no longer set?",
+   "How do I clean up the request-scoped globals when I'm done with a request?"
+  ],
+  "sig:RoutesConfiguratorMixin.add_route": [
+   "How do I register a new URL route with a name and pattern?",
+   "What configuration method maps URLs to handlers with many optional matching conditions?",
+   "How can I add a URL route that narrows matching by request method, headers, or other conditions?"
+  ],
+  "sig:RoutesMapper.get_route": [
+   "How do I look up a route object by its name?",
+   "What lets me fetch a configured route from the mapper using its label?",
+   "How can I get the route definition that matches a given name?"
+  ],
+  "sig:SessionAuthenticationHelper.authenticated_userid": [
+   "How do I find out which user is logged in based on the session helper?",
+   "What returns the user id for the current request using the session auth helper?",
+   "How can I look up the authenticated user identifier from a request via sessions?"
+  ],
+  "sig:SessionAuthenticationHelper.remember": [
+   "How do I store a user identity in the session so they stay logged in?",
+   "What method records who the logged-in user is for session-based login?",
+   "How can I make the session-based login helper save a user ID for later requests?"
+  ],
+  "sig:SettableProperty.__init__": [
+   "How do I wrap a getter-setter so it acts like a property with caching on the instance?",
+   "What helper turns a plain function into a settable property descriptor?",
+   "How can I create a descriptor that stores its value on the object it belongs to?"
+  ],
+  "sig:TopologicalSorter.remove": [
+   "How do I take an item out of a dependency-sorted collection?",
+   "How can I delete a node from a topological sort before ordering?",
+   "What method removes a named entry from a sorter that orders items by their dependencies?"
+  ],
+  "sig:TraversePredicate.text": [
+   "How do I get a readable description of a route predicate that matches on traversal?",
+   "What gives me a label for a traversal-based route condition?",
+   "How can I see what a traversal route filter is checking?"
+  ],
+  "sig:Tweens.implicit": [
+   "What is the default ordering of middleware layers when none is specified?",
+   "How do I get the list of middleware wrappers used when no explicit order is set?",
+   "Which middleware order does the framework fall back on automatically?"
+  ],
+  "sig:WeakOrderedSet.last": [
+   "How do I get the most recently added item from an ordered set of weak references?",
+   "What returns the last element of a weak ordered collection?",
+   "How can I peek at the newest entry in an ordered weak set?"
+  ],
+  "sig:XHRPredicate.__init__": [
+   "How do I make a route or view respond only to requests sent by client-side scripts instead of normal page loads?",
+   "Which check tells whether an incoming request was made asynchronously from the browser?",
+   "How can I restrict a handler so it only answers background calls made by page scripts?"
+  ],
+  "sig:aslist_cronly": [
+   "How do I turn a settings value into a list, splitting only on line breaks?",
+   "What settings helper converts a multi-line string into a list without splitting on commas?",
+   "How does the framework parse a list-valued setting where items are separated by newlines?"
+  ],
+  "sig:cleanUp": [
+   "How do I reset test state after my unit tests finish?",
+   "What call tears down the testing setup so tests don't leak into each other?",
+   "How do I clear out the registry and hooks after a test run?"
+  ],
+  "sig:forbidden_view_config.__init__": [
+   "How do I declare a handler for access-denied responses and pass it extra options?",
+   "Which class lets me declare an unauthorized-access view using keyword options?",
+   "How do I set up a view for forbidden requests with settings like a renderer?"
+  ],
+  "sig:is_bound_method": [
+   "How can I tell whether a callable is a method attached to an object instance?",
+   "Is there a helper that checks if a function belongs to an instance rather than being a plain function?",
+   "How do I test whether something I was given is a method bound to an object?"
+  ],
+  "sig:normalize_accept_offer": [
+   "How does the framework standardize a media type offered for content negotiation?",
+   "What function cleans up an accepted content type value before comparing it?",
+   "How are content type offers normalized for matching?"
+  ],
+  "sig:quote_plus": [
+   "How do I encode a value so it's safe in a URL query string, turning spaces into plus signs?",
+   "What function percent-encodes text, optionally leaving some characters unescaped?",
+   "How can I escape form values for a query string?"
+  ],
+  "sig:route_path": [
+   "How do I build the path portion of a URL for a named route with arguments?",
+   "What function produces a relative URL for a route using its name?",
+   "How can I generate a route's path, without the host, from a route name?"
+  ],
+  "sig:route_request_iface": [
+   "How do I create a marker interface for a named route's request type?",
+   "How can I generate an interface for a route's request, optionally with base interfaces?",
+   "What helper builds the request interface used when registering a route?"
+  ],
+  "sig:static_path": [
+   "How do I generate a full URL pointing to a static asset file?",
+   "What helper builds the address for a file in a static directory?",
+   "How can I get the web address for a static resource from my code?"
+  ],
+  "sig:static_url": [
+   "How do I generate a URL pointing to a static file?",
+   "What helper builds a link to a static resource using the request?",
+   "How can I get the address of a bundled asset for use in templates?"
+  ],
+  "sig:testConfig": [
+   "How do I quickly set up a throwaway configuration for testing with optional registry, request, and settings?",
+   "What function builds a test configurator with settings and autocommit options?",
+   "How can I spin up a test environment with custom settings in one call?"
+  ]
+ },
+ "ToruNiina/toml11": {
+  "const:include/toml11/compat.hpp:TOML11_HAS_STD_BIT_CAST": [
+   "Does the standard library here provide the helper for reinterpreting bits as another type?",
+   "Can the code use the bit-reinterpretation utility from the standard library?",
+   "Which compatibility switch says the bit-level type conversion helper is available?"
+  ],
+  "const:include/toml11/compat.hpp:TOML11_HAS_STD_INTEGER_SEQUENCE": [
+   "Is support for the standard integer sequence feature turned on in this compatibility setup?",
+   "Does the library's compatibility layer enable the standard integer sequence type for this build?",
+   "How can I tell whether the build uses the standard integer sequence facility or a fallback?"
+  ],
+  "const:include/toml11/compat.hpp:TOML11_HAS_STD_INVOKE_RESULT": [
+   "Does the standard library provide a helper that gives the return type of calling a function?",
+   "Is the function-return-type helper available in this build?",
+   "Which compatibility switch says the call-result type utility is supported?"
+  ],
+  "const:include/toml11/compat.hpp:TOML11_HAS_STD_MAKE_UNIQUE": [
+   "Does the build environment's standard library provide the helper for creating unique pointers?",
+   "Which compatibility switch tells the code whether the unique-pointer factory helper can be used?",
+   "How does the library decide whether to fall back to its own unique-pointer factory?"
+  ],
+  "const:include/toml11/compat.hpp:TOML11_HAS_STD_REMOVE_CVREF": [
+   "Does the standard library provide a helper that strips const, volatile, and reference qualifiers from a type?",
+   "Is the type-qualifier removal utility available in this build?",
+   "Which compatibility switch shows the qualifier-stripping type helper is supported?"
+  ],
+  "sig:alpha::clone": [
+   "How do I make an independent copy of a letter-matching rule object?",
+   "Which method clones an alphabetic character matcher?",
+   "How can I duplicate the letter-checking component of the parser?"
+  ],
+  "sig:basic_value::as_array": [
+   "How do I read stored data as a list without throwing an exception if the type doesn't match?",
+   "What's the non-throwing way to get an array out of stored data?",
+   "Is there a safe version for pulling a list from stored data that returns nothing on mismatch?"
+  ],
+  "sig:basic_value::as_boolean": [
+   "How do I read stored data as a true or false flag without getting an exception on a type mismatch?",
+   "Is there a way to check for a boolean without throwing if the stored data is a different type?",
+   "What's the safe version for pulling a yes/no setting out of stored data?"
+  ],
+  "sig:basic_value::as_floating": [
+   "How do I convert a value to a floating-point number without throwing an exception if it fails?",
+   "Which method attempts a float conversion and reports failure through a no-throw flag instead of an error?",
+   "How can I safely read a value as a decimal number when the type might not match?"
+  ],
+  "sig:basic_value::as_local_time": [
+   "How do I read a value as a local date and time without throwing an exception on failure?",
+   "Which method converts a value to a local time and reports failure through a no-throw flag?",
+   "How can I safely get a local time from a generic value that might be a different type?"
+  ],
+  "sig:basic_value::as_offset_datetime": [
+   "How do I convert a value to a date-time with a time zone offset without throwing on failure?",
+   "Which method reads a generic value as a timestamp with offset and reports failure with a flag?",
+   "How can I safely get an offset date-time from a value that might be a different type?"
+  ],
+  "sig:basic_value::as_table_fmt": [
+   "How do I convert a value to a table with formatting info without throwing on failure?",
+   "Which method reads a generic value as a formatted table and reports failure with a flag?",
+   "How can I safely get a formatted table from a value that might be another type?"
+  ],
+  "sig:basic_value::is_floating": [
+   "How do I check whether a generic value currently holds a decimal number?",
+   "Which method tells me if a value stores a floating-point number?",
+   "How can I test whether a value's type is a non-integer number?"
+  ],
+  "sig:basic_value::set_accessed": [
+   "How do I mark stored data as having been read so it's tracked as accessed?",
+   "What records that a piece of stored data was looked at?",
+   "How does the code flag a stored item as accessed?"
+  ],
+  "sig:character_either::clone": [
+   "How do I make an independent copy of a character alternative parser?",
+   "What's the way to duplicate a character-either parser object?",
+   "How can I copy a parser that matches one of several characters?"
+  ],
+  "sig:character_in_range::clone": [
+   "How do I make an independent copy of a range-based character matcher?",
+   "Which method duplicates a matcher that checks whether a character falls within a range?",
+   "How can I clone a character-in-range rule?"
+  ],
+  "sig:clamp": [
+   "How do I keep a number within a minimum and maximum range?",
+   "Is there a helper that limits a value to lie between two bounds?",
+   "What function restricts a number so it doesn't fall outside a given range?"
+  ],
+  "sig:color_mode::enable": [
+   "How do I turn on colored output for messages in the terminal?",
+   "What function enables color mode for printed messages?",
+   "How can I make the error output show up in color?"
+  ],
+  "sig:context::toml_spec": [
+   "Which version of the data format specification is the parser currently enforcing?",
+   "How can I check which spec version the parsing context is following?",
+   "What reports the specification version active during parsing?"
+  ],
+  "sig:discard_comments::cbegin": [
+   "How do I get a read-only iterator at the start of the comments being discarded?",
+   "Which method gives a constant starting position for walking through the dropped comment collection?",
+   "How can I begin looping over discarded comments without modifying them?"
+  ],
+  "sig:discard_comments::cend": [
+   "How do I get a read-only end marker for the discarded comment collection?",
+   "Which method returns the constant end position for dropped comments?",
+   "How can I tell where iteration over discarded comments stops?"
+  ],
+  "sig:discard_comments::emplace_back": [
+   "How do I add a new comment directly into a discard-comments container at the end?",
+   "Which method constructs and appends a comment in place in the dropped comment list?",
+   "How can I insert a comment at the back of the discarded comments without copying it first?"
+  ],
+  "sig:discard_comments::end": [
+   "What marks the end position when walking through the container that drops comments?",
+   "How do I get the past-the-last position of the comment-discarding collection?",
+   "Where does iteration stop for the collection that throws away comments?"
+  ],
+  "sig:discard_comments::rend": [
+   "How do I get the reverse-end position of the comment-discarding collection?",
+   "What marks the start boundary when iterating the comment-dropping container in reverse?",
+   "Where does reverse iteration end for the collection that throws away comments?"
+  ],
+  "sig:discard_comments::swap": [
+   "How do I exchange the contents of two comment-dropping containers?",
+   "What's the way to swap two collections that discard comments?",
+   "Can I trade the contents of two comment-discarding objects in one call?"
+  ],
+  "sig:either::clone": [
+   "How do I make an independent copy of a two-alternative value object?",
+   "Which method creates a duplicate of an either-style value?",
+   "How can I clone a value that holds one of two alternatives?"
+  ],
+  "sig:either::either": [
+   "How do I build a value that holds one of two possible alternatives from the arguments I pass in?",
+   "Which constructor creates a two-way choice type from whatever arguments I give it?",
+   "How can I create an alternative-holding object that takes any argument types?"
+  ],
+  "sig:either::push_back_all": [
+   "How do I add several items to an either-style alternative container in one call?",
+   "Is there a way to append multiple elements at once to the alternatives container?",
+   "What function bulk-appends items to the either container?"
+  ],
+  "sig:either::scan": [
+   "How does the parser try each alternative at the current input position?",
+   "What does the alternatives parser do when it scans the input at a given location?",
+   "How do I run the either-style parser from a specific input position?"
+  ],
+  "sig:empty": [
+   "How do I check whether an insertion-ordered map has no entries?",
+   "Which method tells me if the ordered map is currently empty?",
+   "How can I test whether a key-to-value map that keeps insertion order holds anything?"
+  ],
+  "sig:end": [
+   "Where does the map iterate past its last entry, keeping insertion order?",
+   "What marks the end position when walking through the insertion-ordered map?",
+   "How do I find the sentinel position for the key-order-preserving map?"
+  ],
+  "sig:exception::what": [
+   "How do I get the human-readable message from an error?",
+   "What text describes the error when it's caught?",
+   "Which function returns the description string of an exception?"
+  ],
+  "sig:hexdig::scan": [
+   "How do I read a single hexadecimal digit from the input at the current position?",
+   "Which function checks whether the next character is a hex digit and consumes it while tracking where I am?",
+   "What do I call when a parser needs to match one base-16 digit character?"
+  ],
+  "sig:license_notice": [
+   "How do I get the license text for this library in code?",
+   "Which function returns the legal notice that ships with the library?",
+   "Where can I find the license statement the library provides at runtime?"
+  ],
+  "sig:location::advance": [
+   "How do I move the input position forward by a set number of characters?",
+   "What function advances the read position, defaulting to one character?",
+   "How do I skip ahead in the input while tracking location?"
+  ],
+  "sig:location::column_number": [
+   "How do I find out which column number the current position in the input is on?",
+   "Which method reports the column index of a position within the source text?",
+   "How can I get the column part of a source position for error messages?"
+  ],
+  "sig:maybe::clone": [
+   "How do I make an independent copy of an optional value object?",
+   "Which method duplicates a maybe-style value that may or may not hold something?",
+   "How can I clone an optional wrapper?"
+  ],
+  "sig:non_ascii::name": [
+   "What name does the grammar use for the rule that matches non-ASCII characters?",
+   "How do I get the label for the non-ASCII character rule when reporting errors?",
+   "Which identifier represents the non-ASCII character matching rule in the parser?"
+  ],
+  "sig:preserve_comments::cbegin": [
+   "How do I get a read-only iterator at the start of the stored comments?",
+   "Which method gives me a constant starting position for walking through preserved comments?",
+   "How can I begin looping over the comments without being able to modify them?"
+  ],
+  "sig:preserve_comments::crbegin": [
+   "How do I iterate backward over the comments kept from the source file?",
+   "What gives me a reverse-start position for the comment collection that preserves comments?",
+   "How can I walk the saved comments from last to first?"
+  ],
+  "sig:preserve_comments::crend": [
+   "How do I get a reverse iterator marking the end of the stored comments, for walking backward?",
+   "Which method returns a constant reverse-end position for the preserved comment list?",
+   "How can I iterate over preserved comments in reverse order safely?"
+  ],
+  "sig:preserve_comments::data": [
+   "How do I get a raw pointer to the underlying storage of the preserved comments?",
+   "Which method gives direct access to the memory holding the kept comments?",
+   "How can I reach the contiguous block of preserved comment data?"
+  ],
+  "sig:preserve_comments::empty": [
+   "How do I check whether a comment container holds no comments?",
+   "Which method tells me if the preserved comments list is empty?",
+   "How can I test for the absence of any stored comments?"
+  ],
+  "sig:preserve_comments::preserve_comments": [
+   "How do I create a comment container that keeps the comments found while parsing?",
+   "What constructor should I use to build a comment store that retains comments rather than dropping them?",
+   "How do I construct the comment-keeping option when I want to preserve comments?"
+  ],
+  "sig:preserve_comments::reserve": [
+   "How do I reserve space for a given number of comments in advance to avoid repeated growth?",
+   "Can I pre-allocate capacity in the comments collection that keeps comments?",
+   "What call sets aside room for a set number of comments before adding them?"
+  ],
+  "sig:preserve_comments::size": [
+   "How do I find out how many comments a preserved comment container holds?",
+   "Which method returns the number of preserved comments?",
+   "How can I count the comments I have kept?"
+  ],
+  "sig:preserve_comments::swap": [
+   "How do I swap the contents of two comment collections?",
+   "What's the way to exchange comment lists between two preserving containers?",
+   "How can I trade the saved comments between two collections efficiently?"
+  ],
+  "sig:region::cend": [
+   "How do I get an end marker for iterating over a span of source text?",
+   "Which method returns a constant end position for a source region?",
+   "How can I tell where a source text span stops when looping through it?"
+  ],
+  "sig:repeat_at_least::expected_chars": [
+   "Which characters does the parser report as expected when a repeated match falls short of its minimum count?",
+   "How do I get the list of acceptable next characters after a repetition fails?",
+   "What does the error message say was expected when a repeated pattern doesn't match enough times?"
+  ],
+  "sig:result::as_ok": [
+   "How do I get the successful value out of a result object that holds a success?",
+   "Which method returns the success contents of a result wrapper?",
+   "How can I access the ok value stored inside a result?"
+  ],
+  "sig:result::cleanup": [
+   "How do I release the resources held by a result object once I no longer need it?",
+   "Which method frees the contents of a result so it can be reset or destroyed?",
+   "How can I clean up the value or error stored inside a result wrapper?"
+  ],
+  "sig:result::is_ok": [
+   "How do I check whether a result object holds a success?",
+   "Which method tells me if a result wrapper represents a successful outcome?",
+   "How can I test whether an operation succeeded before reading its value?"
+  ],
+  "sig:sequence::push_back_all": [
+   "How do I append several parsed items to a sequence in one call?",
+   "What's the way to bulk-add elements to a sequence parser?",
+   "Can I push multiple entries onto a sequence at once?"
+  ],
+  "sig:sequence::scan": [
+   "How do I run a sequence parser starting from the current input position?",
+   "What function scans input with a sequence of parsing steps?",
+   "How does the sequence parser attempt to match the input at a given location?"
+  ],
+  "sig:sequence::sequence": [
+   "How do I build a sequence parser from a group of component parsers?",
+   "What's the way to create a sequence of parsing steps from several parts?",
+   "How do I construct a parser that runs its pieces one after another?"
+  ],
+  "sig:serialization_error::what": [
+   "How do I get the human-readable message from an error raised when writing output fails?",
+   "Which method returns the text describing why serialization failed?",
+   "How can I print the reason a serialization error happened?"
+  ],
+  "sig:serializer::format_comments": [
+   "How do I turn a collection of comments into formatted text with a chosen indent style for output?",
+   "What function writes comments out during serialization, using a selected indentation character?",
+   "How can I control the indentation when emitting comments from the serializer?"
+  ],
+  "sig:skip_empty_lines": [
+   "How do I skip over blank lines while parsing, using the current parsing context?",
+   "Which function advances the input position past empty lines during parsing?",
+   "What do I call to move past any blank lines before reading the next token?"
+  ],
+  "sig:source_location::last_column_number": [
+   "How do I find the last column number of a span in the source text?",
+   "Which method reports where a source span ends horizontally?",
+   "How can I get the final column of a source range for error reporting?"
+  ],
+  "sig:storage::get": [
+   "How do I read the value held inside a storage wrapper?",
+   "Which method retrieves the contents of a storage holder?",
+   "How can I access the stored item without copying the wrapper itself?"
+  ],
+  "sig:type_error::location": [
+   "Where in the source file did a type mismatch error occur?",
+   "How do I find the location that a type error points to?",
+   "What position information does a type mismatch error carry?"
+  ]
+ },
  "dateutil/dateutil": {
   "const:src/dateutil/tz/_tzfile.py:_TIMEDELTA_CACHE_SIZE": [
    "How big is the cache that stores computed timedelta values when reading timezone files?",
    "What is the maximum number of timedelta entries kept in memory by the tzfile reader?",
    "How can I tune the memory footprint of the timedelta cache used for timezone file lookups?"
   ],
+  "const:src/dateutil/zoneinfo/__init__.py:METADATA_FN": [
+   "Where is the name of the metadata file for zoneinfo data stored?",
+   "What filename does the zoneinfo package use for its metadata?",
+   "Which constant holds the name of the metadata resource in the zoneinfo module?"
+  ],
+  "sig:ZoneInfoFile.get": [
+   "How do I look up a timezone by its name in the bundled database, falling back to something if it's missing?",
+   "Which method retrieves a zone entry from the packaged timezone collection by key?",
+   "What do I call to get a timezone from the built-in zoneinfo store with a default for unknown names?"
+  ],
+  "sig:datetime_ambiguous": [
+   "How do I check whether a local time occurs twice because of a clock fall-back?",
+   "Which function tells me if a wall-clock time is repeated in a given timezone?",
+   "What's the way to detect an ambiguous time during the daylight saving overlap?"
+  ],
+  "sig:default_tzinfo": [
+   "How do I give a naive datetime a default timezone if it doesn't have one?",
+   "Which helper attaches a fallback timezone only when the value is missing one?",
+   "What do I call to make sure a datetime has a zone, using a provided default?"
+  ],
+  "sig:enfold": [
+   "How do I mark a datetime as the second occurrence when it happens during a repeated hour?",
+   "Which function sets the flag that picks the later of two identical local times?",
+   "What do I call to return a copy of a time flagged as the repeated instance after the clock change?"
+  ],
+  "sig:get_zonefile_instance": [
+   "How do I load the bundled timezone database, and can I force a fresh copy?",
+   "Which function gives me the packaged zone data, optionally creating a new instance?",
+   "What do I call to access the shipped timezone file collection and reload it if needed?"
+  ],
+  "sig:gettz": [
+   "How do I look up a timezone object by its name?",
+   "What's the easy way to get a timezone from a string like a region name?",
+   "Which function gives me timezone information from a name I already have?"
+  ],
+  "sig:isoparser.parse_isotime": [
+   "How do I parse an ISO 8601 time string into its parts?",
+   "Is there a function that reads just the time portion of an ISO-formatted string?",
+   "How can I convert an ISO time like 14:30:00 into a time object?"
+  ],
   "sig:isoparser.parse_tzstr": [
    "How do I parse a timezone string in an ISO 8601 date using the isoparser module?",
    "Which function turns a timezone portion of an ISO date string into a tzinfo object, and what does zero_as_utc do?",
    "Is there a helper that reads the offset part of an ISO timestamp and treats a zero offset as UTC?"
+  ],
+  "sig:load_data": [
+   "How does the library read timezone data from an open file into its internal format?",
+   "What function parses a binary timezone file object into usable transition data?",
+   "Where is the code that loads timezone file contents from a file handle?"
+  ],
+  "sig:parserinfo.__init__": [
+   "How do I tell the date parser to read the day before the month in ambiguous dates?",
+   "Can I make the parser expect the year first when reading date strings?",
+   "What settings control how the date parser interprets day and year order?"
+  ],
+  "sig:parserinfo.convertyear": [
+   "How do I interpret a two-digit year when parsing dates?",
+   "Which method decides the full year from an abbreviated year value during parsing?",
+   "What do I call to convert a short year into a complete one, considering the century setting?"
+  ],
+  "sig:parserinfo.hms": [
+   "How does the date parser recognize words for hours, minutes, and seconds?",
+   "What does the parser use to map time unit names to their meaning?",
+   "How can I check whether a word means hours, minutes, or seconds to the date parser?"
+  ],
+  "sig:parserinfo.tzoffset": [
+   "How do I look up the timezone object that a parser associates with a given abbreviation?",
+   "Which method in the parser settings maps a timezone name to its offset info?",
+   "What do I call to resolve a timezone label into a zone during date parsing?"
   ],
   "sig:picknthweekday": [
    "How do I calculate the date of the nth occurrence of a weekday, like the second Sunday of March, for Windows timezone rules?",
    "Which helper finds a date such as the last Friday of a month given a week number and day of the week?",
    "What function computes a specific weekday in a given month and year for Windows daylight saving transitions?"
   ],
+  "sig:relativedelta.weeks": [
+   "How do I add a number of weeks to a relative date offset?",
+   "Which method builds a time shift measured in weeks for date arithmetic?",
+   "What's the call to express a span of weeks as a relative delta object?"
+  ],
+  "sig:resolve_imaginary": [
+   "How do I handle a local time that falls into a gap when clocks spring forward?",
+   "Which function adjusts a nonexistent wall-clock time to a valid one during a DST skip?",
+   "What do I call to fix up a time that was skipped by the daylight saving transition?"
+  ],
+  "sig:rrule.__init__": [
+   "How do I set up a recurring schedule that starts from a chosen date and stops after a fixed number of occurrences?",
+   "What options can I pass to build a repeating date pattern, like picking specific weekdays or months?",
+   "Is there a way to enable caching when I create a repeating date rule?"
+  ],
+  "sig:rrulebase.__init__": [
+   "How do I set up the shared base for repeating date rules and choose whether to cache results?",
+   "What does the caching option do for the base class of recurrence rules?",
+   "Can I control caching when initializing the common foundation of date recurrence objects?"
+  ],
+  "sig:rrulebase.after": [
+   "How do I find the next scheduled occurrence after a given date in a recurrence pattern?",
+   "Which method returns the first repeat that falls later than a point in time?",
+   "What's the call to get the upcoming instance of a repeating schedule after a moment?"
+  ],
+  "sig:rrulebase.before": [
+   "How do I find the most recent recurring event that happened before a given date?",
+   "Which method looks backward through a recurrence schedule to find the last occurrence?",
+   "What's the call to get the latest scheduled instance prior to a certain datetime?"
+  ],
+  "sig:rrulebase.xafter": [
+   "How do I get a limited number of upcoming occurrences from a recurrence schedule after a date?",
+   "Which method returns a generator of future recurring dates with an optional cap?",
+   "What do I call to lazily iterate over later instances of a repeating event?"
+  ],
+  "sig:rruleset.__init__": [
+   "How do I create a set of several repeating date rules that I can combine?",
+   "Can I turn on caching when building a combined collection of recurrence rules?",
+   "How do I start an empty collection for merging multiple repeating schedules?"
+  ],
+  "sig:rruleset.exrule": [
+   "How do I exclude a recurrence pattern from a set of scheduled dates?",
+   "Which method adds an exception rule so certain repeats are skipped?",
+   "What's the call to subtract a repeating pattern from my recurrence collection?"
+  ],
+  "sig:rruleset.rdate": [
+   "How do I add specific one-off dates to a recurrence collection?",
+   "Which method includes individual extra occurrences in a set of repeating events?",
+   "What's the call to insert fixed dates into a combined schedule?"
+  ],
+  "sig:rruleset.rrule": [
+   "How do I add a base recurrence pattern to a collection of recurring dates?",
+   "Which method includes a recurrence rule in my set of schedules?",
+   "What's the call to register another repeating pattern in a combined recurrence set?"
+  ],
   "sig:tzfile.dst": [
    "How do I find the daylight saving offset that applies to a specific datetime when reading a timezone file?",
    "Which method tells me how much extra time daylight saving adds at a given moment in a compiled timezone?",
    "How can I get the DST adjustment for a datetime using a tzfile object?"
+  ],
+  "sig:tzfile.is_ambiguous": [
+   "How can I tell whether a local time falls into the repeated hour when clocks go back?",
+   "How do I check if a timestamp in a timezone file is ambiguous?",
+   "Is there a way to detect a time that happens twice because of a daylight saving change?"
+  ],
+  "sig:tzfile.key": [
+   "How do I get the name or identifier of a timezone file I loaded?",
+   "How can I find out which key a timezone file was loaded under?",
+   "Is there a way to retrieve the identifier that a timezone object was created with?"
   ],
   "sig:tzfile.tzname": [
    "How do I get the abbreviated name of a timezone for a given datetime when using a tzfile?",
    "Which method tells me the timezone label, like EST or PST, for a specific moment?",
    "How can I look up the name of the zone in effect at a particular time from a compiled timezone file?"
   ],
+  "sig:tzfile.utcoffset": [
+   "How do I get the UTC offset of a timezone loaded from a compiled timezone file?",
+   "What gives the time difference from UTC for a timezone read from a file?",
+   "How can I find the offset applied at a given moment for a file-based timezone?"
+  ],
+  "sig:tzical.__init__": [
+   "How do I load a timezone definition from an iCalendar file?",
+   "How can I read timezone rules from a calendar file object?",
+   "What class lets me parse VTIMEZONE data from an open file?"
+  ],
   "sig:tzlocal.is_ambiguous": [
    "How do I check whether a local time is ambiguous, such as during a daylight saving fall-back hour?",
    "Which method tells me if a datetime occurs twice on the local machine's clock?",
    "How can I detect a repeated wall-clock time when using the system's local timezone?"
   ],
+  "sig:tzlocal.tzname": [
+   "How do I get the abbreviated name of the local timezone at a given datetime?",
+   "What returns the short label like EST for the system's local zone?",
+   "How can I look up the timezone name for a specific moment on this machine?"
+  ],
+  "sig:tzlocal.utcoffset": [
+   "How do I get the UTC offset of the system's local timezone for a given datetime?",
+   "What's the way to find out how far local time is from UTC on this machine?",
+   "How can I ask the local timezone object what offset applies at a specific moment?"
+  ],
+  "sig:tzoffset.__init__": [
+   "How do I create a fixed-offset timezone with a label and a set UTC difference?",
+   "Which constructor builds a timezone from a name and a fixed shift from UTC?",
+   "What do I call to make a simple timezone that has a fixed offset and a custom name?"
+  ],
+  "sig:tzoffset.is_ambiguous": [
+   "How do I check if a datetime is ambiguous under a fixed-offset timezone?",
+   "Can a fixed-offset timezone ever produce a time that happens twice?",
+   "What method tells me whether a local time is ambiguous for a manually offset zone?"
+  ],
+  "sig:tzoffset.utcoffset": [
+   "How do I get the UTC offset for a fixed timezone I defined myself?",
+   "What returns the time difference from UTC for a manually specified offset?",
+   "How can I find the offset of a custom timezone at a given datetime?"
+  ],
+  "sig:tzrangebase.__init__": [
+   "How do I initialize a custom range-based timezone with no arguments?",
+   "Which constructor sets up the base for a range-defined timezone class?",
+   "What do I call to create an empty base object for a custom timezone rule?"
+  ],
+  "sig:tzrangebase.fromutc": [
+   "How do I convert a UTC time into this custom timezone's local time?",
+   "Which method handles translating a moment from UTC into a range-defined zone?",
+   "What's the call that shifts a timestamp into local time for a custom timezone rule?"
+  ],
+  "sig:tzrangebase.is_ambiguous": [
+   "How do I check whether a particular moment is ambiguous in this custom timezone?",
+   "Which method reports if a time repeats during a fall-back transition for a range-based zone?",
+   "What's the call to find out if a datetime is in the overlapping period of a timezone rule?"
+  ],
+  "sig:tzrangebase.tzname": [
+   "How do I get the abbreviated name of the timezone for a given moment?",
+   "Which method tells me what this custom timezone is called at a specific datetime?",
+   "What do I call to fetch the label, like EST or PDT, for a time in a range-based zone?"
+  ],
   "sig:tzrangebase.utcoffset": [
    "How do I find out how far a custom time range is offset from UTC for a given datetime?",
    "Which method reports the UTC offset of a rule-based timezone range at a specific moment?",
    "How can I get the offset value for a datetime when I'm using a tzrange-style timezone?"
+  ],
+  "sig:tzres.__init__": [
+   "How do I load Windows timezone display names from a resource file at a custom path?",
+   "Which constructor reads timezone strings from a Windows resource library, defaulting to a standard filename?",
+   "What do I call to open the localized timezone name resource on Windows?"
+  ],
+  "sig:tzstr.__init__": [
+   "How do I parse a timezone rule string like the POSIX-style ones into a usable zone?",
+   "Which constructor builds a timezone from a textual rule description, with an option for POSIX sign conventions?",
+   "What do I call to create a zone object from a compact string describing offsets and daylight rules?"
+  ],
+  "sig:tzutc.dst": [
+   "How do I find out how much daylight saving time adds for the UTC timezone?",
+   "Does the UTC timezone ever have a daylight saving offset, and how do I check?",
+   "What method reports the DST adjustment for the UTC timezone object?"
   ],
   "sig:tzutc.fromutc": [
    "How do I convert a UTC datetime into UTC using the UTC timezone class in dateutil?",
@@ -327,10 +1413,312 @@
    "What do I pass to create a Windows-based timezone object from a zone name?",
    "How can I construct a timezone object that reads its rules from the Windows registry using a name?"
   ],
+  "sig:tzwinbase.__init__": [
+   "How do I initialize the base class for Windows timezone support?",
+   "What sets up the shared foundation for timezones read from the Windows registry?",
+   "Where is the setup code for Windows-specific timezone classes?"
+  ],
+  "sig:tzwinbase.display": [
+   "How do I get a readable label for the Windows timezone entry I'm working with?",
+   "Which method turns this Windows timezone object into text I can show a user?",
+   "What do I call to see the display string for a Windows-based timezone?"
+  ],
+  "sig:tzwinlocal.__init__": [
+   "How do I create the local timezone object on Windows using the system settings?",
+   "What sets up a timezone that follows the Windows machine's local time?",
+   "Where is the constructor for the Windows local timezone class?"
+  ],
   "sig:valuestodict": [
    "How do I convert a Windows registry key into a Python dictionary?",
    "What function reads values from a Windows registry key into a dict in dateutil?",
    "Where is the code that turns Windows registry timezone data into a usable mapping?"
+  ],
+  "sig:within_delta": [
+   "How do I check whether two datetimes are within a given time window of each other?",
+   "Is there a helper that tells me if the gap between two times is less than a set amount?",
+   "How can I compare two timestamps and see if they differ by no more than a threshold?"
+  ]
+ },
+ "fastfloat/fast_float": {
+  "const:include/fast_float/bigint.h:FASTFLOAT_64BIT_LIMB": [
+   "Is the big-number code built to use 64-bit machine words?",
+   "Does this build treat each big-number word as 64 bits?",
+   "How can I tell whether the big-integer limb size is 64 bits in this configuration?"
+  ],
+  "const:include/fast_float/bigint.h:large_step": [
+   "What size threshold makes the big-number code switch to a larger step during multiplication?",
+   "At what bigint size does the library use its coarser large-step path?",
+   "What is the cutoff value that triggers the large-step strategy for big-number operations?"
+  ],
+  "const:include/fast_float/bigint.h:limb_bits": [
+   "What is the width of each internal word the big-number helper uses to store its digits?",
+   "Which chunk size does the arbitrary-precision integer use for its digits?",
+   "How wide is each piece the big-number code stores its value in?"
+  ],
+  "const:include/fast_float/constexpr_feature_detect.h:FASTFLOAT_HAS_IS_CONSTANT_EVALUATED": [
+   "Is the compiler's ability to detect constant evaluation turned off in this build?",
+   "How do I check whether the library's constant-evaluation detection feature is disabled?",
+   "What setting controls whether the library tests for compile-time evaluation support?"
+  ],
+  "const:include/fast_float/constexpr_feature_detect.h:FASTFLOAT_IS_CONSTEXPR": [
+   "Is constant-expression evaluation support turned off in the library's feature detection?",
+   "How do I check whether the library considers constexpr usable in this build?",
+   "Which setting tells me if the constant-evaluation capability is disabled?"
+  ],
+  "const:include/fast_float/float_common.h:FASTFLOAT_64BIT": [
+   "Is the build targeting a machine with full-width native integers and addresses?",
+   "Does the parser compile for a processor with wide registers and pointers?",
+   "Is the target architecture a wide-word one rather than a narrower one?"
+  ],
+  "const:include/fast_float/float_common.h:FASTFLOAT_HAS_SIMD": [
+   "Is any vector-instruction acceleration available for this build?",
+   "Does the library have a parallel-lane (SIMD) code path enabled here?",
+   "Can the parser use parallel-lane processor instructions in this build?"
+  ],
+  "const:include/fast_float/float_common.h:FASTFLOAT_IS_BIG_ENDIAN": [
+   "Is this build targeting a machine that stores the most significant byte first?",
+   "How can I check whether the target platform uses reversed byte order for multi-byte numbers?",
+   "Where is the flag that says the processor's byte ordering is high-first?"
+  ],
+  "const:include/fast_float/float_common.h:FASTFLOAT_NEON": [
+   "Is NEON SIMD support enabled in this build of the parsing library?",
+   "Does the library use ARM NEON vector instructions here?",
+   "How can I check whether the library's NEON acceleration flag is turned on?"
+  ],
+  "const:include/fast_float/float_common.h:FASTFLOAT_SSE2": [
+   "Is the x86 128-bit vector instruction support enabled in this build?",
+   "How do I tell whether the compile-time flag for the vector extensions is active?",
+   "Where is the switch that turns on the 128-bit SIMD instructions in the parser?"
+  ],
+  "const:include/fast_float/float_common.h:FASTFLOAT_VERSION_MINOR": [
+   "What minor version of the fast float library is this?",
+   "Which release number identifies the minor version of the parsing library?",
+   "How can I find out the minor version component of the library's version?"
+  ],
+  "const:include/fast_float/float_common.h:invalid_am_bias": [
+   "What sentinel bias value marks an invalid mantissa during float parsing?",
+   "Which constant signals that the computed exponent-and-mantissa pair is invalid?",
+   "What special negative offset does the parser use to flag an invalid decimal-to-float result?"
+  ],
+  "sig:add_native": [
+   "How do I scale a big-number by a power and add a small value in one step?",
+   "Which helper accumulates a plain value into the arbitrary-precision number after scaling it?",
+   "How does the code fold a small number into the big integer during decimal conversion?"
+  ],
+  "sig:bigint::compare": [
+   "How do I compare two big integers to see which one is larger?",
+   "Which method returns an ordering result between this big number and another one?",
+   "What function tells me whether one big integer is less than, equal to, or greater than another?"
+  ],
+  "sig:bigint::ctlz": [
+   "How do I count the leading zero bits of a big integer?",
+   "Which method returns the number of unused high bits in a big-number value?",
+   "What function computes the count of leading zero bits across the words of a big integer?"
+  ],
+  "sig:bigint::hi64": [
+   "How do I get the leading word of a big integer and learn whether any lower digits were cut off?",
+   "Which method pulls out the most significant portion of the big-number value and flags truncation?",
+   "How can I read the high part of an arbitrary-precision number and see if precision was lost?"
+  ],
+  "sig:bigint::shl": [
+   "How do I multiply the big-number value by a power of two?",
+   "Where is the left bit-shift for the arbitrary-precision integer?",
+   "How can I shift the big integer's bits upward by a given count?"
+  ],
+  "sig:byteswap_32": [
+   "How do I reverse the byte order of a 32-bit unsigned integer?",
+   "Which helper swaps the bytes of a 32-bit value for endianness conversion?",
+   "What function performs a 32-bit byte swap during ASCII number parsing?"
+  ],
+  "sig:countr_zero_32": [
+   "How many zero bits sit at the bottom of an unsigned integer, using the fastest route?",
+   "Which function returns the number of least-significant zero bits in a fixed-size unsigned integer?",
+   "How do I count the trailing zero bits of an unsigned word?"
+  ],
+  "sig:countr_zero_generic_32": [
+   "What is the non-hardware way to count trailing zero bits when the compiler has no built-in?",
+   "Is there a plain software fallback for counting low zero bits that avoids processor instructions?",
+   "Which portable routine counts trailing zeros for unsigned integers when no intrinsic is available?"
+  ],
+  "sig:cpp20_and_in_constexpr": [
+   "Does the code detect whether the compiler supports the newer language standard for compile-time evaluation?",
+   "How do I check at build time whether the modern language version allows certain constant-expression features?",
+   "Which helper tells whether a compile-time feature from the newer standard is usable here?"
+  ],
+  "sig:from_chars_result_t::bool": [
+   "How do I check whether the parse result reports success in a boolean context?",
+   "Which conversion lets the parse result be tested directly as true or false?",
+   "What does the result object return when converted to a boolean for error checking?"
+  ],
+  "sig:full_multiplication": [
+   "How do I multiply two 64-bit integers and get the full 128-bit result?",
+   "Which function performs a complete wide multiplication of two 64-bit values without losing the high part?",
+   "What routine computes the entire product of two machine-width numbers as a double-width result?"
+  ],
+  "sig:is_made_of_eight_digits_fast": [
+   "How can I check whether eight bytes are all ASCII digit characters at once?",
+   "Which helper quickly tests if an eight-byte block contains only decimal digits?",
+   "What function verifies that a 64-bit value holds eight ASCII digit characters?"
+  ],
+  "sig:is_made_of_four_digits_fast": [
+   "How do I check whether four bytes form four ASCII digit characters at once?",
+   "Which helper quickly tests if a 32-bit value holds four decimal digit characters?",
+   "What function verifies that a four-byte block contains only digits?"
+  ],
+  "sig:is_space": [
+   "How can I tell whether a character is a whitespace character?",
+   "Which helper checks if a code point counts as a space before parsing?",
+   "What is the routine that decides whether a Unicode character is blank or whitespace?"
+  ],
+  "sig:large_mul": [
+   "How is multiplication handled when both operands are large, as opposed to the simple method?",
+   "Which routine multiplies a big-number by a long sequence of word-sized values, choosing an approach for large inputs?",
+   "What does the large-operand multiplication path do for big integers above a size threshold?"
+  ],
+  "sig:long_mul": [
+   "How do I multiply a stack-based big integer by a short sequence of word-sized values?",
+   "Which routine multiplies a big-number buffer by another sequence of chunks, storing the result in the first?",
+   "What simple digit-by-digit multiplication routine does the parser use for small operands?"
+  ],
+  "sig:loop_parse_if_eight_digits": [
+   "How do I parse eight digits from a buffer only if enough characters remain, and advance the pointer when I do?",
+   "Which routine checks for eight digits before the end of input and accumulates them into a running integer?",
+   "What function conditionally consumes an eight-digit chunk and updates the position and accumulated value?"
+  ],
+  "sig:min_safe_u64": [
+   "What is the greatest power of a chosen base that still fits in an unsigned machine word?",
+   "Which helper gives the largest count of digits safely storable in a machine integer for a chosen base?",
+   "How do I find the biggest power of a chosen base that doesn't overflow the integer type?"
+  ],
+  "sig:negative_digit_comp": [
+   "How does the parser decide the correctly rounded result when a number has a negative power-of-ten exponent and fast methods are not enough?",
+   "Which routine runs the exact fallback comparison for numbers with a negative decimal exponent?",
+   "Where is the big-number tie-breaking step used for small decimal values?"
+  ],
+  "sig:parse_eight_digits_unrolled": [
+   "Which routine parses eight digits at once from a character buffer or a 64-bit integer, with manual unrolling for speed?",
+   "How can I convert eight ASCII digits in one step using an unrolled parser?",
+   "What function quickly turns an eight-character digit block into its numeric value?"
+  ],
+  "sig:parse_one_digit": [
+   "Which helper reads a single digit character from the current position and adds it into a running value while counting digits?",
+   "How do I consume one digit from a pointer, update the accumulated number, and track how many digits were read?",
+   "What function parses one decimal digit for the digit-by-digit comparison and advances the counters?"
+  ],
+  "sig:power": [
+   "How does the code compute the power-of-ten scaling factor for a given decimal exponent during float conversion?",
+   "Which function returns the binary scaling for a decimal exponent in the decimal-to-binary conversion?",
+   "What routine calculates the power of five and power of two adjustment for converting a decimal exponent?"
+  ],
+  "sig:read8_to_u64": [
+   "How do I read eight bytes from a character pointer as a 64-bit integer?",
+   "Which helper loads eight consecutive characters into a single 64-bit value?",
+   "What function reinterprets an eight-character block as one unsigned 64-bit number?"
+  ],
+  "sig:round": [
+   "How do I round a mantissa in the digit comparison step using a callback to decide halfway cases?",
+   "Which function applies rounding to the adjusted significand with a user-supplied decision callback?",
+   "What routine performs round-to-nearest-even on a float representation using a comparison callback?"
+  ],
+  "sig:round_down": [
+   "How do I truncate the significand by shifting bits off to fit a smaller precision?",
+   "Which routine lowers the precision of an adjusted significand by a shift amount, discarding low bits?",
+   "How do I round an adjusted significand downward when reducing it by a given bit count?"
+  ],
+  "sig:round_up_bigint": [
+   "How do I round up a big-number value and track how many digits were affected?",
+   "Which routine rounds the big integer upward and updates the digit counter?",
+   "How is an arbitrary-precision number rounded up when it is cut to a fixed digit count?"
+  ],
+  "sig:scalar_add": [
+   "How do I add two single words and learn whether the result overflowed?",
+   "Which non-vector helper adds two word-sized values and sets a flag if a carry occurred?",
+   "What routine performs a single-word addition with the carry reported through a reference?"
+  ],
+  "sig:scalar_mul": [
+   "How do I multiply two machine words and add a carry, returning the new carry out?",
+   "Which routine performs a single-word multiplication that also produces a carry for big-number arithmetic?",
+   "What function computes the product of two words and writes the high part back as a carry?"
+  ],
+  "sig:scientific_exponent": [
+   "How do I compute the scientific-notation exponent of a number from its significand and exponent?",
+   "Which function derives the power-of-ten position of a parsed number from its significand and exponent?",
+   "Where is the calculation that finds the decimal exponent in scientific form?"
+  ],
+  "sig:simd_parse_if_eight_digits_unrolled": [
+   "How does the parser check and consume eight decimal characters at once using vector instructions?",
+   "Which routine speeds up reading an eight-digit run from a character string?",
+   "Where is the vectorized fast path for eight consecutive digits that advances the read position?"
+  ],
+  "sig:skip_zeros": [
+   "How do I skip leading zero digits in a character range and move the start pointer past them?",
+   "Which function advances past zeros at the start of a digit sequence before comparison?",
+   "What routine trims leading zero characters from a number string between a first and last position?"
+  ],
+  "sig:small_add": [
+   "How do I add a single small word into a fixed-capacity stack vector of big-number chunks?",
+   "Is there a helper that increments a big-number buffer by one machine word?",
+   "Where is the routine that adds a single word-sized value onto the stored chunks?"
+  ],
+  "sig:small_add_from": [
+   "How do I add a single word to a big-number vector starting from a given index, carrying as needed?",
+   "Which function adds a small value into a big integer's storage beginning at a chosen position?",
+   "What routine performs a small addition into a stack-allocated big number from a starting offset?"
+  ],
+  "sig:span::len": [
+   "How do I get the number of elements in a span view?",
+   "Which method reports the length of a non-owning view over a sequence?",
+   "What call tells me how many items a span covers?"
+  ],
+  "sig:stackvec::capacity": [
+   "What is the maximum number of elements the small fixed-capacity vector can hold?",
+   "How do I find the total storage size reserved for the stack-allocated big-number vector?",
+   "Which method reports how many elements fit in the vector before it runs out of space?"
+  ],
+  "sig:stackvec::len": [
+   "How many elements are currently stored in the small fixed-capacity vector?",
+   "Which method returns the current size of the stack-allocated big-number vector?",
+   "How do I find out how many words are in use in the small vector right now?"
+  ],
+  "sig:stackvec::nonzero": [
+   "How do I check whether the word at a given index in the small vector is nonzero?",
+   "Which method tests if a specific slot in the stack-allocated big-number vector holds a non-zero value?",
+   "What function reports whether the element at a position is not zero?"
+  ],
+  "sig:stackvec::push_unchecked": [
+   "How do I append a word to the small fixed-capacity vector without checking whether there is room?",
+   "Which function adds an element to the end of the stack-allocated vector unchecked?",
+   "What is the fast way to push a machine word onto a small vector when I know it has space?"
+  ],
+  "sig:stackvec::resize_unchecked": [
+   "How do I grow or shrink the small fixed-capacity vector to a new length and fill new slots with a value without bounds checks?",
+   "Which method resizes the stack-allocated big-number vector and fills the new space, skipping capacity checks?",
+   "How can I set a small vector's length to a given size and initialize the extra elements with one word?"
+  ],
+  "sig:stackvec::rindex": [
+   "How do I read an element of the fixed-capacity stack vector counted from its back end?",
+   "Which method gives access to an item by offset from the last position in the stack buffer?",
+   "How can I index a stack-allocated vector from the tail rather than the head?"
+  ],
+  "sig:stackvec::set_len": [
+   "How do I set the number of elements in the small vector directly without touching the contents?",
+   "Which method changes the recorded length of the stack-allocated big-number vector?",
+   "What function assigns a new length to the small vector without initializing or checking elements?"
+  ],
+  "sig:to_extended": [
+   "How do I convert a floating-point value into the extended-precision representation used for digit comparison?",
+   "Which function turns a value into an extended float with a wider significand for accurate comparison?",
+   "What routine produces the extended-precision form of a float value during parsing?"
+  ],
+  "sig:to_extended_halfway": [
+   "How do I get the exact midpoint between a floating-point number and its neighbor, in extended precision?",
+   "Which routine builds the halfway point between a number and the next representable one for rounding checks?",
+   "How is the boundary value halfway to the next representable number computed for tie-breaking?"
+  ],
+  "sig:uint64_hi64": [
+   "How do I get the upper 64 bits of a 128-bit product and tell whether any lower bits were lost?",
+   "Which helper extracts the high half of a wide multiplication result and sets a flag if truncation happened?",
+   "What function returns the top 64 bits of a two-word value and reports whether rounding information was dropped?"
   ]
  },
  "gulrak/filesystem": {
@@ -930,6 +2318,318 @@
    "How do I create a per-thread storage container type for logging context?",
    "How can I make logging context stored separately for each thread using a chosen dictionary type?",
    "What helper builds a thread-local context class from a dictionary type I pass in?"
+  ]
+ },
+ "jemalloc/jemalloc": {
+  "const:src/arena.c:ARENA_DESTROY_MAX_DELAYED_MTX": [
+   "What is the upper limit on deferred locks when tearing down a memory region?",
+   "How many delayed mutexes can be queued while destroying a region at most?",
+   "What cap controls the number of postponed lock operations during region destruction?"
+  ],
+  "const:src/conf.c:experimental": [
+   "What prefix marks configuration settings that are still experimental?",
+   "Which string does the configuration parser use to identify experimental options?",
+   "How can I tell which options are flagged as experimental in the config system?"
+  ],
+  "const:src/stats.c:neg1": [
+   "What placeholder constant does the statistics code use to mark an unset count?",
+   "Which constant in the statistics module signals an invalid or unavailable reading?",
+   "Where in the stats file is the marker for a missing number defined as a string?"
+  ],
+  "sig:arena_cache_bin_array_unregister": [
+   "How do I remove a cache bin array's entry from a region's registry?",
+   "Which function unregisters a per-region cache bin descriptor?",
+   "What cleanup takes a cache array record out of an arena's tracking?"
+  ],
+  "sig:arena_dalloc_small": [
+   "How do I release a small block of memory back to the allocator region it came from?",
+   "Which routine frees a small allocation inside a memory region?",
+   "What does the allocator call to return a tiny chunk of memory it handed out earlier?"
+  ],
+  "sig:arena_dirty_decay_ms_default_set": [
+   "How do I change the default time before unused dirty memory gets returned in new arenas?",
+   "Which function updates the default dirty-memory decay timing for arenas?",
+   "Where is the setter for the default dirty-page decay interval in milliseconds?"
+  ],
+  "sig:arena_dss_prec_set": [
+   "How do I set the policy for how a memory region gets memory from the operating system?",
+   "Which function changes the data-segment versus mapping preference for a region?",
+   "How can I control whether a region grows its memory through the system's data segment?"
+  ],
+  "sig:arena_extent_ralloc_large_shrink": [
+   "How does the allocator shrink a large block during a resize operation?",
+   "Which function handles reallocation when a large extent in an arena gets smaller?",
+   "Where is the code for shrinking a large allocation in place within an arena?"
+  ],
+  "sig:arena_init": [
+   "Where is the code that creates a new allocation arena with a given slot number and config settings?",
+   "How does the allocator initialize an arena for a specific index using a configuration structure?",
+   "Which function sets up a fresh arena when the allocator starts or a new arena is requested?"
+  ],
+  "sig:arena_prefork0": [
+   "What locking happens to an arena before the process forks?",
+   "Which function performs the first pre-fork step for a specific arena?",
+   "Where is the initial prefork handler that prepares an arena for fork?"
+  ],
+  "sig:arena_prefork7": [
+   "What does the seventh pre-fork step do for a memory region?",
+   "Which function handles one of the late pre-fork locking steps for a region?",
+   "How does the allocator prepare a region's internal state before a fork in its final stage?"
+  ],
+  "sig:background_thread_serialize_lock": [
+   "How do I take the lock that serializes background thread work for a particular arena?",
+   "Which function grabs the background-thread serialization lock tied to an arena index?",
+   "Where is the code that locks background worker coordination for one arena before an operation?"
+  ],
+  "sig:background_thread_wakeup_early": [
+   "How do I wake a background thread early if it still has time left on its sleep?",
+   "Which function interrupts a background thread's sleep based on the remaining wait time?",
+   "How can the allocator rouse its background worker before the scheduled wake-up?"
+  ],
+  "sig:base_alloc": [
+   "How do I allocate a block of memory from the base allocator with a specific alignment?",
+   "Which function hands out aligned memory from the underlying base pool?",
+   "How can I request a chunk of base memory of a given size and alignment?"
+  ],
+  "sig:base_delete": [
+   "How do I tear down a base allocator and free its memory?",
+   "Which function deletes a base allocator instance?",
+   "What releases the resources of a base allocator when it is no longer needed?"
+  ],
+  "sig:base_ehooks_get": [
+   "How do I get the custom memory hooks that a base allocator uses?",
+   "Which function returns the extent hook settings of a base allocator?",
+   "How can I look up which memory callbacks a base allocator is configured with?"
+  ],
+  "sig:bin_malloc_no_fresh_slab": [
+   "How do I allocate from a size-class bin when I do not want it to create a new slab?",
+   "Which function tries to serve an allocation from existing slabs in a bin only?",
+   "Where is the bin allocation path that skips growing with a fresh slab?"
+  ],
+  "sig:bin_update_shard_size": [
+   "How do I update the per-shard sizes for a small-object bin across a range?",
+   "Which function adjusts shard sizing for a bin over a given span of sizes?",
+   "How does the allocator recompute how a bin is split among its shards?"
+  ],
+  "sig:bt_init": [
+   "How is a stack backtrace record set up to hold frames for heap profiling?",
+   "Which function prepares a backtrace structure pointing at a frame buffer?",
+   "Where is the code that initializes the stack-trace container used by the sampling profiler?"
+  ],
+  "sig:buf_writer_flush": [
+   "How do I push any buffered output out to its destination right away?",
+   "Which function empties a write buffer so its pending data gets written?",
+   "How can I make a buffered writer send everything it is holding now?"
+  ],
+  "sig:buf_writer_terminate": [
+   "How do I flush and close out a buffered output writer?",
+   "Which function ends a buffered writer's use and frees its resources?",
+   "Where is the code that finalizes a buffer writer after output is done?"
+  ],
+  "sig:cache_bin_info_init": [
+   "How do I set up the metadata for a thread-local cache slot that holds up to a maximum number of items?",
+   "Which function records the capacity limit for a per-thread cache bin?",
+   "Where is the bin descriptor for the thread cache initialized with its item limit?"
+  ],
+  "sig:ckh_string_hash": [
+   "How does the hash table compute its two hash values for a string key?",
+   "Which function produces the paired hashes used when a string is the key in the hash table?",
+   "Where is the string hashing routine for the cuckoo-style hash table?"
+  ],
+  "sig:conf_handle_char_p": [
+   "How do I read a string config value into a fixed-size buffer safely?",
+   "Which function copies a configuration text value into a destination with length checks?",
+   "What handles a string-typed setting from the config file and stores it in a buffer?"
+  ],
+  "sig:ctl_arena_lextent_allocated": [
+   "How do I read how many large allocations an arena currently has in use through the control interface?",
+   "Which function returns the allocated count for a large size class within an arena?",
+   "Where is the stats accessor for allocated large-size objects per arena?"
+  ],
+  "sig:edata_prof_recent_alloc_get_no_lock_test": [
+   "How can a test read the recent profiling allocation record for a memory extent without taking a lock?",
+   "Which test helper fetches the recent heap-profiling entry tied to an allocation, skipping synchronization?",
+   "Where is the unlocked testing accessor for recently recorded allocation profile data?"
+  ],
+  "sig:emap_release_edata": [
+   "How do I mark an extent in the address map as released with a new state?",
+   "Which function updates the map state of an extent when giving it up?",
+   "Where is the code that clears an extent's ownership in the extent map and sets its new status?"
+  ],
+  "sig:emap_try_acquire_edata_neighbor_expand": [
+   "How do I attempt to grab an adjacent memory region from the address map so it can be merged, only if it is in the right state?",
+   "Which routine tries to take over a neighboring extent for expansion, checking its current state first?",
+   "Where is the logic that opportunistically acquires a neighboring extent in the extent map during growth?"
+  ],
+  "sig:hpa_central_extract": [
+   "How do I get a block of a given size out of the shared huge-page pool, and how do I tell if it ran out of memory?",
+   "Which routine takes memory from the central huge-page allocator while honoring an age value and an eager-upgrade flag?",
+   "Where is the code that carves out an extent from the centralized large-page store and reports failure through a flag?"
+  ],
+  "sig:hpa_purge_batch": [
+   "How do I release a batch of unused pages back to the system through the allocator's hooks?",
+   "Which function processes a list of purge items to return memory to the operating system?",
+   "Where is the batched memory-return routine for the huge-page allocator?"
+  ],
+  "sig:hpa_shard_do_deferred_work": [
+   "How do I trigger the postponed cleanup work for one shard of the huge-page allocator?",
+   "Which function performs the deferred housekeeping tasks on a huge-page allocator shard?",
+   "Where is the code that flushes pending background maintenance for a single huge-page shard?"
+  ],
+  "sig:hpa_supported": [
+   "How can code check whether the huge-page allocator is available on the current system?",
+   "Which function tells me if large-page memory management is supported here?",
+   "Where is the platform check that decides whether huge-page allocation can be enabled?"
+  ],
+  "sig:hpdata_purge_next": [
+   "How do I find the next memory range to release from a huge-page descriptor during purging?",
+   "Which function advances the purge iteration over a huge-page metadata record?",
+   "Where is the step that yields the next address and size to purge in a page descriptor?"
+  ],
+  "sig:je_malloc_usable_size": [
+   "How do I find out how many bytes are actually usable in an allocated block?",
+   "Which function reports the real usable capacity of a memory allocation?",
+   "How can a program ask the allocator how large a block really is beyond what was requested?"
+  ],
+  "sig:large_dalloc_prep_locked": [
+   "How do I prepare a large memory block for freeing while holding a lock?",
+   "Which routine does the cleanup steps needed before releasing a big allocation, under a lock?",
+   "What function handles the locked pre-free work for an oversized block?"
+  ],
+  "sig:malloc_cprintf": [
+   "How do I print formatted text by sending output to a custom callback?",
+   "Which function does printf-style output routed through a callback with an opaque context pointer?",
+   "Where is the callback-based formatted printing routine for allocator messages?"
+  ],
+  "sig:malloc_default": [
+   "What is the fallback function that hands out memory of a requested byte count when no special options are given?",
+   "Where is the basic allocate-by-size routine that the default allocation path uses?",
+   "Which function implements plain memory allocation for a given number of bytes?"
+  ],
+  "sig:malloc_dispatch_palloc": [
+   "How does the allocator handle an aligned allocation request and choose a path for it?",
+   "Which dispatch function serves aligned memory requests with optional zeroing and caching?",
+   "What routine picks how to satisfy an allocation that needs a specific alignment?"
+  ],
+  "sig:malloc_init_hard_a0": [
+   "How does the allocator perform its heavy initialization for the very first arena?",
+   "Which function does the full startup setup for the base arena when the allocator first starts?",
+   "Where is the hard-path init routine that bootstraps the initial arena?"
+  ],
+  "sig:malloc_strtoumax": [
+   "How do I parse an unsigned number from a string in a chosen base and see where parsing stopped?",
+   "Which helper converts text to an unsigned integer and reports the leftover characters?",
+   "What function reads a number out of a string with a configurable radix and gives back the end pointer?"
+  ],
+  "sig:mallocx_default_opts_init": [
+   "Where are the static and dynamic option structures set to defaults for the extended allocate call?",
+   "Which function prepares the default option state used when allocating with extra flags?",
+   "How does the extended allocation path initialize its option and result structures?"
+  ],
+  "sig:narenas_total_inc": [
+   "How do I increase the running count of memory regions in use?",
+   "Which function bumps the total number of allocator regions by one?",
+   "Where does the allocator update its tally when a new region is added?"
+  ],
+  "sig:nstime_divide": [
+   "How do I compute how many times one time interval fits into another?",
+   "Which function divides a time value by another time value?",
+   "Where is the code that divides two timestamps or durations to get a quotient?"
+  ],
+  "sig:pac_wake_bg_on_deferred": [
+   "How do I wake the background worker when the page allocator has postponed work?",
+   "Which function signals the background thread to handle deferred page management?",
+   "Where is the code that nudges the background thread after deferring page work?"
+  ],
+  "sig:prof_free_sampled_object": [
+   "What happens to heap profiling records when a sampled allocation is freed?",
+   "Which function cleans up profiling data for a sampled object when it is released?",
+   "Where is the code that removes a sampled allocation's profile info on free?"
+  ],
+  "sig:prof_gdump": [
+   "How does the profiler dump its data when memory use climbs past a threshold?",
+   "Which function triggers a profile dump when the heap grows?",
+   "What causes the memory profiler to write out a dump on a growth event?"
+  ],
+  "sig:prof_get_default_filename": [
+   "How do I build the default file name for a profile dump with a given index?",
+   "Which function generates the standard name for a profiling output file?",
+   "How does the profiler name its dump files by default?"
+  ],
+  "sig:prof_lookup": [
+   "How do I find the existing profiling record for a captured call stack?",
+   "Which function looks up a stack trace entry in the memory profiler's data?",
+   "How can a profiler check whether a given call stack has already been recorded?"
+  ],
+  "sig:prof_malloc_sample_object": [
+   "What does the profiler do when it samples a new allocation?",
+   "Which function attaches profiling info to an allocation that was just chosen for sampling?",
+   "Where is the code that registers a freshly sampled object with the heap profiler?"
+  ],
+  "sig:prof_prefix_set": [
+   "How do I change the prefix used in heap profile output file names?",
+   "Which function sets the text prepended to profile dump filenames?",
+   "Where is the setter for the profile output path prefix?"
+  ],
+  "sig:prof_prefork0": [
+   "What does the profiler do first, before the process forks?",
+   "Which early pre-fork step locks the profiling data so it stays consistent across a fork?",
+   "How do I make sure profiling state is safe to copy when a fork happens?"
+  ],
+  "sig:prof_thread_name_set_impl": [
+   "How do I give the current thread a name that shows up in profiling output?",
+   "Which function sets the label for a thread used in profile reports?",
+   "How can I attach a readable name to a thread for the memory profiler?"
+  ],
+  "sig:psset_stats_accum": [
+   "How do I add one set of page-slab statistics into another running total?",
+   "Which function accumulates allocator statistics from a source into a destination?",
+   "How can I merge two sets of page allocator counters together?"
+  ],
+  "sig:sc_data_update_slab_size": [
+   "How do I change the slab page count for a range of size classes?",
+   "Which function updates how many pages each slab uses across a set of size classes?",
+   "How does the allocator adjust slab sizing data over a span of size classes?"
+  ],
+  "sig:sec_trim": [
+   "How do I trim a small-extent cache by moving entries into a list for flushing?",
+   "Which function shrinks a secondary extent cache and collects what to release?",
+   "How does the allocator empty part of its small-extent cache into a flush list?"
+  ],
+  "sig:stats_postfork_child": [
+   "What statistics cleanup runs in the child process after a fork?",
+   "Which function resets the stats system inside a forked child?",
+   "How does the allocator reinitialize its reporting state in a process created by a fork?"
+  ],
+  "sig:sz_boot": [
+   "How does the allocator set up its size class tables from configuration data at startup?",
+   "Which function initializes size mapping from the static data, with an option for cache-friendly layout?",
+   "What routine prepares the allocation size tables during boot?"
+  ],
+  "sig:sz_psz_quantize_ceil": [
+   "How do I round a byte count up to the nearest page-aligned size class?",
+   "Which function bumps a requested size up to the next valid page size bucket?",
+   "Where is the code that rounds sizes upward for page-granular allocation?"
+  ],
+  "sig:tcache_arena_reassociate": [
+   "How do I reassign a thread's cache to a different arena?",
+   "Which function rebinds the per-thread cache structure to another arena?",
+   "Where is the code that switches a thread cache's home arena?"
+  ],
+  "sig:tcache_postfork_arena_descriptor": [
+   "What cleanup runs in the parent process after a fork for a region's thread cache descriptors?",
+   "Which function restores the thread cache bookkeeping for a region after forking?",
+   "How does the allocator reset per-region cache descriptors once a fork completes in the parent?"
+  ],
+  "sig:tcache_postfork_parent": [
+   "What happens to the thread cache in the parent process after a fork completes?",
+   "Which function cleans up thread cache locks in the parent after forking?",
+   "Where is the post-fork handler for the parent side of the thread cache?"
+  ],
+  "sig:witness_prefork": [
+   "What does the lock-order checker do before the process forks?",
+   "Which function prepares the witness tracking state ahead of a fork?",
+   "How do I get the lock-checking system ready so a fork doesn't break it?"
   ]
  },
  "lepture/mistune": {

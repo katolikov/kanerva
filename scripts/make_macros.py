@@ -37,12 +37,12 @@ FINAL_SKIP = ("gen-agents", "facility", "recency", "mmr", "dense", "hybrid-dedup
 FINAL_STALE = ("kanerva", "kanerva-lex", "kanerva-0.4", "kanerva-lex-0.4", "hybrid-dedup", "hybrid-live", "hybrid", "rerank", "bm25")
 LANGUAGE_METHODS = {"kanerva": "\\kanerva", "hybrid": "Hybrid", "rerank": "Reranker", "kanerva-lex": "Lexical", "bm25": "BM25", "kanerva-0.4": "0.4.1"}
 GATE_SETS = {"lme": "LongMemEval-S", "locomo": "LoCoMo", "beam-dev": "BEAM-1M", "repomem": "RepoMem dev", "repomem-holdout": "RepoMem holdout",
-             "repomem-fresh": "RepoMem first test", "repomem-new": "RepoMem second test", "repomem-other": "RepoMem beyond Python"}
-FILE_SETS = {"repomem-final": "Third test", "repomem-other": "Beyond Python", "repomem-new": "Second test", "repomem-fresh": "First test",
+             "repomem-fresh": "RepoMem, earlier test 1", "repomem-new": "RepoMem, earlier test 2", "repomem-other": "RepoMem beyond Python"}
+FILE_SETS = {"repomem-final": "Main test", "repomem-other": "Beyond Python", "repomem-new": "Earlier test 2", "repomem-fresh": "Earlier test 1",
              "repomem-holdout": "Holdout", "repomem": "RepoMem dev"}
-WRITE_SETS = {"repomem-final": "RepoMem, third test", "repomem-new": "RepoMem, second test", "repomem-fresh": "RepoMem, first test", "lme-updates": "LongMemEval updates"}
+WRITE_SETS = {"repomem-final": "RepoMem, main test", "repomem-new": "RepoMem, earlier test 2", "repomem-fresh": "RepoMem, earlier test 1", "lme-updates": "LongMemEval updates"}
 ONLINE_COLUMNS = {"static": "Static", "online": "Bandit", "online-noisy": "Bandit, noisy", "lift": "Lift", "lift-noisy": "Lift, noisy"}
-ANSWER_SETS = {"locomo": "LoCoMo", "lme": "LongMemEval-S", "beam-dev": "BEAM-1M", "repomem-final": "RepoMem, third test"}
+ANSWER_SETS = {"locomo": "LoCoMo", "lme": "LongMemEval-S", "beam-dev": "BEAM-1M", "repomem-final": "RepoMem, main test"}
 ANSWER_METHODS = {"kanerva": "\\kanerva", "kanerva-lex": "\\kanerva, lexical", "kanerva-0.4": "\\kanerva 0.4.1", "kanerva-lex-0.4": "\\kanerva 0.4.1, lexical", "hybrid": "Hybrid RRF", "bm25": "BM25"}
 ANSWER_PAIRS = {"kanerva vs hybrid": "\\kanerva vs hybrid", "kanerva vs bm25": "\\kanerva vs BM25", "kanerva-lex vs bm25": "Lexical vs BM25",
                 "kanerva vs kanerva-0.4": "\\kanerva vs 0.4.1", "kanerva-lex vs kanerva-lex-0.4": "Lexical vs 0.4.1"}
@@ -198,7 +198,7 @@ def gate_table(spent: dict, final: dict) -> str:
     rows = list(head)
     for config, title in (("full", "With vectors"), ("lexical", "Lexical")):
         rows.append(f"\\multicolumn{{9}}{{@{{}}l}}{{\\emph{{{title}}}}} \\\\")
-        entries = [("Third test", final[config])] + [(label, spent["sets"][name][config]) for name, label in GATE_SETS.items()]
+        entries = [("Main test", final[config])] + [(label, spent["sets"][name][config]) for name, label in GATE_SETS.items()]
         for label, entry in entries:
             before, after = entry["without"], entry["with"]
             rows.append(f"{label} & {before['own']['queries']} & {fmt(before['own']['recall'])} & {fmt(after['own']['recall'])} & {fmt(after['own']['spoke'])} & "
@@ -536,7 +536,11 @@ def update_readme(data: dict, latency: dict) -> None:
     agent = load("agent_write_path")
     own, verbatim, code_notes = agent["sets"]["lme-own-notes"], agent["sets"]["lme-updates"], agent["sets"]["repomem-final"]
     real = load("real_sessions")
-    text = f"""<img src="docs/assets/recall.png" alt="Evidence recovered at each token budget on the third held-out test and the BEAM check" width="100%">
+    signal = load("agent_signal")
+    chain_table = load("agent_chain")["budgets"]["default"]
+    plain_questions = load("plain_questions")["settings"]
+    plain_pool = load("plain_questions")["in_pool"]
+    text = f"""<img src="docs/assets/recall.png" alt="Evidence recovered at each token budget on the main test and the BEAM check" width="100%">
 
 Share of the needed evidence that made it into the context, with no LLM in the loop. "Lexical" is what runs until the model arrives. Unless noted, these figures come from version 0.5.0.
 
@@ -547,7 +551,8 @@ Share of the needed evidence that made it into the context, with no LLM in the l
 - **Long conversations.** {fmt(sum(beam['summary'][f'kanerva@{b}']['recall'] for b in BUDGETS) / len(BUDGETS))} against {fmt(sum(beam['summary'][f'hybrid@{b}']['recall'] for b in BUDGETS) / len(BUDGETS))} for hybrid search. This is a check and not a test, because earlier tests saw the data.
 - **Stale facts.** With keys, no outdated version gets in. Without keys at 1024 tokens, the current version injects one {percent(c_stale['kanerva']['stale_any'])}% of the time on C and C++ and {percent(twins['third test']['stale']['kanerva'])}% on the earlier test's repositories, against about {percent(c_stale['hybrid']['stale_any'])}% for hybrid search.
 - **Changed notes.** `memory_remember` lists similar notes and your agent fixes the older one. Across {agent['meta']['trials'] + c_agent_trials} real Claude Code sessions, it fixed {own['changed']['replaced'] + own['changed']['edited']} of {own['changed']['n']} facts in its own conversation notes, {verbatim['changed']['replaced'] + verbatim['changed']['edited']} of {verbatim['changed']['n']} in long turns and {code_notes['changed']['replaced'] + code_notes['changed']['edited'] + c_agent['changed']['replaced'] + c_agent['changed']['edited']} of {code_notes['changed']['n'] + c_agent['changed']['n']} in code. It sometimes retires more than it should, and one such note survived only as history.
-- **Where it falls short.** Lexical search stays close to BM25 from 512 tokens up. Without keys it gives up a little on exact facts. On answers from a small local model, better recall barely helped and no difference survived correction. On {real['meta']['prompts']} real prompts of one developer, the gate gave notes to {percent(real['vectors']['all']['gated_spoke'])}% of a project's own prompts and {percent(real['vectors']['foreign']['all']['gated_spoke'])}% of other projects' prompts, far weaker than on benchmarks. RepoMem queries come from templates, and real prompts are vaguer.
+- **Learning.** Over {signal['trials']} real sessions on repositories nothing had seen, your agent's verdicts on notes were right {100 * signal['verdict']['precision']:.1f}% of the time, against {100 * signal['old_signal']['precision']:.1f}% for matching identifiers in tool calls. Acting on those verdicts did not pass its test: on six more repositories, sessions a note helped rose from {100 * chain_table['helped_sessions']['fixed']:.1f}% to {100 * chain_table['helped_sessions']['learned']:.1f}%, but right answers fell from {100 * chain_table['right']['fixed']:.1f}% to {100 * chain_table['right']['learned']:.1f}%. So by default Kanerva only records verdicts.
+- **Where it falls short.** Asked in plain words with no identifier, the shipped gate brings the needed note on only {plain_questions['0.0/0.02']['found']} of {plain_questions['0.0/0.02']['n']} questions, though it reaches the candidate list on {plain_pool} of them. Lexical search stays close to BM25 from 512 tokens up. Without keys it gives up a little on exact facts. On answers from a small local model, better recall barely helped and no difference survived correction. On {real['meta']['prompts']} real prompts of one developer, the gate gave notes to {percent(real['vectors']['all']['gated_spoke'])}% of a project's own prompts and {percent(real['vectors']['foreign']['all']['gated_spoke'])}% of other projects' prompts, far weaker than on benchmarks. RepoMem queries come from templates, and real prompts are vaguer.
 
 A query over 10,000 notes takes about {latency['hybrid@10000']['p50_ms']:.0f} ms, or {hooks['minilm@10000']['prompt']['p50_ms'] / 1000:.2f} s for a whole hook, which starts a new process."""
     path = ROOT / "README.md"
@@ -819,6 +824,71 @@ def main() -> None:
         rows.append(f"{titles[d]} & " + " & ".join(cells) + " \\\\")
     rows.append("\\bottomrule\\end{tabular}")
     (OUT / "table_online.tex").write_text("\n".join(rows))
+
+    verdicts = load("agent_signal")
+    judged, old = verdicts["verdict"], verdicts["old_signal"]
+    define(lines, "v-sig-trials", verdicts["trials"])
+    define(lines, "v-sig-repos", len(verdicts["meta"]["repos"]))
+    define(lines, "v-sig-coverage", f"{100 * verdicts['coverage']:.0f}")
+    define(lines, "v-sig-other-n", judged["false_mark"]["n"])
+    define(lines, "v-sig-unseen", verdicts["unseen_marks"])
+    for label, entry in (("sig", judged), ("sigold", old)):
+        define(lines, f"v-{label}-precision", f"{100 * entry['precision']:.1f}")
+        define(lines, f"v-{label}-precision-ci", f"{100 * entry['precision_interval'][0]:.0f}--{100 * entry['precision_interval'][1]:.0f}")
+        define(lines, f"v-{label}-recall", f"{100 * entry['recall']['share']:.1f}")
+        define(lines, f"v-{label}-false", f"{100 * entry['false_mark']['share']:.1f}")
+        define(lines, f"v-{label}-false-hits", entry["false_mark"]["hits"])
+        define(lines, f"v-{label}-stale-helped", entry["stale_marked_helped"]["hits"])
+    define(lines, "v-sig-stale-n", judged["stale_marked_misled"]["n"])
+    define(lines, "v-sig-stale-misled", judged["stale_marked_misled"]["hits"])
+    chain = load("agent_chain")
+    gate_replay = load("real_gate")
+    define(lines, "v-rs-recurrence", f"{100 * gate_replay['recurrence']['share']:.0f}")
+    define(lines, "v-chain-recurrence", f"{100 * chain['meta']['recurrence']:.0f}")
+    define(lines, "v-chain-sessions", chain["meta"]["sessions"])
+    define(lines, "v-chain-repos", len(chain["meta"]["repos"]))
+    define(lines, "v-chain-notes", chain["meta"]["store_notes"])
+    table = chain["budgets"]["default"]
+    units = len(chain["meta"]["repos"])
+    scored = chain["meta"]["sessions"] // 2 * units
+    define(lines, "v-chain-scored", scored)
+    for measure, entry in table.items():
+        if isinstance(entry, dict):
+            digits = 1 if measure == "tokens" else 2 if measure in ("lookups", "shown") else 3
+            for field in ("fixed", "learned", "delta"):
+                define(lines, f"v-chain-{measure}-{field}", f"{entry[field]:+.{digits}f}" if field == "delta" else f"{entry[field]:.{digits}f}")
+            define(lines, f"v-chain-{measure}-ci", f"[{entry['interval'][0]:+.{digits}f}, {entry['interval'][1]:+.{digits}f}]")
+            define(lines, f"v-chain-{measure}-up", entry["up"])
+            define(lines, f"v-chain-{measure}-down", entry["down"])
+            define(lines, f"v-chain-{measure}-p", f"{entry['p']:.2f}")
+    for field in ("fixed", "learned"):
+        define(lines, f"v-chain-count-helped-{field}", round(table["helped_sessions"][field] * scored))
+        define(lines, f"v-chain-count-right-{field}", round(table["right"][field] * scored))
+    define(lines, "v-chain-lift-chains", chain["lift"]["chains"])
+    define(lines, "v-chain-lift-sessions", chain["lift"]["scored_sessions"])
+    first = load("agent_chain_first")["budgets"]["default"]
+    first_scored = 72
+    for field in ("fixed", "learned"):
+        define(lines, f"v-chainfirst-helped-{field}", round(first["helped_sessions"][field] * first_scored))
+        define(lines, f"v-chainfirst-right-{field}", round(first["right"][field] * first_scored))
+    define(lines, "v-chainfirst-tokens", f"{first['tokens']['delta']:.0f}")
+    plain_report = load("plain_questions")
+    plain = plain_report["settings"]
+    for label, setting in (("default", "0.0/0.02"), ("gate", "-3.0/0.02"), ("wide", "-3.0/0.002")):
+        define(lines, f"v-pq-{label}-found", plain[setting]["found"])
+        define(lines, f"v-pq-{label}-tokens", f"{plain[setting]['tokens']:.0f}")
+    define(lines, "v-pq-n", plain["0.0/0.02"]["n"])
+    define(lines, "v-pq-pool", plain_report["in_pool"])
+    hazard = load("hazard_check")
+    define(lines, "v-hz-vectors", f"{hazard['vectors']['diff']:+.3f}")
+    define(lines, "v-hz-vectors-ci", f"[{hazard['vectors']['ci'][0]:+.3f}, {hazard['vectors']['ci'][1]:+.3f}]")
+    define(lines, "v-hz-lexical", f"{hazard['lexical']['diff']:+.3f}")
+    for method, label in (("kanerva", "with"), ("kanerva-no-hazard", "without")):
+        define(lines, f"v-hz-stale-{label}", f"{100 * hazard['stale'][method]:.1f}")
+    for arm in ("fixed", "learned"):
+        for field, value in gate_replay[arm]["all"].items():
+            if value is not None:
+                define(lines, f"v-rg-{arm}-{field}".replace("_", "-"), f"{100 * value:.1f}" if field.startswith("spoke") else fmt(value, 1) if field == "tokens" else value)
 
     synthetic = load("synthetic")
     for policy, slope in synthetic["loglog_slope"].items():
