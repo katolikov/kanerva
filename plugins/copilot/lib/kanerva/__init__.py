@@ -4,4 +4,4 @@ from .memory import Memory, RetrievalResult
 from .policy import RetrievalConfig
 
 __all__ = ["Memory", "RetrievalConfig", "RetrievalResult"]
-__version__ = "0.6.0"
+__version__ = "0.6.1"

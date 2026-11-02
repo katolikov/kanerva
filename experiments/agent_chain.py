@@ -266,8 +266,8 @@ def compare_arms(chains: list[dict]) -> dict:
 def lift_active(chains: list[dict]) -> dict:
     """In how many acting chains the shadow check switched lift on, and in how many scored sessions it was on."""
     acting = [c["sessions"] for c in chains if c["arm"] == "learned"]
-    return {"chains": sum(any(s["shadow_on"] for s in rows) for rows in acting),
-            "scored_sessions": sum(s["shadow_on"] for rows in acting for s in rows[len(rows) // 2:])}
+    active = [[False] + [s["shadow_on"] for s in rows[:-1]] for rows in acting]  # a session's stop decides for the next one
+    return {"chains": sum(any(flags) for flags in active), "scored_sessions": sum(on for flags in active for on in flags[len(flags) // 2:])}
 
 
 def main(sessions: int = SESSIONS, repos: tuple[str, ...] = tuple(REPOS)) -> None:
@@ -289,7 +289,7 @@ def main(sessions: int = SESSIONS, repos: tuple[str, ...] = tuple(REPOS)) -> Non
     (RESULTS / "raw" / "agent_chain.json").write_text(json.dumps(rows))
     report = {"meta": {"experiment": "learning from verdicts on chains of real sessions", "commit": git_commit(), "agent": version, "model": MODEL, "sessions": sessions, "recurrence": RECURRENCE,
                        "store_notes": STORE_NOTES, "repos": list(repos), "pass": PASS, "prompt": PROMPT, "chore": CHORE, "cost_usd": round(sum(s["cost"] for c in rows for s in c["sessions"]), 2), "seconds": round(time.time() - start)},
-              "budgets": compare_arms(rows), "lift": lift_active(rows), "tuning": [{"repo": c["repo"], "arm": c["arm"]} | c["tuning"] for c in rows], "shadow": [{"repo": c["repo"], "budget": c["budget"], "arm": c["arm"], "records": c["shadow"]} for c in rows]}
+              "budgets": compare_arms(rows), "lift": lift_active(rows), "judged": {arm: sum(s["judged"] for c in rows if c["arm"] == arm for s in c["sessions"]) for arm in ARMS} | {"sessions": sum(len(c["sessions"]) for c in rows if c["arm"] == "fixed")}, "tuning": [{"repo": c["repo"], "arm": c["arm"]} | c["tuning"] for c in rows], "shadow": [{"repo": c["repo"], "budget": c["budget"], "arm": c["arm"], "records": c["shadow"]} for c in rows]}
     (RESULTS / "agent_chain.json").write_text(json.dumps(report, indent=1))
     print(json.dumps(report, indent=1))
 

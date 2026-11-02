@@ -25,9 +25,9 @@ GATE = os.environ.get("KANERVA_GATE", "1") != "0"  # say nothing when the store 
 FILE_BUDGET = int(os.environ.get("KANERVA_FILE_BUDGET", "150"))  # tokens of notes when a session first touches a file
 FILE_SESSION_BUDGET = 8 * FILE_BUDGET
 REEMBED_AT_START = 32
-# "shadow" records verdicts and acts on nothing, since acting failed its bar in experiments/agent_chain.py. "auto" acts once the
-# shadow check of kanerva.learning allows it, "1" forces that, and "0" stops asking for verdicts.
-LEARN = os.environ.get("KANERVA_LEARN", "shadow")
+# "auto" probes from the start and starts lift once the shadow check of kanerva.learning allows it. "1" forces lift, "shadow" records
+# verdicts and acts on nothing, and "0" stops asking for them.
+LEARN = os.environ.get("KANERVA_LEARN", "auto")
 CONSOLIDATE_ON_COMPACT = os.environ.get("KANERVA_CONSOLIDATE") == "1"
 WRAPUP = os.environ.get("KANERVA_WRAPUP") != "0"
 MAX_CONTEXT_CHARS = 9500  # Claude Code truncates injected strings at 10,000 characters

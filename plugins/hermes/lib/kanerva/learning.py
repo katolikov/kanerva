@@ -17,8 +17,8 @@ shown. So a few prompts are probed from the start: they get a wider list, and ve
 that only a probe let through stands for as many prompts as the probe rate implies. Each session counts once, however many
 prompts it held, and probing stops in a project where verdicts do not come.
 
-By default the plugins only record: acting on verdicts failed its bar on held-out repositories (experiments/agent_chain.py), so
-it takes ``KANERVA_LEARN=auto``.
+On held-out repositories this showed no measurable harm or gain (experiments/agent_chain.py). The plugins ship with it on, because a
+project's gate can move no other way.
 """
 
 from __future__ import annotations

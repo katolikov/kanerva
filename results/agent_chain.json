@@ -211,7 +211,7 @@
  },
  "lift": {
   "chains": 2,
-  "scored_sessions": 5
+  "scored_sessions": 3
  },
  "tuning": [
   {
@@ -528,5 +528,10 @@
     }
    }
   }
- ]
+ ],
+ "judged": {
+  "fixed": 137,
+  "learned": 133,
+  "sessions": 144
+ }
 }

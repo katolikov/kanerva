@@ -1,5 +1,5 @@
 name: kanerva
-version: 0.6.0
+version: 0.6.1
 description: Long-term memory for coding agents. Local, no LLM calls, hard token budget.
 author: Artem Katolikov
 hooks:

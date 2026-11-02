@@ -1,7 +1,7 @@
 {
  "meta": {
   "experiment": "the learning gate on real prompts",
-  "commit": "dc442cbb8c00-dirty",
+  "commit": "a3ef2ac4e5f0-dirty",
   "projects": 5,
   "foreign_every": 4,
   "miss": 0.213
@@ -13,12 +13,12 @@
  },
  "fixed": {
   "all": {
-   "rows": 388,
+   "rows": 389,
    "useful": 5,
    "spoke_useful": 1.0,
-   "spoke_idle": 0.561,
-   "spoke_foreign": 0.436,
-   "tokens": 186.9,
+   "spoke_idle": 0.562,
+   "spoke_foreign": 0.397,
+   "tokens": 184.4,
    "last_shift": 0.0
   },
   "projects": [
@@ -36,8 +36,8 @@
     "useful": 1,
     "spoke_useful": 1.0,
     "spoke_idle": 0.665,
-    "spoke_foreign": 0.628,
-    "tokens": 215.3,
+    "spoke_foreign": 0.558,
+    "tokens": 209.8,
     "last_shift": 0.0
    },
    {
@@ -50,12 +50,12 @@
     "last_shift": 0.0
    },
    {
-    "rows": 23,
+    "rows": 24,
     "useful": 0,
     "spoke_useful": null,
-    "spoke_idle": 0.222,
+    "spoke_idle": 0.263,
     "spoke_foreign": 0.2,
-    "tokens": 69.5,
+    "tokens": 83.3,
     "last_shift": 0.0
    },
    {
@@ -71,12 +71,12 @@
  },
  "learned": {
   "all": {
-   "rows": 388,
+   "rows": 389,
    "useful": 5,
    "spoke_useful": 1.0,
-   "spoke_idle": 0.57,
-   "spoke_foreign": 0.474,
-   "tokens": 190.8,
+   "spoke_idle": 0.572,
+   "spoke_foreign": 0.449,
+   "tokens": 189.6,
    "last_shift": 0.0
   },
   "projects": [
@@ -94,8 +94,8 @@
     "useful": 1,
     "spoke_useful": 1.0,
     "spoke_idle": 0.676,
-    "spoke_foreign": 0.628,
-    "tokens": 216.8,
+    "spoke_foreign": 0.581,
+    "tokens": 213.6,
     "last_shift": 0.0
    },
    {
@@ -108,12 +108,12 @@
     "last_shift": 0.0
    },
    {
-    "rows": 23,
+    "rows": 24,
     "useful": 0,
     "spoke_useful": null,
-    "spoke_idle": 0.222,
+    "spoke_idle": 0.263,
     "spoke_foreign": 0.2,
-    "tokens": 69.5,
+    "tokens": 83.3,
     "last_shift": 0.0
    },
    {

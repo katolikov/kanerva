@@ -1,0 +1,20 @@
+{
+ "meta": {
+  "experiment": "scoring of the chains of release 0.6.0",
+  "commit": "a3ef2ac4e5f0-dirty",
+  "repos": [
+   "fastfloat/fast_float",
+   "jemalloc/jemalloc"
+  ]
+ },
+ "fixed": {
+  "word_for_word": 15,
+  "named": 20,
+  "sessions": 24
+ },
+ "learned": {
+  "word_for_word": 10,
+  "named": 20,
+  "sessions": 24
+ }
+}

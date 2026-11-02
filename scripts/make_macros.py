@@ -551,7 +551,7 @@ Share of the needed evidence that made it into the context, with no LLM in the l
 - **Long conversations.** {fmt(sum(beam['summary'][f'kanerva@{b}']['recall'] for b in BUDGETS) / len(BUDGETS))} against {fmt(sum(beam['summary'][f'hybrid@{b}']['recall'] for b in BUDGETS) / len(BUDGETS))} for hybrid search. This is a check and not a test, because earlier tests saw the data.
 - **Stale facts.** With keys, no outdated version gets in. Without keys at 1024 tokens, the current version injects one {percent(c_stale['kanerva']['stale_any'])}% of the time on C and C++ and {percent(twins['third test']['stale']['kanerva'])}% on the earlier test's repositories, against about {percent(c_stale['hybrid']['stale_any'])}% for hybrid search.
 - **Changed notes.** `memory_remember` lists similar notes and your agent fixes the older one. Across {agent['meta']['trials'] + c_agent_trials} real Claude Code sessions, it fixed {own['changed']['replaced'] + own['changed']['edited']} of {own['changed']['n']} facts in its own conversation notes, {verbatim['changed']['replaced'] + verbatim['changed']['edited']} of {verbatim['changed']['n']} in long turns and {code_notes['changed']['replaced'] + code_notes['changed']['edited'] + c_agent['changed']['replaced'] + c_agent['changed']['edited']} of {code_notes['changed']['n'] + c_agent['changed']['n']} in code. It sometimes retires more than it should, and one such note survived only as history.
-- **Learning.** Over {signal['trials']} real sessions on repositories nothing had seen, your agent's verdicts on notes were right {100 * signal['verdict']['precision']:.1f}% of the time, against {100 * signal['old_signal']['precision']:.1f}% for matching identifiers in tool calls. Acting on those verdicts did not pass its test: on six more repositories, sessions a note helped rose from {100 * chain_table['helped_sessions']['fixed']:.1f}% to {100 * chain_table['helped_sessions']['learned']:.1f}%, but right answers fell from {100 * chain_table['right']['fixed']:.1f}% to {100 * chain_table['right']['learned']:.1f}%. So by default Kanerva only records verdicts.
+- **Learning.** Over {signal['trials']} real sessions on repositories nothing had seen, your agent's verdicts on notes were right {100 * signal['verdict']['precision']:.1f}% of the time, against {100 * signal['old_signal']['precision']:.1f}% for matching identifiers in tool calls. Acting on them has shown no measurable gain or harm on the current build: on six more repositories, right answers were {100 * chain_table['right']['learned']:.1f}% against {100 * chain_table['right']['fixed']:.1f}% and tokens per session {chain_table['tokens']['learned']:.0f} against {chain_table['tokens']['fixed']:.0f}, all within noise. It is on because a project's gate can move no other way.
 - **Where it falls short.** Asked in plain words with no identifier, the shipped gate brings the needed note on only {plain_questions['0.0/0.02']['found']} of {plain_questions['0.0/0.02']['n']} questions, though it reaches the candidate list on {plain_pool} of them. Lexical search stays close to BM25 from 512 tokens up. Without keys it gives up a little on exact facts. On answers from a small local model, better recall barely helped and no difference survived correction. On {real['meta']['prompts']} real prompts of one developer, the gate gave notes to {percent(real['vectors']['all']['gated_spoke'])}% of a project's own prompts and {percent(real['vectors']['foreign']['all']['gated_spoke'])}% of other projects' prompts, far weaker than on benchmarks. RepoMem queries come from templates, and real prompts are vaguer.
 
 A query over 10,000 notes takes about {latency['hybrid@10000']['p50_ms']:.0f} ms, or {hooks['minilm@10000']['prompt']['p50_ms'] / 1000:.2f} s for a whole hook, which starts a new process."""
@@ -866,12 +866,21 @@ def main() -> None:
         define(lines, f"v-chain-count-right-{field}", round(table["right"][field] * scored))
     define(lines, "v-chain-lift-chains", chain["lift"]["chains"])
     define(lines, "v-chain-lift-sessions", chain["lift"]["scored_sessions"])
-    first = load("agent_chain_first")["budgets"]["default"]
-    first_scored = 72
+    define(lines, "v-chain-moved", sum(entry["arm"] == "learned" and entry["shift"] != 0 for entry in chain["tuning"]))
+    define(lines, "v-chain-judged-fixed", chain["judged"]["fixed"])
+    define(lines, "v-chain-judged-learned", chain["judged"]["learned"])
+    define(lines, "v-chain-judged-sessions", chain["judged"]["sessions"])
+    for label, name in (("chainfirst", "agent_chain_first"), ("chainsecond", "agent_chain_second")):
+        earlier = load(name)["budgets"]["default"]
+        for field in ("fixed", "learned"):
+            define(lines, f"v-{label}-helped-{field}", round(earlier["helped_sessions"][field] * 72))
+            define(lines, f"v-{label}-right-{field}", round(earlier["right"][field] * 72))
+        define(lines, f"v-{label}-tokens", f"{earlier['tokens']['delta']:.0f}")
+    rescored = load("chain_rescore")
+    define(lines, "v-rescore-sessions", rescored["fixed"]["sessions"])
     for field in ("fixed", "learned"):
-        define(lines, f"v-chainfirst-helped-{field}", round(first["helped_sessions"][field] * first_scored))
-        define(lines, f"v-chainfirst-right-{field}", round(first["right"][field] * first_scored))
-    define(lines, "v-chainfirst-tokens", f"{first['tokens']['delta']:.0f}")
+        define(lines, f"v-rescore-{field}-strict", rescored[field]["word_for_word"])
+        define(lines, f"v-rescore-{field}-named", rescored[field]["named"])
     plain_report = load("plain_questions")
     plain = plain_report["settings"]
     for label, setting in (("default", "0.0/0.02"), ("gate", "-3.0/0.02"), ("wide", "-3.0/0.002")):
