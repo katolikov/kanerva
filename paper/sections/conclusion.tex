@@ -1,7 +1,7 @@
 \section{Conclusion}
 
-Treating agent memory as budgeted selection over items with explicit validity gives a read path that needs no LLM, and a theory in which expiring items have a clear price. The strongest practical lever turned out to be simpler than the theory: a calibrated estimate of what each candidate is worth. \conclusionsummary{}
+Treating agent memory as budgeted selection gives a read path that needs no LLM, and on code its strongest lever turned out to be simple: a calibrated estimate of what each candidate is worth. \conclusionsummary{}
 
-The next step is an end-to-end study: whether higher recall per token, and fewer stale injections, change what a coding agent does. The retrieval results here are necessary for that outcome and do not establish it.
+The next step is to make the gate speak on vague prompts without flooding unrelated ones, and to measure end to end whether any of this changes what a coding agent gets done.
 
-\paragraph{Reproducibility.} \texttt{make data \&\& make reproduce} rebuilds the current results in \texttt{results/*.json}, and \texttt{make check} verifies each number in this paper against those files. The first two held-out tests are the record of the earlier version: their result files name the commit that produced them, and rerunning them scores the current method, so they run only on request. The RepoMem manifest pins every repository snapshot.
+\paragraph{Reproducibility.} \texttt{make data \&\& make reproduce} rebuilds the results in \texttt{results/*.json}, \texttt{make check} verifies each number in this paper against those files, and the RepoMem manifest pins every repository snapshot.

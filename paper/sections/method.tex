@@ -1,86 +1,56 @@
 \section{Method}\label{sec:method}
 
-\kanerva{} is the combination of the components below, implemented with SQLite, FTS5 and NumPy. No component calls an LLM. When a host agent is present it
-can supply structured writes through tools, which is how semantic extraction happens at no added API cost.
+\kanerva{} is built on SQLite, FTS5 and NumPy, and no component calls an LLM. A host agent, when present, writes notes and judges them through tools. The token cost of memory is what the hooks inject, at session start, per prompt and per file, plus the lists a write returns and one short agent turn at the end of a session with real work.
 
 \subsection{Write path}
-A write redacts secrets, deduplicates against live items (an identical write only refreshes the confirmation time $\tau^{\mathrm{v}}$), and stores the
-item with its FTS5 entry and embedding. A write with a key closes the version interval of the live item with that key: the old item keeps its text and gets
-$\tau^{\mathrm{end}}$ and a pointer to its successor. Nothing is rewritten, so history stays queryable.
-
-Most notes come without a key, and an agent cannot see which older note a new one replaces. So a write through the \texttt{memory\_remember} tool returns up to three live facts of the same scope that look like the same subject: those with at least half of the two notes' \emph{idf}-weighted word mass in common, with enough rare words in common, or with vector cosine above $0.95$. Notes that differ in length by more than a factor of two are skipped. This only lists candidates. The host agent decides, and \texttt{memory\_forget} with \texttt{replaced\_by} then closes the old note the way a key chain does. Nothing in the memory layer calls a model for this.
+A write redacts secrets, drops exact duplicates and stores the note with its full-text entry and embedding. A write with a key closes the live note with that key, which stays as history. Most notes have no key, and only an agent can tell that a new note replaces an older one, so \texttt{memory\_remember} returns up to five similar notes, taken in turn from word matches and close vectors. A hint tells the agent to retire a note that only held the old value, or to edit out the outdated part of a longer one. The store lists and the agent decides.
 
 \subsection{Read path}
-Algorithm~\ref{alg:retrieve} shows retrieval. Candidates are the union of the top-200 lexical and dense hits, plus the items written next to the 50 best fused hits in the same session. Neighbours matter because a conversation often splits one fact across adjacent turns, and on our development data they added about twice as much evidence per candidate as a larger pool.
+Candidates are the top 200 lexical and dense hits and, with vectors, the notes written next to the 50 best hits in the same session, since a conversation often splits one fact across adjacent turns.
 
-\paragraph{Relevance.} Each candidate gets a calibrated probability of being needed, from gradient-boosted trees over 29 features in five groups: retrieval signals (ranks, scores, query-term coverage), the item itself (length, content-word density, question form, numbers), role and speaker (whether a first-person query meets a user turn, whether a named speaker appears in the query), query--item overlap (entities, numbers, and a question type such as ``when'' or ``how many'' against dates and numbers in the item), and context (similarity of neighbouring turns and of the session, recency, ACT-R base-level activation \cite{anderson2004integrated}). Three more features come from an optional local reranker. The trees are fitted on LongMemEval-S, LoCoMo, BEAM-1M and 34 RepoMem repositories, keyed and unkeyed, with conversations and code as two families of equal weight and each query equal within its set. They are exported to a compact array form and evaluated with NumPy in tens of milliseconds for a few hundred candidates, so the package has no learning library at run time. Separate models cover the lexical, static-embedding, dense and reranker configurations. The static model2vec model keeps its earlier fit and was not refitted on the 34 repositories.
+\paragraph{Relevance.} Each candidate gets a probability of being needed from gradient-boosted trees over 29 features: retrieval ranks and scores, the note's length and content, query--note overlap, role and speaker, neighbouring turns, recency, and ACT-R activation \cite{anderson2004integrated}. The trees are fitted on LongMemEval-S, LoCoMo, BEAM-1M and 34 RepoMem repositories, with conversations and code at equal weight, and they run on NumPy in tens of milliseconds, so a user trains nothing. Separate models cover the lexical, static-embedding, dense and reranker configurations.
 
-\paragraph{Objective.} With calibrated weights, $F(S)=\sum_{m\in S}w_m$ is the expected number of needed items in $S$. This is the modular case of the objective of Section~\ref{sec:framework}, so Theorem~\ref{thm:selection} still applies, and Proposition~\ref{prop:calibration} says how probability error reaches the selection. With calibrated weights the coverage facets and the facility-location term had no measurable effect on development data, so they are off by default. Length enters twice, as a feature and as the cost, which is intended: the model can learn that short turns are rarely needed, so density no longer favours short junk once the strong candidates run out. This removes the main weakness of the first version of the method, a linear prior over retrieval signals alone, which lost to plain ranking at large budgets.
+\paragraph{Selection.} The weight of a note combines that probability with validity and a learned lift, and selection maximises the sum of weights \eqref{eq:objective} under the budget (Algorithm~\ref{alg:retrieve}). \textsc{Greedy}$(w,B,\nu)$ goes through candidates in order of $w_m/c(m)^{\nu}$ and keeps each one that still fits. Length enters as a feature and as the cost, so the model can learn that short turns are rarely needed and density does not favour short junk. Coverage and facility-location terms had no measurable effect on development data, so they are off.
 
 \begin{algorithm}[t]
 \caption{\textsc{Retrieve}$(q,B,t)$}\label{alg:retrieve}
 \begin{algorithmic}[1]
-\State $C\gets$ top-$N$ of FTS5 $\cup$ top-$N$ of dense search $\cup$ same-session neighbours of the best fused hits
-\State Remove superseded items, and items with a newer near-twin that covers $q$ at least as well, unless $q$ asks for history
+\State $C\gets$ lexical hits $\cup$ dense hits $\cup$ their same-session neighbours
+\State Remove superseded notes and those with a newer near-twin, unless $q$ asks for history
 \For{$m\in C$}
-  \State $p_m\gets$ relevance model on features of $(m,q)$;\quad $x_m\gets(p_m,u_m)$ \Comment{$u_m$: past use}
-  \State $\mu_m\gets\mathrm{clip}_{[0,1]}\big(x_m^\top\hat\theta+\beta\|x_m\|_{V^{-1}}\big)$
-  \State $\rho_m\gets$ Lomax survival \eqref{eq:lomax} at $t-\tau^{\mathrm{v}}(m)$
-  \State $\rho_m\gets\rho_m\prod_{m'\text{ newer, covers } q}\big(1-\pi\,g(s(m,m'))\big)$ \Comment{no key}
-  \State $w_m\gets\rho_m\mu_m$
+  \State $p_m\gets$ relevance model on features of $(m,q)$
+  \State $\rho_m\gets$ class survival at age $t-\tau^{\mathrm{v}}(m)$, discounted by newer similar facts
+  \State $w_m\gets\rho_m\min(1,\ell_m p_m)$ \Comment{$\ell_m$: learned lift}
 \EndFor
-\State $\mathcal{S}\gets\{\textsc{Greedy}(F,B,\varrho):\varrho\in\{1,\tfrac12\}\}\cup\{\arg\max_{c(m)\le B}F(\{m\})\}$
-\State \Return $\arg\max_{S\in\mathcal{S}}F(S)$, and on request certificate \eqref{eq:certificate}
+\State $\mathcal{S}\gets\{\textsc{Greedy}(w,B,\nu):\nu\in\{1,\tfrac12\}\}\cup\{\arg\max_{c(m)\le B}w_m\}$
+\State \Return $\arg\max_{S\in\mathcal{S}}F(S)$
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}[t]
-\caption{\textsc{Greedy}$(F,B,\varrho)$}\label{alg:greedy}
-\begin{algorithmic}[1]
-\State $S\gets\emptyset$;\ $A\gets\{m: c(m)\le B\}$
-\While{$A\neq\emptyset$}
-  \State $m\gets\arg\max_{m\in A}\ [F(S\cup\{m\})-F(S)]\,/\,c(m)^{\varrho}$;\ remove $m$ from $A$
-  \If{the gain is $0$} \textbf{break} \EndIf
-  \If{$c(S)+c(m)\le B$} $S\gets S\cup\{m\}$ \EndIf
-\EndWhile
-\State \Return $S$
-\end{algorithmic}
-\end{algorithm}
+\paragraph{Query gate.} Selection alone fills the budget with the best of a bad lot, so the plugins first ask whether the store can answer the prompt at all. A logistic model over six signals of the result list (four without vectors), fitted to tell a store's own questions from questions drawn from other stores, gives no notes to a prompt below its threshold. Above it, the plugins drop selected notes with weight below $0.02$. Session start is not gated, because its query is generic.
 
-Only the density variant $\varrho=1$ and the singleton carry the guarantee; the other runs can only raise $F$, because the maximum is taken over all runs.
-
-The plugins add steps that the recall benchmarks do not exercise. They drop selected items whose probability is below $0.02$. Before that, a \emph{query gate} decides whether the store can answer the prompt at all, since selection alone fills the budget with the best of a bad lot. The gate is a logistic model over six signals of the whole result list: the best candidate's \emph{idf}-weighted term cover, the number of query terms, the best relevance weight, the spread of lexical scores, the best cosine, and that cosine's gap to the mean of the top 50. A store without vectors uses the first four. The model is fitted to tell a store's own questions from questions drawn from other stores, and its threshold is set to keep $0.97$ of own recall on the data it was fitted on. Below the threshold the prompt gets no notes. Session start is not gated, because its query is generic.
-
-\paragraph{File notes.} A prompt says little about a change, while the file an agent opens says a lot. When a session first touches a file, by reading or editing it, the hook returns live notes that name that file, newest first, within 150 tokens, and the session as a whole stays within eight times that. A name that many projects share, such as \texttt{index.ts}, counts only together with its folder, and the notes the edit hook writes by itself are skipped. This is a plain lookup by name with no relevance model. Adding the session's files to the prompt query was tested instead, and dropped (Section~\ref{sec:filenotes}).
+\paragraph{File notes.} The file an agent opens says more about a change than the prompt does. When a session first touches a file, the hook returns live notes that name it, within 150 tokens per file and eight times that per session, leaving out what the prompt brought and files that many notes name. This is a plain lookup with no relevance model.
 
 \subsection{Validity}
-For a class $k$ of facts (for example, function signatures), the unknown change rate has a $\mathrm{Gamma}(\alpha,\beta)$ prior. After $n_k$ observed changes over $E_k$ item-days of
-exposure, the posterior predictive probability that an item confirmed $a$ days ago still holds is
-\begin{equation}\label{eq:lomax}
-  \hat\rho_k(a)=\Big(1+\frac{a}{\beta+E_k}\Big)^{-(\alpha+n_k)} .
-\end{equation}
-The class hazards are estimated from the store's own version history, so stable classes stop decaying without any tuning.
-\eqref{eq:lomax} is a Lomax tail, which is a power law for ages well beyond $\beta+E_k$; at smaller ages it behaves like an exponential. So the mixture argument behind this estimator gives the same tail as the power-law decay seen in human memory and in the environment \cite{anderson1991reflections}; see Proposition~\ref{prop:lomax}.
+Keyed facts have exact version chains: a superseded note leaves the candidates unless the query asks for history. Text without keys falls to the \emph{near-twin rule}: a newer fact nearly identical to an older one removes it. Twins are compared by sentence vectors and by hashed words, because a sentence model hears little difference between \texttt{FOO = 3} and \texttt{FOO = 4}, and stores without vectors use words alone. To keep the rule from firing on neighbouring facts, a twin must cover the query at least as well as the older note and hold as many of its words whole, and a note that says less by more than one word is not a newer version. Only facts replace each other, since two similar events are still two events. Natural-language updates rarely look like twins, so they are left to the agent, through the write path.
 
-Keyed facts have exact version chains: a superseded item is dropped from the candidates, and a query with historical intent (``previously'', ``used to'') brings old versions back with $\rho=1$. Text without keys has no such chain. For it we use a heuristic: a newer item with similarity above $0.8$ discounts an older one (the product in Algorithm~\ref{alg:retrieve}), and a newer near-twin above $0.97$ removes it. Without embeddings, the similarity comes from feature hashing, which rates two versions of one fact lower than a sentence model does, so the removal threshold there is $0.85$. A newer twin stands in for an older item only if it covers the query at least as well, measured by \emph{idf}-weighted term cover, because facts about two neighbouring functions read alike and a question names one of them. Only facts replace each other, since two similar events are still two events. This rule fires only on near-identical text, so it suits structured notes and rarely fires on natural-language updates; Section~\ref{sec:experiments} measures both cases.
+Live notes also age, by a Gamma--Poisson hazard estimated per class of fact from the store's own version history. Section~\ref{sec:stale} measures what this adds.
 
-\subsection{Learning}
-The online layer sits on top of the frozen relevance model. It keeps a ridge estimate over three features, a bias, the model's probability and the item's past use, starting from $\theta_0=(0,1,0)$, so that with no feedback it returns the model's probability:
-$\hat\theta_t=\theta_0+V_t^{-1}\sum_{(x,y)}(y-x^\top\theta_0)x$ with $V_t=\lambda I+\sum xx^\top$. The bias is used in fitting and zeroed when scoring. It absorbs the base rate of the reward, including false positives from a noisy signal; a constant added to every item would otherwise push the density rule toward short items. Feedback $y\in[0,1]$ says whether an injected item was used, and a used item counts as reconfirmed. Items known to be invalid at feedback time are skipped, since they say nothing about $\mu$. The update is $O(d^2)$ by Sherman--Morrison per item and works offline. In the plugin, an injected item counts as used when its identifiers or paths appear in later tool calls or edits, and a failed test halves the reward, following the evidence that self-reports inflate reward \cite{asadolahi2026rewardinflation}. Item-level counters always update.
+\subsection{Learning from the agent}\label{sec:learning}
+The relevance model ships fitted and cannot know how notes behave in one project. Learning rests on a \emph{verdict}: at the end of a session with real work, where the plugin already asks the agent for a short note, it also asks which notes changed what the agent did or saved it work, and which turned out wrong. A session with no verdict teaches nothing, since silence is not evidence. Verdicts are tied to the project, and a note counts once for each injection that showed it, however often it is named.
 
-The plugins do not use this bandit. With \texttt{KANERVA\_LEARN=1} they scale each note by its own record instead, an \emph{item lift}: with $u_m$ observed uses and $e_m$ the sum of the model's probabilities over the times the note was injected, $\mu_m$ becomes $\mathrm{clip}_{[0,1]}\big(\mu_m(u_m+\kappa)/(e_m+\kappa)\big)$, with $\kappa=5$. A note with no record keeps the model's probability, and one that helps more often than the model expected rises. This asks only about the item, so it needs no weights over shared features. It is opt-in, because Section~\ref{sec:experiments} measures it on simulated feedback only, and the theory of Section~\ref{sec:theory} covers the bandit and not this rule.
+\paragraph{Lift.} Let $h_m$ count the times a note helped, and let $e_m$ sum the model's probabilities over its injections, plus one each time it misled. A rate $b$ over all notes removes the difference in scale between an agent's marks and the model's probabilities. Evidence on one note is scarce, so it is pooled. Notes fall into groups (test commands, build commands, other keyed facts, edit trails, facts, events), and each level starts from the one above, from a group across projects to a group in project $s$ to the note:
+\begin{align*}
+\ell_g&=\frac{h_g+\kappa_g}{b\,e_g+\kappa_g},\qquad \ell_{s,g}=\frac{h_{s,g}+\kappa_g\,\ell_g}{b\,e_{s,g}+\kappa_g},\\
+\ell_m&=\mathrm{clip}_{[\frac14,4]}\,\frac{h_m+\kappa_m\,\ell_{s,g}}{b\,e_m+\kappa_m},
+\end{align*}
+with $\kappa_g=10$ and $\kappa_m=1$. With no evidence every level is $1$. A note the agent found by search or beside a file has no injection on record, so it adds to its own $h_m$ alone.
 
-\subsection{Consolidation and forgetting}
-Consolidation is reversible. Star clusters around a leader, with every member above a similarity threshold of $0.9$ by default, are summarized extractively: density greedy on a sentence-level facility location with rate $R$, which yields the rate--distortion
-guarantee of Theorem~\ref{thm:rd}. The summary is a new semantic item with parent links, the sources move to an archive tier, and \textsc{Expand} restores them on demand.
-This follows the evidence that repeated irreversible rewriting erodes detail \cite{colaco2026ratedistortion,zhang2025ace}.
-Forgetting moves items to the archive when they have been idle for $\tau$ days or when the active store exceeds a token capacity, evicting the lowest
-$\rho\cdot\mathrm{activation}\cdot\mathrm{usefulness}/c$ first. Both rules are opt-in, because Section~\ref{sec:experiments} finds that they cost recall. Deletion happens only on an explicit user command.
+\paragraph{Shadow check.} When learning acts, lift changes nothing until it has shown it ranks better. Before a verdict updates any record, it scores the model's ordering and the learned one on pairs of a note that helped and one that did not. Lift starts once the learned ordering wins two percent more of at least 40 pairs, a verdict adds at most ten pairs, and it stops if the lead goes. A project's own record decides once it has enough pairs, and until then the record across projects.
 
-\subsection{Multi-resolution}
-An item above 160 tokens can also enter selection as an excerpt: the run of consecutive sentences within 128 tokens that covers the most \emph{idf}-weighted query terms, marked with the item's id. The excerpt's weight is the item's probability times the share of query weight it keeps, or its share of the tokens if that is larger, and its cost is its own. The two versions of an item are mutually exclusive. That adds a partition constraint to the knapsack, which Theorem~\ref{thm:selection} does not cover, so excerpts are a heuristic. The agent pulls the full text with \textsc{Expand} when it needs it. This mode is off by default.
+\paragraph{Gate and floor.} A note the gate or the floor stops is never shown, so waiting yields no evidence about it. In this mode probes start from the first prompt: a quarter of prompts, and a tenth once a project has eight judged sessions, get a wider list even if they fall up to three units below the gate, with notes down to a tenth of the floor. Each setting moves only if it beats the shipped one by two sessions of worth, counting each session once, where a prompt is worth what it helped minus $\frac14$ and a note minus $\frac1{20}$. What only a probe could show is weighted by the inverse of the probe rate. Probing stops in a project where verdicts do not come. The relevance model's weights never change.
 
-\subsection{Complexity}
-With $N$ active items, $n$ candidates, embedding dimension $D$, $\mathcal{T}$ trees of depth at most $h$, and $|S|=k$ selected: a write costs $O(\log N)$ plus one embedding; candidate generation costs $O(ND)$ by brute force
-(or sub-linear with an ANN index) plus the FTS5 query; scoring costs $O(n\mathcal{T}h)$; on the modular objective, greedy reduces to a sort and costs $O(n\log n)$ per run.
-A bandit update costs $O(kd^2)$. Space is $O(N(D+\bar c))$. The memory layer itself uses no LLM tokens; the only token cost is the injected $c(S)\le B$.
+\paragraph{Default.} Acting on verdicts did not pass its test (Section~\ref{sec:verdicts}), so the plugins ship with \texttt{KANERVA\_LEARN=shadow}: they ask for verdicts, record them and run the shadow check, and lift and probes change nothing. \texttt{auto} turns them on, and \texttt{0} stops asking.
+
+\subsection{Optional modules}
+Three modules are off by default. \emph{Consolidation} summarises clusters of near-duplicates extractively and moves the sources to an archive that \textsc{Expand} restores from, following evidence that irreversible rewriting erodes detail \cite{colaco2026ratedistortion,zhang2025ace}. \emph{Forgetting} archives notes idle for $\tau$ days or beyond a token capacity. \emph{Excerpts} let a long note enter selection as the run of sentences that best covers the query, which adds a constraint that Proposition~\ref{prop:selection} does not cover.
