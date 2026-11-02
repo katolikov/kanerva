@@ -190,7 +190,7 @@ def resolve_feedback(mem: Memory, session: str, scope: str) -> int:
     pending = [row for row in rows if not row["resolved"] and row["at"] <= at]
     mem.shadow_check(scope, [row["id"] for row in pending], helped)
     fresh = [i for i in helped - shown if mem.db.execute("INSERT OR IGNORE INTO session_credits VALUES (?, ?, ?)", (session, i, at)).rowcount]
-    mem.credit(fresh, misled - shown)
+    mem.credit(fresh, misled - shown, max((row["id"] for row in rows), default=None))
     updated = sum(mem.feedback(row["id"], {i: 1.0 for i in json.loads(row["item_ids"]) if i in helped}, misled, session, save=False) for row in pending)
     mem.close_verdict(scope, at)
     mem.commit()

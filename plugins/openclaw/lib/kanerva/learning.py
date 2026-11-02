@@ -5,6 +5,8 @@ it is pooled on three levels. A note starts from the record of its group in its 
 group across all projects. Groups are what lets a new note inherit anything: a fresh test command starts from how test commands
 have done. With no evidence every level says 1, and the model's weight stands.
 
+A rise applies only to queries like the ones a note helped on, since a note that once helped would otherwise follow every session.
+
 Lift runs in the shadow first. Each verdict also scores the two orderings of the notes it covers, the model's and the learned
 one, using only what was known before that verdict. Lift starts to change what gets injected in a project once the learned
 ordering is ahead there, or across projects while the project has too little of its own, and it stops if that changes. Only shown
@@ -31,6 +33,8 @@ BASE_PRIOR = 1.0  # weak: how an agent's marks scale against the model's chances
 GROUP_PRIOR = 10.0  # expected uses at which a group's own record weighs as much as the level above it
 NOTE_PRIOR = 1.0  # low, because a real agent's mark is rarely wrong: 96.7% right on a test built to check it
 LIFT_RANGE = (0.25, 4.0)
+MATCH_RANGE = (0.35, 0.65)  # how like a query the ones a note helped on must be for its lift to start, and to apply in full
+HELPED_QUERIES = 8  # kept per note
 SHADOW_PAIRS = 40.0  # a level needs this many compared pairs before it can decide
 SHADOW_MARGIN = 0.02  # the learned ordering must win this share of pairs more than the model's, so that noise cannot flip it
 SHADOW_DECAY = 0.98  # per verdict, so that an old lead fades and learning can stop again
@@ -40,12 +44,14 @@ PROBE_BAND = 3.0  # a prompt below the gate by no more than this can still be pr
 PROBE_RATE = (0.25, 0.1)  # the share of prompts probed while a project has few judged sessions, and after
 PROBE_FLOOR = 0.1  # a probe shows notes down to this share of the weight floor, so that verdicts reach what the floor hides
 PROBE_UNJUDGED = 8  # probes with no verdict before a project stops probing
+PROBE_BUDGET = 200  # tokens a probe may show, since it needs only a few notes to learn from
+PROBE_WEIGHT = 4.0  # the most that one row seen only through a probe can stand for
 GATE_WORTH = 0.25  # speaking pays if at least this share of prompts bring a note that helps
 GATE_SHIFTS = (-3.0, -2.0, -1.0, -0.5, 0.0, 0.5, 1.0)
 NOTE_WORTH = 0.05  # a note pays if at least this share of notes at its weight help
 FLOORS = (1.0, 0.5, 0.25, 0.1)  # shares of the shipped weight floor
 GATE_SESSIONS = 8  # judged sessions a level needs before it can move a setting
-GATE_LEAD = 2.0  # sessions of gain over the shipped setting before it moves, so that noise cannot
+GATE_LEAD = 4.0  # sessions of gain over the shipped setting before it moves, so that one lucky probe cannot
 GATE_WINDOW = 200
 
 
@@ -79,6 +85,14 @@ class Pool:
     def lift(self, scope: str, group: str, hits: float, chances: float) -> float:
         low, high = LIFT_RANGE
         return min(high, max(low, _shrunk(hits, self.base * chances, self.prior(scope, group), NOTE_PRIOR)))
+
+
+def reach(lift: float, match: float) -> float:
+    """A note that helped says little about a query unlike the ones it helped on, so a rise needs a match. A fall needs none."""
+    if lift <= 1.0:
+        return lift
+    low, high = MATCH_RANGE
+    return 1.0 + (lift - 1.0) * min(1.0, max(0.0, (match - low) / (high - low)))
 
 
 def pool(db: sqlite3.Connection) -> Pool:
@@ -158,7 +172,7 @@ def _best(options: tuple[float, ...], stay: float, rows: list[tuple], cost: floa
         sessions.setdefault(row[3], []).append(row)
 
     def worth(limit: float) -> float:
-        return sum(sum(w * (helped - cost) for value, helped, w, _ in group if value >= limit) / sum(r[2] for r in group) for group in sessions.values())
+        return sum(sum(min(w, PROBE_WEIGHT) * (helped - cost) for value, helped, w, _ in group if value >= limit) / len(group) for group in sessions.values())
 
     best = max(options, key=lambda o: (worth(o), -abs(o - stay)))
     return best if worth(best) >= worth(stay) + GATE_LEAD else stay

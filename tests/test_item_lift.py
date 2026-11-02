@@ -7,6 +7,7 @@ import numpy as np
 from kanerva.learning import (
     FLOORS,
     GATE_SESSIONS,
+    HELPED_QUERIES,
     LIFT_RANGE,
     PROBE_RATE,
     PROBE_UNJUDGED,
@@ -18,6 +19,7 @@ from kanerva.learning import (
     learning_on,
     pool,
     probes,
+    reach,
     shadow_update,
     tuning,
 )
@@ -57,7 +59,7 @@ def test_a_note_that_helps_rises_and_one_that_never_helps_falls():
     memory, a, b = store()
     before_a, before_b = weight(memory, a), weight(memory, b)
     for _ in range(20):
-        ask_and_reward(memory, {a: 1.0})
+        ask_and_reward(memory, {a: 1.0})  # on this very query
     assert weight(memory, a) > before_a and weight(memory, b) < before_b
 
 
@@ -191,7 +193,7 @@ def test_the_gate_stays_put_on_little_or_even_evidence():
 
 
 def test_the_gate_tightens_when_what_it_lets_through_does_not_help():
-    assert best_shift(rows_of((0.2, 0, 15), (1.2, 1, 10))) > 0.0
+    assert best_shift(rows_of((0.2, 0, 20), (1.2, 1, 10))) > 0.0
 
 
 def test_the_gate_opens_when_prompts_just_below_it_would_have_helped():
@@ -235,10 +237,14 @@ def test_the_floor_falls_when_notes_under_it_help():
     assert best_floor([(0.3, 0, 1.0, f"s{i}") for i in range(30)] + [(2.0, 1, 1.0, f"u{i}") for i in range(5)]) == FLOORS[0]
 
 
-def test_a_note_only_a_probe_could_show_stands_for_the_prompts_without_one():
-    rows = [(-0.3, 1, 1.0, f"s{i}") for i in range(2)] + [(0.5, 1, 1.0, f"t{i}") for i in range(8)]
+def test_a_prompt_only_a_probe_could_show_stands_for_the_prompts_without_one():
+    plain = [(-0.3, 1, 1.0, f"s{i}") for i in range(2)] + [(0.5, 1, 1.0, f"t{i}") for i in range(8)]
     weighted = [(-0.3, 1, 4.0, f"s{i}") for i in range(2)] + [(0.5, 1, 1.0, f"t{i}") for i in range(8)]
-    assert best_shift(rows) == best_shift(weighted)  # each session counts once, so weights act within a session
+    assert best_shift(plain) == 0.0 and best_shift(weighted) < 0.0
+
+
+def test_one_helped_probe_cannot_move_the_gate():
+    assert best_shift([(-0.3, 1, 4.0, "s")] + [(0.5, 1, 1.0, f"t{i}") for i in range(8)]) == 0.0
 
 
 def test_probing_stays_inside_the_band():
@@ -312,3 +318,35 @@ def test_a_helped_mark_does_not_make_an_old_note_look_new():
     before = memory.db.execute("SELECT confirmed_at FROM items WHERE id = ?", (a,)).fetchone()["confirmed_at"]
     ask_and_reward(memory, {a: 1.0})
     assert memory.db.execute("SELECT confirmed_at FROM items WHERE id = ?", (a,)).fetchone()["confirmed_at"] == before
+
+
+def test_a_rise_needs_a_query_like_the_ones_a_note_helped_on():
+    assert reach(3.0, 0.0) == 1.0
+    assert reach(3.0, 1.0) == 3.0
+    assert 1.0 < reach(3.0, 0.5) < 3.0
+
+
+def test_a_fall_needs_no_match():
+    assert reach(0.5, 0.0) == 0.5
+
+
+def test_a_note_rises_on_a_like_query_and_not_on_another():
+    memory, a, _ = store()
+    memory.db.execute("UPDATE items SET hits = 5, chances = 1 WHERE id = ?", (a,))
+    memory.db.execute("INSERT INTO helped_queries VALUES (?, 1.0, ?, NULL)", (a, QUERY))
+    like = memory.helped_matches([a], QUERY, None)[a]
+    other = memory.helped_matches([a], "where do the deployment scripts live", None)[a]
+    assert like > other
+
+
+def test_a_verdict_remembers_the_query_it_helped_on():
+    memory, a, _ = store()
+    ask_and_reward(memory, {a: 1.0})
+    assert memory.db.execute("SELECT query FROM helped_queries WHERE item_id = ?", (a,)).fetchone()["query"] == QUERY
+
+
+def test_a_note_keeps_only_its_latest_helped_queries():
+    memory, a, _ = store()
+    for at in range(HELPED_QUERIES + 3):
+        memory._remember_helped(a, float(at), f"query {at}", None)
+    assert memory.db.execute("SELECT count(*) AS n FROM helped_queries").fetchone()["n"] == HELPED_QUERIES
