@@ -24,7 +24,7 @@ ORDER = ("dateutil/dateutil", "PyCQA/isort", "Pylons/pyramid", "jemalloc/jemallo
 
 def main(path: str = str(RESULTS / "chain_trace.json")) -> None:
     os.environ["KANERVA_HOME"] = str(MODELS_HOME)
-    rows = json.load(open(path))
+    rows = json.load(open(path))["rows"]
     rng = random.Random("agent-chain-1")
     chains = {repo: chain.make_chain(repo, rng, chain.SESSIONS) for repo in ORDER}
     totals: dict = {arm: {"word_for_word": 0, "named": 0, "sessions": 0} for arm in ("fixed", "learned")}

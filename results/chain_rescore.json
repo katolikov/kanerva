@@ -1,7 +1,7 @@
 {
  "meta": {
   "experiment": "scoring of the chains of release 0.6.0",
-  "commit": "a3ef2ac4e5f0-dirty",
+  "commit": "96a205192aac-dirty",
   "repos": [
    "fastfloat/fast_float",
    "jemalloc/jemalloc"
